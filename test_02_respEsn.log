@@ -1,0 +1,447 @@
+2025_01_25_00_51_28 
+testLogin deb
+Check existence de L'élément avec l'ID "username" ... 
+Exist.
+Check existence de L'élément avec l'ID "password" ... 
+Exist.
+Tous les éléments spécifiés existent.
+on va se loguer :
+Texte de l'élément "loginName" : resp1 esn1
+on s'est bien logué : resp1 esn1
+END : isLogued = true
+testLogin end
+*********************************
+*** DEB 2025_01_25_00_51_43 : addClient test-cli-2025-01-25-00-51-43
+*********************************
+Element enabled: true, displayed: true
+scrollToElement deb elementId=addClient
+scrollToElement name=Ajouter Client
+scrollToElement end elementId=addClient
+Élément avec l'id "addClient" cliqué avec succès.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-save-client
+scrollToElement name=Ajouter
+scrollToElement end elementId=btn-save-client
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-save-client"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-save-client"])
+2025_01_25_00_51_51 : checkIfExistInList DEB name, nb : test-cli-2025-01-25-00-51-43, undefined
+2025_01_25_00_51_51 : nb : 1
+2025_01_25_00_51_54 : search in list : txt : test-cli-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Client (1)
+2025_01_25_00_52_00 : checkText: Checking if target is in txt: target='Liste Client (1)', txt='Liste Client (1)'
+OK test title_list: txt=/Liste Client (1)/
+2025_01_25_00_52_00 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_52_00 : addClient test-cli-2025-01-25-00-51-43
+*********************************
+time diff : 17.128 s.
+=================================
+clientName=test-cli-2025-01-25-00-51-43
+*********************************
+*** DEB 2025_01_25_00_52_00 : updateClient test-cli-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_52_00 : checkIfExistInList DEB name, nb : test-cli-2025-01-25-00-51-43, undefined
+2025_01_25_00_52_00 : nb : 1
+2025_01_25_00_52_04 : search in list : txt : test-cli-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Client (1)
+2025_01_25_00_52_10 : checkText: Checking if target is in txt: target='Liste Client (1)', txt='Liste Client (1)'
+OK test title_list: txt=/Liste Client (1)/
+2025_01_25_00_52_10 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-update-client-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-update-client-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-update-client-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-update-client-0"])
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-save-client
+scrollToElement name=Enregistrer
+scrollToElement end elementId=btn-save-client
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-save-client"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-save-client"])
+2025_01_25_00_52_13 : checkIfExistInList DEB name, nb : test-cli-2025-01-25-00-51-43, undefined
+2025_01_25_00_52_13 : nb : 1
+2025_01_25_00_52_16 : search in list : txt : test-cli-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Client (1)
+2025_01_25_00_52_22 : checkText: Checking if target is in txt: target='Liste Client (1)', txt='Liste Client (1)'
+OK test title_list: txt=/Liste Client (1)/
+2025_01_25_00_52_22 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-update-client-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-update-client-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-update-client-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-update-client-0"])
+Texte de l'élément "metier" : my_client_metier_updated
+2025_01_25_00_52_24 : checkText: Checking if target is in txt: target='my_client_metier_updated', txt='my_client_metier_updated'
+OK test metier: txt=/my_client_metier_updated/
+*********************************
+*** FIN 2025_01_25_00_52_24 : updateClient test-cli-2025-01-25-00-51-43
+*********************************
+time diff : 23.275 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_52_24 : deleteClient test-cli-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_52_24 : checkIfExistInList DEB name, nb : test-cli-2025-01-25-00-51-43, undefined
+2025_01_25_00_52_24 : nb : 1
+2025_01_25_00_52_27 : search in list : txt : test-cli-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Client (1)
+2025_01_25_00_52_33 : checkText: Checking if target is in txt: target='Liste Client (1)', txt='Liste Client (1)'
+OK test title_list: txt=/Liste Client (1)/
+2025_01_25_00_52_33 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-delete-client-0
+scrollToElement name=Supprimer
+scrollToElement end elementId=btn-delete-client-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-delete-client-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-delete-client-0"])
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-modal-ok
+scrollToElement name=Ok
+scrollToElement end elementId=btn-modal-ok
+Élément avec l'id "btn-modal-ok" cliqué avec succès.
+2025_01_25_00_52_37 : checkIfExistInList DEB name, nb : test-cli-2025-01-25-00-51-43, 0
+2025_01_25_00_52_37 : nb : 0
+2025_01_25_00_52_40 : search in list : txt : test-cli-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Client (0)
+2025_01_25_00_52_47 : checkText: Checking if target is in txt: target='Liste Client (0)', txt='Liste Client (0)'
+OK test title_list: txt=/Liste Client (0)/
+2025_01_25_00_52_47 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_52_48 : deleteClient test-cli-2025-01-25-00-51-43
+*********************************
+time diff : 23.983 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_52_48 : addProject test-project-2025-01-25-00-51-43
+*********************************
+Element enabled: true, displayed: true
+scrollToElement deb elementId=addProject
+scrollToElement name=AJOUTER
+scrollToElement end elementId=addProject
+Élément avec l'id "addProject" cliqué avec succès.
+2025_01_25_00_52_53 : dropdown=[object Object]
+Option avec 'ClientDEMO1' sélectionnée.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-project-save
+scrollToElement name=Ajouter
+scrollToElement end elementId=btn-project-save
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-project-save"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-project-save"])
+2025_01_25_00_52_56 : checkIfExistInList DEB name, nb : 2025-01-25-00-51-43, undefined
+2025_01_25_00_52_56 : nb : 1
+2025_01_25_00_52_59 : search in list : txt : 2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Project (1)
+2025_01_25_00_53_05 : checkText: Checking if target is in txt: target='Liste Project (1)', txt='Liste Project (1)'
+OK test title_list: txt=/Liste Project (1)/
+2025_01_25_00_53_05 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_53_05 : addProject test-project-2025-01-25-00-51-43
+*********************************
+time diff : 17.378 s.
+=================================
+projectName=test-project-2025-01-25-00-51-43
+*********************************
+*** DEB 2025_01_25_00_53_05 : updateProject test-project-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_53_05 : checkIfExistInList DEB name, nb : test-project-2025-01-25-00-51-43, undefined
+2025_01_25_00_53_05 : nb : 1
+2025_01_25_00_53_08 : search in list : txt : test-project-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Project (1)
+2025_01_25_00_53_14 : checkText: Checking if target is in txt: target='Liste Project (1)', txt='Liste Project (1)'
+OK test title_list: txt=/Liste Project (1)/
+2025_01_25_00_53_14 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-project-edit-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-project-edit-0
+Élément avec l'id "btn-project-edit-0" cliqué avec succès.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-project-save
+scrollToElement name=Enregistrer
+scrollToElement end elementId=btn-project-save
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-project-save"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-project-save"])
+2025_01_25_00_53_18 : checkIfExistInList DEB name, nb : test-project-2025-01-25-00-51-43, undefined
+2025_01_25_00_53_18 : nb : 1
+2025_01_25_00_53_21 : search in list : txt : test-project-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Project (1)
+2025_01_25_00_53_27 : checkText: Checking if target is in txt: target='Liste Project (1)', txt='Liste Project (1)'
+OK test title_list: txt=/Liste Project (1)/
+2025_01_25_00_53_27 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-project-edit-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-project-edit-0
+Élément avec l'id "btn-project-edit-0" cliqué avec succès.
+Texte de l'élément "env" : my_project_env_updated
+2025_01_25_00_53_29 : checkText: Checking if target is in txt: target='my_project_env_updated', txt='my_project_env_updated'
+OK test env: txt=/my_project_env_updated/
+*********************************
+*** FIN 2025_01_25_00_53_30 : updateProject test-project-2025-01-25-00-51-43
+*********************************
+time diff : 25.203 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_53_30 : deleteProject test-project-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_53_30 : checkIfExistInList DEB name, nb : test-project-2025-01-25-00-51-43, undefined
+2025_01_25_00_53_30 : nb : 1
+2025_01_25_00_53_33 : search in list : txt : test-project-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Project (1)
+2025_01_25_00_53_40 : checkText: Checking if target is in txt: target='Liste Project (1)', txt='Liste Project (1)'
+OK test title_list: txt=/Liste Project (1)/
+2025_01_25_00_53_40 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-project-delete-0
+scrollToElement name=Supprimer
+scrollToElement end elementId=btn-project-delete-0
+Élément avec l'id "btn-project-delete-0" cliqué avec succès.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-modal-ok
+scrollToElement name=Ok
+scrollToElement end elementId=btn-modal-ok
+Élément avec l'id "btn-modal-ok" cliqué avec succès.
+2025_01_25_00_53_43 : checkIfExistInList DEB name, nb : test-project-2025-01-25-00-51-43, 0
+2025_01_25_00_53_43 : nb : 0
+2025_01_25_00_53_46 : search in list : txt : test-project-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Project (0)
+2025_01_25_00_53_52 : checkText: Checking if target is in txt: target='Liste Project (0)', txt='Liste Project (0)'
+OK test title_list: txt=/Liste Project (0)/
+2025_01_25_00_53_52 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_53_53 : deleteProject test-project-2025-01-25-00-51-43
+*********************************
+time diff : 22.99 s.
+=================================
+-----------email=fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+*** DEB 2025_01_25_00_53_53 : addConsultant test-consultant-2025-01-25-00-51-43
+*********************************
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-add-consultant-form
+scrollToElement name=AJOUTER
+scrollToElement end elementId=btn-add-consultant-form
+Élément avec l'id "btn-add-consultant-form" cliqué avec succès.
+2025_01_25_00_53_59 : dropdown=[object Object]
+Option avec 'CONSULTANT' sélectionnée.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-consultant-save
+scrollToElement name=Ajouter
+scrollToElement end elementId=btn-consultant-save
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-consultant-save"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-consultant-save"])
+2025_01_25_00_54_08 : checkIfExistInList DEB name, nb : 2025-01-25-00-51-43, 1
+2025_01_25_00_54_08 : nb : 1
+2025_01_25_00_54_11 : search in list : txt : 2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste Consultant (1)
+2025_01_25_00_54_17 : checkText: Checking if target is in txt: target='Liste Consultant (1)', txt='Liste Consultant (1)'
+OK test title_list: txt=/Liste Consultant (1)/
+2025_01_25_00_54_17 : checkIfExistInList END ok : true
+-----------email=fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+*** FIN 2025_01_25_00_54_17 : addConsultant test-consultant-2025-01-25-00-51-43
+*********************************
+time diff : 23.796 s.
+=================================
+consultantName=fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+*** DEB 2025_01_25_00_54_19 : updateConsultant fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+2025_01_25_00_54_19 : checkIfExistInList DEB name, nb : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com, 1
+2025_01_25_00_54_19 : nb : 1
+2025_01_25_00_54_22 : search in list : txt : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+Texte de l'élément "title_list" : Liste Consultant (1)
+2025_01_25_00_54_28 : checkText: Checking if target is in txt: target='Liste Consultant (1)', txt='Liste Consultant (1)'
+OK test title_list: txt=/Liste Consultant (1)/
+2025_01_25_00_54_28 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-consultant-edit-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-consultant-edit-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-consultant-edit-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-consultant-edit-0"])
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-consultant-save
+scrollToElement name=Enregistrer
+scrollToElement end elementId=btn-consultant-save
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-consultant-save"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-consultant-save"])
+2025_01_25_00_54_33 : checkIfExistInList DEB name, nb : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com, undefined
+2025_01_25_00_54_33 : nb : 1
+2025_01_25_00_54_36 : search in list : txt : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+Texte de l'élément "title_list" : Liste Consultant (1)
+2025_01_25_00_54_42 : checkText: Checking if target is in txt: target='Liste Consultant (1)', txt='Liste Consultant (1)'
+OK test title_list: txt=/Liste Consultant (1)/
+2025_01_25_00_54_42 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-consultant-edit-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-consultant-edit-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-consultant-edit-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-consultant-edit-0"])
+Texte de l'élément "level" : 5000
+2025_01_25_00_54_45 : checkText: Checking if target is in txt: target='5000', txt='5000'
+OK test level: txt=/5000/
+*********************************
+*** FIN 2025_01_25_00_54_46 : updateConsultant fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+time diff : 27.328 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_54_46 : deleteConsultant fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+2025_01_25_00_54_46 : checkIfExistInList DEB name, nb : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com, undefined
+2025_01_25_00_54_46 : nb : 1
+2025_01_25_00_54_50 : search in list : txt : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+Texte de l'élément "title_list" : Liste Consultant (1)
+2025_01_25_00_54_56 : checkText: Checking if target is in txt: target='Liste Consultant (1)', txt='Liste Consultant (1)'
+OK test title_list: txt=/Liste Consultant (1)/
+2025_01_25_00_54_56 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-delete-consultant-list-0
+scrollToElement name=Supprimer
+scrollToElement end elementId=btn-delete-consultant-list-0
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-delete-consultant-list-0"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-delete-consultant-list-0"])
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-modal-ok
+scrollToElement name=Ok
+scrollToElement end elementId=btn-modal-ok
+Élément avec l'id "btn-modal-ok" cliqué avec succès.
+2025_01_25_00_55_00 : checkIfExistInList DEB name, nb : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com, 0
+2025_01_25_00_55_00 : nb : 0
+2025_01_25_00_55_03 : search in list : txt : fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+Texte de l'élément "title_list" : Liste Consultant (0)
+2025_01_25_00_55_09 : checkText: Checking if target is in txt: target='Liste Consultant (0)', txt='Liste Consultant (0)'
+OK test title_list: txt=/Liste Consultant (0)/
+2025_01_25_00_55_09 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_55_10 : deleteConsultant fn-2025-01-25-00-51-43.ln-2025-01-25-00-51-43@my-soc.com
+*********************************
+time diff : 24.026 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_55_10 : addActivity test-act-2025-01-25-00-51-43
+*********************************
+Element enabled: true, displayed: true
+scrollToElement deb elementId=addActivity
+scrollToElement name=AJOUTER
+scrollToElement end elementId=addActivity
+Élément avec l'id "addActivity" cliqué avec succès.
+2025_01_25_00_55_15 : dropdown=[object Object]
+Option avec 'MISSION' sélectionnée.
+2025_01_25_00_55_16 : dropdown=[object Object]
+Option avec 'Project DEMO1' sélectionnée.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-save-activity
+scrollToElement name=Ajouter
+scrollToElement end elementId=btn-save-activity
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-save-activity"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-save-activity"])
+2025_01_25_00_55_20 : checkIfExistInList DEB name, nb : test-act-2025-01-25-00-51-43, undefined
+2025_01_25_00_55_20 : nb : 1
+2025_01_25_00_55_23 : search in list : txt : test-act-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste d'activites (1) : resp1 esn1
+2025_01_25_00_55_29 : checkText: Checking if target is in txt: target='Liste d'activites (1)', txt='Liste d'activites (1) : resp1 esn1'
+OK test title_list: txt=/Liste d'activites (1) : resp1 esn1/
+2025_01_25_00_55_29 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_55_29 : addActivity test-act-2025-01-25-00-51-43
+*********************************
+time diff : 18.621 s.
+=================================
+activityName=test-act-2025-01-25-00-51-43
+*********************************
+*** DEB 2025_01_25_00_55_29 : updateActivity test-act-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_55_29 : checkIfExistInList DEB name, nb : test-act-2025-01-25-00-51-43, undefined
+2025_01_25_00_55_29 : nb : 1
+2025_01_25_00_55_32 : search in list : txt : test-act-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste d'activites (1) : resp1 esn1
+2025_01_25_00_55_38 : checkText: Checking if target is in txt: target='Liste d'activites (1)', txt='Liste d'activites (1) : resp1 esn1'
+OK test title_list: txt=/Liste d'activites (1) : resp1 esn1/
+2025_01_25_00_55_38 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-update-activity-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-update-activity-0
+Élément avec l'id "btn-update-activity-0" cliqué avec succès.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-save-activity
+scrollToElement name=Modifier activity
+scrollToElement end elementId=btn-save-activity
+---------clickWithJavaScript deb elementLocator : By(css selector, *[id="btn-save-activity"])
+---------clickWithJavaScript fin elementLocator : By(css selector, *[id="btn-save-activity"])
+2025_01_25_00_55_44 : checkIfExistInList DEB name, nb : test-act-2025-01-25-00-51-43, undefined
+2025_01_25_00_55_44 : nb : 1
+2025_01_25_00_55_47 : search in list : txt : test-act-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste d'activites (1) : resp1 esn1
+2025_01_25_00_55_53 : checkText: Checking if target is in txt: target='Liste d'activites (1)', txt='Liste d'activites (1) : resp1 esn1'
+OK test title_list: txt=/Liste d'activites (1) : resp1 esn1/
+2025_01_25_00_55_53 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-update-activity-0
+scrollToElement name=Modifier
+scrollToElement end elementId=btn-update-activity-0
+Élément avec l'id "btn-update-activity-0" cliqué avec succès.
+Texte de l'élément "description" : my_activity_description_updated
+2025_01_25_00_55_58 : checkText: Checking if target is in txt: target='my_activity_description_updated', txt='my_activity_description_updated'
+OK test description: txt=/my_activity_description_updated/
+*********************************
+*** FIN 2025_01_25_00_55_58 : updateActivity test-act-2025-01-25-00-51-43
+*********************************
+time diff : 28.608 s.
+=================================
+*********************************
+*** DEB 2025_01_25_00_55_58 : deleteActivity test-act-2025-01-25-00-51-43
+*********************************
+2025_01_25_00_55_58 : checkIfExistInList DEB name, nb : test-act-2025-01-25-00-51-43, undefined
+2025_01_25_00_55_58 : nb : 1
+2025_01_25_00_56_01 : search in list : txt : test-act-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste d'activites (1) : resp1 esn1
+2025_01_25_00_56_07 : checkText: Checking if target is in txt: target='Liste d'activites (1)', txt='Liste d'activites (1) : resp1 esn1'
+OK test title_list: txt=/Liste d'activites (1) : resp1 esn1/
+2025_01_25_00_56_07 : checkIfExistInList END ok : true
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-delete-activity-0
+scrollToElement name=Supprimer
+scrollToElement end elementId=btn-delete-activity-0
+Élément avec l'id "btn-delete-activity-0" cliqué avec succès.
+Element enabled: true, displayed: true
+scrollToElement deb elementId=btn-modal-ok
+scrollToElement name=Ok
+scrollToElement end elementId=btn-modal-ok
+Élément avec l'id "btn-modal-ok" cliqué avec succès.
+2025_01_25_00_56_10 : checkIfExistInList DEB name, nb : test-act-2025-01-25-00-51-43, 0
+2025_01_25_00_56_10 : nb : 0
+2025_01_25_00_56_14 : search in list : txt : test-act-2025-01-25-00-51-43
+Texte de l'élément "title_list" : Liste d'activites (0) : resp1 esn1
+2025_01_25_00_56_20 : checkText: Checking if target is in txt: target='Liste d'activites (0)', txt='Liste d'activites (0) : resp1 esn1'
+OK test title_list: txt=/Liste d'activites (0) : resp1 esn1/
+2025_01_25_00_56_20 : checkIfExistInList END ok : true
+*********************************
+*** FIN 2025_01_25_00_56_21 : deleteActivity test-act-2025-01-25-00-51-43
+*********************************
+time diff : 23.279 s.
+=================================
+**** TEST RESP_ESN OK
+*********************************
+*** DEB 2025_01_25_00_56_21 : quit
+*********************************
+*********************************
+*** FIN 2025_01_25_00_56_21 : quit
+*********************************
+time diff : 74 ms.
+=================================
+
+    =================== LIST ERROR : =====================
+
+    =================== LIST ERROR : =====================
+====================================================
+
+    date_deb : 2025_01_25_00_51_28
+    date_fin : 2025_01_25_00_56_21
+    LOG : test_02_respEsn.log 
+

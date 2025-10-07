@@ -1,0 +1,33 @@
+2025_01_22_10_44_19 
+testLogin deb
+Check existence de L'élément avec l'ID "username" ... 
+Exist.
+Check existence de L'élément avec l'ID "password" ... 
+Exist.
+Tous les éléments spécifiés existent.
+on va se loguer :
+Texte de l'élément "loginName" : 
+on n'a pas pu se loguer !
+END : isLogued = false
+testLogin end
+testLogin deb
+Check existence de L'élément avec l'ID "username" ... 
+Exist.
+Check existence de L'élément avec l'ID "password" ... 
+Exist.
+Tous les éléments spécifiés existent.
+on va se loguer :
+Texte de l'élément "loginName" : 
+on n'a pas pu se loguer !
+END : isLogued = false
+testLogin end
+
+    =================== LIST ERROR : =====================
+
+    =================== LIST ERROR : =====================
+====================================================
+
+    date_deb : 2025_01_22_10_44_19
+    date_fin : 2025_01_22_10_44_30
+    LOG : test.log 
+
