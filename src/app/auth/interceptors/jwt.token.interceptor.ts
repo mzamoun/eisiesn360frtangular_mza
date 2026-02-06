@@ -10,13 +10,13 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { UtilsService } from "../../service/utils.service";
 
-@Injectable({providedIn:'root'})
+@Injectable({ providedIn: 'root' })
 export class JwtTokenInterceptor implements HttpInterceptor {
 
   constructor(private router: Router, private utils: UtilsService
     , private utilsIhmService: UtilsIhmService
     , private dataSharingService: DataSharingService
-    ) {
+  ) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -55,14 +55,21 @@ export class JwtTokenInterceptor implements HttpInterceptor {
       this.dataSharingService.addError(new MyError(msgTitle, msgBody))
       this.dataSharingService.redirectToUrl = this.router.url;
       this.utils.showNotification("error", err.error.message)
-      this.dataSharingService.notifyObserversNotificationsError("Erreur 401", new MyError("Erreur 401", err.error.message));
+      this.dataSharingService.addError(new MyError("Erreur 401", err.error.message));
       this.dataSharingService.logout();
-      this.router.navigate(['/login']);
+      // this.router.navigate(['/login']);
+      if (this.router.url !== '/login') {
+        this.router.navigate(['/login']);
+      }
+
       return of(err.message);
-    }else {
+    } else {
       this.dataSharingService.addError(new MyError(err.status + ' : ' + err.name, err.message))
     }
-    this.router.navigate(['/login']);
+    // this.router.navigate(['/login']);
+    if (this.router.url !== '/login') {
+      this.router.navigate(['/login']);
+    }
     return of(err.message);
   }
 }

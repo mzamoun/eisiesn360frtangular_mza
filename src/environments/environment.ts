@@ -15,11 +15,14 @@
 
 const urlLocal = 'http://localhost:8080/esn360/'
 const urlAzure = 'https://esn360.azurewebsites.net/esn360/'
+// const myUrl = urlAzure
+const myUrl = urlLocal
 
 export const environment = {
   production: true,
-  apiUrl: urlLocal + 'api',
+  apiUrl: myUrl + 'api',
   // apiUrl: urlAzure + 'api',
-  divUrl: urlLocal + 'div',
+  divUrl: myUrl + 'div',
   // divUrl: urlAzure + 'div',
+  urlFront: 'http://localhost:4200',
 };

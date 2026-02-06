@@ -43,7 +43,7 @@ export async function addConsultant(driver, num) {
     await utils.setInput(driver, 'password1', "aa");
     await utils.setInput(driver, 'password2', "aa");
 
-    // await driver.findElement(By.id('reset-password')).sendKeys("my_reset-password");
+    // await driver.findElement(By.id('resetPassword')).sendKeys("my_resetPassword");
     // await driver.findElement(By.id('active')).sendKeys("my_active");
 
     await driver.sleep(5000);

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Document } from 'src/app/model/document';
@@ -15,7 +15,8 @@ import { MereComponent } from '../_utils/mere-component';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.css']
+  styleUrls: ['./notification.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotificationComponent extends MereComponent implements AfterViewInit {
 
@@ -52,15 +53,19 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     , private noteFraisService : NoteFraisService
     , private dialog: MatDialog
     , private modal: NgbModal
+    , private cdr: ChangeDetectorRef
   ) {
     super(utils, dataSharingService);
-    dataSharingService.addObserverNotifications(this)
-
   }
 
   ngOnInit() {
-    // if(!this.myList) this.updateNotifications(this.dataSharingService.getListNotifications()); 
-    this.getNotifications();
+    // S'abonner aux notifications via le BehaviorSubject
+    this.dataSharingService.listNotifications$.subscribe(notifications => {
+      this.updateNotifications(notifications);
+    });
+    
+    // Charger les notifications initiales
+    this.getNotifications(null, null);
   }
 
   ngAfterViewInit(): void {
@@ -81,14 +86,37 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
   }
 
   refresh() {
-    if (this.refreshEverySec < this.refreshEverySecMin) this.refreshEverySec = this.refreshEverySecMin;
-    if (!this.refreshStarted) {
-      this.refreshLoopId = setInterval(() => { this.getNotifications(); }, 1000 * this.refreshEverySec);
-      this.refreshStarted = true;
-    } else {
-      if (this.refreshLoopId) clearInterval(this.refreshLoopId);
+    // Assurer un minimum de temps entre chaque refresh
+    this.refreshEverySec = Math.max(this.refreshEverySec, this.refreshEverySecMin);
+    
+    // Toggle le refresh
+    if (this.refreshStarted) {
+      // Arrêter le refresh
+      clearInterval(this.refreshLoopId);
       this.refreshStarted = false;
+    } else {
+      // Démarrer le refresh silencieux (sans recharger toute la page)
+      this.refreshLoopId = setInterval(() => {
+        this.refreshNotificationsSilently();
+      }, this.refreshEverySec * 1000);
+      this.refreshStarted = true;
     }
+  }
+
+  /**
+   * Rafraîchit uniquement les notifications sans recharger tout l'écran
+   */
+  private refreshNotificationsSilently() {
+    this.dataSharingService.getNotifications(
+      (listNotif) => {
+        // Mise à jour silencieuse - pas de message, pas de rechargement
+        // updateNotifications sera appelé automatiquement via l'observer
+      },
+      (error) => {
+        // Erreur silencieuse - ne pas afficher d'erreur pour un refresh automatique
+        console.warn('Refresh automatique des notifications échoué:', error);
+      }
+    );
   }
 
   isMyListEmpty() {
@@ -100,42 +128,43 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
    * @param listAll called by dataSharingService, after calling it
    */
   updateNotifications(listAll: Notification[]) {
+    // Filtrer les notifications si nécessaire
+    const newList = this.isOnlyNotViewed 
+      ? (listAll || []).filter(n => !n.viewed)
+      : listAll;
 
-    // ////////console.log("isOnlyNotViewed="+this.isOnlyNotViewed)
-    if (this.isOnlyNotViewed) {
-      this.myList = []
-      if (listAll) {
-        for (let n of listAll) {
-          if (!n.viewed) {
-            this.myList.push(n)
-          }
-        }
-      }
-    } else {
-      this.myList = listAll;
-    }
+    // Simple assignment - Angular détectera les changements via trackBy
+    this.myList = newList || [];
 
     this.getNbElement();
     this.setTitle();
-
     this.myList00 = this.myList;
+    
+    // Marquer pour vérification au lieu de forcer une détection complète
+    this.cdr.markForCheck();
+  }
 
+  /**
+   * TrackBy function pour optimiser le rendu de la liste
+   */
+  trackByNotificationId(index: number, notification: Notification): any {
+    return notification?.id || index;
   }
 
   setMyList(myList: any[]) {
     this.myList = myList;
   }
 
-  getNotifications() {
-    this.dataSharingService.getNotifications();
+  getNotifications(fctOk: Function, fctKo: Function) {
+    this.dataSharingService.getNotifications(fctOk, fctKo);
   }
 
   findAll() {
-    this.dataSharingService.getNotifications();
+    this.dataSharingService.getNotifications(null, null);
   }
 
-  saveNotification(notification: Notification) {
-    this.dataSharingService.saveNotification(notification);
+  saveNotification(notification: Notification, fctOk?: Function, fctKo?: Function) {
+    this.dataSharingService.saveNotification(notification, fctOk, fctKo);
   }
 
   changeViewed(notification: Notification) {
@@ -161,7 +190,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     let mythis = this;
     this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec date=" + notification.createdDate, mythis
       , () => {
-        mythis.dataSharingService.deleteNotification(notification.id);
+        mythis.dataSharingService.deleteNotification(notification.id, null, null );
       }
       , () => { }
     );
@@ -220,29 +249,66 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
     setTimeout(() => {
       this.dataSharingService.showCra(notification.cra);
-    }, 5000);
+    }, 1500);
 
   }
 
   showCra(notification: Notification) {
-    console.log("showCra", notification)
+    const label = "showCra";
+    console.log(label + " START - notification: ", notification);
+    
+    if (!notification) {
+      console.error(label + " ERROR - notification est null");
+      this.addErrorTxt("Notification null");
+      return;
+    }
+    
+    if (!notification.cra) {
+      console.error(label + " ERROR - notification.cra est null");
+      this.addErrorTxt("CRA non trouvé dans la notification");
+      return;
+    }
+
+    // Update current CRA via service to notify all subscribers
+    this.dataSharingService.notifyCraUpdated(notification.cra);
+
+    let cra = this.dataSharingService.getCurrentCra();
+    console.log(label + " - Current CRA après notifyCraUpdated: ", cra);
+    
+    console.log(label + " - notification.cra: ", notification.cra);
 
     this.clearInfos();
     notification.viewed = true;
+    
+    console.log(label + " - appel craService.majNotification");
     this.craService.majNotification(notification,
       ()=>{
+        console.log(label + " - callback craService.majNotification OK");
+        
+        console.log(label + " - appel noteFraisService.majNotification");
         this.noteFraisService.majNotification(notification, 
           ()=>{
-            this.saveNotification(notification);
-            this.dataSharingService.fromNotif = true;
-            this.dataSharingService.showCra(notification.cra);
+            console.log(label + " - callback noteFraisService.majNotification OK");
+            
+            this.saveNotification(notification, (data)=>{
+              console.log(label + " - callback saveNotification OK: ", data);
+              this.dataSharingService.fromNotif = true;
+              
+              console.log(label + " - appel dataSharingService.showCra");
+              this.dataSharingService.showCra(cra);
+              // this.dataSharingService.showCra(this.dataSharingService.getCurrentCra());
+              console.log(label + " END - showCra appelé");
+
+            }, (error)=>{
+              console.error(label + " - ERREUR saveNotification: ", error);
+            });
+            
           }
         )
-      }, true 
-    )
-
-    // setTimeout(() => {
-    // }, 5000);
+      }, 
+      true 
+    );
+    
   }
 
   showFee(notification: Notification) {

@@ -1,10 +1,9 @@
 ﻿import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HomeComponent } from './home/home.component';
-
 import { LoginComponent } from './auth/components/login/login.component';
 import { AuthGuard } from './auth/guards/auth.guard';
+import { RelationsD3Component } from './compo/_utils/relations-viewer/relations-d3.component';
 import { TableViewerComponent } from './compo/_utils/table-viewer/table-viewer.component';
 import { ActivityAppComponent } from './compo/activity/activity-app/activity-app.component';
 import { ActivityFormComponent } from './compo/activity/activity-form/activity-form.component';
@@ -34,12 +33,12 @@ import { ConsultantListComponent } from './compo/consultant/consultant-list/cons
 import { CraAppComponent } from './compo/cra/cra-app/cra-app.component';
 import { CraFormCalComponent } from './compo/cra/cra-form/cra-form-cal.component';
 import { CraListComponent } from './compo/cra/cra-list/cra-list.component';
+import { DashBoardComponent } from './compo/dashboard/dashboard.component';
 import { EsnAppComponent } from './compo/esn/esn-app/esn-app.component';
 import { EsnFormComponent } from './compo/esn/esn-form/esn-form.component';
 import { EsnListComponent } from './compo/esn/esn-list/esn-list.component';
 import { InscriptionComponent } from './compo/inscription/inscription.component';
 import { LoadingPageComponent } from './compo/loading-page/loading-page.component';
-import { MyRoutingSpecComponent } from './compo/my-routing-spec/my-routing-spec.component';
 import { FeeDepensePercategoryDashComponent } from './compo/noteFrais/fee-depense-percategory-dash/fee-depense-percategory-dash.component';
 import { FeeDepensePerconsultantDashComponent } from './compo/noteFrais/fee-depense-perconsultant-dash/fee-depense-perconsultant-dash.component';
 import { FeeDepensePermonthDashComponent } from './compo/noteFrais/fee-depense-permonth-dash/fee-depense-permonth-dash.component';
@@ -57,90 +56,92 @@ import { ProfileComponent } from "./compo/profile/profile.component";
 import { ProjectAppComponent } from './compo/project/project-app/project-app.component';
 import { ProjectFormComponent } from './compo/project/project-form/project-form.component';
 import { ProjectListComponent } from './compo/project/project-list/project-list.component';
-import { Test2Component } from './compo/test2/test2.component';
-import { ValidEmailComponent } from './compo/valid-email/valid-email.component';
+import { ValidateEmailComponent } from './compo/valid-email/valid-email.component';
 
 
 const routes: Routes = [
-  // { path: '**', component: HomeComponent },  // Wildcard route for a 404 page
-  // { path: '', redirectTo: '/home', pathMatch: 'full' },
-  // {canActivate: [AuthGuard], path: '', redirectTo: '/home', pathMatch: 'full' },
+  // route publique par défaut -> rediriger vers home (dashboard)
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-  { path: 'home0', component: HomeComponent },
-  {path: 'login', component: LoginComponent},
-  {path: 'logout', component: LoginComponent},
-  // { path: '', redirectTo: 'home', pathMatch: 'full' },  // racine redirige vers /home
-  {canActivate: [AuthGuard], path: 'home', component: NotificationComponent},
-  {canActivate: [AuthGuard], path: '', component: NotificationComponent },
-  {canActivate: [AuthGuard], path: 'notification', component: NotificationComponent},
-  {canActivate: [AuthGuard], path: 'my-profile', component: ProfileComponent},
-  {canActivate: [AuthGuard], path: 'project_list', component: ProjectListComponent},
-  {canActivate: [AuthGuard], path: 'project_form', component: ProjectFormComponent},
-  {canActivate: [AuthGuard], path: 'project_app', component: ProjectAppComponent},
-  {canActivate: [AuthGuard], path: 'cra_list', component: CraListComponent},
-  {canActivate: [AuthGuard], path: 'cra_form', component: CraFormCalComponent},
-  {canActivate: [AuthGuard], path: 'cra_app', component: CraAppComponent},
-  {canActivate: [AuthGuard], path: 'consultant_list', component: ConsultantListComponent},
-  {canActivate: [AuthGuard], path: 'consultant_form', component: ConsultantFormComponent},
-  {canActivate: [AuthGuard], path: 'consultant_app', component: ConsultantAppComponent},
-  {canActivate: [AuthGuard], path: 'client_list', component: ClientListComponent},
-  {canActivate: [AuthGuard], path: 'client_form', component: ClientFormComponent},
-  {canActivate: [AuthGuard], path: 'client_app', component: ClientAppComponent},
-  {canActivate: [AuthGuard], path: 'esn_list', component: EsnListComponent},
-  {canActivate: [AuthGuard], path: 'esn_form', component: EsnFormComponent},
-  {canActivate: [AuthGuard], path: 'esn_app', component: EsnAppComponent},
-  {canActivate: [AuthGuard], path: 'activity_list', component: ActivityListComponent},
-  {canActivate: [AuthGuard], path: 'activity_app', component: ActivityAppComponent},
-  {canActivate: [AuthGuard], path: 'activity_list', component: ActivityListComponent},
-  {canActivate: [AuthGuard], path: 'activity_form', component: ActivityFormComponent},
-  {canActivate: [AuthGuard], path: 'activity_app', component: ActivityAppComponent},
-  {canActivate: [AuthGuard], path: 'activityType_list', component: ActivityTypeListComponent},
-  {canActivate: [AuthGuard], path: 'activityType_form', component: ActivityTypeFormComponent},
-  {canActivate: [AuthGuard], path: 'activityType_app', component: ActivityTypeAppComponent},
-  {canActivate: [AuthGuard], path: 'permission', component: PermissionComponent},
-  {canActivate: [AuthGuard], path: 'cra-configuration', component: CraConfigurationComponent},
-  {canActivate: [AuthGuard], path: 'notefrais_list', component: NotefraisListComponent},
-  {canActivate: [AuthGuard], path: 'notefrais_form', component: NotefraisFormComponent},
-  {canActivate: [AuthGuard], path: 'notefrais_app', component: NotefraisAppComponent},
-  {canActivate: [AuthGuard], path: 'category_list', component: CategoryListComponent},
-  {canActivate: [AuthGuard], path: 'category_form', component: CategoryFormComponent},
-  {canActivate: [AuthGuard], path: 'category_app', component: CategoryAppComponent},
-  {canActivate: [AuthGuard], path: 'payementmode_list', component: PayementmodeListComponent},
-  {canActivate: [AuthGuard], path: 'payementmode_form', component: PayementmodeFormComponent},
-  {canActivate: [AuthGuard], path: 'payementmode_app', component: PayementmodeAppComponent},
-  {canActivate: [AuthGuard], path: 'notefrais_dashboard', component: NotefraisDashboardComponent},
-  {canActivate: [AuthGuard], path: 'fee_depense_permonth_dash', component: FeeDepensePermonthDashComponent},
-  {canActivate: [AuthGuard], path: 'fee_depense_peryear_dash', component: FeeDepensePeryearDashComponent},
-  {canActivate: [AuthGuard], path: 'fee_depense_perconsultant_dash', component: FeeDepensePerconsultantDashComponent},
-  {canActivate: [AuthGuard], path: 'fee_depense_percategory_dash', component: FeeDepensePercategoryDashComponent},
-  {canActivate: [AuthGuard], path: 'admindoc_app', component: AdminDocAppComponent},
-  {canActivate: [AuthGuard], path: 'admindoc_form', component: AdminDocFormComponent},
-  {canActivate: [AuthGuard], path: 'admindoc_list', component: AdminDocListComponent},
-  {canActivate: [AuthGuard], path: 'admindoc_multiple', component: AdminDocMultipleComponent},
-  {canActivate: [AuthGuard], path: 'admindoc_permission', component: AdminDocPermissionComponent},
-  {canActivate: [AuthGuard], path: 'categoryDoc_app', component: DocCategoryAppComponent},
-  {canActivate: [AuthGuard], path: 'categoryDoc_form', component: DocCategoryFormComponent},
-  {canActivate: [AuthGuard], path: 'categoryDoc_list', component: DocCategoryListComponent},
-  {canActivate: [AuthGuard], path: 'showTables', component: TableViewerComponent},
-  {canActivate: [AuthGuard], path: 'connections', component: ConnectionComponent},
-  {path: 'inscription', component: InscriptionComponent},
-  { path: 'validEmail/:code', component: ValidEmailComponent },
+  // routes publiques
+  { path: 'login', component: LoginComponent },
+  { path: 'logout', component: LoginComponent },
+  { path: 'inscription', component: InscriptionComponent },
+  { path: 'validateEmail/:code', component: ValidateEmailComponent },
+  { path: 'resetPassword/:code', component: ValidateEmailComponent },
+  { path: 'loading', component: LoadingPageComponent },
+  { path: 'connections', component: ConnectionComponent },  
 
-  { path: 'loading', component: LoadingPageComponent},
-  { path: 'esn360/:path', component: MyRoutingSpecComponent},
-  { path: ':path', component: MyRoutingSpecComponent },  // pas de slash initial
+  // routes protégées (après)
+  { canActivate: [AuthGuard], path: 'home', component: DashBoardComponent },
+  { canActivate: [AuthGuard], path: 'notification', component: NotificationComponent },
 
-  { path: 'test2', component: Test2Component},
+  { canActivate: [AuthGuard], path: 'my-profile', component: ProfileComponent },
+  { canActivate: [AuthGuard], path: 'project_list', component: ProjectListComponent },
+  { canActivate: [AuthGuard], path: 'project_form', component: ProjectFormComponent },
+  { canActivate: [AuthGuard], path: 'project_app', component: ProjectAppComponent },
+  { canActivate: [AuthGuard], path: 'cra_list', component: CraListComponent },
+  { canActivate: [AuthGuard], path: 'cra_form', component: CraFormCalComponent },
+  { canActivate: [AuthGuard], path: 'cra_app', component: CraAppComponent },
+  { canActivate: [AuthGuard], path: 'consultant_list', component: ConsultantListComponent },
+  { canActivate: [AuthGuard], path: 'consultant_form', component: ConsultantFormComponent },
+  { canActivate: [AuthGuard], path: 'consultant_app', component: ConsultantAppComponent },
+  { canActivate: [AuthGuard], path: 'client_list', component: ClientListComponent },
+  { canActivate: [AuthGuard], path: 'client_form', component: ClientFormComponent },
+  { canActivate: [AuthGuard], path: 'client_app', component: ClientAppComponent },
+  { canActivate: [AuthGuard], path: 'esn_list', component: EsnListComponent },
+  { canActivate: [AuthGuard], path: 'esn_form', component: EsnFormComponent },
+  { canActivate: [AuthGuard], path: 'esn_app', component: EsnAppComponent },
+  { canActivate: [AuthGuard], path: 'activity_list', component: ActivityListComponent },
+  { canActivate: [AuthGuard], path: 'activity_app', component: ActivityAppComponent },
+  { canActivate: [AuthGuard], path: 'activity_list', component: ActivityListComponent },
+  { canActivate: [AuthGuard], path: 'activity_form', component: ActivityFormComponent },
+  { canActivate: [AuthGuard], path: 'activity_app', component: ActivityAppComponent },
+  { canActivate: [AuthGuard], path: 'activityType_list', component: ActivityTypeListComponent },
+  { canActivate: [AuthGuard], path: 'activityType_form', component: ActivityTypeFormComponent },
+  { canActivate: [AuthGuard], path: 'activityType_app', component: ActivityTypeAppComponent },
+  { canActivate: [AuthGuard], path: 'permission', component: PermissionComponent },
+  { canActivate: [AuthGuard], path: 'cra-configuration', component: CraConfigurationComponent },
+  { canActivate: [AuthGuard], path: 'notefrais_list', component: NotefraisListComponent },
+  { canActivate: [AuthGuard], path: 'notefrais_form', component: NotefraisFormComponent },
+  { canActivate: [AuthGuard], path: 'notefrais_app', component: NotefraisAppComponent },
+  { canActivate: [AuthGuard], path: 'category_list', component: CategoryListComponent },
+  { canActivate: [AuthGuard], path: 'category_form', component: CategoryFormComponent },
+  { canActivate: [AuthGuard], path: 'category_app', component: CategoryAppComponent },
+  { canActivate: [AuthGuard], path: 'payementmode_list', component: PayementmodeListComponent },
+  { canActivate: [AuthGuard], path: 'payementmode_form', component: PayementmodeFormComponent },
+  { canActivate: [AuthGuard], path: 'payementmode_app', component: PayementmodeAppComponent },
+  { canActivate: [AuthGuard], path: 'notefrais_dashboard', component: NotefraisDashboardComponent },
+  { canActivate: [AuthGuard], path: 'fee_depense_permonth_dash', component: FeeDepensePermonthDashComponent },
+  { canActivate: [AuthGuard], path: 'fee_depense_peryear_dash', component: FeeDepensePeryearDashComponent },
+  { canActivate: [AuthGuard], path: 'fee_depense_perconsultant_dash', component: FeeDepensePerconsultantDashComponent },
+  { canActivate: [AuthGuard], path: 'fee_depense_percategory_dash', component: FeeDepensePercategoryDashComponent },
+  { canActivate: [AuthGuard], path: 'admindoc_app', component: AdminDocAppComponent },
+  { canActivate: [AuthGuard], path: 'admindoc_form', component: AdminDocFormComponent },
+  { canActivate: [AuthGuard], path: 'admindoc_list', component: AdminDocListComponent },
+  { canActivate: [AuthGuard], path: 'admindoc_multiple', component: AdminDocMultipleComponent },
+  { canActivate: [AuthGuard], path: 'admindoc_permission', component: AdminDocPermissionComponent },
+  { canActivate: [AuthGuard], path: 'categoryDoc_app', component: DocCategoryAppComponent },
+  { canActivate: [AuthGuard], path: 'categoryDoc_form', component: DocCategoryFormComponent },
+  { canActivate: [AuthGuard], path: 'categoryDoc_list', component: DocCategoryListComponent },
+  { canActivate: [AuthGuard], path: 'showTables', component: TableViewerComponent },
+  { canActivate: [AuthGuard], path: 'connections', component: ConnectionComponent },
+  { path: 'relations-d3/:table', component: RelationsD3Component },
 
-  { path: '**', component: MyRoutingSpecComponent } // toujours en dernier
 
+  // { path: 'esn360/:path', component: MyRoutingSpecComponent },
+  // { path: ':path', component: MyRoutingSpecComponent },  // pas de slash initial
+
+  // { path: 'test2', component: Test2Component },
+
+  { path: '**', component: NotificationComponent }, // toujours en dernier
 
 ];
 
 @NgModule({
   declarations: [],
   imports: [
-    RouterModule.forRoot(routes , { useHash: true } )
+    RouterModule.forRoot(routes, { useHash: true  })
   ],
   exports: [RouterModule],
 })

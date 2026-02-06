@@ -20,7 +20,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   listInfos: Array<string> = [];
   listErrors: MyError[];
 
-  private subscriptions: Subscription[] = [];
+  protected subscriptions: Subscription[] = [];
 
   //pagination
   currentPage: number = 1;
@@ -74,7 +74,26 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
 
     this.subscriptions.push(
       this.dataSharingService.infos$.subscribe(infos => this.listInfos = infos),
-      this.dataSharingService.errors$.subscribe(errors => this.listErrors = errors)
+      this.dataSharingService.errors$.subscribe(errors => this.listErrors = errors),
+      // Keep UI fields (esnName, userConnectedName, role) in sync when user changes
+      this.dataSharingService.userConnected$.subscribe(user => {
+        this.userConnected = user;
+        this.getCurentUserName();
+        this.esnCurrent = user?.esn || this.esnCurrent;
+        this.idEsnCurrent = this.esnCurrent?.id ?? this.idEsnCurrent;
+        this.esnName = user?.esnName || user?.esn?.name || this.esnName;
+        this.isUserAdmin = user?.admin;
+        if (user) this.isUserLoggedIn = true;
+      }),
+      // S'abonner aux mises à jour de esnCurrent pour mettre à jour esnName
+      this.dataSharingService.esnCurrentReady$.subscribe(esn => {
+        if (esn) {
+          this.esnCurrent = esn;
+          this.idEsnCurrent = esn.id;
+          this.esnName = esn.name;
+          console.log("*** esnName mis à jour via esnCurrentReady$:", this.esnName);
+        }
+      })
     );
 
     //setAdminConsultant 
@@ -102,7 +121,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
                 (esn) => {
 
                   this.esnCurrent = this.userConnected?.esn
-                  // console.log("*** esnCurrent 2 = ", this.esnCurrent)
+                  console.log("*** esnCurrent 2 = ", this.esnCurrent)
                   // this.esnCurrent = this.userConnected?.esn 
                   this.dataSharingService.esnCurrent = this.esnCurrent
                   this.dataSharingService.idEsnCurrent = this.esnCurrent?.id
@@ -117,6 +136,9 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
                   if (!this.esnName) this.esnName = this.userConnected?.esn?.name;
                   if (this.esnName) this.userConnected.esnName = this.esnName
                   // console.log("*** esnName = ", this.esnName)
+                  
+                  // Notifier que esnCurrent est prêt
+                  this.dataSharingService.notifyEsnCurrentReady(this.esnCurrent);
                 }, (error) => {
                   this.addErrorTxt(JSON.stringify(error))
                 }
@@ -130,7 +152,8 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
         this.isUserAdmin = false;
       }
 
-      if (this.userConnected == null) {
+      // Vérifier si on est sur une route publique, sinon rediriger vers login
+      if (this.userConnected == null && !this.dataSharingService.isPublicRoute(this.dataSharingService.router.url)) {
         this.dataSharingService.gotoLogin();
       }
 
@@ -292,12 +315,14 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   addInfo(info: string, isShowLoading = true) {
+    console.log("CallServer addInfo: info=" + info);
     //////////console.log("///////// DATA SHARING add info " , info, this)
     this.isShowLoading = isShowLoading;
     this.dataSharingService.addInfo(info);
   }
 
   delInfo(info: string) {
+    console.log("CallServer delInfo: info=" + info);
     this.dataSharingService.delInfo(info)
   }
 
@@ -381,9 +406,10 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   addErrorFromErrorOfServer(id: string, error: MyError) {
-    console.log("addErrorFromErrorOfServer id=" + id + " error:", error)
+    console.log("CallServer addErrorFromErrorOfServer id=" + id + " error:", error)
     // this.setError( this.getErrorStr() + " ; " + this.utils.getErrorFromErrorOfServer(error) );
     error = this.utils.getErrorFromErrorOfServer(error)
+    console.log("CallServer addErrorFromErrorOfServer processed error:", error)
     this.addError(error);
     this.utils.showNotification("error", this.getErrorTitleMsg(error));
     this.endLoading(id)
@@ -391,27 +417,42 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
 
   beforeCallServer(id: string) {
     let info = id
-    //////////console.log("beforeCallServer id="+id + " info="+info)
+    console.log("before CallServer id=" + id + " nbCallServer avant=" + this.nbCallServer);
     this.nbCallServer++;
     this.isLoading = true;
+    console.log("before CallServer nbCallServer après=" + this.nbCallServer + " isLoading=" + this.isLoading);
     if (this.nbCallServer == 1) this.addError(null);
     this.addInfo(info)
   }
+  
   afterCallServer(id: string, data: any) {
     console.log("afterCallServer id=" + id + " this : ", this)
     console.log("afterCallServer id=" + id + " data :", data)
     this.addErrorFromResultOfServer(id, data);
     this.endLoading(id)
   }
+  
   endLoading(id: string) {
     this.nbCallServer--;
+    console.log("endLoading id=" + id + " nbCallServer=" + this.nbCallServer);
     this.delInfo(id);
-    this.isLoading = false;
+    
+    // Correction: ne mettre isLoading à false que si plus aucun appel en cours
+    if (this.nbCallServer <= 0) {
+      this.nbCallServer = 0;
+      this.isLoading = false;
+      console.log("CallServer endLoading: tous les appels terminés, isLoading=false");
+    } else {
+      console.log("CallServer endLoading: encore " + this.nbCallServer + " appel(s) en cours, isLoading reste true");
+    }
 
+    console.log("CallServerendLoading id=" + id + " listInfos=" + this.listInfos);
+    console.log("CallServer endLoading id=" + id + " listErrors=" + this.listErrors);
   }
 
   setMyList(list: any[]): void { 
-    // this.myLi = list 
+    console.log("MereComponent.setMyList list :", list)
+    // this.myList = list 
   }
 
   search() {

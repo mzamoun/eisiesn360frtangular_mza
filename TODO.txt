@@ -2,6 +2,9 @@
 
 refaire scenario d'une nouvelle esn de A-Z : 
 	- l'esn fait une demande d'inscription via formulaire 
+	- l'admin esn recoit un email pour valider son email 
+	- s'il valide son email, il peut se connecter (dans le code, on valide le consultant correspondant )
+	
 	- le 1er mois est gratuit. A partir du 2em mois, on bloque les connexions jusqu'au paiment 
 	- on lui envoie un mot de passe provisoire à changer apres la 1ere connexion 
 	
@@ -59,12 +62,19 @@ Consultant :
 Cra :
 	month : Date ;
 	
-----------------------------------------------
-
+============================================================================================
 DONE 
-------------------
+============================================================================================
 
-voir si le mail fonctionne 
+le manager peut rejeter un cra/congé validated 
+
+faire table historique des changement status des cra 
+
+on doit pouvoir ajouter cra sur mois d un conge futur deja validated
+
+manager peut changer status cra/congé validated 
+
+le mail fonctionne
 
 si cra valide : hide certains btns 
 

@@ -6,6 +6,7 @@ import { NoteFrais } from "./noteFrais";
 import { Project } from './project';
 
 export class Activity {
+  createdDate: Date;
   id: number;
   name: string;
   description: string;
@@ -23,6 +24,7 @@ export class Activity {
   consultant: Consultant;
   consultantId:number
   consultantFullName:String
+  esnId:number
 
   project: Project;
   projectId:number

@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { CommonModule, DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -126,25 +126,30 @@ import { TradService } from './service/trad.service';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConsultantArboComponent } from './compo/consultant/consultant-arbo/consultant-arbo.component';
 
 import { MatTabsModule } from '@angular/material/tabs';
 import { ClientsDialogComponent } from './compo/_dialogs/ClientsDialogComponent';
 import { ConfirmDialogComponent } from './compo/_dialogs/confirm-dialog.component';
+import { CraHistoStatusComponent } from './compo/_dialogs/CraHistoStatusComponent';
 import { InfoDialogComponent } from './compo/_dialogs/info-dialog.component';
 import { SignupDialogComponent } from './compo/_dialogs/signup-dialog/signup-dialog.component';
+import { RelationsD3Component } from './compo/_utils/relations-viewer/relations-d3.component';
 import { TableViewerComponent } from './compo/_utils/table-viewer/table-viewer.component';
 import { DocCategoryAppComponent } from './compo/administratifDocumentation/docCategory/doc-category-app/doc-category-app.component'; // Assurez-vous d'importer MatTabsModule
 import { DocCategoryFormComponent } from './compo/administratifDocumentation/docCategory/doc-category-form/doc-category-form.component';
 import { DocCategoryListComponent } from './compo/administratifDocumentation/docCategory/doc-category-list/doc-category-list.component';
 import { ConnectionComponent } from './compo/connection/connection.component';
+import { DashBoardComponent } from './compo/dashboard/dashboard.component';
 import { EsnArboComponent } from './compo/esn/esn-arbo/esn-arbo.component';
+import { InscriptionComponent } from './compo/inscription/inscription.component';
+import { LoadingDialogComponent } from './compo/loading-dialog/loading-dialog.component';
 import { ProjectAppComponent } from './compo/project/project-app/project-app.component';
 import { ProjectFormComponent } from './compo/project/project-form/project-form.component';
 import { ProjectListComponent } from './compo/project/project-list/project-list.component';
+import { ValidateEmailComponent } from './compo/valid-email/valid-email.component';
 import { ProjectService } from './service/project.service';
-import { InscriptionComponent } from './compo/inscription/inscription.component';
-import { ValidEmailComponent } from './compo/valid-email/valid-email.component';
 // import { TabsComponent } from './tabs/tabs.component';
 
 
@@ -234,6 +239,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     SelectConsultantComponent,
     MsgNotificationsComponent,
     NotificationComponent,
+    DashBoardComponent,
     Test2Component,
     MzDatePickerComponent,
     MzDatePickerDebFinComponent,
@@ -264,7 +270,10 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     ConfirmDialogComponent,
     InfoDialogComponent,
     InscriptionComponent,
-    ValidEmailComponent,
+    ValidateEmailComponent,
+    CraHistoStatusComponent,
+    RelationsD3Component,
+    LoadingDialogComponent,
     
   ],
   imports: [
@@ -302,6 +311,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     MatIconModule,
     MatButtonModule,
     MatTabsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     FormsModule,
@@ -319,7 +329,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
       multi: true
     },
     Location,
-    { provide: LocationStrategy, useClass: PathLocationStrategy },
+    { provide: LocationStrategy, useClass: HashLocationStrategy  },
     UtilsService,
     ActivityTypeService,
     PermissionService,

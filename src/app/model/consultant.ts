@@ -7,6 +7,7 @@ import { Msg } from './msg';
 import { NoteFrais } from './noteFrais';
 
 export class Consultant {
+    createdDate: Date;
     id: number;
     //------------person----------------
     firstName: string;
@@ -22,9 +23,9 @@ export class Consultant {
     username: string;
     password: string;
     active: boolean;
-    
-    esnId : number 
-    esnName : string 
+
+    esnId: number
+    esnName: string
     esn: Esn;
     // idEsn:number;
 
@@ -42,6 +43,7 @@ export class Consultant {
     listMsgFrom: Msg[]
     listMsgTo: Msg[]
     listDocument: Document[]
+    codeEmailToValidate: string;
 
     // adminConsultant: Consultant;
     get adminConsultantUsernameFct(): string {
@@ -61,7 +63,3 @@ export class Consultant {
 
 
 }
-
-
-
-

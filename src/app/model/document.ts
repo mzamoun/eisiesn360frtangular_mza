@@ -3,6 +3,7 @@ import { Consultant } from "./consultant";
 import { FileUpload } from "./FileUpload";
 
 export class Document{
+    createdDate: Date;
     id: number;
     title: string;
     for_all_users: boolean = false;
@@ -20,8 +21,7 @@ export class Document{
 
     files: FileUpload[] = [];
     //listNotification: Notification[] = [];
-    category_name: string;
-    created_date: Date;
-    last_modified_date: Date;
+    categoryName: string;
+    lastModifiedDate: Date;
 
 }

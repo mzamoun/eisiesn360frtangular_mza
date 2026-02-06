@@ -41,6 +41,7 @@
         "bootstrap-icons": "^1.7.2",
         "calendar-utils": "^0.8.5",
         "chromedriver": "^137.0.0",
+        "d3": "^7.9.0",
         "date-fns": "^2.25.0",
         "flag-icon-css": "^3.5.0",
         "flatpickr": "^4.6.13",

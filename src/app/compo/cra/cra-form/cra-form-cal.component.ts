@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityType } from "../../../model/activityType";
 import { Cra } from "../../../model/cra";
 import { CraDay } from "../../../model/cra-day";
+import { CraStatusHisto } from "../../../model/cra-status-histo.model";
 import { ActivityService } from '../../../service/activity.service';
 import { CraService } from '../../../service/cra.service';
 
@@ -42,6 +43,7 @@ import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { CraObservable, CraObserver } from "../../../core/core";
 import { CraReportActivity } from "../../../model/cra-report-activity";
 import { ClientsDialogComponent } from '../../_dialogs/ClientsDialogComponent';
+import { CraHistoStatusComponent } from '../../_dialogs/CraHistoStatusComponent';
 import { SelectComponent } from '../../_reuse/select-consultant/select/select.component';
 import { MereComponent } from '../../_utils/mere-component';
 import { AddMultiDateComponent } from "../add-multi-date/add-multi-date.component";
@@ -154,7 +156,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   ) {
     super(utils, dataSharingService);
     console.log("DBG: cra-form-cal: constructot: currentCra: ", this.currentCra)
-    console.log("cra list findAll Constr : dataSharingService.listCra:", this.dataSharingService.listCra)
+    console.log("cra list findAll Constr : dataSharingService.listCra:", this.dataSharingService.getListCra())
   }
 
   // getCurrentCra() {
@@ -168,10 +170,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   ngOnInit(): void {
 
-    console.log("ngOnInit deb dataSharingService.listCra, dataSharingService.fromNotif", this.dataSharingService.listCra, this.dataSharingService.fromNotif);
+    console.log("ngOnInit deb dataSharingService.listCra, dataSharingService.fromNotif", this.dataSharingService.getListCra(), this.dataSharingService.fromNotif);
 
     // eviter d'entrer si on vient de nulle part
-    if (!this.dataSharingService.listCra && !this.dataSharingService.fromNotif) {
+    if (!this.dataSharingService.getListCra() && !this.dataSharingService.fromNotif) {
       this.gotoCraList();
     }
 
@@ -188,15 +190,15 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.viewDate = this.utils.getDate(this.viewDate);
     console.log("ngOnInit viewDate finalement : ", this.viewDate)
 
-    console.log("cra list findAll av call initParams : dataSharingService.listCra:", this.dataSharingService.listCra)
+    console.log("cra list findAll av call initParams : dataSharingService.listCra:", this.dataSharingService.getListCra())
 
     this.initParams();
 
-    console.log("cra list findAll ap call initParams : dataSharingService.listCra:", this.dataSharingService.listCra)
+    console.log("cra list findAll ap call initParams : dataSharingService.listCra:", this.dataSharingService.getListCra())
 
     this.dataSharingService.addService(this);
 
-    console.log("cra list findAll ap call addService : dataSharingService.listCra:", this.dataSharingService.listCra)
+    console.log("cra list findAll ap call addService : dataSharingService.listCra:", this.dataSharingService.getListCra())
 
     console.log("ngOnInit isAdd : ", this.isAdd)
     console.log("ngOnInit currentCraUser : ", this.currentCraUser)
@@ -218,13 +220,72 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.consultantService.majCra(this.currentCra);
 
-    console.log("cra list findAll ap call majCra : dataSharingService.listCra:", this.dataSharingService.listCra)
+    this.statusHistoJsonToTab()
+
+    console.log("cra list findAll ap call majCra : dataSharingService.listCra:", this.dataSharingService.getListCra())
     console.log("cra list findAll ap call majCra : currentCra:", this.currentCra)
 
     // this.showCra(this.currentCra)
 
     console.log("+++ ngOnit FIN");
 
+  }
+
+  getClassForStatus(): string {
+    switch (this.currentCra?.status) {
+      case 'VALIDATED':
+        return "btn-outline-success";
+      case 'REJECTED':
+        return "btn-outline-danger";
+      default:
+        return "btn-outline-primary";
+    }
+  }
+
+  changeTypeToCra() {
+    if (this.currentCra) {
+      this.currentCra.type = "CRA"
+      this.typeCra = this.currentCra.type
+      this.setStatus("DRAFT")
+      this.currentCra.validByConsultant = false
+      this.currentCra.validByManager = false
+    }
+  }
+
+  addStatusHisto() {
+    if (this.currentCra) {
+
+      if (!this.currentCra.statusHistoTab) {
+        this.currentCra.statusHistoTab = []
+      }
+
+      let histo = new CraStatusHisto();
+      histo.dateStatus = new Date()
+      histo.status = this.currentCra.status
+      histo.typeCra = this.currentCra.type
+      histo.userConnected = this.userConnected
+      this.currentCra.statusHistoTab.push(histo)
+
+      this.statusHistoTabToJson()
+    }
+  }
+
+  statusHistoJsonToTab() {
+    if (!this.currentCra.statusHistoJson) {
+      this.currentCra.statusHistoJson = "[]"
+      this.currentCra.statusHistoTab = []
+    } else {
+      this.currentCra.statusHistoTab = JSON.parse(this.currentCra.statusHistoJson)
+    }
+  }
+
+  statusHistoTabToJson() {
+    if (!this.currentCra.statusHistoTab) {
+      this.currentCra.statusHistoJson = "[]"
+      this.currentCra.statusHistoTab = []
+    } else {
+      this.currentCra.statusHistoJson = JSON.stringify(this.currentCra.statusHistoTab)
+    }
   }
 
   setCurrentCraConsultantId() {
@@ -262,8 +323,16 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     if (this.currentCra == null) {
       console.log("DBG: initParams: currentCra = null")
       if (this.isAdd != "true") {
-        this.currentCra = this.dataSharingService.currentCra;
-        console.log("DBG: initParams: dataSharingService.currentCra : ", this.currentCra)
+        // Essayer de récupérer le CRA depuis le state de la route
+        const navigationExtras = this.router.getCurrentNavigation()?.extras;
+        if (navigationExtras?.state?.cra) {
+          this.currentCra = navigationExtras.state.cra;
+          console.log("DBG: initParams: CRA récupéré du state de la route : ", this.currentCra)
+        } else {
+          // Sinon, récupérer depuis le service
+          this.currentCra = this.dataSharingService.getCurrentCra();
+          console.log("DBG: initParams: dataSharingService.currentCra : ", this.currentCra)
+        }
       }
     }
 
@@ -300,6 +369,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             if (this.notADate(this.viewDate)) this.viewDate = new Date();
             this.viewDate = this.utils.getDate(this.viewDate);
             this.dataSharingService.onCraDestroy();
+            this.statusHistoJsonToTab()
 
           }
           // //////////console.log("DBG: cra-form-cal: ngOnint(): FIN currentCra: ", this.currentCra)
@@ -389,7 +459,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         } else {
 
           // this.getCurrentCraFromContext();
-          this.currentCra = this.dataSharingService.currentCra;
+          this.currentCra = this.dataSharingService.getCurrentCra();
           console.log("*************** findAllActivities get cra from dataSharingService : ", this.currentCra);
 
           if (!this.currentCra) {
@@ -434,6 +504,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           })
         }
       })
+
+      this.initDatesDebFinMultiDates();
+
+      this.statusHistoJsonToTab()
+
     }
     console.log("+++ initCra fin");
   }
@@ -512,20 +587,19 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     console.log(label + " after : viewDate:", this.viewDate)
 
     // this.viewDate est un objet Date au 1er
-    this.addMultiDateStartDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
-
-    // Calcul de la dernière date du mois de this.viewDate
-    this.addMultiDateEndDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
+    this.initDatesDebFinMultiDates();
 
     /**
      * si existe un cra validee , afficher le
      */
 
-    let craInDateView: Cra = this.craService.getCraInDate(this.viewDate, this.dataSharingService.listCra);
+    let craInDateView: Cra = this.craService.getCraInDate(this.viewDate, this.dataSharingService.getListCra());
     console.log(label + " craInDateView", craInDateView)
 
     if (craInDateView != null) {
       console.log("showCra valide deb")
+
+      this.statusHistoJsonToTab()
 
       this.showCra(craInDateView);
 
@@ -543,6 +617,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           if (data != null && data.body != null && data.body.result != null) {
             console.log("we have a new cra from initCra du server. data", data)
             this.currentCra = data.body.result;
+
+            this.statusHistoJsonToTab()
+
             // console.log("monthStr = " + this.currentCra.monthStr )
             // this.currentCra.month = new Date(this.currentCra.monthStr);
             this.setMonthCurentCraIfNull();
@@ -592,6 +669,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     console.log(label + " fin currentCra ", this.currentCra)
 
+  }
+
+  private initDatesDebFinMultiDates() {
+    this.addMultiDateStartDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), 1);
+
+    // Calcul de la dernière date du mois de this.viewDate
+    this.addMultiDateEndDate = new Date(this.viewDate.getFullYear(), this.viewDate.getMonth() + 1, 0);
   }
 
   showCra(cra: Cra) {
@@ -1049,6 +1133,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.afterCallServer("saveCraDirect", data)
 
         this.currentCra = data.body.result
+        this.statusHistoJsonToTab()
         this.dataSharingService.majConsultantInCra(this.currentCra,
           () => {
             console.log("+++ saveCra : change 05 of consultant of currentCra ", this.currentCra.consultant)
@@ -1080,10 +1165,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   addToList(cra: Cra) {
-    if (cra && this.dataSharingService.listCra) {
-      const exists = this.dataSharingService.listCra.some(item => item.id === cra.id);
+    const list = this.dataSharingService.getListCra();
+    if (cra && list) {
+      const exists = list.some(item => item.id === cra.id);
       if (!exists) {
-        this.dataSharingService.listCra.push(cra)
+        list.push(cra);
+        // Notifier les subscribers de la mise à jour
+        this.dataSharingService.setListCra(list);
         // this.myList00 
         // this.setMyList(this.dataSharingService.listCra)
       }
@@ -1102,6 +1190,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   canValidateCraOrConge() {
+
+    // console.log("canValidateCraOrConge this.hasRoleManagerValidate()=",this.hasRoleManagerValidate())
+    // console.log("canValidateCraOrConge this.currentCra.validByManager=", this.currentCra.validByManager)
+    // console.log("canValidateCraOrConge this.isTimeToModify()=", this.isTimeToModify())
+    // console.log("canValidateCraOrConge this.isCraOfManagerRole()=", this.isCraOfManagerRole())
 
     return this.hasRoleManagerValidate() && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
 
@@ -1175,7 +1268,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.beforeCallServer("sendNotification")
     this.dataSharingService.addNotificationServer(notification).subscribe((data) => {
       this.afterCallServer("sendNotification", data)
-      this.dataSharingService.getNotifications();
+      this.dataSharingService.getNotifications(null, null);
 
     }, error => {
       this.addErrorFromErrorOfServer("sendNotification", error);
@@ -1311,7 +1404,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       let date = this.utils.getDatePlusNbJour(dateDeb, i);
       console.log("addActivityInDates: currentCra, date", this.currentCra, date)
       this.craDay = this.craService.getCraDayByDate(this.currentCra, date);
-      console.log("addActivityInDates: craDay", this.craDay)
+      console.log("addActivityInDates: craDay : ", this.craDay)
       // this.craService.setDayProps(this.craDay);
       console.log("addActivityInDates: craService, craDayActivity: ", this.craService, craDayActivity)
       if (this.craService.canAddActivity(this.craDay, craDayActivity)) {
@@ -1405,7 +1498,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
 
         for (let craDayActivity of craDayActivities) {
-          if (!craDayActivity.activity.type.congeDay) {
+          if ( craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
             this.utilsIhm.info("isCraValid : Oops,verify your Conges plz. All days must be conge type.", null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
@@ -1439,7 +1532,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       for (let i = 0; i < this.currentCra.craDays.length; i++) {
         let craDay: CraDay = this.currentCra.craDays[i];
         if (craDay.type == "DAY_WORKED") {
-          let craDayActivities: CraDayActivity[] = this.currentCra.craDays[i].craDayActivities;
+          let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
           let time: number = 0;
           craDayActivities.forEach(craDayActivity => {
             time = time + craDayActivity.nbDay;
@@ -1494,7 +1587,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       , () => {
         this.currentCra.validByManager = true;
         this.currentCra.dateValidationManager = new Date();
-        this.currentCra.status = "VALIDATED";
+        this.setStatus("VALIDATED")
         this.saveCra(true, true, name + " validated by Manager", this.currentCra.comment);
       },
       () => {
@@ -1516,7 +1609,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.currentCra.validByManager = false;
     this.currentCra.validByConsultant = false;
-    this.currentCra.status = "REJECTED";
+    this.setStatus("REJECTED")
     this.modal.dismissAll(this.rejectCraView);
     this.saveCra(true, true, name + " rejected", this.currentCra.comment);
     console.log("rejectCra END currentCra", this.currentCra)
@@ -1561,7 +1654,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.currentCra.validByConsultant = true;
             this.currentCra.dateValidationConsultant = new Date();
             this.currentCra.comment = null;
-            this.currentCra.status = "TO_VALIDATE";
+            this.setStatus("TO_VALIDATE")
             // this.saveCra(false, false, "", "");
             if (craManager != null) {
               // this.currentCra.consultant.adminConsultant = currentUser.adminConsultant;
@@ -1571,7 +1664,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           , () => {
             this.currentCra.validByConsultant = false;
             this.currentCra.dateValidationConsultant = null;
-            this.currentCra.status = "DRAFT";
+            this.setStatus("DRAFT")
           });
       }
 
@@ -1947,6 +2040,19 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
       console.log("**** refreshMe fin")
     }, 500);
+  }
+
+  setStatus(status: string) {
+    this.currentCra.status = status
+    this.addStatusHisto()
+  }
+
+  showHistoryStatus() {
+    const dialogRef = this.dialog.open(CraHistoStatusComponent, {
+      width: '800px',
+      data: { myList: this.currentCra.statusHistoTab }
+    });
+
   }
 
 }
