@@ -24,6 +24,7 @@ export class ClientFormComponent extends MereComponent {
   isAdd: string;
   emailPattern: string = UtilsService.EMAIL_PATTERN;
   telPattern: string = UtilsService.TEL_PATTERN;
+  urlPattern: string = UtilsService.URL_PATTERN;
 
   constructor(private route: ActivatedRoute, private router: Router
     , private esnService: EsnService
@@ -113,4 +114,26 @@ export class ClientFormComponent extends MereComponent {
     this.clearInfos();
     this.router.navigate(['/client_list']);
   }
+
+  myDomain() {
+    return this.myObj.name ? this.myObj.name.toLowerCase().replace(/\s/g, '-') + ".com" : "exemple.com"
+  }
+
+  onMailClientFocusIn() {
+    let domain  = this.myDomain()
+    this.myObj.email = this.myObj.email ? this.myObj.email : "contact@" + domain  
+  }
+
+  onMailRespFocusIn() {
+    let domain  = this.myDomain()
+    let respEsnName = this.myObj.nameResp ?  this.myObj.nameResp.toLowerCase().replace(/\s/g, '.') : "contact"
+    this.myObj.emailResp = this.myObj.emailResp ? this.myObj.emailResp : respEsnName + "@" + domain  
+  }
+
+  onWebSiteClientFocusIn() {
+    let domain  = this.myDomain()
+    this.myObj.webSite = this.myObj.webSite ? this.myObj.webSite : "www." + domain  
+  }
+
+
 }

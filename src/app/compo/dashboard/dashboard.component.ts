@@ -28,6 +28,9 @@ import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 export class DashBoardComponent implements OnInit {
     selectedSection: any = null;
     chartData: any = null;
+    activeTab: string = 'evolution';
+    chartHeightMultiplier: number = 10;
+    timeGrouping: 'day' | 'month' | 'year' = 'day';
 
     sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
         { title: 'Notifications', route: '/notification' },
@@ -141,6 +144,7 @@ export class DashBoardComponent implements OnInit {
         this.craService.findAll().subscribe({
             next: (resp) => {
                 this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
+                console.log('DashboardComponent: Loaded CRA, count = ', this.listCra.length);
                 this.updateSectionCount('CRA', this.listCra.length);
             },
             error: () => this.updateSectionCount('CRA', 0)
@@ -395,22 +399,35 @@ export class DashBoardComponent implements OnInit {
 
     showChart(section: any): void {
         this.selectedSection = section;
-        this.chartData = this.generateChartData(section.title);
+        this.activeTab = 'evolution';
+        this.chartData = this.generateChartData(section);
     }
 
     closeChart(): void {
         this.selectedSection = null;
         this.chartData = null;
+        this.activeTab = 'evolution';
+    }
+
+    switchTab(tabName: string): void {
+        this.activeTab = tabName;
+    }
+
+    changeTimeGrouping(grouping: 'day' | 'month' | 'year'): void {
+        this.timeGrouping = grouping;
+        if (this.selectedSection) {
+            this.chartData = this.generateChartData(this.selectedSection);
+        }
     }
 
     /**
      * Génère les données du graphique basées sur la propriété createdDate
      */
-    private generateChartData(sectionTitle: string): any {
+    private generateChartData(section: any): any {
         let dataList: any[] = [];
-        
+
         // Récupérer les données correspondantes à la section
-        switch(sectionTitle) {
+        switch (section.title) {
             case 'Notifications':
                 dataList = this.listNotifications;
                 break;
@@ -440,29 +457,49 @@ export class DashBoardComponent implements OnInit {
                 dataList = [];
         }
 
+        console.log(`DashboardComponent: Generating chart data for ${section.title}, count : `, dataList.length);
+
         // Grouper par date de création
         const dateGroups = this.groupByCreatedDate(dataList);
-        
+
+        console.log(`DashboardComponent: Date groups for ${section.title} : `, dateGroups);
+
         // Convertir en format de graphique avec dates et counts cumulés
         const chartData = this.convertToChartFormat(dateGroups);
-        
+
+        console.log(`DashboardComponent: Chart data for ${section.title} : `, chartData);
+
         return chartData;
     }
 
     /**
-     * Groupe les données par date de création
+     * Groupe les données par date de création selon le mode sélectionné
      */
     private groupByCreatedDate(dataList: any[]): Map<string, number> {
         const groups = new Map<string, number>();
-        
+
         dataList.forEach(item => {
             if (item.createdDate) {
                 const date = new Date(item.createdDate);
-                const dateKey = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+                let dateKey: string;
+                
+                switch (this.timeGrouping) {
+                    case 'year':
+                        dateKey = date.getFullYear().toString();
+                        break;
+                    case 'month':
+                        dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        break;
+                    case 'day':
+                    default:
+                        dateKey = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+                        break;
+                }
+                
                 groups.set(dateKey, (groups.get(dateKey) || 0) + 1);
             }
         });
-        
+
         return groups;
     }
 
@@ -472,21 +509,21 @@ export class DashBoardComponent implements OnInit {
     private convertToChartFormat(dateGroups: Map<string, number>): any {
         // Trier les dates
         const sortedDates = Array.from(dateGroups.keys()).sort();
-        
+
         const labels: string[] = [];
         const data: number[] = [];
         const cumulativeData: number[] = [];
         let cumulative = 0;
-        
+
         sortedDates.forEach(date => {
             const count = dateGroups.get(date) || 0;
             cumulative += count;
-            
+
             labels.push(this.formatDate(date));
             data.push(count);
             cumulativeData.push(cumulative);
         });
-        
+
         return {
             labels: labels,
             dailyCount: data,
@@ -497,10 +534,20 @@ export class DashBoardComponent implements OnInit {
     }
 
     /**
-     * Formate une date pour l'affichage
+     * Formate une date pour l'affichage selon le mode de groupement
      */
     private formatDate(dateStr: string): string {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        switch (this.timeGrouping) {
+            case 'year':
+                return dateStr; // Déjà au format YYYY
+            case 'month':
+                const [year, month] = dateStr.split('-');
+                const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+                return `${monthNames[parseInt(month) - 1]} ${year}`;
+            case 'day':
+            default:
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
     }
 }

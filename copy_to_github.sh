@@ -4,6 +4,13 @@ DIR_DEV=/cygdrive/c/Users/mza/Documents/home
 d1=$DIR_DEV/bitbucket/eisiesn360frtangular
 d2=$DIR_DEV/github/eisiesn360frtangular2
 
+usage() {
+    echo "
+        Usage : $0 
+    "
+    exit 1
+}
+
 echo "
     Go to copy to github ...
 "
@@ -21,11 +28,6 @@ exit_if_dir_not_exist $DIR_DEV
 exit_if_dir_not_exist $d1
 exit_if_dir_not_exist $d2
 
-
-files=("configs" "src")
-exts=("md" "sh" "json" "txt" "js" "config" "xml" "prop" "cli")
-
-
 date_deb=$(date_now.sh)
 
 # replace space by _
@@ -37,32 +39,7 @@ for f in *; do
     }
 done 
 
-
-file_out=/tmp/copy_all.tmp.sh
-echo > $file_out 
-mycopy() {
-    echo "$*" >> $file_out 
-}
-
-
-for f in ${files[@]}; do 
-    # echo "copy $f "
-    mycopy cp -dpr $f $d2/
-done 
-
-for ext in ${exts[@]}; do 
-    # echo "copy *.$ext "
-    mycopy cp -dpr *.$ext $d2/
-done 
-
-. $file_out 
-rm -rf $file_out 
-
-cp -p .gitignore $d2 
-
-setApiUrlServer() {
-    local f=""
-}
+ang_cp_proj.sh $d1 $d2
 
 date_fin=$(date_now.sh)
 

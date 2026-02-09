@@ -13,12 +13,14 @@
 
             <div class="form-group">
                 <label for="email">{{utils.tr('app.compo.client.form.input.email')}}</label>
-                <input type="text" [(ngModel)]="myObj.email" class="form-control" id="email" name="email" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.email') | lowercase}}" [pattern]="emailPattern" required #email="ngModel">
+                <input type="text" [(ngModel)]="myObj.email" class="form-control" id="email" name="email" 
+                placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.email') | lowercase}}" 
+                [pattern]="emailPattern" required #email="ngModel"
+                (focusin)="onMailClientFocusIn()" 
+                >
             </div>
             <div [hidden]="email.valid" class="badge badge-danger">{{utils.tr('app.compo.client.form.input.email')}} {{utils.tr('app.badge.required')}}
             </div>
-
-
             <div class="form-group">
                 <label for="tel">{{utils.tr('app.compo.client.form.input.tel')}}</label>
                 <input type="text" [(ngModel)]="myObj.tel" class="form-control" id="tel" name="tel" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.tel') | lowercase}}" required #tel="ngModel" [pattern]="telPattern">
@@ -70,7 +72,11 @@
 
             <div class="form-group">
                 <label for="siteWeb">{{utils.tr('app.compo.client.form.input.webSite')}}</label>
-                <input type="text" [(ngModel)]="myObj.webSite" class="form-control" id="siteWeb" name="siteWeb" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.webSite') | lowercase}}">
+                <input type="text" [(ngModel)]="myObj.webSite" class="form-control" id="siteWeb" name="siteWeb" 
+                placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.webSite') | lowercase}}"
+                [pattern]="urlPattern" required #siteWeb="ngModel"
+                (focusin)="onWebSiteClientFocusIn()"
+                >
             </div>
 
             <div class="form-group">
@@ -88,7 +94,8 @@
             <div class="form-group">
                 <label for="emailResp">{{utils.tr('app.compo.client.form.input.email')}}</label>
                 <input type="email" [(ngModel)]="myObj.emailResp" class="form-control" id="emailResp" name="emailResp" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.client.form.input.email') | lowercase}}" required #emailResp="ngModel"
-                    [pattern]="emailPattern">
+                    [pattern]="emailPattern"
+                    (focusin)="onMailRespFocusIn()">
             </div>
             <div [hidden]="emailResp.valid" class="badge badge-danger">{{utils.tr('app.compo.client.form.input.email')}} {{utils.tr('app.badge.required')}}</div>
 

@@ -17,53 +17,91 @@
 </div>
 
 <div id="dboard_graphiques">
-   <!-- div pour afficher les graphiques -->
-   <div class="charts-section" *ngIf="selectedSection">
-     <div class="chart-display">
-       <div class="chart-header">
-         <h3>📊 Évolution - {{ selectedSection.title }}</h3>
-         <button class="close-btn" (click)="closeChart()">✕</button>
-       </div>
-       <div class="chart-content">
-         <p class="chart-info">Graphique temporel pour: <strong>{{ selectedSection.title }}</strong></p>
-         <p class="chart-info">Nombre actuel: <strong>{{ selectedSection.count || 0 }}</strong></p>
-         
-         <!-- Affichage des données du graphique -->
-         <div *ngIf="chartData" class="chart-data">
-           <div class="chart-stats">
-             <div class="stat-item">
-               <span class="stat-label">Total:</span>
-               <span class="stat-value">{{ chartData.currentTotal }}</span>
-             </div>
-             <div class="stat-item">
-               <span class="stat-label">Nombre de jours:</span>
-               <span class="stat-value">{{ chartData.totalDays }}</span>
-             </div>
-           </div>
-           
-           <div class="chart-visualization">
-             <h4>Évolution cumulative</h4>
-             <div class="chart-timeline">
-               <div class="timeline-item" *ngFor="let label of chartData.labels; let i = index">
-                 <div class="timeline-date">{{ label }}</div>
-                 <div class="timeline-bar">
-                   <div class="bar-daily" 
-                        [style.height.px]="chartData.dailyCount[i] * 3"
-                        [title]="'Ajouts: ' + chartData.dailyCount[i]">
-                   </div>
-                   <div class="bar-label">{{ chartData.dailyCount[i] }}</div>
-                 </div>
-                 <div class="timeline-cumul">Total: {{ chartData.cumulativeCount[i] }}</div>
-               </div>
-             </div>
-           </div>
-         </div>
-         
-         <div *ngIf="!chartData || chartData.totalDays === 0" class="placeholder-chart">
-           <p>📈 Aucune donnée disponible</p>
-           <p>Pas encore de données avec createdDate pour {{ selectedSection.title }}</p>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
+  <!-- div pour afficher les graphiques -->
+  <div class="charts-section" *ngIf="selectedSection">
+    <div class="chart-display">
+      <div class="chart-header">
+        <h3>📊 {{ selectedSection.title }}</h3>
+        <button class="close-btn" (click)="closeChart()">✕</button>
+      </div>
+
+      <!-- Onglets -->
+      <div class="tabs-container">
+        <button class="tab-btn" [class.active]="activeTab === 'evolution'" (click)="switchTab('evolution')">
+          📈 Évolution du nombre
+        </button>
+        <!-- Autres onglets à ajouter plus tard -->
+      </div>
+
+      <div class="chart-content" *ngIf="activeTab === 'evolution'">
+        <p class="chart-info">Graphique temporel pour: <strong>{{ selectedSection.title }}</strong></p>
+        <p class="chart-info">Nombre actuel: <strong>{{ selectedSection.count || 0 }}</strong></p>
+
+        <!-- Affichage des données du graphique -->
+        <div *ngIf="chartData" class="chart-data">
+          <div class="chart-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total:</span>
+              <span class="stat-value">{{ chartData.currentTotal }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Nombre de jours:</span>
+              <span class="stat-value">{{ chartData.totalDays }}</span>
+            </div>
+          </div>
+
+          <div class="chart-visualization">
+            <div class="chart-title-row">
+              <h4>Évolution cumulative</h4>
+              <div class="chart-controls">
+                <!-- Options de groupement temporel -->
+                <div class="time-grouping">
+                  <label class="radio-label">
+                    <input type="radio" name="timeGrouping" value="day" 
+                           [checked]="timeGrouping === 'day'"
+                           (change)="changeTimeGrouping('day')">
+                    <span>Par jour</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="timeGrouping" value="month" 
+                           [checked]="timeGrouping === 'month'"
+                           (change)="changeTimeGrouping('month')">
+                    <span>Par mois</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="timeGrouping" value="year" 
+                           [checked]="timeGrouping === 'year'"
+                           (change)="changeTimeGrouping('year')">
+                    <span>Par an</span>
+                  </label>
+                </div>
+                <!-- Contrôle d'échelle -->
+                <div class="multiplier-control">
+                  <label>Échelle (x</label>
+                  <input type="number" [(ngModel)]="chartHeightMultiplier" min="1" max="100" class="multiplier-input">
+                  <label>)</label>
+                </div>
+              </div>
+            </div>
+            <div class="chart-timeline">
+              <div class="timeline-item" *ngFor="let label of chartData.labels; let i = index">
+                <div class="timeline-bar">
+                  <div class="bar-total" [style.height.px]="chartData.cumulativeCount[i] * chartHeightMultiplier"
+                    [title]="'Total: ' + chartData.cumulativeCount[i]">
+                  </div>
+                  <div class="bar-label">{{ chartData.cumulativeCount[i] }}</div>
+                </div>
+                <div class="timeline-date">{{ label }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!chartData || chartData.totalDays === 0" class="placeholder-chart">
+          <p>📈 Aucune donnée disponible</p>
+          <p>Pas encore de données avec createdDate pour {{ selectedSection.title }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,6 +32,7 @@ export class UtilsService {
   static readonly TOKEN_STORAGE_KEY_LAST_USERNAME = 'lastUsername';
 
   error: string;
+  static URL_PATTERN: string = "^(https?:\\/\\/)?([\\w\\-]+\\.)+[\\w\\-]+(\\/\\S*)?$";
   // private readonly notifier: NotifierService;
 
   constructor(
