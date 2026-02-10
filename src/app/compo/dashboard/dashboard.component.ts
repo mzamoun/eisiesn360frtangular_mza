@@ -30,7 +30,9 @@ export class DashBoardComponent implements OnInit {
     chartData: any = null;
     activeTab: string = 'evolution';
     chartHeightMultiplier: number = 10;
+    revenueHeightMultiplier: number = 0.5;
     timeGrouping: 'day' | 'month' | 'year' = 'day';
+    revenueData: any = null;
 
     sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
         { title: 'Notifications', route: '/notification' },
@@ -144,8 +146,18 @@ export class DashBoardComponent implements OnInit {
         this.craService.findAll().subscribe({
             next: (resp) => {
                 this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
-                console.log('DashboardComponent: Loaded CRA, count = ', this.listCra.length);
+                console.log('DashboardComponent: Loaded CRA, listCra = ', this.listCra);
+
+                this.dataSharingService.setListCra(this.listCra);
+                this.dataSharingService.majListCra();
+
+                setTimeout(() => {
+                    console.log('DashboardComponent: ap set timeout, listCra = ', this.listCra);
+                }, 3000);
+
                 this.updateSectionCount('CRA', this.listCra.length);
+
+
             },
             error: () => this.updateSectionCount('CRA', 0)
         });
@@ -401,12 +413,18 @@ export class DashBoardComponent implements OnInit {
         this.selectedSection = section;
         this.activeTab = 'evolution';
         this.chartData = this.generateChartData(section);
+        
+        // Générer les données de revenus pour CRA
+        if (section.title === 'CRA') {
+            this.revenueData = this.generateRevenueData();
+        }
     }
 
     closeChart(): void {
         this.selectedSection = null;
         this.chartData = null;
         this.activeTab = 'evolution';
+        this.revenueData = null;
     }
 
     switchTab(tabName: string): void {
@@ -417,6 +435,24 @@ export class DashBoardComponent implements OnInit {
         this.timeGrouping = grouping;
         if (this.selectedSection) {
             this.chartData = this.generateChartData(this.selectedSection);
+            if (this.selectedSection.title === 'CRA') {
+                this.revenueData = this.generateRevenueData();
+            }
+        }
+    }
+
+    /**
+     * Calcule le multiplicateur effectif pour les barres de revenus selon le groupement
+     */
+    getEffectiveRevenueMultiplier(): number {
+        switch (this.timeGrouping) {
+            case 'year':
+                return this.revenueHeightMultiplier / 50; // Divisé par 50 pour les années
+            case 'month':
+                return this.revenueHeightMultiplier / 20; // Divisé par 20 pour les mois
+            case 'day':
+            default:
+                return this.revenueHeightMultiplier; // Valeur normale pour les jours
         }
     }
 
@@ -549,5 +585,76 @@ export class DashBoardComponent implements OnInit {
                 const date = new Date(dateStr);
                 return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
+    }
+
+    /**
+     * Génère les données de revenus (sum TJM) par consultant et par période
+     */
+    private generateRevenueData(): any {
+        const consultantRevenueMap = new Map<number, { consultant: Consultant, periods: Map<string, number> }>();
+
+        // Parcourir tous les CRA
+        this.listCra.forEach(cra => {
+            if (cra.consultant && cra.craDays) {
+                const consultantId = cra.consultant.id;
+                
+                // Initialiser le consultant s'il n'existe pas encore
+                if (!consultantRevenueMap.has(consultantId)) {
+                    consultantRevenueMap.set(consultantId, {
+                        consultant: cra.consultant,
+                        periods: new Map<string, number>()
+                    });
+                }
+
+                const consultantData = consultantRevenueMap.get(consultantId);
+
+                // Parcourir les craDays pour calculer les TJM
+                cra.craDays.forEach(craDay => {
+                    if (craDay.day && craDay.craDayActivities) {
+                        const date = new Date(craDay.day);
+                        let periodKey: string;
+
+                        switch (this.timeGrouping) {
+                            case 'year':
+                                periodKey = date.getFullYear().toString();
+                                break;
+                            case 'month':
+                                periodKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                                break;
+                            case 'day':
+                            default:
+                                periodKey = date.toISOString().split('T')[0];
+                                break;
+                        }
+
+                        // Parcourir les craDayActivities pour sommer les TJM
+                        craDay.craDayActivities.forEach(craDayActivity => {
+                            if (craDayActivity.activity && craDayActivity.activity.tjm) {
+                                const currentSum = consultantData.periods.get(periodKey) || 0;
+                                consultantData.periods.set(periodKey, currentSum + craDayActivity.activity.tjm);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        // Convertir en format pour affichage
+        const result = Array.from(consultantRevenueMap.values()).map(data => {
+            const sortedPeriods = Array.from(data.periods.keys()).sort();
+            const periodData = sortedPeriods.map(period => ({
+                period: this.formatDate(period),
+                tjmSum: data.periods.get(period) || 0
+            }));
+
+            return {
+                consultant: data.consultant,
+                periodData: periodData,
+                totalRevenue: Array.from(data.periods.values()).reduce((sum, val) => sum + val, 0)
+            };
+        });
+
+        console.log('DashboardComponent: Revenue data generated:', result);
+        return result;
     }
 }

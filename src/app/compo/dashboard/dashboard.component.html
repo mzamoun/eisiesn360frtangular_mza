@@ -30,6 +30,11 @@
         <button class="tab-btn" [class.active]="activeTab === 'evolution'" (click)="switchTab('evolution')">
           📈 Évolution du nombre
         </button>
+        <button class="tab-btn" *ngIf="selectedSection.title === 'CRA'" 
+                [class.active]="activeTab === 'revenus'" 
+                (click)="switchTab('revenus')">
+          💰 Revenus
+        </button>
         <!-- Autres onglets à ajouter plus tard -->
       </div>
 
@@ -100,6 +105,67 @@
         <div *ngIf="!chartData || chartData.totalDays === 0" class="placeholder-chart">
           <p>📈 Aucune donnée disponible</p>
           <p>Pas encore de données avec createdDate pour {{ selectedSection.title }}</p>
+        </div>
+      </div>
+
+      <!-- Contenu de l'onglet Revenus -->
+      <div class="chart-content" *ngIf="activeTab === 'revenus'">
+        <p class="chart-info">Évolution des revenus (somme TJM) par consultant</p>
+        
+        <div *ngIf="revenueData && revenueData.length > 0" class="revenue-data">
+          <div class="consultant-revenue" *ngFor="let item of revenueData">
+            <div class="consultant-header">
+              <h4>👤 {{ item.consultant.firstName }} {{ item.consultant.lastName }}</h4>
+              <!--Ajouter ici le choix d'afficher par an, mois, jour -->
+              <div class="time-grouping">
+                <label class="radio-label">
+                  <input type="radio" name="revenueTimeGrouping_{{item.consultant.id}}" value="day" 
+                         [checked]="timeGrouping === 'day'"
+                         (change)="changeTimeGrouping('day')">
+                  <span>Par jour</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="revenueTimeGrouping_{{item.consultant.id}}" value="month" 
+                         [checked]="timeGrouping === 'month'"
+                         (change)="changeTimeGrouping('month')">
+                  <span>Par mois</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="revenueTimeGrouping_{{item.consultant.id}}" value="year" 
+                         [checked]="timeGrouping === 'year'"
+                         (change)="changeTimeGrouping('year')">
+                  <span>Par an</span>
+                </label>
+              </div>
+            </div>
+            <!--ajouter ici l'echel des revenus-->
+            <div class="revenue-scale">
+              <label>Échelle (x</label>
+              <input type="number" [(ngModel)]="revenueHeightMultiplier" min="0.1" max="10" step="0.1" class="multiplier-input">
+              <label>)</label>
+            </div>
+            <div>
+              <span class="total-revenue">Total: {{ item.totalRevenue | number:'1.2-2' }} €</span>
+            </div>
+            
+            <div class="revenue-timeline">
+              <div class="revenue-item" *ngFor="let period of item.periodData">
+                <div class="revenue-value">{{ period.tjmSum | number:'1.2-2' }} €</div>
+                <div class="revenue-bar-container">
+                  <div class="revenue-bar" 
+                       [style.height.px]="period.tjmSum * getEffectiveRevenueMultiplier()"
+                       [title]="'TJM: ' + period.tjmSum">
+                  </div>
+                </div>
+                <div class="revenue-period">{{ period.period }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!revenueData || revenueData.length === 0" class="placeholder-chart">
+          <p>💰 Aucune donnée de revenus disponible</p>
+          <p>Pas encore de CRA avec des activités et TJM renseignés</p>
         </div>
       </div>
     </div>
