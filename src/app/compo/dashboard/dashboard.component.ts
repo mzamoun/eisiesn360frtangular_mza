@@ -29,9 +29,10 @@ export class DashBoardComponent implements OnInit {
     selectedSection: any = null;
     chartData: any = null;
     activeTab: string = 'evolution';
-    chartHeightMultiplier: number = 10;
-    revenueHeightMultiplier: number = 0.5;
-    timeGrouping: 'day' | 'month' | 'year' = 'day';
+    heightMultiplier: number = 1;
+    autoScale: boolean = true;
+    targetBarHeight: number = 200; // Hauteur cible en pixels pour la barre max
+    timeGrouping: 'day' | 'month' | 'year' = 'year';
     revenueData: any = null;
 
     sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
@@ -418,6 +419,11 @@ export class DashBoardComponent implements OnInit {
         if (section.title === 'CRA') {
             this.revenueData = this.generateRevenueData();
         }
+        
+        // Calculer le multiplicateur auto si activé
+        if (this.autoScale) {
+            this.calculateAutoMultiplier();
+        }
     }
 
     closeChart(): void {
@@ -429,6 +435,11 @@ export class DashBoardComponent implements OnInit {
 
     switchTab(tabName: string): void {
         this.activeTab = tabName;
+        
+        // Recalculer le multiplicateur auto si activé lors du changement d'onglet
+        if (this.autoScale) {
+            this.calculateAutoMultiplier();
+        }
     }
 
     changeTimeGrouping(grouping: 'day' | 'month' | 'year'): void {
@@ -438,22 +449,57 @@ export class DashBoardComponent implements OnInit {
             if (this.selectedSection.title === 'CRA') {
                 this.revenueData = this.generateRevenueData();
             }
+            
+            // Recalculer le multiplicateur auto si activé
+            if (this.autoScale) {
+                this.calculateAutoMultiplier();
+            }
         }
     }
 
     /**
-     * Calcule le multiplicateur effectif pour les barres de revenus selon le groupement
+     * Calcule le multiplicateur automatique basé sur la valeur maximale
      */
-    getEffectiveRevenueMultiplier(): number {
-        switch (this.timeGrouping) {
-            case 'year':
-                return this.revenueHeightMultiplier / 50; // Divisé par 50 pour les années
-            case 'month':
-                return this.revenueHeightMultiplier / 20; // Divisé par 20 pour les mois
-            case 'day':
-            default:
-                return this.revenueHeightMultiplier; // Valeur normale pour les jours
+    calculateAutoMultiplier(): void {
+        let maxValue = 0;
+        
+        if (this.activeTab === 'evolution' && this.chartData) {
+            // Pour l'onglet évolution, utiliser la valeur cumulative max
+            maxValue = Math.max(...(this.chartData.cumulativeCount || [0]));
+        } else if (this.activeTab === 'revenus' && this.revenueData) {
+            // Pour l'onglet revenus, trouver le TJM max parmi tous les consultants
+            this.revenueData.forEach((item: any) => {
+                item.periodData.forEach((period: any) => {
+                    if (period.tjmSum > maxValue) {
+                        maxValue = period.tjmSum;
+                    }
+                });
+            });
         }
+        
+        // Calculer le multiplicateur pour atteindre la hauteur cible
+        if (maxValue > 0) {
+            this.heightMultiplier = this.targetBarHeight / maxValue;
+            console.log('Auto-scale calculated:', { maxValue, multiplier: this.heightMultiplier });
+        } else {
+            this.heightMultiplier = 1;
+        }
+    }
+    
+    /**
+     * Active/désactive l'auto-scaling
+     */
+    toggleAutoScale(): void {
+        if (this.autoScale) {
+            this.calculateAutoMultiplier();
+        }
+    }
+    
+    /**
+     * Retourne le multiplicateur à utiliser pour les barres
+     */
+    getEffectiveMultiplier(): number {
+        return this.heightMultiplier;
     }
 
     /**

@@ -1,15 +1,15 @@
 .dashboard-container {
-  padding: 24px;
+  padding: 10px;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 /* Styles pour les onglets */
 .tabs-container {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  /* gap: 1rem; */
+  margin-bottom: 10px;
   border-bottom: 2px solid #e0e0e0;
-  padding: 0 1rem;
+  padding: 0 10px;
 }
 
 .tab-btn {
@@ -40,7 +40,7 @@
 .dashboard-container h2 {
   color: #2c3e50;
   font-size: 2em;
-  margin-bottom: 32px;
+  margin-bottom: 10px;
   text-align: center;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -58,7 +58,7 @@
   background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
   border: 2px solid rgba(25, 118, 210, 0.1);
   border-radius: 12px;
-  padding: 20px;
+  padding: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -91,7 +91,7 @@
 
 .card-title {
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-size: 1.1em;
   color: #2c3e50;
   display: flex;
@@ -110,8 +110,8 @@
 }
 
 .card-actions {
-  margin-top: 16px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -153,7 +153,7 @@
 .charts-section {
   max-width: 1400px;
   margin: 30px auto;
-  padding: 0 24px;
+  padding: 0 10px;
   animation: slideDown 0.4s ease;
 }
 
@@ -171,7 +171,7 @@
 .chart-display {
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 2px solid rgba(25, 118, 210, 0.2);
 }
@@ -180,15 +180,95 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #1976d2;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .chart-header h3 {
   margin: 0;
   color: #2c3e50;
   font-size: 1.5em;
+}
+
+.chart-header .time-grouping {
+  background: rgba(25, 118, 210, 0.1);
+  border: 1px solid rgba(25, 118, 210, 0.3);
+}
+
+.chart-header .radio-label {
+  color: #2c3e50;
+}
+
+.chart-header .radio-label:hover {
+  color: #1976d2;
+}
+
+/* Contrôle d'échelle unifié dans le header */
+.chart-header .scale-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.chart-header .auto-scale-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.chart-header .auto-scale-toggle input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: #4caf50;
+}
+
+.chart-header .multiplier-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.chart-header .multiplier-input {
+  width: 70px;
+  padding: 5px 8px;
+  border: 2px solid #4caf50;
+  border-radius: 4px;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #4caf50;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.chart-header .multiplier-input:disabled {
+  background: #f0f0f0;
+  color: #999;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+.chart-header .multiplier-input:focus:not(:disabled) {
+  outline: none;
+  border-color: #388e3c;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.chart-header .multiplier-input:hover:not(:disabled) {
+  border-color: #388e3c;
 }
 
 .close-btn {
@@ -212,7 +292,7 @@
 }
 
 .chart-content {
-  padding: 20px 0;
+  padding: 10px 0;
 }
 
 .chart-info {
@@ -225,9 +305,9 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #e3e8ef 100%);
   border: 2px dashed #1976d2;
   border-radius: 8px;
-  padding: 60px 20px;
+  padding: 20px 10px;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .placeholder-chart p {
@@ -237,14 +317,14 @@
 }
 
 .chart-data {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .chart-stats {
   display: flex;
   gap: 30px;
-  margin-bottom: 30px;
-  padding: 15px;
+  margin-bottom: 10px;
+  padding: 10px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 8px;
 }
@@ -269,16 +349,16 @@
 
 .chart-visualization h4 {
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-size: 1.2em;
 }
 
 .chart-title-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 10px;
 }
 
 .chart-title-row h4 {
@@ -359,12 +439,12 @@
 
 /* Styles pour l'onglet Revenus */
 .revenue-data {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .consultant-revenue {
-  margin-bottom: 40px;
-  padding: 20px;
+  margin-bottom: 10px;
+  padding: 10px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -374,8 +454,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #1976d2;
 }
 
@@ -386,7 +466,7 @@
 }
 
 .total-revenue {
-  font-size: 1.5em;
+  font-size: 1em;
   font-weight: 700;
   color: #27ae60;
   background: #fff;
@@ -520,17 +600,17 @@
 
   .dashboard-container h2 {
     font-size: 1.5em;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .cards {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .dashboard-container {
-    padding: 16px;
+    padding: 10px;
   }
 }
