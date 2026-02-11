@@ -609,4 +609,21 @@ export class TableViewerComponent implements OnInit {
     });
   }
 
+  exportAllTablesToJson() { 
+    this.tableService.exportAllTablesToJson(
+      (res) => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "all_tables.json");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+      },
+      (err) => {
+        alert("Failed to export tables: " + err);
+      }
+    );
+  }
+
 }

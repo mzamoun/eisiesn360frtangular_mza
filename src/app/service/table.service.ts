@@ -159,4 +159,18 @@ export class TableService {
         },
       });
   }
+
+  exportAllTablesToJson(arg0: (res: any) => void, arg1: (err: any) => void) {
+    this.http.get<any>(this.myUrl + "exportAllToJson").subscribe(
+      res => {
+        console.log("exportAllTablesToJson : res : ", res)
+        if (arg0) arg0(res)
+      },
+      err => {
+        console.log("exportAllTablesToJson : err : ", err)
+        if (arg1) arg1(err)
+      }
+    );
+  }
+
 }
