@@ -116,7 +116,7 @@ export class TableService {
   }
 
   getTypeInput(col: string, mapColType: {}) {
-    col = (col + "")
+    col = (col + "").toUpperCase()
     let typ = (mapColType[col] + "").toUpperCase()
     let res = "text"
     if (typ.includes("DATE")) {
@@ -172,5 +172,20 @@ export class TableService {
       }
     );
   }
+
+  importFromJsonToTable(selectedTable: string, jsonData: any[], fctOk: Function, fctKo: Function) {
+    this.http.post(this.myUrl + "importFromJson/" + selectedTable, jsonData).subscribe(
+      res => {
+        console.log("importFromJsonToTable : res : ", res)
+        if (fctOk) fctOk(res)
+      },
+      err => {
+        console.log("importFromJsonToTable : err : ", err)
+        if (fctKo) fctKo(err)
+      }
+    );
+  }
+
+  //////////////////
 
 }

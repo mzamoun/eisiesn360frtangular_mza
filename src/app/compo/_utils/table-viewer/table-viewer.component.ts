@@ -42,19 +42,11 @@ export class TableViewerComponent implements OnInit {
     this.getTables(
       () => {
         if (this.tables && this.tables.length) {
-          this.selectTable(this.tables[0])
           let t0 = 100
           let t = t0
           setTimeout(() => {
             this.openTabData()
           }, t += t0);
-          // setTimeout(() => {
-          //   this.openRelations()
-          // }, t+=t0);
-          // setTimeout(() => {
-          //   this.openTabData()
-          // }, t+=t0);
-
         }
       }
     )
@@ -585,8 +577,13 @@ export class TableViewerComponent implements OnInit {
   openTabData() {
     let fct = "openTabData"
     if (!this.selectedTable) {
-      alert("Veuillez sélectionner une table.");
-      return;
+      // select the first of tables if exist
+      if (this.tables && this.tables.length) {
+        this.selectTable(this.tables[0])
+      } else {
+        alert("No table available.");
+        return;
+      }
     }
 
     this.activeTab = "data";
@@ -609,7 +606,7 @@ export class TableViewerComponent implements OnInit {
     });
   }
 
-  exportAllTablesToJson() { 
+  exportAllTablesToJson() {
     this.tableService.exportAllTablesToJson(
       (res) => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
@@ -625,5 +622,54 @@ export class TableViewerComponent implements OnInit {
       }
     );
   }
+
+  importFromJsonToTableSelected() {
+    if (!this.selectedTable) {
+      alert("Please select a table first.");
+      return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+      const file = (e.target as HTMLInputElement).files[0];
+      const reader = new FileReader();
+      reader.onload = event => {
+        try {
+          const jsonData = JSON.parse(event.target.result as string);
+          // console.log("importFromJsonToTableSelected : jsonData : ", jsonData)
+          if (Array.isArray(jsonData)) {
+            this.tableService.importFromJsonToTable(this.selectedTable, jsonData,
+              (res) => {
+                console.log("importFromJsonToTableSelected : res : ", res);
+                if (!res) {
+                  alert("Failed to import data: " + (res ? JSON.stringify(res) : "Unknown error"));
+                  return;
+                } else if (res.errorCount) {
+                  alert("Failed to import all data: " + JSON.stringify(res.error));
+                  return;
+                }
+
+                alert("Data imported successfully! res = " + JSON.stringify(res));
+                this.openTabData(); // Refresh the table view
+              },
+              (err) => {
+                alert("Failed to import data: " + JSON.stringify(err));
+              }
+            );
+
+          } else {
+            alert("Invalid JSON format: Expected an array.");
+          }
+        } catch (error) {
+          alert("Error parsing JSON: " + error.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  ///////
 
 }
