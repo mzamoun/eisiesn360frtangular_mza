@@ -670,6 +670,17 @@ export class TableViewerComponent implements OnInit {
     input.click();
   }
 
+  runBatchCraMannualy() {
+    this.tableService.runBatchCraMannualy(
+      (res) => {
+        alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
+      },
+      (err) => {
+        alert("Failed to execute Batch Cra: " + JSON.stringify(err));
+      }
+    );
+  }
+
   ///////
 
 }

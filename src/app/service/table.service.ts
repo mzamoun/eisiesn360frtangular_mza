@@ -13,9 +13,11 @@ const httpOptions = {
 export class TableService {
 
   private myUrl: string;
+  private myUrlBatch: string;
 
   constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService) {
     this.myUrl = environment.apiUrl + '/tables/';
+    this.myUrlBatch = environment.apiUrl + '/batch/';
   }
 
   relationsData: Relation[] = [];  // contenu JSON des relations pour D3
@@ -36,9 +38,14 @@ export class TableService {
   }
 
   deleteTableData(table: string, fOk: Function, fKo: Function) {
-    this.http.delete(this.myUrl + table).subscribe(() => {
-      // sql = "delete from " + table 
-    });
+    this.http.delete(this.myUrl + table).subscribe(
+      () => {
+        if (fOk) fOk();
+      },
+      error => {
+        if (fKo) fKo(error);
+      }
+    );
   }
 
   executeSql(sql, fOk: Function, fKo: Function) {
@@ -182,6 +189,20 @@ export class TableService {
       err => {
         console.log("importFromJsonToTable : err : ", err)
         if (fctKo) fctKo(err)
+      }
+    );
+  }
+
+  runBatchCraMannualy(fOk: Function, fKo: Function) {
+    console.log("runBatchCraMannualy : start")
+    this.http.post(this.myUrlBatch + "run", {}).subscribe(
+      res => {
+        console.log("runBatchCraMannualy : res : ", res)
+        if (fOk) fOk(res)
+      },
+      err => {
+        console.log("runBatchCraMannualy : err : ", err)
+        if (fKo) fKo(err)
       }
     );
   }
