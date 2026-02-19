@@ -1,0 +1,104 @@
+<!-- Bloc 1 list activity DEBUT -->
+<div class="card my-5">
+    <div class="card-body">
+        <div style="display: flex; justify-content: center; align-items: center; " class="">
+            <h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
+            <button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;"
+                (click)="findAll()">Refresh</button>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <!-- Filtre par consultant pour RESPONSIBLE_ESN et MANAGER -->
+        <div *ngIf="canFilterByConsultant" style="width: 50%; margin-left:20px; margin-bottom: 20px;">
+            <app-select-consultant #selectConsultantCompo (onSelectElement)="onSelectConsultant()"
+                title="{{utils.tr(selectConsultantLabel)}}"></app-select-consultant>
+        </div>
+
+        <!-- Filtre par texte -->
+        <div style="flex: 1; display: flex; margin-right: 20px; width: 50%;" name="searchDiv">
+            <input id="searchStr" #searchStrInput class="form-control" style="flex: 1;" type="text" placeholder="search"
+                name="searchStr" [(ngModel)]="searchStr" (keyup)="search()" (mouseover)="enableInputSearchStr()"
+                [readonly]="dataSharingService.isDisableSearchStrInput">
+            <button style="width: 40px; height: 40px; text-align: center; margin-left: 5px;"
+                (click)="clearSearch()">X</button>
+        </div>
+
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.name')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.type')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.project')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.client')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.startDate')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.endDate')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.consultant')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.valid')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.action')}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let element of myList | paginate: {itemsPerPage, currentPage}; let i = index"
+                [className]="element.id == getIdOfCurentObj() ? 'active' : 'inactive'">
+                <td>{{ element.id }}</td>
+                <td>{{ element.name }}</td>
+                <td>
+                    {{element.typeName}}
+                </td>
+                <td>
+                    {{ element.projectName }}
+                </td>
+                <td>
+                    {{ element.clientName }}
+                </td>
+                <td>
+                    {{element.dateDeb | date:'dd/MM/yyyy'}}
+                </td>
+                <td>
+                    {{element.dateFin | date:'dd/MM/yyyy'}}
+                </td>
+                <td>
+                    {{ element.consultantFullName }}
+                </td>
+                <td>
+                    {{ element.valid }}
+                </td>
+                <td>
+                    <!-- <button (click)="edit(element)" class='btn btn-info'>Edit</button> -->
+                    <button (click)="showForm(element)" class='btn btn-primary' [appAuthorization]
+                        feature="ACTIVITY_MANAGEMENT" id="btn-update-activity-{{i}}"
+                        permission="UPDATE">{{utils.tr('Edit')}}
+                    </button>
+                    <button (click)="delete(element)" class='btn btn-danger' [appAuthorization]
+                        feature="ACTIVITY_MANAGEMENT" id="btn-delete-activity-{{i}}"
+                        permission="DELETE">{{utils.tr('Delete')}}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="left" style="width: 50%;">
+        <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
+    </div>
+
+    <div class="right" *ngIf="nbCallServer == 0">
+        <li class="list-inline-item" [appAuthorization] feature="ACTIVITY_MANAGEMENT" permission="CREATE">
+            <a type="button" class="btn btn-info" id="addActivity"
+                (click)="addActivity()">{{utils.tr('app.compo.activity.list.button.add')}}</a>
+        </li>
+
+    </div>
+
+</div>
+<!-- Bloc 1 list activity FIN -->
+
+
+<!-- Bloc 2 list activity By consultant DEBUT -->
+<!-- <app-activity-form  #myObjEditView [myObj]="myObj" [consultantSelected]="consultant" *ngIf="myObj != null"
+    [appAuthorization] feature="ACTIVITY_MANAGEMENT" permission="UPDATE"></app-activity-form> -->
+<!-- Bloc 2 list activity By consultant FIN -->

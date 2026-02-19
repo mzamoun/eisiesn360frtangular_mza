@@ -1,0 +1,141 @@
+<div class="dashboard-container">
+  <h2>📊 Tableau de bord</h2>
+  <div class="cards">
+    <div class="card" *ngFor="let s of visibleSections">
+      <div class="card-title">
+        {{ s.title }}
+        <span class="count">{{ s.count || 0 }}</span>
+      </div>
+      <div class="card-actions">
+        <a [routerLink]="s.route" [queryParams]="s.queryParams">→ Accéder</a>
+        <button class="chart-btn" (click)="showChart(s); $event.stopPropagation()" title="Afficher le graphique">
+          📈
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="dboard_graphiques">
+  <!-- div pour afficher les graphiques -->
+  <div class="charts-section" *ngIf="selectedSection">
+    <div class="chart-display">
+      <div class="chart-header">
+        <h3>📊 {{ selectedSection.title }}</h3>
+        <!-- Options de groupement temporel pour tous les onglets-->
+        <div class="time-grouping" >
+          <label class="radio-label">
+            <input type="radio" name="timeGrouping" value="year" 
+                   [checked]="timeGrouping === 'year'"
+                   (change)="changeTimeGrouping('year')">
+            <span>Par an</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="timeGrouping" value="month" 
+                   [checked]="timeGrouping === 'month'"
+                   (change)="changeTimeGrouping('month')">
+            <span>Par mois</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="timeGrouping" value="day" 
+                   [checked]="timeGrouping === 'day'"
+                   (change)="changeTimeGrouping('day')">
+            <span>Par jour</span>
+          </label>
+        </div>
+        <!-- Contrôle d'échelle unifié -->
+        <div class="scale-control">
+          <label class="auto-scale-toggle">
+            <input type="checkbox" [(ngModel)]="autoScale" (change)="toggleAutoScale()">
+            <span>Auto</span>
+          </label>
+          <div class="multiplier-control">
+            <label>Échelle (x</label>
+            <input type="number" [(ngModel)]="heightMultiplier" 
+                   [disabled]="autoScale"
+                   min="0.01" max="100" step="0.1" 
+                   class="multiplier-input">
+            <label>)</label>
+          </div>
+        </div>
+        <button class="close-btn" (click)="closeChart()">✕</button>
+      </div>
+
+      <!-- Onglets -->
+      <div class="tabs-container">
+        <button class="tab-btn" [class.active]="activeTab === 'evolution'" (click)="switchTab('evolution')">
+          📈 Évolution du nombre
+        </button>
+        <button class="tab-btn" *ngIf="selectedSection.title === 'CRA'" 
+                [class.active]="activeTab === 'revenus'" 
+                (click)="switchTab('revenus')">
+          💰 Revenus
+        </button>
+        <!-- Autres onglets à ajouter plus tard -->
+      </div>
+
+      <div class="chart-content" *ngIf="activeTab === 'evolution'">
+        <p class="chart-info">Évolution cumulative pour: 
+          <strong> {{ selectedSection.title }}. 
+            Total : {{ selectedSection.count || 0 }}. 
+            Nombre de jours total : {{ chartData.totalDays }}.
+          </strong></p>
+
+        <!-- Affichage des données du graphique -->
+        <div *ngIf="chartData" class="chart-data">
+          <div class="chart-visualization">
+            <div class="chart-timeline">
+              <div class="timeline-item" *ngFor="let label of chartData.labels; let i = index">
+                <div class="timeline-bar">
+                  <div class="bar-total" [style.height.px]="chartData.cumulativeCount[i] * getEffectiveMultiplier()"
+                    [title]="'Total: ' + chartData.cumulativeCount[i]">
+                  </div>
+                  <div class="bar-label">{{ chartData.cumulativeCount[i] }}</div>
+                </div>
+                <div class="timeline-date">{{ label }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!chartData || chartData.totalDays === 0" class="placeholder-chart">
+          <p>📈 Aucune donnée disponible</p>
+          <p>Pas encore de données avec createdDate pour {{ selectedSection.title }}</p>
+        </div>
+      </div>
+
+      <!-- Contenu de l'onglet Revenus -->
+      <div class="chart-content" *ngIf="activeTab === 'revenus'">
+        <p class="chart-info">Évolution des revenus (somme TJM) par consultant</p>
+        
+        <div *ngIf="revenueData && revenueData.length > 0" class="revenue-data">
+          <div class="consultant-revenue" *ngFor="let item of revenueData">
+            <div class="consultant-header">
+              <h4>👤 {{ item.consultant.firstName }} {{ item.consultant.lastName }} : 
+                <span class="total-revenue">Total: {{ item.totalRevenue | number:'1.2-2' }} €</span>
+              </h4>
+            </div>
+            
+            <div class="revenue-timeline">
+              <div class="revenue-item" *ngFor="let period of item.periodData">
+                <div class="revenue-value">{{ period.tjmSum | number:'1.2-2' }} €</div>
+                <div class="revenue-bar-container">
+                  <div class="revenue-bar" 
+                       [style.height.px]="period.tjmSum * getEffectiveMultiplier()"
+                       [title]="'TJM: ' + period.tjmSum">
+                  </div>
+                </div>
+                <div class="revenue-period">{{ period.period }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!revenueData || revenueData.length === 0" class="placeholder-chart">
+          <p>💰 Aucune donnée de revenus disponible</p>
+          <p>Pas encore de CRA avec des activités et TJM renseignés</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+firstName,lastName,username,email,password,role,esnName,tel,active,admin,adminConsultantUsername,birthdayString
+Amine,Benali,amine.benali@exemple.com,amine.benali@exemple.com,Azerty123!,CONSULTANT,,0611223344,true,false,admin@eisi-consulting.fr,2000-01-01
+Sara,ElMansouri,sara.elmansouri@exemple.com,sara.elmansouri@exemple.com,Azerty123!,CONSULTANT,ESN Lyon,0622334455,true,false,admin@eisi-consulting.fr,1992-02-15
+Youssef,Hamidi,youssef.hamidi@exemple.com,youssef.hamidi@exemple.com,Azerty123!,CONSULTANT,ESN Lille,0633445566,true,false,admin@eisi-consulting.fr,1995-10-02
+,,,,,,,,,,,

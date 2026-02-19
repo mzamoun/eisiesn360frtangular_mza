@@ -1,0 +1,104 @@
+.case {
+	width: 50px;
+	text-align: center;
+}
+.caseTitle {
+	min-width: 200px;
+	text-align: center;
+}
+.red {
+	background-color: darkgray;
+	color: crimson;
+	font-weight: bold;
+}
+
+.craDayActivity {
+	text-decoration: underline;
+	text-decoration-color: blue;
+	cursor: pointer;
+}
+
+.left {
+	float: left;
+	/* width: 100%; */
+	text-align: center;
+	/* border: 1px solid black; */
+}
+
+.right {
+	float: right;
+	/* width: 100%; */
+	text-align: right;
+	/* border: 1px solid black; */
+}
+
+.center {
+	float: center;
+	/* width: 100%; */
+	text-align: center;
+	/* border: 1px solid black; */
+}
+
+.holiday {
+	border: 1px solid red; 
+	color: crimson;
+	font-weight: bold;
+	width: 150px;
+}
+
+.conge {
+	background: yellow;
+}
+.free {
+	background: rgb(224, 222, 75);
+}
+
+.cal-cell-normal {
+		width: 150px;
+}
+
+ .event {
+      /* color: #fff !important; */
+/*       font-weight: bold;
+      text-decoration: none; */
+     width: 150px;
+  }
+  
+ .cal-cell {
+	width: 150px;
+} 
+
+.cal-cell-col {
+	border: 1px solid blue; 
+	width: 150px;
+}
+
+/* Ajouts pour le CSS */
+.calendar-container {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.btn-outline-primary {
+    border-width: 2px;
+}
+
+.btn-group .btn {
+    margin-right: -1px;
+}
+
+.table-sm td {
+    padding: 0.3rem;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+

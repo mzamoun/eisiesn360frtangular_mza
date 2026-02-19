@@ -1,0 +1,37 @@
+<table>
+    <tr>
+        <td style="width: 45%;" >
+            <highcharts-chart [Highcharts]="highcharts" [options]="chartOptions">
+            </highcharts-chart>
+        </td>
+        <td *ngIf="!load" style="width: 100%;">
+            <span></span>
+        </td>
+
+        <td style="width: 45%;" >
+            <!-- <div [ngClass]="getClassListConsultant()"> -->
+            <div>
+                <span>Consultant: </span>
+                <app-select style="font-size: 11px;" [selectId]="'fee-fep-perconsultant-slect-consultant'"
+                    #compoSelectConsultant [objectName]="'Consultant'" [myList]="listConsultant"
+                    [initObj]="consultantSelected" [objCaller]="this" onChangeCaller="onSelectConsultant"
+                    ObjectPropName="fullName">
+                </app-select>
+            </div>
+            <div *ngIf="!load">
+                <highcharts-chart [Highcharts]="highcharts" [options]="chartOptions">
+                </highcharts-chart>
+            </div>
+            <div *ngIf="load">
+                <div style="margin-top: 25%;">
+                    <app-spinner title="Choisir un consultant..."></app-spinner>
+                </div>
+            </div>
+        </td>
+
+        <!-- <td style="width: 7%;">
+            <span></span>
+        </td> -->
+
+    </tr>
+</table>

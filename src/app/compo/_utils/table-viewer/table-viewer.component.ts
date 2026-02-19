@@ -670,8 +670,8 @@ export class TableViewerComponent implements OnInit {
     input.click();
   }
 
-  runBatchCraMannualy() {
-    this.tableService.runBatchCraMannualy(
+  runBatchCraExportManually() {
+    this.tableService.runBatchCraExportManually(
       (res) => {
         alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
       },
@@ -680,6 +680,19 @@ export class TableViewerComponent implements OnInit {
       }
     );
   }
+
+  runBatchConsultantImportManually() {
+    this.tableService.runBatchConsultantImportManually(
+      (res) => {
+        alert("Batch Consultant Import executed successfully! res = " + JSON.stringify(res));
+        this.selectTable(this.selectedTable) // refresh data
+      },
+      (err) => {
+        alert("Failed to execute Batch Consultant Import: " + JSON.stringify(err));
+      }
+    );
+   }  
+
 
   ///////
 

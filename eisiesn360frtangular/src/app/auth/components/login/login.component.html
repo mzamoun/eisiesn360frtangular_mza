@@ -1,0 +1,86 @@
+<div class="mt-5">
+    <section>
+        <h4 *ngIf="error" class="text-center error">{{error}}</h4>
+        <h2 class="h1 py-5 font-weight-bold text-center">Login</h2>
+        <div class="d-flex justify-content-center">
+            <div class="card login-form text-white bg-info">
+                <div class="card-header">
+                    <h5 class="text-center" style="float: right;">Provide your credentials</h5>
+                </div>
+                <div class="card-body">
+                    <form ngForm #loginForm style="float: right;">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input id="username" class="form-control" type="text" placeholder="Username" name="username"
+                                [(ngModel)]="credentials.username" #username="ngModel" required>
+                            <div [hidden]="username.valid || username.pristine" class="text-danger">
+                                Username is required
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <div class="d-flex align-items-center">
+                                <input id="password" class="form-control" [type]="showPassword ? 'text' : 'password'" 
+                                    placeholder="Password" name="password" required 
+                                    [(ngModel)]="credentials.password" #password="ngModel">
+                                <div class="form-check ml-2">
+                                    <input type="checkbox" class="form-check-input" id="showPassword" 
+                                        [(ngModel)]="showPassword" name="showPassword">
+                                    <label class="form-check-label" for="showPassword">
+                                        Show
+                                    </label>
+                                </div>
+                            </div>
+                            <div [hidden]="password.valid || password.pristine" class="text-danger">
+                                Password is required
+                            </div>
+                        </div>
+                        <div class="text-center mt-3 d-flex justify-content-center">
+                            <button class="btn btn-warning mx-2" id="btn-login" (click)="login()"
+                                [disabled]="!username || !password">
+                                <span class="ml-1">Log in</span>
+                            </button>
+
+                            <button type="button" class="btn btn-info mx-2" id="btn-forgot-password" (click)="toggleForgotPasswordForm()">
+                                <span class="ml-1">Mot de passe oublié ?</span>
+                            </button>
+
+                            <button type="button" class="btn btn-light mx-2" id="btn-signup" (click)="goToSignup()">
+                                <span class="ml-1">Inscription</span>
+                            </button>
+                        </div>
+
+                        <!-- Formulaire Mot de passe oublié -->
+                        <div *ngIf="showForgotPasswordForm" class="mt-4 p-3 border border-warning rounded">
+                            <h5 class="text-center mb-3">Réinitialiser votre mot de passe</h5>
+                            
+                            <div class="form-group">
+                                <label for="resetEmail">Email:</label>
+                                <input id="resetEmail" class="form-control" type="email" 
+                                    placeholder="Entrez votre email" name="resetEmail"
+                                    [(ngModel)]="forgotPasswordEmail" #resetEmail="ngModel" required>
+                                <div [hidden]="resetEmail.valid || resetEmail.pristine" class="text-danger">
+                                    Email valide requis
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" class="btn btn-success mx-2" id="btn-send-reset-email" 
+                                    (click)="resetPassword()" 
+                                    [disabled]="!resetEmail || !resetEmail.valid || isLoadingResetEmail">
+                                    <span *ngIf="!isLoadingResetEmail" class="ml-1">Envoyer le lien</span>
+                                    <span *ngIf="isLoadingResetEmail" class="ml-1">Envoi en cours...</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary mx-2" id="btn-cancel-reset" 
+                                    (click)="toggleForgotPasswordForm()" [disabled]="isLoadingResetEmail">
+                                    <span class="ml-1">Annuler</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

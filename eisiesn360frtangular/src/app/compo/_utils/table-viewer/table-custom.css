@@ -1,0 +1,29 @@
+.custom-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .cell-content {
+    cursor: pointer;
+  }
+  
+  .custom-table thead {
+    background-color: #f9f9f9;
+  }
+
+  .tblSelected {
+    background-color: yellow;
+  }
+  

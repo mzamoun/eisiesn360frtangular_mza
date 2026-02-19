@@ -193,18 +193,50 @@ export class TableService {
     );
   }
 
-  runBatchCraMannualy(fOk: Function, fKo: Function) {
-    console.log("runBatchCraMannualy : start")
+  runBatchCraExportManually(fOk: Function, fKo: Function) {
+    console.log("runBatchCraManually : start")
     this.http.post(this.myUrlBatch + "run", {}).subscribe(
       res => {
-        console.log("runBatchCraMannualy : res : ", res)
+        console.log("runBatchCraManually : res : ", res)
         if (fOk) fOk(res)
       },
       err => {
-        console.log("runBatchCraMannualy : err : ", err)
+        console.log("runBatchCraManually : err : ", err)
         if (fKo) fKo(err)
       }
     );
+  }
+
+  // a modifier selon ce qu'attend le server : 
+  /*
+    @PostMapping(value = "/run", consumes = "multipart/form-data")
+    public GenericResponse runConsultantImportJob(@RequestParam("file") MultipartFile file) throws Exception {
+        consultantImportJobRunner.runImport(file);
+        return ResponseBuilder.buildSuccessResponse(new BooleanResponse(true), Provider.COMPANY);
+    }
+  */
+
+  runBatchConsultantImportManually(fOk: Function, fKo: Function) {
+    console.log("runBatchConsultantImportManually : start")
+    const formData = new FormData();
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.csv'; // Accepter uniquement les fichiers CSV  
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      formData.append('file', file);
+      this.http.post(this.myUrlBatch + "consultants/run", formData).subscribe(
+        res => {
+          console.log("runBatchConsultantImportManually : res : ", res)
+          if (fOk) fOk(res)
+        },
+        err => {
+          console.log("runBatchConsultantImportManually : err : ", err)
+          if (fKo) fKo(err)
+        }
+      );
+    };
+    fileInput.click();
   }
 
   //////////////////
