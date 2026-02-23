@@ -193,11 +193,38 @@ export class TableService {
     );
   }
 
+  /**
+   * 
+changer cette methode afin d'afficher le fichier pdf du resultat de l'objet retourné : 
+         * CraExportResult : proprietes : 
+         * - batchStatus : le statut du batch (COMPLETED, FAILED, etc.)
+         * - readCount : le nombre d'items lus par le reader
+         * - writeCount : le nombre d'items écrits par le writer
+         * - filterCount : le nombre d'items filtrés par le processor
+         * - skipCount : le nombre d'items sautés par le batch
+         * - errors : la liste des erreurs rencontrées pendant l'exécution du job, avec
+         *  - lineNumber : le numéro de la ligne du CSV qui a causé l'erreur
+         * - errorMessage : le message d'erreur associé à cette ligne
+         * - pdfContent : le contenu du fichier PDF généré par le job de génération des CRA, sous forme de tableau de bytes
+         * Le résultat de l'exécution du job de génération des CRA est retourné dans la réponse de cet endpoint,
+         * ce qui permet au client de connaître le statut du batch, les compteurs de lecture, écriture, filtrage et saut,
+         * ainsi que les erreurs rencontrées, et d'obtenir le fichier PDF généré par le job de génération des CRA.
+   */
   runBatchCraExportManually(fOk: Function, fKo: Function) {
     console.log("runBatchCraManually : start")
-    this.http.post(this.myUrlBatch + "run", {}).subscribe(
-      res => {
+    this.http.post<any>(this.myUrlBatch + "cra/runExportJob", {}).subscribe(
+      (res: any) => {
         console.log("runBatchCraManually : res : ", res)
+        if (res && res.body && res.body.result && res.body.result.pdfContent) {
+          console.log("runBatchCraManually OK : pdfContent : ", res.body.result.pdfContent)
+          const blob = new Blob([new Uint8Array(res.body.result.pdfContent)], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'cra_export.pdf';
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
         if (fOk) fOk(res)
       },
       err => {
@@ -206,15 +233,6 @@ export class TableService {
       }
     );
   }
-
-  // a modifier selon ce qu'attend le server : 
-  /*
-    @PostMapping(value = "/run", consumes = "multipart/form-data")
-    public GenericResponse runConsultantImportJob(@RequestParam("file") MultipartFile file) throws Exception {
-        consultantImportJobRunner.runImport(file);
-        return ResponseBuilder.buildSuccessResponse(new BooleanResponse(true), Provider.COMPANY);
-    }
-  */
 
   runBatchConsultantImportManually(fOk: Function, fKo: Function) {
     console.log("runBatchConsultantImportManually : start")
@@ -225,7 +243,7 @@ export class TableService {
     fileInput.onchange = () => {
       const file = fileInput.files[0];
       formData.append('file', file);
-      this.http.post(this.myUrlBatch + "consultants/run", formData).subscribe(
+      this.http.post(this.myUrlBatch + "consultant/runImportJob", formData).subscribe(
         res => {
           console.log("runBatchConsultantImportManually : res : ", res)
           if (fOk) fOk(res)

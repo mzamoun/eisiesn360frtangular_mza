@@ -673,7 +673,8 @@ export class TableViewerComponent implements OnInit {
   runBatchCraExportManually() {
     this.tableService.runBatchCraExportManually(
       (res) => {
-        alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
+       // alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
+        console.log("Batch Cra executed successfully! res = ", res);
       },
       (err) => {
         alert("Failed to execute Batch Cra: " + JSON.stringify(err));
@@ -685,6 +686,7 @@ export class TableViewerComponent implements OnInit {
     this.tableService.runBatchConsultantImportManually(
       (res) => {
         alert("Batch Consultant Import executed successfully! res = " + JSON.stringify(res));
+        console.log("Batch Consultant Import executed successfully! res = ", res);
         this.selectTable(this.selectedTable) // refresh data
       },
       (err) => {
