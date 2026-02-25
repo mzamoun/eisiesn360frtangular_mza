@@ -212,18 +212,17 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
    */
   runBatchCraExportManually(fOk: Function, fKo: Function) {
     console.log("runBatchCraManually : start")
-    this.http.post<any>(this.myUrlBatch + "cra/runExportJob", {}).subscribe(
+    let url = this.myUrlBatch + "cra/runExportJobPdf"
+    this.http.post(url, null, { responseType: 'blob', observe: 'response' }).subscribe(
       (res: any) => {
         console.log("runBatchCraManually : res : ", res)
-        if (res && res.body && res.body.result && res.body.result.pdfContent) {
-          console.log("runBatchCraManually OK : pdfContent : ", res.body.result.pdfContent)
-          const blob = new Blob([new Uint8Array(res.body.result.pdfContent)], { type: 'application/pdf' });
-          const url = window.URL.createObjectURL(blob);
+        if (res && res.body) {
+          const blob = new Blob([res.body!], { type: 'application/pdf' });
           const a = document.createElement('a');
-          a.href = url;
-          a.download = 'cra_export.pdf';
+          a.href = URL.createObjectURL(blob);
+          a.download = 'cra.pdf';
           a.click();
-          window.URL.revokeObjectURL(url);
+          URL.revokeObjectURL(a.href);
         }
         if (fOk) fOk(res)
       },
@@ -232,6 +231,27 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
         if (fKo) fKo(err)
       }
     );
+
+    // this.http.post<any>(url, {}).subscribe(
+    //   (res: any) => {
+    //     console.log("runBatchCraManually : res : ", res)
+    //     if (res && res.body && res.body.result && res.body.result.content) {
+    //       console.log("runBatchCraManually OK : content : ", res.body.result.content)
+    //       const blob = new Blob([new Uint8Array(res.body.result.content)], { type: 'application/pdf' });
+    //       const url = window.URL.createObjectURL(blob);
+    //       const a = document.createElement('a');
+    //       a.href = url;
+    //       a.download = 'cra_export.pdf';
+    //       a.click();
+    //       window.URL.revokeObjectURL(url);
+    //     }
+    //     if (fOk) fOk(res)
+    //   },
+    //   err => {
+    //     console.log("runBatchCraManually : err : ", err)
+    //     if (fKo) fKo(err)
+    //   }
+    // );
   }
 
   runBatchConsultantImportManually(fOk: Function, fKo: Function) {
