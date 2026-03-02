@@ -6,9 +6,9 @@ import { Address } from 'src/app/model/address';
 import { MyError } from 'src/app/resource/MyError';
 import { EsnService } from 'src/app/service/esn.service';
 import { MsgService } from 'src/app/service/msg.service';
+import { PasswordValidatorService } from 'src/app/service/password-validator.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
-import { PasswordValidatorService } from 'src/app/service/password-validator.service';
 import { Constants } from "../../../model/constants/constants";
 import { Consultant } from '../../../model/consultant';
 import { Esn } from '../../../model/esn';
@@ -127,8 +127,8 @@ export class ConsultantFormComponent extends MereComponent {
     if (this.isAdd == 'true') {
       this.myObj = new Consultant();
       //par defaut active
-      this.myObj.active = false 
-      if(this.userConnected) {
+      this.myObj.active = false
+      if (this.userConnected) {
         this.myObj.active = true;
       }
 
@@ -246,12 +246,12 @@ export class ConsultantFormComponent extends MereComponent {
 
     if (esn) {
       this.myObj.esn = esn;
-      this.myObj.username = this.myObj.email
+      this.emailChange()
       this.selectEsn(esn)
     } else {
       if (this.dataSharingService.IsAddEsnAndResp) {
         this.myObj.esn = this.dataSharingService.esnSaved;
-        this.myObj.username = this.myObj.email
+        this.emailChange()
       }
     }
 
@@ -261,6 +261,7 @@ export class ConsultantFormComponent extends MereComponent {
     if (this.dataSharingService.esnSaved) {
       this.myObj.esn = this.dataSharingService.esnSaved;
       this.esnSavedName = this.dataSharingService.esnSaved.name
+      this.emailChange()
     }
   }
 
@@ -324,8 +325,8 @@ export class ConsultantFormComponent extends MereComponent {
       return
     }
 
-    this.myObj.username = this.myObj.email
-    
+    this.emailChange()
+
     // Sauvegarder le password saisie (en plain text) pour l'email
     // Le serveur va le hasher et le sauvegarder en BDD
     this.dataSharingService.passRespEsnSaved = this.myObj.password;
@@ -526,13 +527,22 @@ export class ConsultantFormComponent extends MereComponent {
       if (!this.utils.isEmpty(this.myObj.firstName) && !this.utils.isEmpty(this.myObj.lastName) && !this.utils.isEmpty(this.myObj.esn?.name)) {
         this.myObj.email = (this.myObj.firstName + "." + this.myObj.lastName + "@" + domaine).toLowerCase();
         this.myObj.email = this.myObj.email.toLowerCase().replace(/\s+/g, '-');
-        this.myObj.username = this.myObj.email
       }
     }
+
+    this.emailChange()
+    
   }
 
   emailChange() {
-    this.myObj.username = this.myObj.email
+    console.log("emailChange this.myObj.email ", this.myObj.email)
+    if (this.utils.isEmpty(this.myObj.username)) {
+      this.myObj.username = this.myObj.email
+    }
+
+    // if (!this.myObj.username || this.myObj.username == "") {
+    //   this.myObj.username = this.myObj.email
+    // }
   }
 
   showLoadingDialog(message: string): void {
