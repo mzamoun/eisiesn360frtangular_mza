@@ -1,49 +1,55 @@
-<!-- Bouton en haut -->
-<h3 style="margin: 20px; margin-top: 40px;">
-    Interface sql DOIT ETRE accessible que par ADMIN
-    <br>
-    API_URL : {{apiUrl}}
-</h3>
 
 <div style="width: 100%; margin: 10px;">
     {{infos}}
 </div>
 
-<div style="display: flex; margin: 20px;">
-    <button class="btn btn-primary" (click)="getTables()">Get All Table Names</button>
-    <button class="btn btn-primary" (click)="exportAllTablesToJson()">Export All Tables To Json</button>
-    <button class="btn btn-primary" (click)="importFromJsonToTableSelected()">Import From Json To Selected Table</button>
-    <button class="btn btn-primary" (click)="runBatchCraExportManually()">Run Batch Cra Export Manually</button>
-    <button class="btn btn-primary" (click)="runBatchConsultantImportManually()">Run Batch Consultant Import Manually</button>
-</div>
+<!-- faire un btn ici aligné à dte : click : hide/show (tblv_entete); --> 
+ <button class="btn btn-secondary right" (click)="toggleTblvEntete()"> X </button>
+<div id="tblv_entete" class="cadre" style="width: 100%;" (mousedown)="startResizing($event)">
+    <!-- Bouton en haut -->
+    <h3 style="margin: 20px; margin-top: 40px;">
+        Interface sql DOIT ETRE accessible que par ADMIN
+        <br>
+        API_URL : {{apiUrl}}
+    </h3>
 
-<!-- Section table sélectionnée -->
-<h3 *ngIf="selectedTable" style="width: 100%; margin-left: 20px;">
-    Table: {{ selectedTable }}
-
-    <div style="margin-top: 10px;">
-
-        <button class="btn btn-primary" (click)="addTableLike()">Add Table Like</button>
-        <button class="btn btn-success" (click)="startEditSelectedRow()">Update Selected Row</button>
-        <button class="btn btn-info" (click)="insertLikeSelectedRow()">Insert Like Selected</button>
-        <button class="btn btn-primary" (click)="insertRow()">Insert Empty Row</button>
-
-        <button class="btn btn-danger" (click)="confirmDeleteTable()">Delete Table</button>
-        <button class="btn btn-danger" (click)="deleteSelectedRow()">Delete Selected Row</button>
-
-        <div *ngIf="isEditing || isInserting" style="margin-top: 10px;">
-            <button class="btn btn-primary" (click)="saveRow()">Save</button>
-            <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
-        </div>
-
+    <div style="display: flex; margin: 20px;">
+        <button class="btn btn-primary" (click)="getTables()">Get All Table Names</button>
+        <button class="btn btn-primary" (click)="exportAllTablesToJson()">Export All Tables To Json</button>
+        <button class="btn btn-primary" (click)="importFromJsonToTableSelected()">Import From Json To Selected Table</button>
+        <button class="btn btn-primary" (click)="runBatchCraExportManually()">Run Batch Cra Export Manually</button>
+        <button class="btn btn-primary" (click)="runBatchConsultantImportManually()">Run Batch Consultant Import Manually</button>
     </div>
-</h3>
+
+    <!-- Section table sélectionnée -->
+    <h3 *ngIf="selectedTable" style="width: 100%; margin-left: 20px;" >
+        Table: {{ selectedTable }}
+    
+        <div style="margin-top: 10px;">
+    
+            <button class="btn btn-primary" (click)="addTableLike()">Add Table Like</button>
+            <button class="btn btn-success" (click)="startEditSelectedRow()">Update Selected Row</button>
+            <button class="btn btn-info" (click)="insertLikeSelectedRow()">Insert Like Selected</button>
+            <button class="btn btn-primary" (click)="insertRow()">Insert Empty Row</button>
+    
+            <button class="btn btn-danger" (click)="confirmDeleteTable()">Delete Table</button>
+            <button class="btn btn-danger" (click)="deleteSelectedRow()">Delete Selected Row</button>
+    
+            <div *ngIf="isEditing || isInserting" style="margin-top: 10px;">
+                <button class="btn btn-primary" (click)="saveRow()">Save</button>
+                <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+            </div>
+    
+        </div>
+    </h3>
+
+</div>
 
 <!-- Layout principal -->
 <div class="side-container" *ngIf="tables && tables.length">
 
     <!-- Liste tables -->
-    <div #leftPanel class="side-left cadre">
+    <div id="tblv_liste_tbl" #leftPanel class="side-left cadre">
         <ol>
             <li *ngFor="let table of tables" (click)="selectTable(table)" [style.cursor]="'pointer'"
                 [ngClass]="getClassOfTable(table)">
@@ -55,7 +61,7 @@
     <div class="resizer cadre" (mousedown)="startResizing($event)"></div>
 
     <!-- Onglets Data / Relations -->
-    <div class="side-right cadre">
+    <div id="tblv_tab_content" class="side-right cadre">
 
         <div class="tabs-header">
             <button class="btn" [ngClass]="{ 'btn-primary': activeTab === 'data', 'btn-light': activeTab !== 'data' }"
@@ -82,7 +88,7 @@
             </button>
         </div>
 
-        <div class="tab-content">
+        <div id="tblv_content_of_tab" class="tab-content">
 
             <!-- Onglet DATA -->
             <div *ngIf="activeTab === 'data'">

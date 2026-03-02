@@ -12,7 +12,7 @@ export class Activity {
   description: string;
   dateDeb: Date;
   dateFin: Date;
-  createdByUsername: string;
+  createdByUserId: number;
   tjm: number;
   valid: boolean;
   overTime: boolean;

@@ -104,7 +104,7 @@ export class ActivityFormComponent extends MereComponent {
       this.title = this.utils.tr("NewActivity");
       this.myObj = new Activity();
       this.myObj.valid = true
-      this.myObj.createdByUsername = this.userConnected.username;
+      this.myObj.createdByUserId = this.userConnected.id;
       if (!this.isForMyConsultants()) {
         this.consultantSelected = this.userConnected;
       }

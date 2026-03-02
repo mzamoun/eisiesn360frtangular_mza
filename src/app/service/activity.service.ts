@@ -73,7 +73,7 @@ export class ActivityService {
 
   public getFilteredActivity(consultantUsername: string): Observable<GenericResponse> {
     const currentUser: Consultant = this.dataSharingService.userConnected
-    return this.http.get<GenericResponse>(this.activityUrl + 'list/filtered?createdByUsername=' + currentUser.username + '&consultant.username=' + consultantUsername);
+    return this.http.get<GenericResponse>(this.activityUrl + 'list/filtered?createdByUserId=' + currentUser.id + '&consultant.username=' + consultantUsername);
   }
 
   public getListActivityOfUser(consultant: Consultant): Observable<GenericResponse> {

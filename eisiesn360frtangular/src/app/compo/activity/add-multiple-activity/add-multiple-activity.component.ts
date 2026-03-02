@@ -198,7 +198,7 @@ export class AddMultipleActivityComponent extends MereComponent {
   update() {
     let currentUser: Consultant = this.dataSharingService.userConnected;
     this.activities.forEach(activity => {
-      activity.createdByUsername = currentUser.username;
+      activity.createdByUserId = currentUser.id;
     });
     this.beforeCallServer("update")
     this.activityService.addMultipleActivity(this.activities).subscribe((data) => {

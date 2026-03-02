@@ -695,6 +695,28 @@ export class TableViewerComponent implements OnInit {
     );
    }  
 
+   toggleTblvEntete() {
+    const tblvEntete = document.getElementById('tblv_entete');
+    if (tblvEntete) {
+      tblvEntete.style.display = tblvEntete.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // resize tblv_liste_tbl and tblv_content_of_tab to take all the height
+    const tblvListeTbl = document.getElementById('tblv_liste_tbl');
+    const tblvContentOfTab = document.getElementById('tblv_content_of_tab');
+    if (tblvListeTbl && tblvContentOfTab) {
+      // const newHeight = tblvEntete.style.display === 'none' ? '100%' : 'calc(100% - ' + tblvEntete.offsetHeight + 'px)';
+      // const newHeight = "100%"
+      // tblvListeTbl.style.height = newHeight;
+      // tblvContentOfTab.style.height = newHeight;
+      // changer le max-height de tblvListeTbl et tblvContentOfTab à 100% de l'ecran visible dans ts les cas et pas seulement quand on affiche tblvEntete
+      // il faut s'adapter à l'ecran visible et pas à l'ecran total pour éviter d'avoir des scrolls dans la page
+      // c'est quoi vh ? c'est le pourcentage de la hauteur de l'ecran visible. 100vh = 100% de la hauteur de l'ecran visible
+        tblvListeTbl.style.maxHeight = "100vh";
+        tblvContentOfTab.style.maxHeight = "100vh";
+
+    }
+  }
 
   ///////
 
