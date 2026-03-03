@@ -223,11 +223,15 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
           a.download = 'cra.pdf';
           a.click();
           URL.revokeObjectURL(a.href);
+        }else {
+          console.log("runBatchCraManually : no body in response")
+          alert("No PDF generated, response body is empty")
         }
         if (fOk) fOk(res)
       },
       err => {
         console.log("runBatchCraManually : err : ", err)
+        alert("Error during batch execution : " + (err.message || err.statusText || "Unknown error"))
         if (fKo) fKo(err)
       }
     );
