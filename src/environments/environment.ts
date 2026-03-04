@@ -14,7 +14,8 @@
 // https://esn360.azurewebsites.net/esn360/
 
 const urlLocal = 'http://localhost:8080/esn360/'
-const urlAzure = 'https://esn360.azurewebsites.net/esn360/'
+// const urlAzure = 'https://esn360.azurewebsites.net/esn360/'
+const urlAzure = 'https://esn360-backend-dev.whiteforest-96ad5fb7.francecentral.azurecontainerapps.io/esn360/'
 // const myUrl = urlAzure
 const myUrl = urlLocal
 
