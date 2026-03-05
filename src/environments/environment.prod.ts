@@ -1,5 +1,7 @@
 
-const url = "https://esn360.azurewebsites.net"
+// const url = "https://esn360.azurewebsites.net"
+const url_dev = 'https://esn360-backend-dev.whiteforest-96ad5fb7.francecentral.azurecontainerapps.io'
+const url = url_dev;
 // const url = "http://127.0.0.1:8080"
 const app = '/esn360/'
 
