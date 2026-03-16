@@ -24,7 +24,7 @@ export class UtilsService {
   static readonly TOKEN_STORAGE_USER_CONNECTED = 'user_connected';
   /****** PATTERNS INPUT ***********/
   static readonly EMAIL_PATTERN = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$";
-  static readonly TEL_PATTERN = "^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"; //   ^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$  // ^0[1-9][0-9]{8}$
+  static readonly TEL_PATTERN = "^[\+]?[(]?[0-9]{1,4}[)]?(?:[\s\.-]?[0-9]{2,4}){2,4}$"; // Accepts spaces between groups, e.g. 06 12 34 56 78
   /******               ************/
   static readonly DEFAULT_LOCALE = navigator.language.substr(0, 2);
   static readonly myDatePickerOptions: IMyDpOptions = { dateFormat: 'yyyy-mm-dd' };
