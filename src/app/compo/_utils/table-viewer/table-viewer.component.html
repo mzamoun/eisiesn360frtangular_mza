@@ -102,7 +102,13 @@
                         <tr *ngFor="let row of lines; let i = index" (click)="selectRow(row, i)"
                             [ngClass]="{ 'row-selected': selectedRowIndex === i }">
                             <td *ngFor="let key of getKeys(row)" class="cell-content">
-                                <span (dblclick)="onCellTableDblClick($event)">{{ row[key] }}</span>
+                                <span
+                                    [title]="row[key]"
+                                    (dblclick)="onCellTableDblClick($event)"
+                                    (mouseenter)="onCellHover($event, row[key])"
+                                    (mousemove)="onCellMove($event)"
+                                    (mouseleave)="onCellLeave()"
+                                >{{ row[key] }}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -180,6 +186,17 @@
 
     </div>
 
+</div>
+
+<div
+    *ngIf="tooltipVisible"
+    class="cell-tooltip"
+    [style.left.px]="tooltipX"
+    [style.top.px]="tooltipY"
+    (mouseenter)="onTooltipEnter()"
+    (mouseleave)="onTooltipLeave()"
+>
+    {{ tooltipText }}
 </div>
 
 <!-- Section métadonnées colonnes -->

@@ -16,6 +16,12 @@ export class TableViewerComponent implements OnInit {
   sqlResult: any[] = [];
   colDetails = '';
   colDetails2 = '';
+  tooltipVisible = false;
+  tooltipText = '';
+  tooltipX = 0;
+  tooltipY = 0;
+  isTooltipHovered = false;
+  hideTooltipTimer: number | null = null;
 
   selectedRow: any = null;          // la ligne sélectionnée
   selectedRowIndex: number = null;
@@ -606,6 +612,55 @@ export class TableViewerComponent implements OnInit {
     });
   }
 
+  onCellHover(event: MouseEvent, value: any) {
+    this.clearHideTooltipTimer();
+
+    const text = value == null ? '' : String(value);
+    if (!text.trim()) {
+      this.tooltipVisible = false;
+      return;
+    }
+
+    this.tooltipText = text;
+    this.tooltipVisible = true;
+    this.onCellMove(event);
+  }
+
+  onCellMove(event: MouseEvent) {
+    this.tooltipX = event.clientX - 5;
+    this.tooltipY = event.clientY - 5;
+  }
+
+  onCellLeave() {
+    this.scheduleHideTooltip();
+  }
+
+  onTooltipEnter() {
+    this.isTooltipHovered = true;
+    this.clearHideTooltipTimer();
+  }
+
+  onTooltipLeave() {
+    this.isTooltipHovered = false;
+    this.tooltipVisible = false;
+  }
+
+  private scheduleHideTooltip() {
+    this.clearHideTooltipTimer();
+    this.hideTooltipTimer = window.setTimeout(() => {
+      if (!this.isTooltipHovered) {
+        this.tooltipVisible = false;
+      }
+    }, 1000);
+  }
+
+  private clearHideTooltipTimer() {
+    if (this.hideTooltipTimer != null) {
+      window.clearTimeout(this.hideTooltipTimer);
+      this.hideTooltipTimer = null;
+    }
+  }
+
   exportAllTablesToJson() {
     this.tableService.exportAllTablesToJson(
       (res) => {
@@ -673,7 +728,7 @@ export class TableViewerComponent implements OnInit {
   runBatchCraExportManually() {
     this.tableService.runBatchCraExportManually(
       (res) => {
-       // alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
+        // alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
         console.log("Batch Cra executed successfully! res = ", res);
       },
       (err) => {
@@ -693,9 +748,9 @@ export class TableViewerComponent implements OnInit {
         alert("Failed to execute Batch Consultant Import: " + JSON.stringify(err));
       }
     );
-   }  
+  }
 
-   toggleTblvEntete() {
+  toggleTblvEntete() {
     const tblvEntete = document.getElementById('tblv_entete');
     if (tblvEntete) {
       tblvEntete.style.display = tblvEntete.style.display === 'none' ? 'block' : 'none';
@@ -712,8 +767,8 @@ export class TableViewerComponent implements OnInit {
       // changer le max-height de tblvListeTbl et tblvContentOfTab à 100% de l'ecran visible dans ts les cas et pas seulement quand on affiche tblvEntete
       // il faut s'adapter à l'ecran visible et pas à l'ecran total pour éviter d'avoir des scrolls dans la page
       // c'est quoi vh ? c'est le pourcentage de la hauteur de l'ecran visible. 100vh = 100% de la hauteur de l'ecran visible
-        tblvListeTbl.style.maxHeight = "100vh";
-        tblvContentOfTab.style.maxHeight = "100vh";
+      tblvListeTbl.style.maxHeight = "100vh";
+      tblvContentOfTab.style.maxHeight = "100vh";
 
     }
   }

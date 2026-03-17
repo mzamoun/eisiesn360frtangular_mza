@@ -1,4 +1,9 @@
 
+- bug : jours de vacances perso 
+
+- bug : notifications des cra : mauvaise direction 
+
+----------------------------------------------------------------
 
 refaire scenario d'une nouvelle esn de A-Z : 
 	- l'esn fait une demande d'inscription via formulaire 

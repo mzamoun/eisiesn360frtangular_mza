@@ -30,6 +30,12 @@ proj_dev=$(echo $proj_prod | sed 's/_prod//')
 LOG="$proj_prod.log"
 DIR_ENV=src/environments
 
+branch_name=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$branch_name" != "prod" ]]; then
+    echo "You are on branch $branch_name. Please switch to prod branch to deploy."
+    exit 1
+fi
+
 # modifier les fichiers environnement.ts et environnement.prod.ts
 # pour les adapter à la production
 

@@ -220,20 +220,20 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
           return new Date(this.datePipe.transform(craDay.day, 'yyyy-MM-dd')).getTime() <= value.endDate.getTime() &&
             new Date(this.datePipe.transform(craDay.day, 'yyyy-MM-dd')).getTime() >= value.startDate.getTime()
         })
-        .forEach(craDy => {
-          if (craDy.type == "DAY_WORKED") {
+        .forEach(craDay => {
+          if (craDay.type == "DAY_WORKED") {
             let tmp: CraDayActivity = new CraDayActivity();
             tmp.activity = value.activity;
             tmp.nbDay = value.time;
             let nbDay: number = 0;
-            craDy.craDayActivities.forEach(item => {
+            craDay.craDayActivities.forEach(item => {
               nbDay = nbDay + item.nbDay;
             })
             if (nbDay + value.time <= 1) {
-              craDy.craDayActivities.push(tmp);
+              craDay.craDayActivities.push(tmp);
             } else {
-              craDy.craDayActivities = [];
-              craDy.craDayActivities.push(tmp);
+              craDay.craDayActivities = [];
+              craDay.craDayActivities.push(tmp);
             }
           }
         })

@@ -127,7 +127,7 @@ export class CraService {
   }
 
   public generateCliPDF(idCra: number): Observable<GenericResponse> {
-    return this.generateCliPDFClientName(idCra , "/-")
+    return this.generateCliPDFClientName(idCra, "/-")
   }
 
   public generateCliPDFClientName(idCra: number, clientName: string): Observable<GenericResponse> {
@@ -142,11 +142,11 @@ export class CraService {
   public canAddActivity(craDay: CraDay, craDayActivity: CraDayActivity): boolean {
     let t = craDayActivity.nbDay;
 
-    if(craDay) {
+    if (craDay) {
       if (!craDay.craDayActivities) {
         craDay.craDayActivities = []
       }
-  
+
       craDay.craDayActivities.forEach(
         (cda, index) => {
           t += cda.nbDay
@@ -165,7 +165,7 @@ export class CraService {
    * @param date
    */
   public getCraDayByDate(cra: Cra, date: Date): CraDay {
-    console.log("getCraDayByDate : cra, date : ", cra, date )
+    console.log("getCraDayByDate : cra, date : ", cra, date)
     let craDay: CraDay;
 
     if (cra != null && cra.craDays != null) {
@@ -262,13 +262,14 @@ export class CraService {
               activity.type = data.body.result;
               type = activity.type;
 
-              if (this.isCraDayOpen(craDay) && !type.congeDay) craDay.isDayWorked = true;
-              if (this.isCraDayOpen(craDay) && type.billDay) craDay.dayBill = true;
+              this.majCraDayByType(craDay, type);
             },
             error => {
               console.log("ERROR activityTypeService.findById, activity.typeId, err", activity.typeId, error)
             }
           );
+        } else {
+          this.majCraDayByType(craDay, type);
         }
 
       }
@@ -279,6 +280,11 @@ export class CraService {
         craDay.dayAbs = true;
       }
     }
+  }
+
+  private majCraDayByType(craDay: CraDay, type: ActivityType) {
+    if (this.isCraDayOpen(craDay) && !type.congeDay) craDay.isDayWorked = true;
+    if (this.isCraDayOpen(craDay) && type.billDay) craDay.dayBill = true;
   }
 
   ///////////////
@@ -360,25 +366,25 @@ export class CraService {
 
   ////////////////////
 
-  majNotification(myObj: Notification, fct : Function = null, isForce : Boolean = false  ) {
+  majNotification(myObj: Notification, fct: Function = null, isForce: Boolean = false) {
     ////////////////
     let id = myObj.craId
     let label = "find cra by id=" + id;
     let obj = myObj.cra
 
-    if (myObj && id && ( !obj || isForce)) {
+    if (myObj && id && (!obj || isForce)) {
       this.findById(id).subscribe(
         data => {
           console.log(label, data)
           myObj.cra = data.body.result;
-          if(fct) fct()
+          if (fct) fct()
         },
         error => {
           console.log("ERROR label myObj, err", label, myObj, error)
         }
       );
-    }else {
-      if(fct) fct()
+    } else {
+      if (fct) fct()
     }
     /////////////////
   }

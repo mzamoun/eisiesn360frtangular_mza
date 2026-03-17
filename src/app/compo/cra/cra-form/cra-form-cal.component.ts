@@ -549,6 +549,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     cd.dayAbs = craDay.dayAbs;
     cd.dayBill = craDay.dayBill
     cd.isDayWorked = craDay.isDayWorked
+    cd.type = craDay.type
+    cd.createdAt = new Date()
 
     if (craDay.craDayActivities != null) {
       for (let i = 0; i < craDay.craDayActivities.length; i++) {
@@ -875,20 +877,26 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    * @param day
    */
   dayClicked(day: any, events: any, event: any): void {
+    console.log("dayClicked day=", day)
     console.log("dayClicked this.currentCra=", this.currentCra)
 
     // this.isDayBilled(day)
 
     this.daySelected = day;
     this.daySelectedStr = this.utils.formatDate(day)
+    console.log("dayClicked daySelectedStr=", this.daySelectedStr)
     this.dateOfDaySelected = this.daySelected.date;
+    console.log("dayClicked dateOfDaySelected=", this.dateOfDaySelected)
 
     this.viewDate = this.utils.getDate(this.viewDate)
+    console.log("dayClicked viewDate=", this.viewDate)
 
     this.isDaySelectedInCurentMonth = this.isDayInViewMonth(this.dateOfDaySelected);
+    console.log("dayClicked isDaySelectedInCurentMonth=", this.isDaySelectedInCurentMonth);
 
     if (!this.currentCra.validByConsultant) {
       this.craDay = this.craService.getCraDayByDate(this.currentCra, this.daySelected);
+      console.log("dayClicked craDay=", this.craDay);
       if (this.craDay) {
         if (this.craDay.craDayActivities.length == 0) {
           this.craDayActivityNew();

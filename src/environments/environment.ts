@@ -13,7 +13,7 @@
 
 // https://esn360.azurewebsites.net/esn360/
 
-const urlLocal = 'http://localhost:8080/esn360/'
+const urlLocal = 'http://localhost:80/esn360/'
 const url_dev = 'https://esn360-backend-dev.whiteforest-96ad5fb7.francecentral.azurecontainerapps.io/esn360/'
 const url_main = url_dev 
 const url_prod = 'https://esn360-backend-prod.whiteforest-96ad5fb7.francecentral.azurecontainerapps.io/esn360/'
