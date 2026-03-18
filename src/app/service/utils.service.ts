@@ -182,6 +182,21 @@ export class UtilsService {
     return this.setTime0ToDate(lastMonthFirstDay);
   }
 
+  getDateFirstDay(date: any) {
+    const d: Date = this.getDate(date);
+    if (!d) return null;
+
+    const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+    return this.setTime0ToDate(firstDay);
+  }
+
+  addDays(date: Date, days: number): Date {
+
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
   formatDateToDateHeure(date: Date): string {
     if (!date) return "";
 
