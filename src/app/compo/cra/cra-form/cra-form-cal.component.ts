@@ -551,7 +551,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     cd.dayAbs = craDay.dayAbs;
     cd.dayBill = craDay.dayBill
     cd.isDayWorked = craDay.isDayWorked
-    cd.type = craDay.type
+    // cd.type = craDay.type
     cd.createdAt = new Date()
 
     if (craDay.craDayActivities != null) {
