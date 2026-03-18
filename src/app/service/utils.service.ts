@@ -457,15 +457,17 @@ export class UtilsService {
     return "";
   }
 
+  // est ce que cette methode calcule le nombre de jours entre 2 dates ou pas ? sinon, corriger la pour qu'elle le fasse
+  // go
   public getNbJourBetweenDates(date1: Date, date2: Date): number {
 
     date1 = this.getDate(date1);
     date2 = this.getDate(date2);
 
-    let diffMs = date2.getTime() - date1.getTime();
-    let diffJours = diffMs / (1000 * 3600 * 24);
+    let timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 pour inclure les deux dates
+    return diffDays;
 
-    return diffJours;
   }
 
   public getDatePlusNbJour(dateDeb: Date, i): Date {
