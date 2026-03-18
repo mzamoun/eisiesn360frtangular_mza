@@ -152,6 +152,8 @@ export class CraService {
           t += cda.nbDay
         }
       );
+    }else {
+      console.log("canAddActivity: can add KO : craDay is null, craDayActivity : ", craDay, craDayActivity)
     }
 
     return t <= 1;

@@ -1360,6 +1360,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       if (isLanceProcess) {
         this.process();
       }
+    }else {
+      console.log("++++ addActivity KO craDayActivity=", craDayActivity)
     }
 
   }
@@ -1391,7 +1393,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
 
       this.currentCra = this.craService.updateCraDay(this.currentCra, this.craDay);
-      console.log(this.currentCra)
+      console.log("addCurrentActivity: currentCra after updateCraDay:", this.currentCra)
+      this.process();
+      this.refreshMe();
     } else {
       ////console.log("date deb" , this.addMultiDateStartDate)
       ////console.log("date fin" , this.addMultiDateEndDate)
@@ -1429,8 +1433,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           this.craDayActivity = cda;
           this.addActivity(this.craDayActivity, this.craDay, false);
         } else {
-          console.log("addActivityInDates: can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
+          console.log("addActivityInDates: can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
         }
+      }else {
+        console.log("addActivityInDates: can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
       }
     }
     this.process();
@@ -1513,7 +1519,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
 
         for (let craDayActivity of craDayActivities) {
-          if ( craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
+          if (craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
             this.utilsIhm.info("isCraValid : Oops,verify your Conges plz. All days must be conge type.", null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
