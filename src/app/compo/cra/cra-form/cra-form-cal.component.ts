@@ -509,6 +509,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
       this.statusHistoJsonToTab()
 
+      this.craService.majNewCra(this.currentCra, this.viewDate);
+
     }
     console.log("+++ initCra fin");
   }
