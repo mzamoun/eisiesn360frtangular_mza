@@ -170,7 +170,7 @@ export class CraService {
     console.log("getCraDayByDate : cra, date : ", cra, date)
     let craDay: CraDay;
 
-    this.majNewCra(cra, date);
+    // this.majNewCra(cra, date);
 
     if (cra != null && cra.craDays != null) {
       for (let i = 0; i < cra.craDays.length; i++) {
@@ -184,23 +184,23 @@ export class CraService {
     return craDay;
   }
 
-  majNewCra(cra: Cra, date: Date) {
-    if (cra && cra.id == null && date) {
-      let month = this.utils.getDateFirstDay(date);
-      cra.month = month;
+  // majNewCra(cra: Cra, date: Date) {
+  //   if (cra && cra.id == null && date) {
+  //     let month = this.utils.getDateFirstDay(date);
+  //     cra.month = month;
 
-      if (cra.craDays && cra.craDays.length > 0) {
-        // le 1er element (i=0) craDay : day = month
-        // a partir de i = 1, day = month + i 
-        let i = 0;
-        cra.craDays.forEach((craDay, i) => {
-          craDay.day = this.utils.addDays(cra.month, i);
-          i++;
-        })
+  //     if (cra.craDays && cra.craDays.length > 0) {
+  //       // le 1er element (i=0) craDay : day = month
+  //       // a partir de i = 1, day = month + i 
+  //       let i = 0;
+  //       cra.craDays.forEach((craDay, i) => {
+  //         craDay.day = this.utils.addDays(cra.month, i);
+  //         i++;
+  //       })
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
   public setCraDayInCraByDate(cra: Cra, date: Date, craDay: CraDay, isEraseOldActivities: boolean): boolean {
     if (cra) {
