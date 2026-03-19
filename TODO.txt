@@ -3,6 +3,8 @@
 
 - bug : notifications des cra : mauvaise direction 
 
+- verif : on ne doit pas ajouter une activites en dehors de ses dates deb, fin 
+
 ----------------------------------------------------------------
 
 refaire scenario d'une nouvelle esn de A-Z : 

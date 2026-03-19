@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
    * LOGIN function 
    */
   public login(): void {
+    this.dataSharingService.clearInfosErrors();
     this.dataSharingService.login(this.credentials, this);
   }
 

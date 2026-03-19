@@ -509,7 +509,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
       this.statusHistoJsonToTab()
 
-      // this.craService.majNewCra(this.currentCra, this.viewDate);
+      this.craService.majNewCra(this.currentCra, this.viewDate);
 
     }
     console.log("+++ initCra fin");
@@ -605,7 +605,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
       this.statusHistoJsonToTab()
 
-      // this.craService.majNewCra(this.currentCra, this.viewDate);
+      this.craService.majNewCra(this.currentCra, this.viewDate);
 
       this.showCra(craInDateView);
 
@@ -623,7 +623,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           if (data != null && data.body != null && data.body.result != null) {
             this.currentCra = data.body.result;
             console.log(label + " we have a new cra from initCra du server. currentCra : ", this.currentCra)
-            // this.craService.majNewCra(this.currentCra, this.viewDate);
+            this.craService.majNewCra(this.currentCra, this.viewDate);
 
             this.statusHistoJsonToTab()
 
@@ -635,7 +635,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.currentCra = new Cra();
             this.setMonthCurentCraIfNull();
             this.events = [];
-            // this.craService.majNewCra(this.currentCra, this.viewDate);
+            this.craService.majNewCra(this.currentCra, this.viewDate);
           }
 
           console.log(label + " currentCra : ", this.currentCra)
@@ -664,7 +664,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.addCongesValidOfDate(this.viewDate);
 
             this.initCra(this.currentCra);
-            // this.craService.majNewCra(this.currentCra, this.viewDate);
+            this.craService.majNewCra(this.currentCra, this.viewDate);
             this.process();
             this.refreshMe();
 
