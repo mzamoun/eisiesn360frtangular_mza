@@ -267,6 +267,75 @@ export class UtilsService {
     return isWeekend;
   }
 
+  public isDateHoliday(date: Date, pays: string): boolean {
+
+    let holidays = this.getHolidaysOfYear(date.getFullYear(), pays);
+
+    for (let holiday of holidays) {
+      if (date.getDate() === holiday.getDate() &&
+        date.getMonth() === holiday.getMonth() &&
+        date.getFullYear() === holiday.getFullYear()) {
+        return true;
+      }
+    }
+
+
+    return false;
+  }
+
+  public getHolidaysOfYear(year: number, pays: string): Date[] {
+    const holidays: Date[] = [];
+
+    switch (pays.toLowerCase()) {
+      case 'fr':
+        // Dates fixes
+        holidays.push(
+          new Date(year, 0, 1),   // Nouvel An
+          new Date(year, 4, 1),   // Fête du Travail
+          new Date(year, 4, 8),   // Victoire 1945
+          new Date(year, 6, 14),  // Fête Nationale
+          new Date(year, 7, 15),  // Assomption
+          new Date(year, 10, 1),  // Toussaint
+          new Date(year, 10, 11), // Armistice
+          new Date(year, 11, 25)  // Noël
+        );
+
+        // Calcul du dimanche de Pâques
+        const easter = this.getEasterDate(year);
+
+        // Jours mobiles basés sur Pâques
+        holidays.push(
+          new Date(year, easter.getMonth(), easter.getDate() + 1),  // Lundi de Pâques
+          new Date(year, easter.getMonth(), easter.getDate() + 39), // Ascension
+          new Date(year, easter.getMonth(), easter.getDate() + 50)  // Lundi de Pentecôte
+        );
+        break;
+
+      // case 'be': ... (Belgique, etc.)
+    }
+
+    return holidays.sort((a, b) => a.getTime() - b.getTime());
+  }
+
+  /** Algorithme de calcul du Dimanche de Pâques **/
+  private getEasterDate(year: number): Date {
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(year, month - 1, day);
+  }
+
   /***
  * Used to format date to yyyy-MM
  * @param date

@@ -185,21 +185,35 @@ export class CraService {
   }
 
   majNewCra(cra: Cra, date: Date) {
+
+    console.log("majNewCra : cra, date : ", cra, date)
+
     if (cra && cra.id == null && date) {
       let month = this.utils.getDateFirstDay(date);
       cra.month = month;
 
       if (cra.craDays && cra.craDays.length > 0) {
+        console.log("majNewCra : cra.craDays exist, cra.craDays : ", cra.craDays)
         // le 1er element (i=0) craDay : day = month
         // a partir de i = 1, day = month + i 
         let i = 0;
         cra.craDays.forEach((craDay, i) => {
           craDay.day = this.utils.addDays(cra.month, i);
+          // par defaut type = "WORKDAY"
+          craDay.type = "DAY_WORKED";
+          // maj type : if day is weekend, type = "WEEKEND"
+          if (this.utils.isDateWeekend(craDay.day)) craDay.type = "WEEKEND";
+          // if day is holiday, type = "HOLIDAY" : to do
+          if (this.utils.isDateHoliday(craDay.day, "fr")) craDay.type = "HOLIDAY";
           i++;
         })
 
+        console.log("majNewCra : cra.craDays after maj, cra.craDays : ", cra.craDays)
+
       }
     }
+
+
   }
 
   public setCraDayInCraByDate(cra: Cra, date: Date, craDay: CraDay, isEraseOldActivities: boolean): boolean {
