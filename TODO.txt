@@ -1,5 +1,5 @@
 
-- bug : jours de vacances perso 
+- bug : jours de vacances perso : ramener les jours de vacances perso du mois 
 
 - bug : notifications des cra : mauvaise direction 
 

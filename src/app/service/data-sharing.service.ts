@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { Injectable, Injector } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from "rxjs";
@@ -29,6 +29,7 @@ import { Mail } from '../model/Mail';
 import { Notification } from "../model/notification";
 import { GenericResponse } from "../model/response/genericResponse";
 import { ClientService } from './client.service';
+// CraService importé en lazy via Injector pour éviter la dépendance circulaire
 import { CraService } from './cra.service';
 import { EsnService } from './esn.service';
 import { MsgService } from './msg.service';
@@ -72,6 +73,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   private infosSource = new BehaviorSubject<string[]>([]);
   private errorsSource = new BehaviorSubject<MyError[]>([]);
   private esnCurrentReadySource = new BehaviorSubject<Esn>(null);
+  private idEsnCurrentSource = new BehaviorSubject<number>(null);
   private currentCraSource = new BehaviorSubject<Cra>(null);
   private listCraSource = new BehaviorSubject<Cra[]>([]);
   private listNotificationsSource = new BehaviorSubject<Notification[]>([]);
@@ -80,6 +82,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   infos$ = this.infosSource.asObservable();
   errors$ = this.errorsSource.asObservable();
   esnCurrentReady$ = this.esnCurrentReadySource.asObservable();
+  idEsnCurrent$ = this.idEsnCurrentSource.asObservable();
   currentCra$ = this.currentCraSource.asObservable();
   listCra$ = this.listCraSource.asObservable();
   listNotifications$ = this.listNotificationsSource.asObservable();
@@ -106,15 +109,28 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   userConnected: Consultant;
   isUserLoggedInFct: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   esnCurrent: Esn;
-  idEsnCurrent: number;
+  private _idEsnCurrent: number = null;
   IsAddEsnAndResp: boolean = false;
   esnSaved: Esn;
   respEsnSaved: Consultant;
   passRespEsnSaved: string;
   consultantSelected: Consultant;
 
+  get idEsnCurrent(): number {
+    return this._idEsnCurrent;
+  }
+
+  set idEsnCurrent(value: number) {
+    this._idEsnCurrent = value;
+    this.idEsnCurrentSource.next(value);
+  }
+
+  private get craService(): CraService {
+    return this.injector.get(CraService);
+  }
+
   constructor(public router: Router
-    , private craService: CraService
+    , private injector: Injector
     , private utils: UtilsService
     , private utilsIhmService: UtilsIhmService
     , private consultantService: ConsultantService
@@ -133,6 +149,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     if (this.userConnected) {
       this.userConnectedSource.next(this.userConnected);
       this.isUserLoggedInFct.next(true);
+    }
+
+    if (!this.userConnected) {
+      // get it from local storage in case of page refresh
+      this.getCurrentUserFromLocaleStorage();
+
     }
 
     console.log("constructor, userConnected", this.userConnected)
@@ -195,6 +217,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     if (this.userConnected) {
       let esn = this.userConnected.esn;
       this.esnCurrentReadySource.next(esn);
+      this.idEsnCurrent = esn?.id;
     }
 
     return this.userConnected
@@ -224,7 +247,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   addError(error: MyError) {
-    //////console.log("DS addError error", error )
+    console.log("DS addError error", error)
     if (!error || !error.msg) return
     //////console.log("DS addError msg", error.msg ) 
     if (error.title) {
@@ -544,6 +567,8 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             if (this.userConnected) {
               let esn = this.userConnected.esn;
               this.esnCurrentReadySource.next(esn);
+              this.idEsnCurrent = esn?.id
+              console.log("majEsnOnConsultant idEsnCurrent : ", this.idEsnCurrent)
             }
           }, (error) => {
             this.addErrorTxt(JSON.stringify(error))
@@ -672,6 +697,23 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     // console.log("isLoggin this.getToken() = ", this.getToken())
     return this.getToken() != null;
   }
+
+  get UserConnected(): Consultant {
+    if (!this.userConnected) {
+      this.getCurrentUserFromLocaleStorage();
+    }
+
+    return this.userConnected;
+  }
+
+  // getUserConnected(): Consultant {
+  //   if (!this.userConnected) {
+  //     this.getCurrentUserFromLocaleStorage();
+  //   }
+
+  //   return this.userConnected;
+  // }
+
 
   setUserConnected(user: Consultant) {
     this.userConnected = user;

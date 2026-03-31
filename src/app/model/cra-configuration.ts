@@ -10,8 +10,11 @@
  * @author Saber Ben Khalifa <saber.khalifa@eisi-consulting.fr>
  **/
 
+import { Esn } from "./esn";
+
 export class CraConfiguration {
   id: number;
+  esn : Esn
   month: Date;
   monthStringFormat: string;
   holidays: Date[];

@@ -1,6 +1,7 @@
 ﻿import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Cra } from '../model/cra';
 import { CraDay } from "../model/cra-day";
@@ -13,8 +14,11 @@ import { UtilsService } from "./utils.service";
 
 import { CalendarEvent } from 'angular-calendar';
 import { ActivityType } from '../model/activityType';
+import { CraConfiguration } from '../model/cra-configuration';
 import { Notification } from '../model/notification';
+import { MyError } from '../resource/MyError';
 import { ActivityTypeService } from './activityType.service';
+import { CraConfigurationService } from './cra-configuration.service';
 import { DataSharingService } from "./data-sharing.service";
 
 const httpOptions = {
@@ -27,6 +31,11 @@ export class CraService {
   craUrl: string;
   craDayUrl: string;
   craDayActivity: string;
+  craConfigurationData: CraConfiguration = null;
+
+  private holidaysLoadedSource = new BehaviorSubject<CraConfiguration>(null);
+  /** Émet chaque fois que les jours fériés sont chargés depuis l'API */
+  holidaysLoaded$ = this.holidaysLoadedSource.asObservable();
 
   private cra: Cra;
 
@@ -38,7 +47,9 @@ export class CraService {
     return this.cra;
   }
 
-  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService, private activityTypeService: ActivityTypeService) {
+  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService
+    , private activityTypeService: ActivityTypeService
+    , private craConfigurationService: CraConfigurationService) {
     this.craUrl = environment.apiUrl + '/cra/';
     this.craDayUrl = environment.apiUrl + "/cra-day/";
     this.craDayActivity = environment.apiUrl + "/cra-day-activity/"
@@ -152,7 +163,7 @@ export class CraService {
           t += cda.nbDay
         }
       );
-    }else {
+    } else {
       console.log("canAddActivity: can add KO : craDay is null, craDayActivity : ", craDay, craDayActivity)
     }
 
@@ -184,16 +195,108 @@ export class CraService {
     return craDay;
   }
 
+  majHolidays(date: Date) {
+    console.log("majHolidays DEB : date : ", date)
+
+    let user = this.dataSharingService.userConnected;
+    let esn = user?.esn || null;
+    console.log("majHolidays : user, user.esn : ", user, esn)
+
+    if (!date) {
+      console.log("majHolidays : date is null")
+      return;
+    }
+
+    date = this.utils.getDate(date);
+
+    // if (this.craConfigurationData && this.craConfigurationData.holidays && this.craConfigurationData.holidays.length > 0) {
+    //   console.log("majHolidays : holidays exist, craConfigurationData, holidays : ", this.craConfigurationData, this.craConfigurationData.holidays)
+    //   return;
+    // }
+
+    let label = "majHolidays : Récupération des jours fériés du mois en cours, date : " + date;
+    console.log(label)
+    const dataSharingServiceAny: any = this.dataSharingService;
+    if (typeof dataSharingServiceAny.addInfo === 'function') {
+      console.log("majHolidays : addInfo label : ", label)
+      dataSharingServiceAny.addInfo(label);
+    } else {
+      console.log("majHolidays : dataSharingService.addInfo indisponible, impossible d'ajouter le message info : ", label)
+    }
+
+    const loadHolidays = (esnId: number) => {
+      console.log("majHolidays : idEsnCurrent : ", esnId)
+      this.craConfigurationService.getCraConfigByEsnIdAndMonth(esnId, this.utils.formatDateToMonth2(date))
+        .subscribe((data) => {
+          if (typeof dataSharingServiceAny.delInfo === 'function') {
+            dataSharingServiceAny.delInfo(label);
+          }
+          this.craConfigurationData = data.body?.result || null
+          this.holidaysLoadedSource.next(this.craConfigurationData);
+          console.log("majHolidays : holidays récupérés, date, holidays : ", date, this.craConfigurationData?.holidays)
+        }, error => {
+          if (typeof dataSharingServiceAny.delInfo === 'function') {
+            dataSharingServiceAny.delInfo(label);
+          }
+          if (typeof dataSharingServiceAny.addError === 'function') {
+            dataSharingServiceAny.addError(new MyError("Erreur: " + label, "majHolidays : error, err : " + JSON.stringify(error)));
+          }
+          console.log("majHolidays : error, err", error)
+        })
+    };
+
+    // Chemin rapide sync : esn déjà disponible dans userConnected
+    if (esn && esn.id) {
+      loadHolidays(esn.id);
+      return;
+    }
+
+    // Chemin rapide sync : idEsnCurrent déjà positionné
+    const syncEsnId = this.dataSharingService.idEsnCurrent;
+    if (syncEsnId != null) {
+      loadHolidays(syncEsnId);
+      return;
+    }
+
+    // Chemin réactif principal : idEsnCurrent$ (BehaviorSubject → émet la valeur courante immédiatement
+    // si déjà non-null, sinon attend la prochaine émission du setter).
+    // NOTE : peut être undefined au runtime à cause de la dépendance circulaire
+    // CraService ↔ DataSharingService → garder la guard typeof.
+    console.log("majHolidays : chemin réactif via idEsnCurrent$...")
+    const idEsn$ = (this.dataSharingService as any).idEsnCurrent$;
+    if (idEsn$ && typeof idEsn$.pipe === 'function') {
+      idEsn$.pipe(filter((id: number) => id != null), take(1)).subscribe((esnId: number) => {
+        if (!this.craConfigurationData?.holidays?.length) {
+          loadHolidays(esnId);
+        }
+      });
+      return;
+    }
+
+    // Dernier recours : esnCurrentReady$ (émis par getCurrentUserFromLocaleStorage et majEsnOnConsultant)
+    console.log("majHolidays : idEsnCurrent$ indisponible, tentative via esnCurrentReady$...")
+    const esnReady$ = (this.dataSharingService as any).esnCurrentReady$;
+    if (esnReady$ && typeof esnReady$.pipe === 'function') {
+      esnReady$.pipe(filter((e: any) => e != null && e.id != null), take(1)).subscribe((e: any) => {
+        if (!this.craConfigurationData?.holidays?.length) {
+          loadHolidays(e.id);
+        }
+      });
+    } else {
+      console.warn("majHolidays : aucun observable ESN disponible, impossible de récupérer les jours fériés");
+    }
+
+  }
+
   majNewCra(cra: Cra, date: Date) {
-
     console.log("majNewCra : cra, date : ", cra, date)
-
     if (cra && cra.id == null && date) {
       let month = this.utils.getDateFirstDay(date);
       cra.month = month;
-
       if (cra.craDays && cra.craDays.length > 0) {
         console.log("majNewCra : cra.craDays exist, cra.craDays : ", cra.craDays)
+        const holidays = this.craConfigurationData?.holidays || [];
+        this.utils.addHolidays(month, "fr", holidays)
         // le 1er element (i=0) craDay : day = month
         // a partir de i = 1, day = month + i 
         let i = 0;
@@ -204,16 +307,13 @@ export class CraService {
           // maj type : if day is weekend, type = "WEEKEND"
           if (this.utils.isDateWeekend(craDay.day)) craDay.type = "WEEKEND";
           // if day is holiday, type = "HOLIDAY" : to do
-          if (this.utils.isDateHoliday(craDay.day, "fr")) craDay.type = "HOLIDAY";
+          if (this.utils.isDateHolidayNational(craDay.day, "fr")) craDay.type = "HOLIDAY";
+          if (this.utils.isDateHolidayPerso(craDay.day, this.craConfigurationData?.holidays)) craDay.type = "HOLIDAY";
           i++;
         })
-
         console.log("majNewCra : cra.craDays after maj, cra.craDays : ", cra.craDays)
-
       }
     }
-
-
   }
 
   public setCraDayInCraByDate(cra: Cra, date: Date, craDay: CraDay, isEraseOldActivities: boolean): boolean {
@@ -250,7 +350,7 @@ export class CraService {
     }
     currentCra.craDays.forEach((cd, index) => {
       if (this.utils.formatDate(craDay.day) == this.utils.formatDate(cd.day)) {
-        currentCra[index] = craDay;
+        currentCra.craDays[index] = craDay;
       }
     })
     return currentCra;
@@ -345,7 +445,9 @@ export class CraService {
         let title = UtilsService.getEventTitle(cda);
         title = title.slice(0, 25);
         let indexEvent = this.getIndexEventOfCraActivity(craDay, cda, events);
-        events[indexEvent].title = title;
+        if (indexEvent >= 0 && events[indexEvent]) {
+          events[indexEvent].title = title;
+        }
       }
       );
     }

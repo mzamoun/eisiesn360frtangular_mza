@@ -267,9 +267,65 @@ export class UtilsService {
     return isWeekend;
   }
 
-  public isDateHoliday(date: Date, pays: string): boolean {
+  public holidaysCache: { [key: string]: Date[] } = {};
+  public addHolidays(date: Date, pays: string, holidays: Date[]) {
+    let key = pays + "_" + date.getFullYear();
+    let holidaysOfYear: Date[] = this.holidaysCache[key];
+    if (!holidays) {
+      holidays.forEach(value => {
+        // this.holidaysCache[key].push(value);
+        if (!this.isDateInTabDate(value, holidaysOfYear)) holidaysOfYear.push(value);
+      });
+    }
+  }
 
-    let holidays = this.getHolidaysOfYear(date.getFullYear(), pays);
+  public isDateInTabDate(date: Date, tab: Date[]): boolean {
+    if (!date) return false;
+    if (!tab) return false;
+    for (let d of tab) {
+      if (date.getDate() == d.getDate() && date.getMonth() == d.getMonth() && date.getFullYear() == d.getFullYear()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  tabDateNotInOtherTabDate(holidays: Date[], tabParent: Date[]): boolean {
+    if (!holidays) return true;
+    if (!tabParent) return true;
+    for (let h of holidays) {
+      let exist = this.isDateInTabDate(h, tabParent);
+      if (!exist) return true;
+    }
+
+    return false;
+  }
+
+  public isDateHolidayPerso(date: Date, holidays: any[]): boolean {
+    if (!date || !holidays) return false;
+    console.log("isDateHolidayPerso : date : ", date, " holidays : ", holidays)
+    for (let holiday of holidays) {
+      console.log("isDateHolidayPerso : holiday : ", holiday)
+      // Les jours fériés peuvent arriver comme strings ISO depuis l'API
+      const h: Date = (holiday instanceof Date) ? holiday : new Date(holiday);
+      if (isNaN(h.getTime())) continue;
+      if (date.getDate() === h.getDate() &&
+        date.getMonth() === h.getMonth() &&
+        date.getFullYear() === h.getFullYear()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public isDateHolidayNational(date: Date, pays: string): boolean {
+
+    let key = pays + "_" + date.getFullYear();
+    let holidays: Date[] = this.holidaysCache[key];
+    if (!holidays) {
+      holidays = this.getHolidaysOfYear(date.getFullYear(), pays);
+      this.holidaysCache[key] = holidays;
+    }
 
     for (let holiday of holidays) {
       if (date.getDate() === holiday.getDate() &&
@@ -279,12 +335,24 @@ export class UtilsService {
       }
     }
 
-
     return false;
   }
 
+  /**
+   * 
+   * @param year : format yyyy
+   * @param pays : fr, en, ...
+   * @returns 
+   */
   public getHolidaysOfYear(year: number, pays: string): Date[] {
     const holidays: Date[] = [];
+
+    let key = pays + "_" + year;
+    let cachedHolidays: Date[] = this.holidaysCache[key];
+    if (cachedHolidays) {
+      return cachedHolidays;
+    }
+    this.holidaysCache[key] = holidays;
 
     switch (pays.toLowerCase()) {
       case 'fr':
@@ -363,6 +431,35 @@ export class UtilsService {
     ////console.log(res)
     return res;
   }
+
+  /***
+* Used to format date to MM-yyyy
+* @param date
+*/
+  public formatDateToMonth2(date: any): string {
+
+    if (!date) return "";
+
+    ////////////console.log("formatDate:")
+    ////console.log(date)
+
+    let d: Date = this.getDate(date);
+
+    let month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    let res = [month, year].join('-');
+    ////////////console.log("res:")
+    ////console.log(res)
+    return res;
+  }
+
 
   /***
    * Used to format date to yyyy-MM-dd

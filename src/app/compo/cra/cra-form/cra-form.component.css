@@ -40,13 +40,16 @@
 }
 
 .holiday {
-	border: 1px solid red; 
+	border: 2px solid crimson;
+	background-color: #ffe0e0;
 	color: crimson;
 	font-weight: bold;
 	width: 150px;
 }
 
 .conge {
+	color: red;
+	font-weight: bold;
 	background: yellow;
 }
 .free {
@@ -101,4 +104,3 @@
     font-weight: 500;
     padding: 0.35em 0.65em;
 }
-

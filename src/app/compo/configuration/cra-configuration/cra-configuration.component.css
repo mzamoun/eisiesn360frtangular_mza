@@ -2,9 +2,24 @@
 .cal-cell-normal {
   width: 150px;
 }
-.holiday {
-  border: 1px solid red;
-  color: crimson;
-  font-weight: bold;
+.holiday-national {
   width: 150px;
+  border: 2px solid #b11f1f;
+  background: #ffe3e3;
+  color: #b11f1f;
+  font-weight: bold;
+}
+
+.holiday-perso {
+  width: 150px;
+  border: 2px solid #c28a00;
+  background: #fff1a8;
+  color: #7a5600;
+  font-weight: bold;
+}
+
+.holiday-perso-badge {
+  background: #f0c419;
+  color: #5d4300;
+  font-weight: bold;
 }

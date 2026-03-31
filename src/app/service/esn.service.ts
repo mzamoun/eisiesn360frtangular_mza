@@ -79,7 +79,7 @@ export class EsnService {
   }
 
   majEsnOnConsultant(myObj: Consultant, fct : Function = null, fctErr : Function ) {
-    console.log("majEsnOnConsultant myObj, esnId, myObj.esn : ", myObj, myObj.esnId, myObj.esn)
+    console.log("majEsnOnConsultant myObj, esnId, myObj.esn : ", myObj, myObj?.esnId, myObj?.esn)
     if (myObj && myObj.esnId && !myObj.esn) {
       console.log("majEsnOnConsultant DEB find esn by id=" + myObj.esnId);
       let esnId = myObj.esnId
@@ -95,9 +95,11 @@ export class EsnService {
         },
         error => {
           console.log("majEsnOnConsultant ERROR setEsnOnConsultant consultant, err", myObj, error)
-          fctErr(error)
+          if (fctErr) fctErr(error)
         }
       );
+    } else {
+      if (fct) fct(myObj?.esn);
     }
   }
 

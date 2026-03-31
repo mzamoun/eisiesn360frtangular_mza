@@ -80,17 +80,25 @@ deploy() {
     log "Starting deployment process..."
     save_envs
     set_url_prod
+    chmod 755 *.sh
     ./build_front.sh
     save_to_git
     # TODO est ce necessaire ici ?
     back_envs
 }
 
+chmod 755 *.sh
+
 log "Starting deployment of $proj_prod with comment: $comment_save" > $LOG
 log "Fichier de LOG : $LOG" >> $LOG
 exec >>$LOG 2>&1
 
+chmod 755 *.sh
 copy_from_dev
+
+chmod 755 *.sh
 deploy
+
+chmod 755 *.sh
 
 log "Deployment completed successfully."

@@ -15,7 +15,7 @@
  port=${1:-90}
 
  dir=docs
- b=./build.sh
+ b=./build_front.sh
 
  echo "
   port=$port 

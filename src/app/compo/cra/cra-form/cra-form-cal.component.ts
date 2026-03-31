@@ -222,6 +222,15 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.statusHistoJsonToTab()
 
+    // Rafraîchir le calendrier quand les jours fériés arrivent de l'API (chargement async)
+    this.subscriptions.push(
+      this.craService.holidaysLoaded$.subscribe(config => {
+        if (config?.holidays?.length > 0) {
+          this.refreshMe();
+        }
+      })
+    );
+
     console.log("cra list findAll ap call majCra : dataSharingService.listCra:", this.dataSharingService.getListCra())
     console.log("cra list findAll ap call majCra : currentCra:", this.currentCra)
 
@@ -590,6 +599,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     console.log(label + " after : viewDate:", this.viewDate)
 
+    this.craService.majHolidays(this.viewDate);
+
     // this.viewDate est un objet Date au 1er
     this.initDatesDebFinMultiDates();
 
@@ -641,7 +652,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           console.log(label + " currentCra : ", this.currentCra)
 
           if (!this.getError() || this.getError().length == 0) {
-            console.log(label+" NO_ERROR : goto showCra", this.currentCra)
+            console.log(label + " NO_ERROR : goto showCra", this.currentCra)
             // this.addActivitiesValidOfThisMonth();
             // this.currentCra.month = this.viewDate;
 
@@ -650,13 +661,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.setMonthCurentCraIfNull();
 
             let craContext: CraContext = new CraContext();
-            console.log(label+" +++++ craContext:", craContext)
+            console.log(label + " +++++ craContext:", craContext)
 
             let month = this.utils.getDate(this.currentCra.month);
             craContext.cra = this.currentCra;
             craContext.viewDate = month;
             craContext.events = [];
-            console.log(label+" +++++ craContext after setting viewDate and events:", craContext)
+            console.log(label + " +++++ craContext after setting viewDate and events:", craContext)
             this.dataSharingService.onCraInit(craContext);
             // this.router.navigate(["/cra_form"])
             ////////console.log("showCra fin", cra)
@@ -834,31 +845,32 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   getClassOfDay(day) {
-    // console.log("*** getClassOfDay deb", day)
     let type = this.getTypeDay(day);
-    let klass = "";
+    const dayDate: Date = day?.date instanceof Date ? day.date : new Date(day?.date);
 
-    if (type == 'HOLIDAY') {
-      klass = "holiday";
-    } else if (type == 'CONGE_PAYE') {
-      klass = "conge";
-    } else {
-      klass = 'cal-cell-normal'
+    // Vérifier si c'est un jour férié (national ou perso API) — priorité maximale
+    const isNationalHoliday = !isNaN(dayDate?.getTime()) && this.utils.isDateHolidayNational(dayDate, 'fr');
+    const persoHolidays = this.craService.craConfigurationData?.holidays;
+    const isPersoHoliday = persoHolidays?.length > 0 && !isNaN(dayDate?.getTime())
+      && this.utils.isDateHolidayPerso(dayDate, persoHolidays);
+
+    if (type == 'HOLIDAY' || isNationalHoliday || isPersoHoliday) {
+      return 'holiday';
     }
 
+    if (type == 'CONGE_PAYE') {
+      return 'conge';
+    }
+
+    // 'free' uniquement pour les jours ouvrés non facturés (jamais pour les jours fériés)
     if (this.isDayInViewMonth(day) && !this.isDayBilled(day)) {
-      klass = 'free';
-      ////////console.log("************ getClassOfDay day, type, klass", day, type, klass)
+      return 'free';
     }
 
     let isDayConge = this.isDayConge(day);
-    if (isDayConge) klass = 'conge';
+    if (isDayConge) return 'conge';
 
-    // ////////console.log("************ getClassOfDay day, type, klass", day, type, klass)
-
-    ////////console.log("*** getClassOfDay fin", klass)
-    return klass;
-
+    return 'cal-cell-normal';
   }
 
 
@@ -1362,7 +1374,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       if (isLanceProcess) {
         this.process();
       }
-    }else {
+    } else {
       console.log("++++ addActivity KO craDayActivity=", craDayActivity)
     }
 
@@ -1437,7 +1449,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         } else {
           console.log("addActivityInDates: can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
         }
-      }else {
+      } else {
         console.log("addActivityInDates: can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
       }
     }
@@ -1712,6 +1724,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       let color = colors.blue;
       let cssClass = 'event';
 
+      if (!this.craService.isCraDayOpen(craDay)) {
+        color = colors.red;
+        cssClass = 'conge';
+      }
+
       this.events.push({
         title: title,
         start: startOfDay(day),
@@ -1769,6 +1786,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.currentCra.craDays.forEach((craDay, index) => {
         if (this.craService.isCraDayOpen(craDay)) {
           this.totalDayToWork++;
+        }else {
+          
         }
         craDay.craDayActivities.forEach((cda, k) => {
           let activity: Activity = cda.activity;
