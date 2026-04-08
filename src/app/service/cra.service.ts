@@ -215,17 +215,19 @@ export class CraService {
     // }
 
     let label = "majHolidays : Récupération des jours fériés du mois en cours, date : " + date;
-    console.log(label)
-    const dataSharingServiceAny: any = this.dataSharingService;
-    if (typeof dataSharingServiceAny.addInfo === 'function') {
-      console.log("majHolidays : addInfo label : ", label)
-      dataSharingServiceAny.addInfo(label);
-    } else {
-      console.log("majHolidays : dataSharingService.addInfo indisponible, impossible d'ajouter le message info : ", label)
-    }
 
     const loadHolidays = (esnId: number) => {
       console.log("majHolidays : idEsnCurrent : ", esnId)
+
+      console.log(label)
+      const dataSharingServiceAny: any = this.dataSharingService;
+      if (typeof dataSharingServiceAny.addInfo === 'function') {
+        console.log("majHolidays : addInfo label : ", label)
+        dataSharingServiceAny.addInfo(label);
+      } else {
+        console.log("majHolidays : dataSharingService.addInfo indisponible, impossible d'ajouter le message info : ", label)
+      }
+
       this.craConfigurationService.getCraConfigByEsnIdAndMonth(esnId, this.utils.formatDateToMonth2(date))
         .subscribe((data) => {
           if (typeof dataSharingServiceAny.delInfo === 'function') {
