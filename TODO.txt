@@ -1,9 +1,17 @@
 
-- bug : jours de vacances perso : ramener les jours de vacances perso du mois 
+- bug : jours de vacances perso : ramener les jours de vacances perso du mois : OK
 
-- bug : notifications des cra : mauvaise direction 
+bug : notifications des cra : mauvaise direction : OK
+le consultant doit notifier son manager 
+le manager doit notifier le consultant du cra 
+
+- Btn "Approuver Cra" n'apparait pas chez resp_esn 
 
 - verif : on ne doit pas ajouter une activites en dehors de ses dates deb, fin 
+
+- Ajouter un commentaire à un jour férié 
+
+
 
 ----------------------------------------------------------------
 

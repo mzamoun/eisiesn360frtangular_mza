@@ -130,7 +130,7 @@
                     <div>
                         <input type="file" accept=".jpg, .png, .pdf" class="btn btn-outline-dark me-2"
                             (change)="onFileSelect($event)" name="ADD ATTACHMENT" id="attachment"
-                            *ngIf="!currentCra.validByConsultant && !hasRoleManagerValidate() && currentCra.id != null" />
+                            *ngIf="is_canSubmitCra" />
                         <button type="button" class="btn btn-outline-info" *ngIf="currentCra.attachment" #attachment
                             id="btn-cra-form-download-attachement" (click)="downloadAttachment()">
                             <i class="fas fa-download me-1"></i> Download attachment
@@ -188,7 +188,7 @@
                     </button>
                     <button class="btn btn-outline-dark me-2" id="btn-cra-form-send-cra-validation"
                         (click)="sendCraToValidate()"
-                        *ngIf="(!currentCra?.validByConsultant) && hasManager() && currentCra.consultant?.id == userConnected.id ">
+                        *ngIf="is_canSubmitCra">
                         <i class="fas fa-paper-plane me-1"></i> Submit {{getNameByType()}}
                     </button>
 
@@ -224,7 +224,7 @@
 
             <div class="mt-3" *ngIf="hasRoleManagerValidate()">
                 <button class="btn btn-success me-2" id="btn-cra-form-valid" (click)="validCra()"
-                    *ngIf="canValidateCraOrConge()">
+                    *ngIf="is_canValidateCraOrConge">
                     <i class="fas fa-check me-1"></i> Approve {{getNameByType()}}
                 </button>
                 <button class="btn btn-danger" id="btn-cra-form-reject" (click)="openModalPopup(rejectCraView)"

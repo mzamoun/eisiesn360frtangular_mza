@@ -50,7 +50,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     , public dataSharingService: DataSharingService
     , protected utilsIhm: UtilsIhmService
     , private craService: CraService
-    , private noteFraisService : NoteFraisService
+    , private noteFraisService: NoteFraisService
     , private dialog: MatDialog
     , private modal: NgbModal
     , private cdr: ChangeDetectorRef
@@ -63,7 +63,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     this.dataSharingService.listNotifications$.subscribe(notifications => {
       this.updateNotifications(notifications);
     });
-    
+
     // Charger les notifications initiales
     this.getNotifications(null, null);
   }
@@ -88,7 +88,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
   refresh() {
     // Assurer un minimum de temps entre chaque refresh
     this.refreshEverySec = Math.max(this.refreshEverySec, this.refreshEverySecMin);
-    
+
     // Toggle le refresh
     if (this.refreshStarted) {
       // Arrêter le refresh
@@ -129,7 +129,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
    */
   updateNotifications(listAll: Notification[]) {
     // Filtrer les notifications si nécessaire
-    const newList = this.isOnlyNotViewed 
+    const newList = this.isOnlyNotViewed
       ? (listAll || []).filter(n => !n.viewed)
       : listAll;
 
@@ -139,7 +139,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     this.getNbElement();
     this.setTitle();
     this.myList00 = this.myList;
-    
+
     // Marquer pour vérification au lieu de forcer une détection complète
     this.cdr.markForCheck();
   }
@@ -190,7 +190,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     let mythis = this;
     this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec date=" + notification.createdDate, mythis
       , () => {
-        mythis.dataSharingService.deleteNotification(notification.id, null, null );
+        mythis.dataSharingService.deleteNotification(notification.id, null, null);
       }
       , () => { }
     );
@@ -235,80 +235,129 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     return dTotal + " days " + h + " hours " + mn + " mn ";
   }
 
-  showForm(notification: Notification) {
-    this.clearInfos();
-    notification.viewed = true;
-    this.craService.majNotification(notification)
-    this.noteFraisService.majNotification(notification)
-    
-    this.saveNotification(notification);
-    
-    this.dataSharingService.fromNotif = true;
-    
-    this.addInfo("show cra en cours ... " + notification.cra?.monthStr, true )
+  /**
+   * show cra in notification 
+   * it will call showCra of dataSharingService after marking the notification as viewed and saving it, 
+   * then showCra will call notifyCraUpdated to update the current CRA and notify all subscribers of 
+   * current CRA (like craFormCalComponent) to update their CRA and show the updated CRA in the form
+   * @param notification 
+   */
+  private mergeCraComment(cra: any, notification: Notification, originalCra: any = null) {
+    if (!cra) {
+      return cra;
+    }
 
-    setTimeout(() => {
-      this.dataSharingService.showCra(notification.cra);
-    }, 1500);
+    const craInList = cra.id != null ? this.dataSharingService.getCraInListCraById(cra.id) : null;
+    const currentCra = cra.id != null && this.dataSharingService.getCurrentCra()?.id == cra.id
+      ? this.dataSharingService.getCurrentCra()
+      : null;
+    const fallbackComment = cra.comment
+      || originalCra?.comment
+      || notification?.cra?.comment
+      || currentCra?.comment
+      || craInList?.comment
+      || notification?.message;
+    const fallbackStatus = cra.status
+      || originalCra?.status
+      || notification?.cra?.status
+      || currentCra?.status
+      || craInList?.status;
+    const fallbackValidByConsultant = cra.validByConsultant ?? originalCra?.validByConsultant
+      ?? notification?.cra?.validByConsultant ?? currentCra?.validByConsultant ?? craInList?.validByConsultant;
+    const fallbackValidByManager = cra.validByManager ?? originalCra?.validByManager
+      ?? notification?.cra?.validByManager ?? currentCra?.validByManager ?? craInList?.validByManager;
 
+    if (!cra.comment && fallbackComment) {
+      cra.comment = fallbackComment;
+    }
+
+    if (!cra.status && fallbackStatus) {
+      cra.status = fallbackStatus;
+    }
+
+    if (cra.validByConsultant == null && fallbackValidByConsultant != null) {
+      cra.validByConsultant = fallbackValidByConsultant;
+    }
+
+    if (cra.validByManager == null && fallbackValidByManager != null) {
+      cra.validByManager = fallbackValidByManager;
+    }
+
+    return cra;
   }
 
-  showCra(notification: Notification) {
-    const label = "showCra";
+  showForm(notification: Notification) {
+
+    const label = "Notification.showForm";
     console.log(label + " START - notification: ", notification);
-    
+
+    this.clearInfos();
+
     if (!notification) {
       console.error(label + " ERROR - notification est null");
       this.addErrorTxt("Notification null");
       return;
     }
-    
-    if (!notification.cra) {
+
+    if (!notification.cra || !notification.cra.id) {
       console.error(label + " ERROR - notification.cra est null");
       this.addErrorTxt("CRA non trouvé dans la notification");
       return;
     }
 
-    // Update current CRA via service to notify all subscribers
-    this.dataSharingService.notifyCraUpdated(notification.cra);
+    let label2 = label + " - CRA ID: " + notification.cra.id + " - récupération du CRA en cours...";
+    this.addInfo(label2);
+    const originalCra = notification.cra;
 
-    let cra = this.dataSharingService.getCurrentCra();
-    console.log(label + " - Current CRA après notifyCraUpdated: ", cra);
-    
-    console.log(label + " - notification.cra: ", notification.cra);
+    this.craService.findAll().subscribe(
+      (data) => {
+        this.delInfo(label2);
+        const allCra = data?.body?.result || [];
+        console.log(label + " - liste CRA trouvée: data : ", data);
+        this.dataSharingService.setListCra(allCra);
 
-    this.clearInfos();
-    notification.viewed = true;
-    
-    console.log(label + " - appel craService.majNotification");
-    this.craService.majNotification(notification,
-      ()=>{
-        console.log(label + " - callback craService.majNotification OK");
-        
-        console.log(label + " - appel noteFraisService.majNotification");
-        this.noteFraisService.majNotification(notification, 
-          ()=>{
-            console.log(label + " - callback noteFraisService.majNotification OK");
-            
-            this.saveNotification(notification, (data)=>{
-              console.log(label + " - callback saveNotification OK: ", data);
-              this.dataSharingService.fromNotif = true;
-              
-              console.log(label + " - appel dataSharingService.showCra");
-              this.dataSharingService.showCra(cra);
-              // this.dataSharingService.showCra(this.dataSharingService.getCurrentCra());
-              console.log(label + " END - showCra appelé");
+        const craFromList = allCra.find(cra => cra?.id === notification.cra.id);
+        if (!craFromList) {
+          console.warn(label + " - CRA introuvable dans findAll, fallback sur la notification");
+          notification.cra = this.mergeCraComment(notification.cra, notification, originalCra);
+        } else {
+          notification.cra = this.mergeCraComment(craFromList, notification, originalCra);
+        }
 
-            }, (error)=>{
-              console.error(label + " - ERREUR saveNotification: ", error);
-            });
-            
-          }
-        )
-      }, 
-      true 
+        this.dataSharingService.showCra(notification.cra);
+        notification.viewed = true;
+        this.saveNotification(notification, (saveData) => {
+          console.log(label + " - callback saveNotification OK: ", saveData);
+          this.dataSharingService.fromNotif = true;
+        }, (error) => {
+          console.error(label + " - ERREUR saveNotification: ", error);
+        });
+      },
+      (error) => {
+        this.delInfo(label2);
+        console.error(label + " - ERREUR lors de la récupération de la liste des CRA: ", error);
+        this.addErrorTxt("Erreur lors de la récupération de la liste des CRA : " + JSON.stringify(error));
+      }
     );
-    
+
+
+
+    // root to list cra 
+    // this.dataSharingService.navigateTo("cra_list");
+
+    // setTimeout(() => {
+    //   this.dataSharingService.showCra(notification.cra);
+    // }, 1000);
+
+    // this.dataSharingService.showCra(cra);
+
+  }
+
+  showCra(notification: Notification) {
+    // Keep a single opening flow for CRA from notifications to avoid status drift.
+    this.showForm(notification);
+
+
   }
 
   showFee(notification: Notification) {

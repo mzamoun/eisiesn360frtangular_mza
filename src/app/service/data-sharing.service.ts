@@ -340,9 +340,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   showCra(cra: Cra) {
-    console.log("showCra deb", cra)
+    let label = "navigate to cra_form with cra id=" + cra.id
+    console.log(label + " START - cra: ", cra)
     if (!cra) {
-      console.log("showCra cra NULL !", cra)
+      console.log(label + " ERROR - cra NULL !", cra)
       return
     }
 
@@ -350,22 +351,32 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.isAdd = "";
     this.typeCra = cra.type;
 
-    console.log("showCra avant navigate to cra_form", cra)
-    this.router.navigate(["/cra_form"], {
-      queryParams: { id: cra.id },
-      state: { cra: cra }
-    })
-    console.log("showCra fin", cra)
+    console.log(label + " avant navigate to cra_form", cra)
+    this.addInfo(label)
+    setTimeout(() => {
+      this.router.navigate(["/cra_form"]).then(
+        success => {
+          this.delInfo(label)
+          console.log(label + " navigate to cra_form success", cra)
+        },
+        error => {
+          this.delInfo(label)
+          console.log(label + " ERROR - navigate to cra_form", cra, error)
+        }
+      );
+
+      console.log(label + " END - navigate to cra_form", cra)
+    }
+    , 1500);
   }
 
   showFee(fee: NoteFrais) {
-    this.currentFee = fee;
-    this.isAdd = "";
-    this.router.navigate(["/notefrais_form"])
-  }
+      this.currentFee = fee;
+      this.isAdd = "";
+      this.router.navigate(["/notefrais_form"])
+    }
 
   /**
-   * 
    * @param cra 
    * @param tms : 500 
    * @param isReturnIfSameCra : false
@@ -373,17 +384,17 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    */
   showCraViaLoading(cra: Cra, tms = 500, isReturnIfSameCra = false) {
 
-    if (isReturnIfSameCra) {
-      let lastCra: Cra = this.currentCraSource.value;
-      if (lastCra && lastCra.id == cra.id) {
-        return;
+      if(isReturnIfSameCra) {
+        let lastCra: Cra = this.currentCraSource.value;
+        if (lastCra && lastCra.id == cra.id) {
+          return;
+        }
       }
-    }
 
     //pour bien rafraichir la page.
     this.showLoading();
 
-    setTimeout(() => {
+      setTimeout(() => {
       this.showCra(cra);
     }, tms);
   }
@@ -789,6 +800,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       }
     } else {
       this.consultantService.majAdminConsultant(cra.consultant)
+      if (fct) fct()
     }
   }
 

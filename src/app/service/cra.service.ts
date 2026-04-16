@@ -150,7 +150,7 @@ export class CraService {
     return this.http.get<GenericResponse>(this.craUrl + "generate-cra-pdf/cli/" + idCra + "/-")
   }
 
-  public canAddActivity(craDay: CraDay, craDayActivity: CraDayActivity): boolean {
+  public craDayNotFull(craDay: CraDay, craDayActivity: CraDayActivity): boolean {
     let t = craDayActivity.nbDay;
 
     if (craDay) {
@@ -181,7 +181,7 @@ export class CraService {
     console.log("getCraDayByDate : cra, date : ", cra, date)
     let craDay: CraDay;
 
-    this.majNewCra(cra, date);
+    // this.majNewCra(cra, date);
 
     if (cra != null && cra.craDays != null) {
       for (let i = 0; i < cra.craDays.length; i++) {
@@ -307,14 +307,38 @@ export class CraService {
           // par defaut type = "WORKDAY"
           craDay.type = "DAY_WORKED";
           // maj type : if day is weekend, type = "WEEKEND"
-          if (this.utils.isDateWeekend(craDay.day)) craDay.type = "WEEKEND";
+          if (this.utils.isDateWeekend(craDay.day)) {
+            craDay.type = "WEEKEND";
+          }
           // if day is holiday, type = "HOLIDAY" : to do
-          if (this.utils.isDateHolidayNational(craDay.day, "fr")) craDay.type = "HOLIDAY";
-          if (this.utils.isDateHolidayPerso(craDay.day, this.craConfigurationData?.holidays)) craDay.type = "HOLIDAY";
+          if (this.utils.isDateHolidayNational(craDay.day, "fr")) {
+            this.markCraDayAsHoliday(craDay);
+          }
+
+          if (this.utils.isDateHolidayPerso(craDay.day, this.craConfigurationData?.holidays)) {
+            this.markCraDayAsHoliday(craDay);
+          }
+
           i++;
-        })
+        });
+
         console.log("majNewCra : cra.craDays after maj, cra.craDays : ", cra.craDays)
       }
+    }
+  }
+
+  private markCraDayAsHoliday(craDay: CraDay) {
+    craDay.type = "HOLIDAY";
+    craDay.isDayWorked = false;
+    if (craDay.craDayActivities && craDay.craDayActivities.length > 0) {
+      craDay.craDayActivities.forEach((cda, k) => {
+        let activity: Activity = cda.activity;
+        let type: ActivityType = activity?.type;
+        if (type != null) {
+          type.congeDay = true;
+          this.majCraDayByType(craDay, type);
+        }
+      });
     }
   }
 
@@ -365,6 +389,8 @@ export class CraService {
     if (craDay) {
 
       if (this.utils.isDateWeekend(craDay.day)) craDay.type = "WEEKEND";
+      if (this.utils.isDateHolidayNational(craDay.day, "fr")) this.markCraDayAsHoliday(craDay);
+      if (this.utils.isDateHolidayPerso(craDay.day, this.craConfigurationData?.holidays)) this.markCraDayAsHoliday(craDay);
 
       if (craDay.type != "WEEKEND" && craDay.type != "HOLIDAY") {
         ok = true;

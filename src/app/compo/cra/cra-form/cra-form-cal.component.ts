@@ -131,6 +131,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   isToRejectCra = false;
   isToValidateCra = false;
 
+  is_canValidateCraOrConge = false;
+  is_canSubmitCra = false;
+
   showWeekNumber() {
     // //////////console.log("DBG showWeekNumber")
     if (this.isAffWeekNumber) this.titleShowWeekNumber = 'Show Week Number';
@@ -231,6 +234,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       })
     );
 
+    this.is_canValidateCraOrConge = this.canValidateCraOrConge();
+    this.is_canSubmitCra = this.canSubmitCra();
+
     console.log("cra list findAll ap call majCra : dataSharingService.listCra:", this.dataSharingService.getListCra())
     console.log("cra list findAll ap call majCra : currentCra:", this.currentCra)
 
@@ -258,6 +264,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.setStatus("DRAFT")
       this.currentCra.validByConsultant = false
       this.currentCra.validByManager = false
+      this.maj_canSubmitCra();
     }
   }
 
@@ -1196,14 +1203,14 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   addToList(cra: Cra) {
     const list = this.dataSharingService.getListCra();
     if (cra && list) {
-      const exists = list.some(item => item.id === cra.id);
-      if (!exists) {
+      const index = list.findIndex(item => item.id === cra.id);
+      if (index < 0) {
         list.push(cra);
-        // Notifier les subscribers de la mise à jour
-        this.dataSharingService.setListCra(list);
-        // this.myList00 
-        // this.setMyList(this.dataSharingService.listCra)
+      } else {
+        list[index] = cra;
       }
+      // Notifier les subscribers de la mise à jour
+      this.dataSharingService.setListCra(list);
     }
   }
 
@@ -1220,13 +1227,31 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   canValidateCraOrConge() {
 
-    // console.log("canValidateCraOrConge this.hasRoleManagerValidate()=",this.hasRoleManagerValidate())
-    // console.log("canValidateCraOrConge this.currentCra.validByManager=", this.currentCra.validByManager)
-    // console.log("canValidateCraOrConge this.isTimeToModify()=", this.isTimeToModify())
-    // console.log("canValidateCraOrConge this.isCraOfManagerRole()=", this.isCraOfManagerRole())
+    let label = "canValidateCraOrConge"
 
-    return this.hasRoleManagerValidate() && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
+    console.log(label + " this.hasRoleManagerValidate()=",this.hasRoleManagerValidate())
+    console.log(label + " this.currentCra.validByManager=", this.currentCra.validByManager)
+    console.log(label + " this.isTimeToModify()=", this.isTimeToModify())
+    console.log(label + " this.isCraOfManagerRole()=", this.isCraOfManagerRole())
 
+    let res = this.hasRoleManagerValidate() && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
+
+    console.log(label + " res=", res)  
+
+    return res;
+
+  }
+
+  canSubmitCra(){
+    let label = "canSubmitCra"
+    let res = (!this.currentCra?.validByConsultant) && this.hasManager() && this.currentCra.consultant?.id == this.userConnected.id ;
+    console.log(label + " currentCra?.validByConsultant=", this.currentCra?.validByConsultant)
+    console.log(label + " res=", res)
+    return res;
+  }
+
+  maj_canSubmitCra() {
+    this.is_canSubmitCra = this.canSubmitCra();
   }
 
 
@@ -1270,21 +1295,26 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     console.log("sendNotification fromUser : ", notification.fromUser)
 
-    let toUser = currentUser.adminConsultant != null ? currentUser.adminConsultant : currentUser;
+    // Déterminer le destinataire selon le statut du CRA
+    let toUser: any;
     console.log("sendNotification currentCra.status=", this.currentCra.status)
-    if (this.currentCra.status != 'TO_VALIDATE') {
-      toUser = this.currentCra.consultant
+
+    if (this.currentCra.status === 'TO_VALIDATE') {
+      // Consultant envoie → notifier son manager
+      toUser = currentUser.adminConsultant || currentUser;
+      console.log("sendNotification: Consultant envoie au manager");
+    } else if (this.currentCra.status === 'VALIDATED' || this.currentCra.status === 'REJECTED') {
+      // Manager valide/rejette → notifier le consultant du CRA
+      toUser = this.currentCra.consultant;
+      console.log("sendNotification: Manager notifie le consultant");
+    } else {
+      // Défaut: si consultant, envoyer au manager; sinon au consultant du CRA
+      toUser = currentUser.adminConsultant != null ? currentUser.adminConsultant : this.currentCra.consultant;
+      console.log("sendNotification: Cas par défaut");
     }
 
     notification.toUser = toUser
-    console.log("sendNotification toUser 1 : ", notification.toUser)
-
-    console.log("sendNotification currentUser.role : ", currentUser.role)
-    if (currentUser.role == "RESPONSIBLE_ESN") {
-      notification.toUser = currentUser
-    }
-
-    console.log("sendNotification toUser 2 : ", notification.toUser)
+    console.log("sendNotification toUser final : ", notification.toUser)
 
     notification.toUsername = notification.toUser.username
 
@@ -1428,35 +1458,37 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   addActivityInDates(craDayActivity: CraDayActivity, dateDeb: Date, dateFin: Date) {
-    console.log("addActivityInDates DEB : craDayActivity, dateDeb, dateFin : ", craDayActivity, dateDeb, dateFin)
+    let label = "addActivityInDates";
+    console.log("********* " + label + " DEB : currentCra: ", this.currentCra)
+    console.log("********* " + label + " DEB : craDayActivity, dateDeb, dateFin : ", craDayActivity, dateDeb, dateFin)
 
     let nbJoursDiff = this.utils.getNbJourBetweenDates(dateDeb, dateFin);
-    console.log("addActivityInDates: nbJoursDiff", nbJoursDiff)
+    console.log("********* " + label + " : nbJoursDiff", nbJoursDiff)
 
     for (let i = 0; i < nbJoursDiff + 1; i++) {
       let date = this.utils.getDatePlusNbJour(dateDeb, i);
-      console.log("addActivityInDates: currentCra, date", this.currentCra, date)
+      console.log("********* " + label + " : currentCra, date", this.currentCra, date)
       this.craDay = this.craService.getCraDayByDate(this.currentCra, date);
-      console.log("addActivityInDates: craDay : ", this.craDay)
+      console.log("********* " + label + " : craDay : ", this.craDay)
       // this.craService.setDayProps(this.craDay);
-      console.log("addActivityInDates: craService, craDayActivity: ", this.craService, craDayActivity)
-      if (this.craService.canAddActivity(this.craDay, craDayActivity)) {
+      console.log("********* " + label + " : craService, craDayActivity: ", this.craService, craDayActivity)
+      if (this.craService.craDayNotFull(this.craDay, craDayActivity)) {
         if (this.craService.isCraDayOpen(this.craDay)) {
-          console.log("addActivityInDates: can add OK")
+          console.log("********* " + label + " : can add OK")
           let cda = this.getNewCraDayActivityFrom(craDayActivity);
           this.craDayActivity = cda;
           this.addActivity(this.craDayActivity, this.craDay, false);
         } else {
-          console.log("addActivityInDates: can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
+          console.log("********* " + label + " : can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
         }
       } else {
-        console.log("addActivityInDates: can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
+        console.log("********* " + label + " : can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
       }
     }
     this.process();
     this.refreshMe();
 
-    console.log("********* addActivityInDates END : currentCra: ", this.currentCra)
+    console.log("********* " + label + " END : currentCra: ", this.currentCra)
 
   }
 
@@ -1537,6 +1569,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.utilsIhm.info("isCraValid : Oops,verify your Conges plz. All days must be conge type.", null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
+            this.maj_canSubmitCra();
             return false;
           } else {
             isCongesVide = false;
@@ -1556,6 +1589,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.utilsIhm.info("isCraValid : Oops, Vous devez saisir au moins un conge.", null, null);
         this.currentCra.validByConsultant = null;
         this.currentCra.dateValidationConsultant = null;
+        this.maj_canSubmitCra();
         return false;
       }
 
@@ -1577,6 +1611,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.utilsIhm.info("isCraValid : Oops,verify your cra plz.All days you have been equals a 1.", null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
+            this.maj_canSubmitCra();
             return false;
           }
         }
@@ -1589,7 +1624,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     }
 
     console.log("isCraValid END OK this.currentCra=", this.currentCra)
-
+    this.maj_canSubmitCra();
     return true;
   }
 
@@ -1622,6 +1657,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       , () => {
         this.currentCra.validByManager = true;
         this.currentCra.dateValidationManager = new Date();
+        this.currentCra.comment = null;
         this.setStatus("VALIDATED")
         this.saveCra(true, true, name + " validated by Manager", this.currentCra.comment);
       },
@@ -1644,6 +1680,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.currentCra.validByManager = false;
     this.currentCra.validByConsultant = false;
+    this.maj_canSubmitCra();
     this.setStatus("REJECTED")
     this.modal.dismissAll(this.rejectCraView);
     this.saveCra(true, true, name + " rejected", this.currentCra.comment);
@@ -1687,6 +1724,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           , () => {
             console.log("sendCraToValidate go to soumettre cra : currentUser.adminConsultant ", currentUser.adminConsultant)
             this.currentCra.validByConsultant = true;
+            this.maj_canSubmitCra();
             this.currentCra.dateValidationConsultant = new Date();
             this.currentCra.comment = null;
             this.setStatus("TO_VALIDATE")
@@ -1698,6 +1736,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           }
           , () => {
             this.currentCra.validByConsultant = false;
+            this.maj_canSubmitCra();
             this.currentCra.dateValidationConsultant = null;
             this.setStatus("DRAFT")
           });
@@ -1786,8 +1825,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.currentCra.craDays.forEach((craDay, index) => {
         if (this.craService.isCraDayOpen(craDay)) {
           this.totalDayToWork++;
-        }else {
-          
+        } else {
+
         }
         craDay.craDayActivities.forEach((cda, k) => {
           let activity: Activity = cda.activity;
@@ -1795,17 +1834,20 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
           let type: ActivityType = activity.type;
           if (type == null) {
+            // Type manquant : charger puis relancer process() depuis zéro pour éviter
+            // le double-comptage dû aux callbacks multiples en attente.
             this.activityTypeService.findById(activity.typeId).subscribe(
               data => {
                 activity.type = data.body.result;
-                type = activity.type;
-
-                this.calcul_recap(activity, cda, craDay);
+                // Recompte complet depuis 0 : pas de calcul_recap direct ici
+                this.process();
+                this.refreshMe();
               },
               error => {
                 console.log("ERROR activityTypeService.findById, activity.typeId, err", activity.typeId, error)
               }
             );
+            // Ne pas compter cette activité maintenant : sera recomptée après chargement du type
           } else {
             this.calcul_recap(activity, cda, craDay);
           }

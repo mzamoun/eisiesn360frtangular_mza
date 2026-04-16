@@ -303,15 +303,30 @@ export class UtilsService {
 
   public isDateHolidayPerso(date: Date, holidays: any[]): boolean {
     if (!date || !holidays) return false;
-    console.log("isDateHolidayPerso : date : ", date, " holidays : ", holidays)
+
+    const day = this.getDate(date);
+    if (!day || isNaN(day.getTime())) return false;
+
+    // console.log("isDateHolidayPerso : date : ", day, " holidays : ", holidays)
     for (let holiday of holidays) {
-      console.log("isDateHolidayPerso : holiday : ", holiday)
-      // Les jours fériés peuvent arriver comme strings ISO depuis l'API
-      const h: Date = (holiday instanceof Date) ? holiday : new Date(holiday);
-      if (isNaN(h.getTime())) continue;
-      if (date.getDate() === h.getDate() &&
-        date.getMonth() === h.getMonth() &&
-        date.getFullYear() === h.getFullYear()) {
+      // console.log("isDateHolidayPerso : holiday : ", holiday)
+
+      let h: Date = null;
+      try {
+        h = this.getDate(holiday);
+      } catch (e) {
+        try {
+          h = this.getDate(holiday?.date);
+        } catch (e2) {
+          continue;
+        }
+      }
+
+      if (!h || isNaN(h.getTime())) continue;
+
+      if (day.getDate() === h.getDate() &&
+        day.getMonth() === h.getMonth() &&
+        day.getFullYear() === h.getFullYear()) {
         return true;
       }
     }
@@ -319,6 +334,14 @@ export class UtilsService {
   }
 
   public isDateHolidayNational(date: Date, pays: string): boolean {
+
+    let label = "isDateHolidayNational"
+
+    // console.log(label + " : date : ", date, " pays : ", pays)
+    // isDateHolidayNational : date :  2026-04-01  pays :  fr
+    date = this.getDate(date);
+    if (!date || isNaN(date.getTime())) return false;
+    // console.log(label + " : date after getDate : ", date);
 
     let key = pays + "_" + date.getFullYear();
     let holidays: Date[] = this.holidaysCache[key];

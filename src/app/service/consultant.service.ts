@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Activity } from '../model/activity';
@@ -26,9 +26,14 @@ export class ConsultantService {
   private consultant: Consultant;
   private managerSelected: Consultant = null;
 
-  constructor(private http: HttpClient, private datasharingService: DataSharingService) {
+  constructor(private http: HttpClient, private datasharingService: DataSharingService, private injector: Injector) {
     this.consultantUrl = environment.apiUrl + '/consultant';
     this.consultantUrlPub = environment.divUrl + '/consultant';
+  }
+
+  /** Résolution lazy pour éviter la dépendance circulaire ConsultantService ↔ DataSharingService */
+  private get dataSharingServiceLazy(): DataSharingService {
+    return this.injector.get(DataSharingService);
   }
 
   public setManagerSelected(m: Consultant) {
@@ -332,7 +337,7 @@ export class ConsultantService {
         if (craDay != null) {
           for (let craDayActivities of craDay.craDayActivities) {
             // craDayActivities.craDay = craDay
-            this.datasharingService.majActivityInCraDayActivity(craDayActivities);
+            this.dataSharingServiceLazy.majActivityInCraDayActivity(craDayActivities);
           }
         }
       }

@@ -1,4 +1,5 @@
-cmd="npx ng build --configuration production --output-path docs --base-href ."
+# cmd="npx ng build --configuration production --output-path docs --base-href ."
+cmd="node ./node_modules/@angular/cli/bin/ng build --configuration production --output-path docs --base-href ./"
 echo "
     run build ...
     cmd : $cmd 
