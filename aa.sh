@@ -1,3 +1,34 @@
+
+
+is_frontend() {
+	# is this dir fronted app
+	[ -f ./build_front.sh -a -f index.html ] && {
+		return true
+	} || {
+		return false 
+	}
+}
+
+[ is_frontend ] && echo "fronted" || echo "dont know"
+
+exit 
+
+
+name=hello_prod_prod
+last=$(echo $name | awk -F_ '{print $NF}')
+echo "
+	last name : $last $name
+"
+[ "$last" == "mza" -o "$last" == "prod" ] && {
+	echo "
+		Exist
+	"
+	exit 0
+}
+
+exit 0
+
+
 echo "
 
 Historique Virements Mourad ZAMOUN -> Sid Ahmed Boukhezna
