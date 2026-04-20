@@ -14,6 +14,7 @@ import { CraStatusHisto } from 'src/app/model/cra-status-histo.model';
                     <th scope="col">Status</th>
                     <th scope="col">Type</th>
                     <th scope="col">User Connected</th>
+                    <th scope="col">Commentaire</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,6 +23,7 @@ import { CraStatusHisto } from 'src/app/model/cra-status-histo.model';
                     <td>{{ element.status }}</td>
                     <td>{{ element.typeCra }}</td>
                     <td>{{ element.userConnected?.username }}</td>
+                    <td>{{ element.comment }}</td>
                 </tr>
             </tbody>
         </table>

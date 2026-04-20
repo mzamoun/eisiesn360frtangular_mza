@@ -25,6 +25,7 @@ export class ActivityListComponent extends MereComponent {
 
   myList: Activity[];
   myObj: Activity;
+  title: string = '';
   /** le consultant des activites */
   @Input() consultant: Consultant = null;
   @ViewChild('selectConsultantCompo', { static: false }) selectConsultantCompo: SelectConsultantComponent;
@@ -77,6 +78,7 @@ export class ActivityListComponent extends MereComponent {
     if (this.selectConsultantCompo) {
       this.selectConsultantCompo.elementSelected = null;
     }
+    this.updateTitle();
     this.findAll();
     if (this.myObjEditView != null) {
       this.myObjEditView.myObj = null;
@@ -104,6 +106,7 @@ export class ActivityListComponent extends MereComponent {
     console.log("onSelectConsultant - consultant set to:", this.consultant);
     console.log("onSelectConsultant - consultantFilterApplied:", this.consultantFilterApplied);
     this.findAll();
+    this.updateTitle();
   }
 
   getTitle() {
@@ -116,25 +119,18 @@ export class ActivityListComponent extends MereComponent {
 
     t = t + " (" + nbElement + ")"
 
-    console.log("getTitle - consultantFilterApplied:", this.consultantFilterApplied);
-    console.log("getTitle - this.consultant:", this.consultant);
-
     // Afficher le consultant seulement si le filtre a été explicitement appliqué
     if (this.consultantFilterApplied && this.consultant != null) {
-      console.log("getTitle - showing specific consultant:", this.consultant.fullName);
       t += " : " + this.consultant.fullName;
     } else {
-      // Pas de consultant spécifique sélectionné, afficher le mot Tous.
-      const role = this.userConnected?.role;
-      if (role === 'MANAGER' && this.managedConsultants.length > 0) {
-        // const consultantNames = this.managedConsultants.map(c => c.firstName + " " + c.lastName).join(", ");
-        t += " : " + "All";
-      } else {
-        t += " : " + "All";
-      }
+      t += " : " + "All";
     }
 
-    return t
+    return t;
+  }
+
+  private updateTitle() {
+    this.title = this.getTitle();
   }
 
   findAll() {
@@ -162,6 +158,7 @@ export class ActivityListComponent extends MereComponent {
           if (data.body != null) {
             this.myList = data.body.result || [];
             this.myList00 = this.myList;
+            this.updateTitle();
           }
         },
         error => {
@@ -181,6 +178,7 @@ export class ActivityListComponent extends MereComponent {
             this.myList = data.body.result || [];
             console.log("findAll Activity - ADMIN myList:", this.myList);
             this.myList00 = this.myList;
+            this.updateTitle();
           }
         },
         error => {
@@ -203,6 +201,7 @@ export class ActivityListComponent extends MereComponent {
                 if (x) {
                   this.myList.push(activity);
                   this.myList00.push(activity);
+                  this.updateTitle();
                 }
               }
             );
@@ -242,6 +241,7 @@ export class ActivityListComponent extends MereComponent {
                   // this.myList = allActivities.filter(a => managedConsultantIds.includes(a.consultantId));
                   console.log("findAll Activity - MANAGER filtered myList:", this.myList);
                   this.myList00 = this.myList;
+                  this.updateTitle();
                 }
               },
               error => {
@@ -276,6 +276,7 @@ export class ActivityListComponent extends MereComponent {
 
   setMyList(list: any[]) {
     this.myList = list;
+    this.updateTitle();
   }
 
   edit(activity: Activity) {

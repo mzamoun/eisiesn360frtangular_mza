@@ -280,6 +280,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       histo.status = this.currentCra.status
       histo.typeCra = this.currentCra.type
       histo.userConnected = this.userConnected
+      histo.comment = this.currentCra.comment
       this.currentCra.statusHistoTab.push(histo)
 
       this.statusHistoTabToJson()
@@ -1411,6 +1412,25 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   /***
+   * Returns true if the given day falls within the activity's dateDeb/dateFin range.
+   * If no date constraint is defined on the activity, returns true.
+   */
+  isActivityValidForDay(activity: Activity, day: any): boolean {
+    if (!activity) return false;
+    if (!activity.dateDeb && !activity.dateFin) return true;
+    const d = this.utils.getDate(day);
+    if (activity.dateDeb) {
+      const deb = this.utils.getDate(activity.dateDeb);
+      if (d < deb) return false;
+    }
+    if (activity.dateFin) {
+      const fin = this.utils.getDate(activity.dateFin);
+      if (d > fin) return false;
+    }
+    return true;
+  }
+
+  /***
    * used to add new cra day activity
    */
   addCurrentActivity() {
@@ -1425,6 +1445,18 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       if (this.craDayActivity != null && !this.isEditCraActivity) {
 
         ////////console.log("saveCurrentActivity: craDay:", this.craDay)
+
+        if (!this.isActivityValidForDay(this.craDayActivity.activity, this.craDay.day)) {
+          const act = this.craDayActivity.activity;
+          const debStr = act.dateDebFr || (act.dateDeb ? this.datePipe.transform(act.dateDeb, 'dd/MM/yyyy') : '?');
+          const finStr = act.dateFinFr || (act.dateFin ? this.datePipe.transform(act.dateFin, 'dd/MM/yyyy') : '?');
+          this.utilsIhm.info(
+            `Impossible d'ajouter l'activité "${act.name || ''}" à cette date.\n` +
+            `Elle est valide uniquement du ${debStr} au ${finStr}.`,
+            null, null
+          );
+          return;
+        }
 
         this.addActivity(this.craDayActivity, this.craDay, true);
 
@@ -1443,7 +1475,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     } else {
       ////console.log("date deb" , this.addMultiDateStartDate)
       ////console.log("date fin" , this.addMultiDateEndDate)
+      this.modal.dismissAll(this.dayDetailView);
       this.addActivityInDates(this.craDayActivity, this.addMultiDateStartDate, this.addMultiDateEndDate);
+      return;
     }
 
     this.modal.dismissAll(this.dayDetailView);
@@ -1465,6 +1499,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     let nbJoursDiff = this.utils.getNbJourBetweenDates(dateDeb, dateFin);
     console.log("********* " + label + " : nbJoursDiff", nbJoursDiff)
 
+    let nbHorsPlage = 0;
+
     for (let i = 0; i < nbJoursDiff + 1; i++) {
       let date = this.utils.getDatePlusNbJour(dateDeb, i);
       console.log("********* " + label + " : currentCra, date", this.currentCra, date)
@@ -1474,10 +1510,15 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       console.log("********* " + label + " : craService, craDayActivity: ", this.craService, craDayActivity)
       if (this.craService.craDayNotFull(this.craDay, craDayActivity)) {
         if (this.craService.isCraDayOpen(this.craDay)) {
-          console.log("********* " + label + " : can add OK")
-          let cda = this.getNewCraDayActivityFrom(craDayActivity);
-          this.craDayActivity = cda;
-          this.addActivity(this.craDayActivity, this.craDay, false);
+          if (!this.isActivityValidForDay(craDayActivity.activity, date)) {
+            nbHorsPlage++;
+            console.log("********* " + label + " : can add KO : date hors plage de l'activité : ", date, craDayActivity.activity)
+          } else {
+            console.log("********* " + label + " : can add OK")
+            let cda = this.getNewCraDayActivityFrom(craDayActivity);
+            this.craDayActivity = cda;
+            this.addActivity(this.craDayActivity, this.craDay, false);
+          }
         } else {
           console.log("********* " + label + " : can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
         }
@@ -1485,6 +1526,17 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         console.log("********* " + label + " : can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
       }
     }
+
+    if (nbHorsPlage > 0) {
+      const act = craDayActivity.activity;
+      const debStr = act?.dateDebFr || (act?.dateDeb ? this.datePipe.transform(act.dateDeb, 'dd/MM/yyyy') : '?');
+      const finStr = act?.dateFinFr || (act?.dateFin ? this.datePipe.transform(act.dateFin, 'dd/MM/yyyy') : '?');
+      this.utilsIhm.info(
+        `${nbHorsPlage} jour(s) ignoré(s) : l'activité "${act?.name || ''}" est valide uniquement du ${debStr} au ${finStr}.`,
+        null, null
+      );
+    }
+
     this.process();
     this.refreshMe();
 

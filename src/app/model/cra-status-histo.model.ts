@@ -5,4 +5,5 @@ export class CraStatusHisto {
     status: string;
     typeCra: string;    // CRA ou CONGé
     userConnected : Consultant
+    comment: string;
 }

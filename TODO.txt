@@ -5,13 +5,20 @@ bug : notifications des cra : mauvaise direction : OK
 le consultant doit notifier son manager 
 le manager doit notifier le consultant du cra 
 
-- Btn "Approuver Cra" n'apparait pas chez resp_esn 
+- Btn "Approuver Cra" n'apparait pas chez resp_esn : OK 
 
-- verif : on ne doit pas ajouter une activites en dehors de ses dates deb, fin 
+- verifier : on ne doit pas ajouter une activites en dehors de ses dates deb, fin : OK
+
+- optimisation sur getTitle() de liste activites : OK 
+
+- dans history status : on doit ajouter le comment : OK 
+
 
 - Ajouter un commentaire à un jour férié 
 
-
+- CRA : un seul btn : Ajouter Cra / Congé 
+	- par defaut type = CRA 
+	- on peut changer le type via radio btn 
 
 ----------------------------------------------------------------
 
