@@ -881,6 +881,19 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     return 'cal-cell-normal';
   }
 
+  getHolidayPersoLabel(day): string | null {
+    const dayDate: Date = day?.date instanceof Date ? day.date : new Date(day?.date);
+    if (!dayDate || isNaN(dayDate.getTime())) return null;
+    const config = this.craService.craConfigurationData;
+    const persoHolidays = config?.holidays;
+    if (!persoHolidays?.length || !this.utils.isDateHolidayPerso(dayDate, persoHolidays)) return null;
+    const dd = dayDate.getDate().toString().padStart(2, '0');
+    const mm = (dayDate.getMonth() + 1).toString().padStart(2, '0');
+    const yyyy = dayDate.getFullYear();
+    const dateKey = `${dd}-${mm}-${yyyy}`;
+    return config?.holidayLabels?.[dateKey] || ('Congé perso : ' + dateKey);
+  }
+
 
   getWidthDivsEntete() {
     let w = this.widthDevisEntete;

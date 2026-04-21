@@ -125,6 +125,13 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.idEsnCurrentSource.next(value);
   }
 
+  private syncEsnFromUser(user: Consultant): void {
+    const esn = user?.esn || null;
+    this.esnCurrent = esn;
+    this.idEsnCurrent = esn?.id || null;
+    this.esnCurrentReadySource.next(esn);
+  }
+
   private get craService(): CraService {
     return this.injector.get(CraService);
   }
@@ -213,12 +220,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     }
 
     // this.currentUser = DataSharingService.currentUser;
-
-    if (this.userConnected) {
-      let esn = this.userConnected.esn;
-      this.esnCurrentReadySource.next(esn);
-      this.idEsnCurrent = esn?.id;
-    }
 
     return this.userConnected
   }
@@ -569,16 +570,13 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         if (data) {
           this.setUserConnected(data.body.result)
           console.log("findConsultantByUsername userConnected : ", this.userConnected)
-          this.esnCurrent = this.userConnected?.esn
           console.log("getConsultantConnectedAndHisInfos esnCurrent : ", this.esnCurrent)
-          this.idEsnCurrent = this.esnCurrent?.id
           console.log("getConsultantConnectedAndHisInfos idEsnCurrent : ", this.idEsnCurrent)
 
           this.majEsnOnConsultant(() => {
             if (this.userConnected) {
-              let esn = this.userConnected.esn;
-              this.esnCurrentReadySource.next(esn);
-              this.idEsnCurrent = esn?.id
+              this.setUserConnected(this.userConnected);
+              this.saveTokenUser(this.userConnected);
               console.log("majEsnOnConsultant idEsnCurrent : ", this.idEsnCurrent)
             }
           }, (error) => {
@@ -728,6 +726,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   setUserConnected(user: Consultant) {
     this.userConnected = user;
+    this.syncEsnFromUser(user);
     this.userConnectedSource.next(user);
     this.isUserLoggedInFct.next(!!user);
   }

@@ -33,6 +33,8 @@ export class CraConfigurationComponent extends MereComponent {
   editingHolidayTitle: string = '';
   isEditingExistingHoliday: boolean = false;
 
+  idEsnCurrent: number = null;
+
   constructor(private craConfigurationService: CraConfigurationService, public utils: UtilsService
     , public dataSharingService: DataSharingService, private datePipe: DatePipe
     , private modal: NgbModal) {
@@ -40,8 +42,20 @@ export class CraConfigurationComponent extends MereComponent {
   }
 
   ngOnInit() {
-    this.viewDateChange()
+    this.idEsnCurrent = this.dataSharingService.idEsnCurrent;
 
+    if (this.idEsnCurrent && this.idEsnCurrent > 0) {
+      this.viewDateChange();
+    }
+
+    this.subscriptions.push(
+      this.dataSharingService.idEsnCurrent$.subscribe(id => {
+        if (id && id > 0 && this.idEsnCurrent !== id) {
+          this.idEsnCurrent = id;
+          this.viewDateChange();
+        }
+      })
+    );
   }
 
   viewDateChange() {
@@ -49,33 +63,15 @@ export class CraConfigurationComponent extends MereComponent {
     setTimeout(() => {
       this.beforeCallServer("viewDateChange")
       console.log("viewDateChange : viewDate : ", this.viewDate)
-      let idEsnCurrent = this.dataSharingService.idEsnCurrent;
-      console.log("viewDateChange : dataSharingService.idEsnCurrent : ", idEsnCurrent)
-      if (!idEsnCurrent || idEsnCurrent <= 0) {
-        idEsnCurrent = this.dataSharingService.userConnected?.esn?.id || null;
-        console.log("viewDateChange : dataSharingService.userConnected?.esn?.id : ", idEsnCurrent)
-        if (idEsnCurrent) {
-          this.dataSharingService.idEsnCurrent = idEsnCurrent;
-        }
-      }
 
-      if (!idEsnCurrent || idEsnCurrent <= 0) {
-        this.dataSharingService.getCurrentUserFromLocaleStorage();
-        idEsnCurrent = this.dataSharingService.userConnected?.esn?.id || null;
-        console.log("viewDateChange : after getCurrentUserFromLocaleStorage : dataSharingService.userConnected?.esn?.id : ", idEsnCurrent)
-        if (idEsnCurrent) {
-          this.dataSharingService.idEsnCurrent = idEsnCurrent;
-        }
-      }
-
-      if (!idEsnCurrent || idEsnCurrent <= 0) {
+      if (!this.idEsnCurrent || this.idEsnCurrent <= 0) {
         this.addError(new MyError("viewDateChange", "Esn non trouvée pour l'utilisateur connecté"))
         return;
       }
 
       let myDate = this.datePipe.transform(this.viewDate, "MM-yyyy");
       console.log("viewDateChange : myDate : ", myDate)
-      this.craConfigurationService.getCraConfigByEsnIdAndMonth(idEsnCurrent, myDate)
+      this.craConfigurationService.getCraConfigByEsnIdAndMonth(this.idEsnCurrent, myDate)
         .subscribe((data) => {
           this.afterCallServer("viewDateChange", data)
           this.craConfigurationData = data?.body?.result || new CraConfiguration();
