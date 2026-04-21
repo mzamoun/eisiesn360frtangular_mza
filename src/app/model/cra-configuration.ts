@@ -18,6 +18,7 @@ export class CraConfiguration {
   month: Date;
   monthStringFormat: string;
   holidays: Date[];
+  holidayLabels: {[dateKey: string]: string};  // dateKey format: dd-MM-yyyy
   createdDate: Date;
   lastModifiedDate: Date
 }

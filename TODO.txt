@@ -1,20 +1,9 @@
 
-- bug : jours de vacances perso : ramener les jours de vacances perso du mois : OK
-
-bug : notifications des cra : mauvaise direction : OK
-le consultant doit notifier son manager 
-le manager doit notifier le consultant du cra 
-
-- Btn "Approuver Cra" n'apparait pas chez resp_esn : OK 
-
-- verifier : on ne doit pas ajouter une activites en dehors de ses dates deb, fin : OK
-
-- optimisation sur getTitle() de liste activites : OK 
-
-- dans history status : on doit ajouter le comment : OK 
 
 
-- Ajouter un commentaire à un jour férié 
+- Ajouter un commentaire à un jour férié : 
+	url : /cra-configuration
+	
 
 - CRA : un seul btn : Ajouter Cra / Congé 
 	- par defaut type = CRA 
@@ -87,6 +76,24 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+
+- bug : jours de vacances perso : ramener les jours de vacances perso du mois : OK
+
+bug : notifications des cra : mauvaise direction : OK
+le consultant doit notifier son manager 
+le manager doit notifier le consultant du cra 
+
+- Btn "Approuver Cra" n'apparait pas chez resp_esn : OK 
+
+2026-04-20 17:09:19
+
+- verifier : on ne doit pas ajouter une activites en dehors de ses dates deb, fin : OK
+
+- optimisation sur getTitle() de liste activites : OK 
+
+- dans history status : on doit ajouter le comment : OK 
+--------
 
 le manager peut rejeter un cra/congé validated 
 

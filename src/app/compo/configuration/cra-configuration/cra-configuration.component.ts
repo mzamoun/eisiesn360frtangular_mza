@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CalendarEvent, CalendarView } from "angular-calendar";
 import { MonthViewDay } from "calendar-utils";
 import { endOfDay, startOfDay } from "date-fns";
@@ -26,9 +27,15 @@ export class CraConfigurationComponent extends MereComponent {
   craConfigurationData: CraConfiguration = new CraConfiguration();
 
   @ViewChild('customCellTemplate', { static: true }) customCellTemplate: TemplateRef<any>;
+  @ViewChild('holidayDialogView', { static: true }) holidayDialogView: TemplateRef<any>;
+
+  selectedDay: MonthViewDay<any> | null = null;
+  editingHolidayTitle: string = '';
+  isEditingExistingHoliday: boolean = false;
 
   constructor(private craConfigurationService: CraConfigurationService, public utils: UtilsService
-    , public dataSharingService: DataSharingService, private datePipe: DatePipe) {
+    , public dataSharingService: DataSharingService, private datePipe: DatePipe
+    , private modal: NgbModal) {
     super(utils, dataSharingService);
   }
 
@@ -90,12 +97,17 @@ export class CraConfigurationComponent extends MereComponent {
   update() {
     this.beforeCallServer("update")
     this.craConfigurationData.esn = this.getEsnCurrent();
+    const savedLabels = this.craConfigurationData.holidayLabels;
     console.log("update craConfigurationData : ", this.craConfigurationData)
     this.craConfigurationService.updateCraConfiguration(this.craConfigurationData).subscribe((data) => {
       this.afterCallServer("update", data)
       this.craConfigurationData = data?.body?.result || this.craConfigurationData;
       if (!this.craConfigurationData.holidays) {
         this.craConfigurationData.holidays = [];
+      }
+      // Le serveur ne persiste pas holidayLabels : on le restaure
+      if (!this.craConfigurationData.holidayLabels && savedLabels) {
+        this.craConfigurationData.holidayLabels = savedLabels;
       }
       console.log("craConfigurationData : ", this.craConfigurationData)
     }, (error) => {
@@ -105,21 +117,76 @@ export class CraConfigurationComponent extends MereComponent {
 
   dayClicked(day: MonthViewDay<any>, events: CalendarEvent[]) {
     console.log("dayClicked : day : ", day);
-    this.craConfigurationData.month = day.date;
-    this.craConfigurationData.monthStringFormat = this.datePipe.transform(day.date, "MM-yyyy");
-    if (this.craConfigurationData.holidays != null) {
-      let index = this.craConfigurationData.holidays.findIndex(item => this.datePipe.transform(item, "dd-MM-yyyy") ==
-        this.datePipe.transform(day.date, "dd-MM-yyyy"));
-      if (index > -1) {
-        this.craConfigurationData.holidays.splice(index, 1)
-      } else {
-        this.craConfigurationData.holidays.push(day.date);
-      }
-    } else {
-      this.craConfigurationData.holidays = new Array();
-      this.craConfigurationData.holidays.push(day.date);
+
+    const dayDate = this.utils.getDate(day.date);
+
+    // Jour férié national : rien à faire
+    if (this.isNationalHoliday(dayDate)) {
+      console.log("dayClicked : jour férié national, rien à faire");
+      return;
     }
 
+    this.selectedDay = day;
+    this.craConfigurationData.month = day.date;
+    this.craConfigurationData.monthStringFormat = this.datePipe.transform(day.date, "MM-yyyy");
+
+    if (this.isPersonalHoliday(dayDate)) {
+      // Jour férié personnel : popup pour modifier le titre ou supprimer
+      const existingIndex = this.craConfigurationData.holidays.findIndex(
+        item => this.datePipe.transform(item, "dd-MM-yyyy") === this.datePipe.transform(day.date, "dd-MM-yyyy")
+      );
+      const existingEvent = day.events?.find(e => e.cssClass === 'holiday-perso');
+      this.editingHolidayTitle = existingEvent?.title
+        || ('Congé perso : ' + this.datePipe.transform(day.date, 'dd/MM/yyyy'));
+      this.isEditingExistingHoliday = true;
+    } else {
+      // Jour normal : popup pour ajouter un congé personnel
+      this.editingHolidayTitle = 'Congé perso : ' + this.datePipe.transform(day.date, 'dd/MM/yyyy');
+      this.isEditingExistingHoliday = false;
+    }
+
+    this.modal.open(this.holidayDialogView, { size: 'sm', centered: true });
+  }
+
+  confirmHoliday() {
+    if (!this.selectedDay) return;
+
+    const dateKey = this.datePipe.transform(this.selectedDay.date, 'dd-MM-yyyy');
+
+    const index = this.craConfigurationData.holidays.findIndex(
+      item => this.datePipe.transform(item, "dd-MM-yyyy") === dateKey
+    );
+
+    if (index > -1) {
+      this.craConfigurationData.holidays.splice(index, 1);
+    }
+    this.craConfigurationData.holidays.push(this.selectedDay.date);
+
+    if (!this.craConfigurationData.holidayLabels) {
+      this.craConfigurationData.holidayLabels = {};
+    }
+    this.craConfigurationData.holidayLabels[dateKey] = this.editingHolidayTitle;
+
+    this.modal.dismissAll();
+    this.setEvents();
+    this.update();
+  }
+
+  deleteSelectedHoliday() {
+    if (!this.selectedDay) return;
+
+    const dateKey = this.datePipe.transform(this.selectedDay.date, 'dd-MM-yyyy');
+    const index = this.craConfigurationData.holidays.findIndex(
+      item => this.datePipe.transform(item, "dd-MM-yyyy") === dateKey
+    );
+    if (index > -1) {
+      this.craConfigurationData.holidays.splice(index, 1);
+    }
+    if (this.craConfigurationData.holidayLabels) {
+      delete this.craConfigurationData.holidayLabels[dateKey];
+    }
+
+    this.modal.dismissAll();
     this.setEvents();
     this.update();
   }
@@ -151,8 +218,10 @@ export class CraConfigurationComponent extends MereComponent {
     this.craConfigurationData.holidays.forEach(value => {
       value = this.utils.getDate(value);
       console.log("setEvents : holiday value : ", value)
+      const dateKey = this.datePipe.transform(value, 'dd-MM-yyyy');
+      const label = this.craConfigurationData.holidayLabels?.[dateKey] || ('Congé perso : ' + dateKey);
       this.events.push({
-        title: "holiday : " + this.datePipe.transform(value, "dd-MM-yyyy"),
+        title: label,
         start: startOfDay(value),
         end: endOfDay(value),
         color: {

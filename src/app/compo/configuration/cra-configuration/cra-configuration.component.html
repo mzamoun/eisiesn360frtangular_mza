@@ -44,6 +44,26 @@
     </div>
 </ng-template>
 
+<ng-template #holidayDialogView let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ isEditingExistingHoliday ? 'Modifier le congé personnel' : 'Ajouter un congé personnel' }}
+    </h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <label class="form-label">Titre de l'événement</label>
+    <input type="text" class="form-control" [(ngModel)]="editingHolidayTitle" />
+  </div>
+  <div class="modal-footer">
+    <button *ngIf="isEditingExistingHoliday" class="btn btn-danger" (click)="deleteSelectedHoliday()">Supprimer</button>
+    <button class="btn btn-primary" (click)="confirmHoliday()">
+      {{ isEditingExistingHoliday ? 'Modifier' : 'Ajouter' }}
+    </button>
+    <button class="btn btn-secondary" (click)="modal.dismiss()">Annuler</button>
+  </div>
+</ng-template>
+
 <ng-template #defaultTemplate let-days="days" let-locale="locale" let-trackByWeekDayHeaderDate="trackByWeekDayHeaderDate">
     <div class="cal-cell-row cal-header">
         <div class="cal-cell" *ngFor="let day of days; trackBy: trackByWeekDayHeaderDate" [class.cal-past]="day.isPast" [class.cal-today]="day.isToday" [class.cal-future]="day.isFuture" [class.cal-weekend]="day.isWeekend" [ngClass]="day.cssClass">
