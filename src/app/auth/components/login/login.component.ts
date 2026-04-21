@@ -28,7 +28,9 @@ export class LoginComponent implements OnInit {
     let lastUserName = this.dataSharingService.getLastUserName()
     console.log("login ngOnInit deb lastUserName : ", lastUserName)
     if (this.dataSharingService.isLoggedIn()) {
-      this.dataSharingService.gotoMyProfile()
+      console.log("login ngOnInit : user déjà loggé, redirection vers home")
+      this.dataSharingService.gotoMyHome()
+      // this.dataSharingService.gotoMyProfile()
       //  this.authService.gotoLogin()
     }
     if (!this.credentials.username) this.credentials.username = lastUserName;

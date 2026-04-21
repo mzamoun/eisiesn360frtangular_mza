@@ -201,6 +201,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.router.navigate(['/my-profile'])
   }
 
+  gotoMyHome() {
+    console.log("navigate to home ")
+    this.router.navigate(['/home'])
+  }
+
   getCurrentUserFromLocaleStorage(): Consultant {
     let value = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED);
     if (value != null && value != undefined) {
@@ -368,14 +373,14 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
       console.log(label + " END - navigate to cra_form", cra)
     }
-    , 1500);
+      , 1500);
   }
 
   showFee(fee: NoteFrais) {
-      this.currentFee = fee;
-      this.isAdd = "";
-      this.router.navigate(["/notefrais_form"])
-    }
+    this.currentFee = fee;
+    this.isAdd = "";
+    this.router.navigate(["/notefrais_form"])
+  }
 
   /**
    * @param cra 
@@ -385,17 +390,17 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    */
   showCraViaLoading(cra: Cra, tms = 500, isReturnIfSameCra = false) {
 
-      if(isReturnIfSameCra) {
-        let lastCra: Cra = this.currentCraSource.value;
-        if (lastCra && lastCra.id == cra.id) {
-          return;
-        }
+    if (isReturnIfSameCra) {
+      let lastCra: Cra = this.currentCraSource.value;
+      if (lastCra && lastCra.id == cra.id) {
+        return;
       }
+    }
 
     //pour bien rafraichir la page.
     this.showLoading();
 
-      setTimeout(() => {
+    setTimeout(() => {
       this.showCra(cra);
     }, tms);
   }
@@ -493,8 +498,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * @param caller : objet appelant 
    */
   login(credentials: Credentials, caller: any = null): void {
+    let label = "Tentative de connexion en cours..."
+    this.addInfo(label)
     this.tokenService.getResponseHeaders(credentials)
       .subscribe(res => {
+        this.delInfo(label)
         console.log("++++++++++++++++login:", credentials, res);
         if (caller) {
           caller.info = "Info : res=" + JSON.stringify(res)
@@ -516,6 +524,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           }
         }
       }, error => {
+        this.delInfo(label)
         if (caller) {
           caller.error = "ERROR : error=" + JSON.stringify(error)
           //////console.log("error:", credentials, error);

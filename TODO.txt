@@ -1,9 +1,26 @@
 
+set loading on login , goto home. debug on disconnect : OK 
+---
 
+mettre le calcul des fetes national dans un services a part 
+avec pays : 
+France
+Algeria
+Tunisia
+Libya
+Mauritania
+Niger
 
-- Ajouter un commentaire à un jour férié : 
-	url : /cra-configuration
-	
+---
+
+l'internationalisation complete : 
+
+fr
+ar 
+en 
+
+---------
+
 
 - CRA : un seul btn : Ajouter Cra / Congé 
 	- par defaut type = CRA 
@@ -76,6 +93,10 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+ 2026-04-21 17:17:44
+- Ajouter un commentaire à un jour férié : OK 
+	url : /cra-configuration
 
 
 - bug : jours de vacances perso : ramener les jours de vacances perso du mois : OK
