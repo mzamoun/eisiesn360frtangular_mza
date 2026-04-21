@@ -388,6 +388,7 @@
     <div [className]="getClassOfDay(day)" *ngIf="day">
         <div *ngIf="day.inMonth; else notInMonth">
             <div>
+                <span class="cal-day-badge bg-warning text-dark" *ngIf="utils.getNationalHolidayLabel(day?.date, 'fr') as nationalLabel">{{ nationalLabel }}</span>
                 <span class="cal-day-badge holiday-perso-badge" *ngIf="getHolidayPersoLabel(day) as label">{{ label }}</span>
                 <div *ngFor="let e of day.events">
                     <span class="cal-day-badge bg-{{day.isWeekend ? 'danger' : 'primary'}}"

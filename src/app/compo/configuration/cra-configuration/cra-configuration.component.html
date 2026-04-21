@@ -30,6 +30,7 @@
     <div [className]="getClassOfDay(day)">
         <div *ngIf="day?.inMonth; else notInMonth">
             <div>
+                <span class="cal-day-badge bg-warning text-dark" *ngIf="utils.getNationalHolidayLabel(day?.date, 'fr') as nationalLabel">{{ nationalLabel }}</span>
                 <div *ngFor="let e of day.events">
                     <span class="cal-day-badge holiday-perso-badge" *ngIf="e.title != null">{{ e.title }}</span>
                 </div>

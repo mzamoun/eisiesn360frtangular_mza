@@ -9,6 +9,11 @@ import { IMyDpOptions } from "mydatepicker";
 import { CraDayActivity } from "../model/cra-day-activity";
 import { TradService } from './trad.service';
 
+export interface DateLabelHoliday {
+  date: Date;
+  label: string;
+}
+
 const formatter = new Intl.NumberFormat('fr-FR', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2
@@ -267,14 +272,23 @@ export class UtilsService {
     return isWeekend;
   }
 
-  public holidaysCache: { [key: string]: Date[] } = {};
+  public holidaysCache: { [key: string]: DateLabelHoliday[] } = {};
   public addHolidays(date: Date, pays: string, holidays: Date[]) {
     let key = pays + "_" + date.getFullYear();
-    let holidaysOfYear: Date[] = this.holidaysCache[key];
-    if (!holidays) {
+    let holidaysOfYear: DateLabelHoliday[] = this.holidaysCache[key];
+    if (!holidaysOfYear) {
+      holidaysOfYear = this.getHolidaysOfYear(date.getFullYear(), pays);
+      this.holidaysCache[key] = holidaysOfYear;
+    }
+    if (holidays) {
       holidays.forEach(value => {
-        // this.holidaysCache[key].push(value);
-        if (!this.isDateInTabDate(value, holidaysOfYear)) holidaysOfYear.push(value);
+        const exists = holidaysOfYear.some(h => this.isDateInTabDate(value, [h.date]));
+        if (!exists) {
+          holidaysOfYear.push({
+            date: this.getDate(value),
+            label: 'Congé perso'
+          });
+        }
       });
     }
   }
@@ -344,21 +358,49 @@ export class UtilsService {
     // console.log(label + " : date after getDate : ", date);
 
     let key = pays + "_" + date.getFullYear();
-    let holidays: Date[] = this.holidaysCache[key];
+    let holidays: DateLabelHoliday[] = this.holidaysCache[key];
     if (!holidays) {
       holidays = this.getHolidaysOfYear(date.getFullYear(), pays);
       this.holidaysCache[key] = holidays;
     }
 
     for (let holiday of holidays) {
-      if (date.getDate() === holiday.getDate() &&
-        date.getMonth() === holiday.getMonth() &&
-        date.getFullYear() === holiday.getFullYear()) {
+      const holidayDate = this.getDate(holiday?.date);
+      if (!holidayDate || isNaN(holidayDate.getTime())) continue;
+
+      if (date.getDate() === holidayDate.getDate() &&
+        date.getMonth() === holidayDate.getMonth() &&
+        date.getFullYear() === holidayDate.getFullYear()) {
         return true;
       }
     }
 
     return false;
+  }
+
+  public getNationalHolidayLabel(date: Date, pays: string): string | null {
+    date = this.getDate(date);
+    if (!date || isNaN(date.getTime())) return null;
+
+    const key = pays + "_" + date.getFullYear();
+    let holidays: DateLabelHoliday[] = this.holidaysCache[key];
+    if (!holidays) {
+      holidays = this.getHolidaysOfYear(date.getFullYear(), pays);
+      this.holidaysCache[key] = holidays;
+    }
+
+    for (const holiday of holidays) {
+      const holidayDate = this.getDate(holiday?.date);
+      if (!holidayDate || isNaN(holidayDate.getTime())) continue;
+
+      if (date.getDate() === holidayDate.getDate()
+        && date.getMonth() === holidayDate.getMonth()
+        && date.getFullYear() === holidayDate.getFullYear()) {
+        return holiday.label;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -367,11 +409,11 @@ export class UtilsService {
    * @param pays : fr, en, ...
    * @returns 
    */
-  public getHolidaysOfYear(year: number, pays: string): Date[] {
-    const holidays: Date[] = [];
+  public getHolidaysOfYear(year: number, pays: string): DateLabelHoliday[] {
+    const holidays: DateLabelHoliday[] = [];
 
     let key = pays + "_" + year;
-    let cachedHolidays: Date[] = this.holidaysCache[key];
+    let cachedHolidays: DateLabelHoliday[] = this.holidaysCache[key];
     if (cachedHolidays) {
       return cachedHolidays;
     }
@@ -381,14 +423,14 @@ export class UtilsService {
       case 'fr':
         // Dates fixes
         holidays.push(
-          new Date(year, 0, 1),   // Nouvel An
-          new Date(year, 4, 1),   // Fête du Travail
-          new Date(year, 4, 8),   // Victoire 1945
-          new Date(year, 6, 14),  // Fête Nationale
-          new Date(year, 7, 15),  // Assomption
-          new Date(year, 10, 1),  // Toussaint
-          new Date(year, 10, 11), // Armistice
-          new Date(year, 11, 25)  // Noël
+          { date: new Date(year, 0, 1), label: 'Nouvel An' },
+          { date: new Date(year, 4, 1), label: 'Fête du Travail' },
+          { date: new Date(year, 4, 8), label: 'Victoire 1945' },
+          { date: new Date(year, 6, 14), label: 'Fête Nationale' },
+          { date: new Date(year, 7, 15), label: 'Assomption' },
+          { date: new Date(year, 10, 1), label: 'Toussaint' },
+          { date: new Date(year, 10, 11), label: 'Armistice' },
+          { date: new Date(year, 11, 25), label: 'Noël' }
         );
 
         // Calcul du dimanche de Pâques
@@ -396,16 +438,16 @@ export class UtilsService {
 
         // Jours mobiles basés sur Pâques
         holidays.push(
-          new Date(year, easter.getMonth(), easter.getDate() + 1),  // Lundi de Pâques
-          new Date(year, easter.getMonth(), easter.getDate() + 39), // Ascension
-          new Date(year, easter.getMonth(), easter.getDate() + 50)  // Lundi de Pentecôte
+          { date: new Date(year, easter.getMonth(), easter.getDate() + 1), label: 'Lundi de Pâques' },
+          { date: new Date(year, easter.getMonth(), easter.getDate() + 39), label: 'Ascension' },
+          { date: new Date(year, easter.getMonth(), easter.getDate() + 50), label: 'Lundi de Pentecôte' }
         );
         break;
 
       // case 'be': ... (Belgique, etc.)
     }
 
-    return holidays.sort((a, b) => a.getTime() - b.getTime());
+    return holidays.sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
   /** Algorithme de calcul du Dimanche de Pâques **/
