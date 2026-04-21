@@ -273,7 +273,7 @@ export class UtilsService {
   }
 
   public holidaysCache: { [key: string]: DateLabelHoliday[] } = {};
-  public addHolidays(date: Date, pays: string, holidays: Date[]) {
+  public addHolidays(date: Date, pays: string, holidays: any[]) {
     let key = pays + "_" + date.getFullYear();
     let holidaysOfYear: DateLabelHoliday[] = this.holidaysCache[key];
     if (!holidaysOfYear) {
@@ -282,29 +282,38 @@ export class UtilsService {
     }
     if (holidays) {
       holidays.forEach(value => {
-        const exists = holidaysOfYear.some(h => this.isDateInTabDate(value, [h.date]));
+        const holidayDate = this.getDate((value as any)?.date ?? (value as any)?.day ?? (value as any)?.dayDate ?? value);
+        if (!holidayDate || isNaN(holidayDate.getTime())) return;
+
+        const exists = holidaysOfYear.some(h => this.isDateInTabDate(holidayDate, [h.date]));
         if (!exists) {
           holidaysOfYear.push({
-            date: this.getDate(value),
-            label: 'Congé perso'
+            date: holidayDate,
+            label: (value as any)?.label || (value as any)?.title || (value as any)?.name || null
           });
         }
       });
     }
   }
 
-  public isDateInTabDate(date: Date, tab: Date[]): boolean {
+  public isDateInTabDate(date: any, tab: any[]): boolean {
     if (!date) return false;
     if (!tab) return false;
+    const dateValue = this.getDate((date as any)?.date ?? (date as any)?.day ?? (date as any)?.dayDate ?? date);
+    if (!dateValue || isNaN(dateValue.getTime())) return false;
+
     for (let d of tab) {
-      if (date.getDate() == d.getDate() && date.getMonth() == d.getMonth() && date.getFullYear() == d.getFullYear()) {
+      const tabDate = this.getDate((d as any)?.date ?? (d as any)?.day ?? (d as any)?.dayDate ?? d);
+      if (!tabDate || isNaN(tabDate.getTime())) continue;
+
+      if (dateValue.getDate() == tabDate.getDate() && dateValue.getMonth() == tabDate.getMonth() && dateValue.getFullYear() == tabDate.getFullYear()) {
         return true;
       }
     }
     return false;
   }
 
-  tabDateNotInOtherTabDate(holidays: Date[], tabParent: Date[]): boolean {
+  tabDateNotInOtherTabDate(holidays: any[], tabParent: any[]): boolean {
     if (!holidays) return true;
     if (!tabParent) return true;
     for (let h of holidays) {
@@ -321,13 +330,24 @@ export class UtilsService {
     const day = this.getDate(date);
     if (!day || isNaN(day.getTime())) return false;
 
+    const dayKeyLocal = this.formatDate(day);
+
     // console.log("isDateHolidayPerso : date : ", day, " holidays : ", holidays)
     for (let holiday of holidays) {
       // console.log("isDateHolidayPerso : holiday : ", holiday)
 
+      const raw = holiday?.date ?? holiday?.day ?? holiday?.dayDate ?? holiday;
+      if (typeof raw === 'string') {
+        const rawKeyMatch = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+        const rawKey = rawKeyMatch ? rawKeyMatch[1] : null;
+        if (rawKey && rawKey === dayKeyLocal) {
+          return true;
+        }
+      }
+
       let h: Date = null;
       try {
-        h = this.getDate(holiday);
+        h = this.getDate(raw);
       } catch (e) {
         try {
           h = this.getDate(holiday?.date);

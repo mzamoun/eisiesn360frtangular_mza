@@ -100,7 +100,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   view: CalendarView = CalendarView.Month;
   viewDate: Date = new Date();
-  events: CalendarEvent[];
+  events: CalendarEvent[] = [];
 
   activities: Activity[];
 
@@ -228,7 +228,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     // Rafraîchir le calendrier quand les jours fériés arrivent de l'API (chargement async)
     this.subscriptions.push(
       this.craService.holidaysLoaded$.subscribe(config => {
-        if (config?.holidays?.length > 0) {
+        if (config) {
           this.refreshMe();
         }
       })
@@ -509,6 +509,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       // console.log("+++ initCra currentCra.month", currentCra.month);
       if (this.notADate(this.viewDate)) this.viewDate = new Date();
       this.viewDate = this.utils.getDate(this.viewDate);
+      // Charger les jours fériés (dont congés perso + labels) du mois du CRA dès l'ouverture.
+      this.craService.majHolidays(this.viewDate);
       // console.log("+++ initCra viewDate", this.viewDate);
       this.events = [];
       // console.log("+++ initCra currentCra.craDays", currentCra.craDays);
@@ -884,14 +886,65 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   getHolidayPersoLabel(day): string | null {
     const dayDate: Date = day?.date instanceof Date ? day.date : new Date(day?.date);
     if (!dayDate || isNaN(dayDate.getTime())) return null;
+
     const config = this.craService.craConfigurationData;
     const persoHolidays = config?.holidays;
-    if (!persoHolidays?.length || !this.utils.isDateHolidayPerso(dayDate, persoHolidays)) return null;
+    if (!persoHolidays?.length && !config?.holidayLabels) return null;
+
     const dd = dayDate.getDate().toString().padStart(2, '0');
     const mm = (dayDate.getMonth() + 1).toString().padStart(2, '0');
     const yyyy = dayDate.getFullYear();
     const dateKey = `${dd}-${mm}-${yyyy}`;
-    return config?.holidayLabels?.[dateKey] || ('Congé perso : ' + dateKey);
+    const dateKeyIso = `${yyyy}-${mm}-${dd}`;
+
+    const labelFromMap = config?.holidayLabels?.[dateKey]
+      || config?.holidayLabels?.[dateKeyIso];
+    if (labelFromMap && labelFromMap.trim() !== 'Congé perso') return labelFromMap;
+
+    // Fallback: matcher les clés map en tolérant les formats dd-MM-yyyy / yyyy-MM-dd et UTC.
+    if (config?.holidayLabels) {
+      for (const mapKey of Object.keys(config.holidayLabels)) {
+        if (!mapKey) continue;
+
+        let parsed: Date = null;
+        const ddMmYyyy = mapKey.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+        const yyyyMmDd = mapKey.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+        if (ddMmYyyy) {
+          parsed = new Date(Number(ddMmYyyy[3]), Number(ddMmYyyy[2]) - 1, Number(ddMmYyyy[1]));
+        } else if (yyyyMmDd) {
+          parsed = new Date(Number(yyyyMmDd[1]), Number(yyyyMmDd[2]) - 1, Number(yyyyMmDd[3]));
+        }
+
+        if (!parsed || isNaN(parsed.getTime())) continue;
+
+        const sameLocal = parsed.getDate() === dayDate.getDate()
+          && parsed.getMonth() === dayDate.getMonth()
+          && parsed.getFullYear() === dayDate.getFullYear();
+
+        if (sameLocal) {
+          const mapLabel = config.holidayLabels[mapKey];
+          if (mapLabel && mapLabel.trim() !== 'Congé perso') return mapLabel;
+        }
+      }
+    }
+
+    if (!persoHolidays?.length) return null;
+
+    // Compat: certains payloads renvoient les labels directement dans holidays [{date,label}] (ou variantes date/day/dayDate).
+    for (const holiday of persoHolidays) {
+      const holidayDate = this.utils.getDate((holiday as any)?.date ?? (holiday as any)?.day ?? (holiday as any)?.dayDate ?? holiday);
+      if (!holidayDate || isNaN(holidayDate.getTime())) continue;
+
+      if (holidayDate.getDate() === dayDate.getDate()
+        && holidayDate.getMonth() === dayDate.getMonth()
+        && holidayDate.getFullYear() === dayDate.getFullYear()) {
+        const payloadLabel = (holiday as any)?.label || (holiday as any)?.title || (holiday as any)?.name;
+        if (payloadLabel && payloadLabel.trim() !== 'Congé perso') return payloadLabel;
+        return null;
+      }
+    }
+    return null;
   }
 
 

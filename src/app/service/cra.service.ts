@@ -330,13 +330,13 @@ export class CraService {
   private markCraDayAsHoliday(craDay: CraDay) {
     craDay.type = "HOLIDAY";
     craDay.isDayWorked = false;
+    craDay.dayBill = false;
     if (craDay.craDayActivities && craDay.craDayActivities.length > 0) {
       craDay.craDayActivities.forEach((cda, k) => {
         let activity: Activity = cda.activity;
         let type: ActivityType = activity?.type;
         if (type != null) {
           type.congeDay = true;
-          this.majCraDayByType(craDay, type);
         }
       });
     }
@@ -443,8 +443,9 @@ export class CraService {
   }
 
   private majCraDayByType(craDay: CraDay, type: ActivityType) {
-    if (this.isCraDayOpen(craDay) && !type.congeDay) craDay.isDayWorked = true;
-    if (this.isCraDayOpen(craDay) && type.billDay) craDay.dayBill = true;
+    const isDayOpen = this.isCraDayOpen(craDay);
+    if (isDayOpen && !type.congeDay) craDay.isDayWorked = true;
+    if (isDayOpen && type.billDay) craDay.dayBill = true;
   }
 
   ///////////////
