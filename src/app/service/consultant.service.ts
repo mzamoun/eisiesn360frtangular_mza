@@ -218,6 +218,7 @@ export class ConsultantService {
   /////////////////////////////
 
   mapConsul = new Map<number, Consultant>();
+  private pendingAdminConsultantById = new Map<number, Array<{ consultant: Consultant; fct?: Function }>>();
   majAdminConsultant(consultant: Consultant, fct: Function = null) {
     ////////////////
     if (consultant == null) return;
@@ -241,8 +242,6 @@ export class ConsultantService {
     let label = "find admin consultant by id=" + id;
     let obj = consultant.adminConsultant
 
-    console.log("setAdminConsultant DEB consultant, idAdmin, admin : ", consultant, id, obj)
-
     if (consultant && id != null && !obj) {
 
       if (this.mapConsul != null) {
@@ -255,24 +254,40 @@ export class ConsultantService {
         }
       }
 
+      const pending = this.pendingAdminConsultantById.get(id);
+      if (pending) {
+        pending.push({ consultant, fct });
+        return;
+      }
+
+      console.log("setAdminConsultant DEB consultant, idAdmin, admin : ", consultant, id, obj)
+      this.pendingAdminConsultantById.set(id, [{ consultant, fct }]);
+
       this.findById(id).subscribe(
         data => {
           console.log(label, data)
-          consultant.adminConsultant = data.body.result;
-          consultant.adminConsultantId = consultant.adminConsultant?.id
-          // if(consultant.adminConsultant == null) {
-          //   consultant.adminConsultant = consultant
-          // }
+          const adminConsultant = data.body.result;
+          const waiting = this.pendingAdminConsultantById.get(id) || [];
+
+          for (let item of waiting) {
+            item.consultant.adminConsultant = adminConsultant;
+            item.consultant.adminConsultantId = adminConsultant?.id;
+            if (item.fct) item.fct();
+          }
+
           if (this.mapConsul != null) {
             let ca = this.mapConsul[id]
-            this.mapConsul[id] = consultant.adminConsultant
+            this.mapConsul[id] = adminConsultant
           }
-          console.log("setAdminConsultant trouve dans server ca : ", consultant.adminConsultant);
-
-          if (fct) fct()
+          console.log("setAdminConsultant trouve dans server ca : ", adminConsultant);
+          this.pendingAdminConsultantById.delete(id);
         },
         error => {
-          consultant.adminConsultant = null
+          const waiting = this.pendingAdminConsultantById.get(id) || [];
+          for (let item of waiting) {
+            item.consultant.adminConsultant = null;
+          }
+          this.pendingAdminConsultantById.delete(id);
           console.log("setAdminConsultant ERROR label consultant, err", label, consultant, error)
         }
       );

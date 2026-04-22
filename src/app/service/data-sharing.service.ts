@@ -129,6 +129,16 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     const esn = user?.esn || null;
     this.esnCurrent = esn;
     this.idEsnCurrent = esn?.id || null;
+    this.emitEsnCurrentIfChanged(esn);
+  }
+
+  private emitEsnCurrentIfChanged(esn: Esn): void {
+    const currentEsn = this.esnCurrentReadySource.value;
+    const currentId = currentEsn?.id || null;
+    const nextId = esn?.id || null;
+    if (currentId === nextId) {
+      return;
+    }
     this.esnCurrentReadySource.next(esn);
   }
 
@@ -573,7 +583,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
     console.log("getConsultantConnectedAndHisInfos username:", username)
 
-    this.setUserConnected(null)
     this.consultantService.getConsultantAndHisInfos(username).subscribe(
       data => {
         if (data) {
@@ -584,7 +593,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
           this.majEsnOnConsultant(() => {
             if (this.userConnected) {
-              this.setUserConnected(this.userConnected);
+              this.syncEsnFromUser(this.userConnected);
               this.saveTokenUser(this.userConnected);
               console.log("majEsnOnConsultant idEsnCurrent : ", this.idEsnCurrent)
             }
@@ -616,10 +625,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
               }
             );
           }
-
-          this.getNotifications(null, null);
-
-
           this.router.navigate(['/home']);
         }
       }, error => {
@@ -1304,6 +1309,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * Émettre le signal que esnCurrent est prêt
    */
   notifyEsnCurrentReady(esn: Esn): void {
-    this.esnCurrentReadySource.next(esn);
+    this.emitEsnCurrentIfChanged(esn);
   }
 }

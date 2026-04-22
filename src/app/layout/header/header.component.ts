@@ -40,9 +40,11 @@ export class HeaderComponent extends MereComponent {
     , private cdr: ChangeDetectorRef
   ) {
     super(utils, dataSharingService);
+    console.log('HeaderComponent.constructor called');
   }
 
   ngOnInit() {
+    console.log('HeaderComponent.ngOnInit called');
 
     super.ngOnInit()
 
@@ -57,6 +59,10 @@ export class HeaderComponent extends MereComponent {
           this.displayEsnName = esn.name;
         }
       }),
+      this.dataSharingService.listNotifications$.subscribe(notifications => {
+        const list = notifications || [];
+        this.nbNotificationNotViewed = list.filter(n => !n?.viewed).length;
+      }),
       this.dataSharingService.userConnected$.subscribe(user => {
         // Mettre à jour displayEsnName quand userConnected change
 
@@ -64,26 +70,14 @@ export class HeaderComponent extends MereComponent {
         console.log("HeaderComponent - userConnected change : ", user)
 
         if (user) {
+          const esnName = user?.esnName || user?.esn?.name;
+          if (esnName) {
+            this.displayEsnName = esnName;
+          }
 
-          this.dataSharingService.majEsnOnConsultant(
-            (esn) => {
-              this.userConnected.esn = esn;
-              this.userConnected.esnName = esn?.name;
-              this.dataSharingService.notifyEsnCurrentReady(this.userConnected.esn);
-
-              const esnName = user?.esnName || user?.esn?.name;
-
-              if (esnName) {
-                this.displayEsnName = esnName;
-              }
-
-              this.consultantService.majAdminConsultant(this.userConnected)
-              this.getNbNotifications()
-            },
-            (error) => {
-              console.error("Erreur lors de la mise à jour de l'ESN du consultant :", error);
-            }
-          )
+          // L'ESN est déjà synchronisée par DataSharingService pendant le login.
+          // Ici on se contente de mettre à jour l'UI locale.
+          this.consultantService.majAdminConsultant(this.userConnected)
         }
 
       })
@@ -94,6 +88,7 @@ export class HeaderComponent extends MereComponent {
   }
 
   private setClock() {
+    console.log('HeaderComponent.setClock called');
     setInterval(
       () => {
         let dateHeure = this.utils.formatDateToDateHeure(new Date);
@@ -105,16 +100,19 @@ export class HeaderComponent extends MereComponent {
   }
 
   showCalendar() {
+    console.log('HeaderComponent.showCalendar called');
     this.utilsIhm.openCalendarModal()
   }
 
 
   showNotificationsAll() {
+    console.log('HeaderComponent.showNotificationsAll called');
     this.clearInfos();
     this.dataSharingService.showNotificationsAll();
   }
 
   public getNotifications() {
+    console.log('HeaderComponent.getNotifications called');
     // //////////console.log("getListNotifications")
 
     if (this.notificationCompo) this.notificationCompo.getNotifications(null, null);
@@ -123,6 +121,7 @@ export class HeaderComponent extends MereComponent {
     return this.notifications;
   }
   getNbNotifications() {
+    console.log('HeaderComponent.getNbNotifications called');
     // //////////console.log("getNbNotifications")
     // this.getListNotifications();
     this.nbNotificationNotViewed = this.notificationCompo ? this.notificationCompo.nbNotification : 0;
@@ -135,6 +134,7 @@ export class HeaderComponent extends MereComponent {
 
   //ICON USER
   menuUserConnected() {
+    console.log('HeaderComponent.menuUserConnected called');
     if (this.dataSharingService.isLoggedIn()) {
 
       this.dataSharingService.isDisableSearchStrInput = true;

@@ -99,65 +99,28 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     //setAdminConsultant 
     this.dataSharingService.setAdminConsultant(this.userConnected)
 
-    this.dataSharingService.isUserLoggedInFct.subscribe(value => {
-      this.isUserLoggedIn = value;
-      // console.log("*** isUserLoggedIn = ", this.isUserLoggedIn)
-      // console.log("*** esnCurrent = ", this.esnCurrent)
-      if (this.isUserLoggedIn) {
-        setTimeout(
-          () => {
-            this.userConnected = this.dataSharingService.userConnected
-            // console.log("*** userConnected = ", this.userConnected)
+    this.subscriptions.push(
+      this.dataSharingService.isUserLoggedInFct.subscribe(value => {
+        this.isUserLoggedIn = value;
+        if (this.isUserLoggedIn) {
+          this.userConnected = this.dataSharingService.userConnected;
+          this.getCurentUserName();
+          this.isUserAdmin = this.userConnected?.admin;
+          if (this.userConnected) this.isUserLoggedIn = true;
 
-            this.getCurentUserName()
+          this.esnCurrent = this.dataSharingService.esnCurrent || this.userConnected?.esn || this.esnCurrent;
+          this.idEsnCurrent = this.dataSharingService.idEsnCurrent ?? this.esnCurrent?.id ?? this.idEsnCurrent;
+          this.esnName = this.userConnected?.esnName || this.esnCurrent?.name || this.esnName;
+        } else {
+          this.isUserAdmin = false;
+        }
 
-            this.isUserAdmin = this.userConnected?.admin;
-
-            if(this.userConnected) this.isUserLoggedIn = true ;
-
-            if (!this.esnCurrent) {
-
-              this.dataSharingService.majEsnOnConsultant(
-                (esn) => {
-
-                  this.esnCurrent = this.userConnected?.esn
-                  console.log("*** esnCurrent 2 = ", this.esnCurrent)
-                  // this.esnCurrent = this.userConnected?.esn 
-                  this.dataSharingService.esnCurrent = this.esnCurrent
-                  this.dataSharingService.idEsnCurrent = this.esnCurrent?.id
-                  this.idEsnCurrent = this.dataSharingService.idEsnCurrent
-                  if (this.esnCurrent != null) {
-                    this.idEsnCurrent = this.esnCurrent.id;
-                    if (this.userConnected) {
-                      this.userConnected.esn = this.esnCurrent
-                    }
-                  }
-                  this.esnName = this.userConnected?.esnName;
-                  if (!this.esnName) this.esnName = this.userConnected?.esn?.name;
-                  if (this.esnName) this.userConnected.esnName = this.esnName
-                  // console.log("*** esnName = ", this.esnName)
-                  
-                  // Notifier que esnCurrent est prêt
-                  this.dataSharingService.notifyEsnCurrentReady(this.esnCurrent);
-                }, (error) => {
-                  this.addErrorTxt(JSON.stringify(error))
-                }
-              );
-            }
-
-          }, 1000
-        )
-
-      } else {
-        this.isUserAdmin = false;
-      }
-
-      // Vérifier si on est sur une route publique, sinon rediriger vers login
-      if (this.userConnected == null && !this.dataSharingService.isPublicRoute(this.dataSharingService.router.url)) {
-        this.dataSharingService.gotoLogin();
-      }
-
-    });
+        // Vérifier si on est sur une route publique, sinon rediriger vers login
+        if (this.userConnected == null && !this.dataSharingService.isPublicRoute(this.dataSharingService.router.url)) {
+          this.dataSharingService.gotoLogin();
+        }
+      })
+    );
 
     // this.userConnected = this.getCurrentUserFromLocaleStorage();
 

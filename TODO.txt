@@ -1,17 +1,67 @@
 
-set loading on login , goto home. debug on disconnect : OK 
+
+
 ---
+
+nouveau service : i18n
+
+faire un tableau de  mapPaysLangue : 
+[
+	{
+		pays : France, lang : fr 
+	},
+	{
+		pays : Pays Bas, lang : en 
+	},
+	....
+]
+
+pays par defaut France avec sa langue fr 
+langue par defaut si pays inconu : EN 
+
+
+
 
 mettre le calcul des fetes national dans un services a part 
 avec pays : 
-France
-Algeria
-Tunisia
-Libya
-Mauritania
-Niger
+France : FR 
+Pays Bas : EN 
+Royaume-Uni : EN 
+Allemagne : DE 
+Canada : FR 
+
+Algeria : AR 
+Tunisia : AR 
+Libya : AR 
+Mauritania : AR 
+
 
 ---
+TOP 5 à cibler
+France
+Pays-Bas
+Royaume-Uni
+Allemagne
+Canada
+
+puis :
+➡️ USA quand tu es prêt
+
+Mon conseil direct (sans filtre)
+
+👉 Si tu veux réussir vite :
+
+👉 commence par :
+
+🇫🇷 + 🇳🇱
+
+👉 Pourquoi ?
+
+rapide à vendre
+peu de friction
+bon retour produit
+
+-----------------------------
 
 l'internationalisation complete : 
 
@@ -66,11 +116,12 @@ profils : admin, resp, manager, consultant
 
 
 dans la fenetre login : 
-faire une liste a gauche contenant la les last 5 logins différents par date dec 
-admin@eisi-consulting.fr
-resp.esn.demo1@ens-demo1.com
-manager.demo1@ens-demo1.com
-consultant.demo1@ens-demo1.com
+faire un tableau en bas contenant la les last 5 logins différents par date desc 
+ex :
+admin@eisi-consulting.fr		2026/04/22 14:00:02
+resp.esn.demo1@ens-demo1.com	2026/04/20 10:00:02
+manager.demo1@ens-demo1.com		2026/04/20 08:00:30
+consultant.demo1@ens-demo1.com	2026/04/15 15:01:02
 ---------------------------
 
 Angular CLI: 12.2.18
@@ -93,6 +144,10 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+2026-04-22 22:56:34
+set loading on login , goto home. debug on disconnect : OK 
+optimisation demarrage : OK 
 
  2026-04-21 17:17:44
 - Ajouter un commentaire à un jour férié : OK 
