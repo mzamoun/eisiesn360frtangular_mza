@@ -64,6 +64,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     esnId: number = 0;
     private destroy$ = new Subject<void>();
     private lastLoadedEsnId: number = null;
+    private hasLoadedCounts = false;
+    private adminCountsLoaded = false;
+    private isResolvingEsnForCounts = false;
     private isCraLoading: boolean = false;
     private isCraLoaded: boolean = false;
 
@@ -87,18 +90,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         console.log('DashboardComponent.ngOnInit called');
         this.refreshVisibleSections();
-        this.dataSharingService.userConnected$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.dataSharingService.userConnected$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
             this.refreshVisibleSections();
+            this.tryLoadCountsFromUserContext(user);
         });
-
-        const role = this.dataSharingService.userConnected?.role;
-
-        // Pour ADMIN, pas besoin d'attendre esnCurrentReady
-        if (role === 'ADMIN') {
-            this.esnId = 0; // Les ADMIN voient toutes les données sans restriction d'ESN
-            this.loadCounts();
-            return;
-        }
 
         // Pour les rôles non ADMIN, le chargement se fait une seule fois par esnId.
         // Le BehaviorSubject rejoue la valeur courante, donc pas besoin de fallback séparé.
@@ -114,6 +109,62 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             console.log('DashboardComponent: esnId 1 = ', this.esnId);
             this.loadCountsOncePerEsn();
         });
+
+        this.tryLoadCountsFromUserContext(this.dataSharingService.userConnected);
+    }
+
+    private tryLoadCountsFromUserContext(user: Consultant): void {
+        if (!user) {
+            return;
+        }
+
+        const role = user?.role;
+        if (role === 'ADMIN') {
+            if (this.adminCountsLoaded) {
+                return;
+            }
+            this.adminCountsLoaded = true;
+            this.esnId = 0;
+            console.log('DashboardComponent: admin context detected, loading counts');
+            this.loadCounts();
+            return;
+        }
+
+        const fallbackEsnId =
+            user?.esn?.id ||
+            user?.esnId ||
+            this.dataSharingService.idEsnCurrent;
+
+        if (fallbackEsnId) {
+            this.esnId = fallbackEsnId;
+            console.log('DashboardComponent: fallback esnId = ', this.esnId);
+            this.loadCountsOncePerEsn();
+            return;
+        }
+
+        // Au refresh, l'utilisateur peut exister sans esn/esnId hydraté.
+        // On tente une seule résolution ESN puis on déclenche le premier chargement.
+        if (!this.hasLoadedCounts && !this.isResolvingEsnForCounts) {
+            this.isResolvingEsnForCounts = true;
+            this.dataSharingService.majEsnOnConsultant(
+                () => {
+                    this.isResolvingEsnForCounts = false;
+                    const resolvedEsnId =
+                        this.dataSharingService.userConnected?.esn?.id ||
+                        this.dataSharingService.userConnected?.esnId ||
+                        this.dataSharingService.idEsnCurrent;
+
+                    if (resolvedEsnId) {
+                        this.esnId = resolvedEsnId;
+                    }
+                    this.loadCountsOncePerEsn();
+                },
+                () => {
+                    this.isResolvingEsnForCounts = false;
+                    this.loadCountsOncePerEsn();
+                }
+            );
+        }
     }
 
     ngOnDestroy(): void {
@@ -125,9 +176,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     private loadCountsOncePerEsn(): void {
         console.log('DashboardComponent.loadCountsOncePerEsn called');
         const currentEsnId = this.esnId || null;
-        if (this.lastLoadedEsnId === currentEsnId) {
+        if (this.hasLoadedCounts && this.lastLoadedEsnId === currentEsnId) {
             return;
         }
+        this.hasLoadedCounts = true;
         this.lastLoadedEsnId = currentEsnId;
         this.loadCounts();
     }

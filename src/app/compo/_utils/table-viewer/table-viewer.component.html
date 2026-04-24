@@ -102,13 +102,43 @@
                         <tr *ngFor="let row of lines; let i = index" (click)="selectRow(row, i)"
                             [ngClass]="{ 'row-selected': selectedRowIndex === i }">
                             <td *ngFor="let key of getKeys(row)" class="cell-content">
-                                <span
-                                    [title]="row[key]"
-                                    (dblclick)="onCellTableDblClick($event)"
-                                    (mouseenter)="onCellHover($event, row[key])"
-                                    (mousemove)="onCellMove($event)"
-                                    (mouseleave)="onCellLeave()"
-                                >{{ row[key] }}</span>
+                                <ng-container *ngIf="isEditing && editingIndex === i; else displayCell">
+                                    <input
+                                        *ngIf="getTypeInput(key) !== 'checkbox'; else editCheckbox"
+                                        [(ngModel)]="rowInEdit[key]"
+                                        [type]="getTypeInput(key)"
+                                        [value]="getValueForInput(key, rowInEdit[key])"
+                                        class="form-control form-control-sm" />
+                                    <ng-template #editCheckbox>
+                                        <input
+                                            type="checkbox"
+                                            [(ngModel)]="rowInEdit[key]" />
+                                    </ng-template>
+                                </ng-container>
+
+                                <ng-container *ngIf="isInserting && insertingIndex === i && newRow === row">
+                                    <input
+                                        *ngIf="getTypeInput(key) !== 'checkbox'; else insertCheckbox"
+                                        [(ngModel)]="newRow[key]"
+                                        [type]="getTypeInput(key)"
+                                        [value]="getValueForInput(key, newRow[key])"
+                                        class="form-control form-control-sm" />
+                                    <ng-template #insertCheckbox>
+                                        <input
+                                            type="checkbox"
+                                            [(ngModel)]="newRow[key]" />
+                                    </ng-template>
+                                </ng-container>
+
+                                <ng-template #displayCell>
+                                    <span
+                                        [title]="row[key]"
+                                        (dblclick)="onCellTableDblClick($event)"
+                                        (mouseenter)="onCellHover($event, row[key])"
+                                        (mousemove)="onCellMove($event)"
+                                        (mouseleave)="onCellLeave()"
+                                    >{{ row[key] }}</span>
+                                </ng-template>
                             </td>
                         </tr>
                     </tbody>

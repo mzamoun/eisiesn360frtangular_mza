@@ -115,6 +115,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   respEsnSaved: Consultant;
   passRespEsnSaved: string;
   consultantSelected: Consultant;
+  private isHydratingStoredUserEsn = false;
 
   get idEsnCurrent(): number {
     return this._idEsnCurrent;
@@ -213,7 +214,28 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   gotoMyHome() {
     console.log("navigate to home ")
-    this.router.navigate(['/home'])
+    this.navigateToHomeWhenReady();
+  }
+
+  private navigateToHomeWhenReady(): void {
+    const user = this.userConnected;
+    if (!user || user.role === 'ADMIN' || user.esn || !user.esnId) {
+      this.router.navigate(['/home']);
+      return;
+    }
+
+    this.majEsnOnConsultant(
+      () => {
+        if (this.userConnected) {
+          this.syncEsnFromUser(this.userConnected);
+          this.saveTokenUser(this.userConnected);
+        }
+        this.router.navigate(['/home']);
+      },
+      () => {
+        this.router.navigate(['/home']);
+      }
+    );
   }
 
   getCurrentUserFromLocaleStorage(): Consultant {
@@ -237,6 +259,29 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     // this.currentUser = DataSharingService.currentUser;
 
     return this.userConnected
+  }
+
+  private hydrateStoredUserEsnIfNeeded(): void {
+    const user = this.userConnected;
+    if (!user || user.role === 'ADMIN' || user.esn || !user.esnId || this.isHydratingStoredUserEsn) {
+      return;
+    }
+
+    this.isHydratingStoredUserEsn = true;
+    this.esnService.majEsnOnConsultant(
+      user,
+      () => {
+        this.isHydratingStoredUserEsn = false;
+        this.userConnected = user;
+        this.syncEsnFromUser(user);
+        this.userConnectedSource.next(user);
+        this.isUserLoggedInFct.next(true);
+        this.saveTokenUser(user);
+      },
+      () => {
+        this.isHydratingStoredUserEsn = false;
+      }
+    );
   }
 
   addInfo(info: string) {
@@ -597,8 +642,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
               this.saveTokenUser(this.userConnected);
               console.log("majEsnOnConsultant idEsnCurrent : ", this.idEsnCurrent)
             }
+            this.navigateToHomeWhenReady();
           }, (error) => {
             this.addErrorTxt(JSON.stringify(error))
+            this.navigateToHomeWhenReady();
           })
           console.log("findConsultantByUsername userConnected.esn : ", this.userConnected.esn)
           if (caller) {
@@ -625,7 +672,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
               }
             );
           }
-          this.router.navigate(['/home']);
         }
       }, error => {
         console.log("findConsultantByUsername: error ", error);
@@ -743,6 +789,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.syncEsnFromUser(user);
     this.userConnectedSource.next(user);
     this.isUserLoggedInFct.next(!!user);
+    this.hydrateStoredUserEsnIfNeeded();
   }
 
   majManagerOfUserCurent() {

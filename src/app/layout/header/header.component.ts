@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MereComponent } from 'src/app/compo/_utils/mere-component';
 import { NotificationComponent } from 'src/app/compo/notification/notification.component';
 import { UserConnectedComponent } from 'src/app/compo/user-connected/user-connected.component';
+import { MyError } from 'src/app/resource/MyError';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { EsnService } from 'src/app/service/esn.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -25,6 +26,7 @@ export class HeaderComponent extends MereComponent {
 
   // Propriété pour l'affichage du nom de l'ESN (mis à jour automatiquement)
   displayEsnName: string = '';
+  private isHydratingHeaderEsn = false;
 
   // @ViewChild('infors', {static: false}) infors: MereComponent;
 
@@ -50,7 +52,21 @@ export class HeaderComponent extends MereComponent {
 
     this.language = this.utils.getLocale();
     this.dataSharingService.setHeaderComponent(this);
-    // this.dataSharingService.addInfosObservers(this);
+
+    let labelEsn = "maj esn on current consultant"
+    this.dataSharingService.addInfo(labelEsn)
+    this.dataSharingService.majEsnOnConsultant(
+      (esn) => {
+        this.dataSharingService.delInfo(labelEsn)
+        if (esn?.name) {
+          this.displayEsnName = esn.name;
+        }
+      },
+      (err) => {
+        this.dataSharingService.delInfo(labelEsn)
+        this.dataSharingService.addError(new MyError("Erreur lors de la récupération de l'ESN de l'utilisateur", JSON.stringify(err)));
+      }
+    )
 
     // S'abonner aux changements de l'ESN pour mettre à jour l'affichage
     this.subscriptions.push(
@@ -73,6 +89,31 @@ export class HeaderComponent extends MereComponent {
           const esnName = user?.esnName || user?.esn?.name;
           if (esnName) {
             this.displayEsnName = esnName;
+          }
+
+          if (user.role !== 'ADMIN' && !user?.esn && !!user?.esnId && !this.isHydratingHeaderEsn) {
+            this.isHydratingHeaderEsn = true;
+            this.dataSharingService.majEsnOnConsultant(
+              (esn) => {
+                this.isHydratingHeaderEsn = false;
+                if (this.userConnected) {
+                  this.userConnected.esn = esn;
+                  this.userConnected.esnName = esn?.name;
+                }
+                this.dataSharingService.esnCurrent = esn;
+                this.dataSharingService.idEsnCurrent = esn?.id || null;
+                this.dataSharingService.notifyEsnCurrentReady(esn);
+                if (this.userConnected) {
+                  this.dataSharingService.saveTokenUser(this.userConnected);
+                }
+                if (esn?.name) {
+                  this.displayEsnName = esn.name;
+                }
+              },
+              () => {
+                this.isHydratingHeaderEsn = false;
+              }
+            );
           }
 
           // L'ESN est déjà synchronisée par DataSharingService pendant le login.

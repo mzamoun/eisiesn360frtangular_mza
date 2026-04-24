@@ -1,7 +1,20 @@
 
+cra pdf client : OK 
+env cra pdf clien to client : 
+----
+cra pdf esn 
+env cra pdf esn to manager  
+-----
 
+ajouter les tests (voir scenarios)
 
 ---
+
+doc install sur azure 
+doc install locale 
+doc utilisation 
+
+----------------------------------------------------------------
 
 nouveau service : i18n
 

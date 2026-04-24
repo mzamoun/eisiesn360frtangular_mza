@@ -462,8 +462,18 @@ export class TableViewerComponent implements OnInit {
       return;
     }
 
+    if (this.selectedRowIndex == null) {
+      this.selectedRowIndex = this.lines.findIndex(r => r === this.selectedRow);
+    }
+
+    if (this.selectedRowIndex == null || this.selectedRowIndex < 0) {
+      this.infoSelectLine();
+      return;
+    }
+
     this.isEditing = true;
     this.isInserting = false;
+    this.activeTab = 'data';
 
     this.editingIndex = this.selectedRowIndex;
 
