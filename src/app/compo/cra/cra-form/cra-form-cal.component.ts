@@ -44,6 +44,7 @@ import { CraObservable, CraObserver } from "../../../core/core";
 import { CraReportActivity } from "../../../model/cra-report-activity";
 import { ClientsDialogComponent } from '../../_dialogs/ClientsDialogComponent';
 import { CraHistoStatusComponent } from '../../_dialogs/CraHistoStatusComponent';
+import { DownloadClientCraDialogComponent } from '../../_dialogs/DownloadClientCraDialogComponent';
 import { SelectComponent } from '../../_reuse/select-consultant/select/select.component';
 import { MereComponent } from '../../_utils/mere-component';
 import { AddMultiDateComponent } from "../add-multi-date/add-multi-date.component";
@@ -2088,11 +2089,22 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
                   this.afterCallServer(label, response)
                   console.log(label, "response : ", response)
                   const linkSource = `data:application/pdf;base64,${response.body.result}`;
-                  const downloadLink = document.createElement("a");
                   const fileName = "cra-cli-" + userName + "-" + clientName + "-" + now + ".pdf";
-                  downloadLink.href = linkSource;
-                  downloadLink.download = fileName;
-                  downloadLink.click();
+
+                  // Afficher une dialog contenant : 
+                  // - le nom du client 
+                  // - le nom du fichier à télécharger
+                  // - un bouton pour télécharger le fichier
+                  // - un bouton pour appeler le server afin de l'envoyer par mail au client 
+                  // - un btn pour fermer la dialog
+
+                  this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
+
+                  const dialogRef = this.dialog.open(DownloadClientCraDialogComponent, {
+                    width: '500px',
+                    data: { status : this.currentCra.status, fullNameConsultant: this.currentCra.consultant.fullName, monthCra: this.currentCra.monthStr, clientName: clientName, clientMail: clients[0].email, fileName: fileName, linkSource: linkSource }
+                  });
+
                 }, error => {
                   this.addErrorFromErrorOfServer(label, error);
                   ////console.log(error);
@@ -2132,6 +2144,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     let now = this.utils.getDateNow()
 
     dialogRef.afterClosed().subscribe(selectedClient => {
+      this.afterCallServer(label, selectedClient)
       console.log("selectedClient : ", selectedClient)
       if (selectedClient) {
         this.craService.generateCliPDFClientName(this.currentCra.id, selectedClient.name).subscribe(

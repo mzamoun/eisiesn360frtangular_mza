@@ -133,6 +133,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ClientsDialogComponent } from './compo/_dialogs/ClientsDialogComponent';
 import { ConfirmDialogComponent } from './compo/_dialogs/confirm-dialog.component';
 import { CraHistoStatusComponent } from './compo/_dialogs/CraHistoStatusComponent';
+import { DownloadClientCraDialogComponent } from './compo/_dialogs/DownloadClientCraDialogComponent';
 import { InfoDialogComponent } from './compo/_dialogs/info-dialog.component';
 import { SignupDialogComponent } from './compo/_dialogs/signup-dialog/signup-dialog.component';
 import { RelationsD3Component } from './compo/_utils/relations-viewer/relations-d3.component';
@@ -266,6 +267,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     TableViewerComponent,
     ConnectionComponent,
     ClientsDialogComponent,
+    DownloadClientCraDialogComponent,
     SignupDialogComponent,
     ConfirmDialogComponent,
     InfoDialogComponent,

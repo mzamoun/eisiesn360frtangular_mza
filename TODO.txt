@@ -1,12 +1,10 @@
 
 btn suppr tte mes notifications  : OK 
 
-call get all notifications si un client a ajouter une notification sur le serveur : 
-
 cra pdf client : OK 
-env cra pdf clien to client : 
+env cra pdf to client : OK 
 ----
-cra pdf esn 
+cra pdf esn : OK 
 env cra pdf esn to manager  
 -----
 

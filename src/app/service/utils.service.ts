@@ -819,6 +819,36 @@ export class UtilsService {
     return date;
   }
 
+  public getDateToFormat(d: any, format: string): string {
+    
+    let date = this.getDate(d);
+    if (!date) return "";
+    return this.formatDateByFormat(date, format);
+  }
+
+  public formatDateByFormat(date: Date, format: string): string {
+    if (!date) return "";
+
+    let d: Date = this.getDate(date);
+
+    let month = this.getNumberInMin2Digits((d.getMonth() + 1) + ""),
+      day = this.getNumberInMin2Digits(d.getDate() + ""),
+      year = d.getFullYear(),
+      hour = this.getNumberInMin2Digits(d.getHours() + ""),
+      min = this.getNumberInMin2Digits(d.getMinutes() + ""),
+      sec = this.getNumberInMin2Digits(d.getSeconds() + "")
+      ;
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    let res = format.replace("yyyy", year.toString()).replace("MM", month).replace("dd", day).replace("HH", hour).replace("mm", min).replace("ss", sec);
+    ////////////console.log   
+    return res;
+  }
+
   public getDateToDebug(d: any) {
 
     // ////////console.log("getDate: d: ", d)
