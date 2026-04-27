@@ -35,15 +35,11 @@ export class AppComponent {
     // const snap = this.activatedRoute.snapshot;
     // console.log("changeNavigationRouting: snap", snap)
 
-    const url = this.activatedRoute.snapshot.url;
-    console.log("changeNavigationRouting: url", url)
-    
-    const path = this.activatedRoute.snapshot.queryParams['path'];
-    console.log("changeNavigationRouting: path", path)
-    
-    const navigateTo = '/' + path;
+    const pathParam = this.activatedRoute.snapshot.queryParams?.['path'];
+    const path = typeof pathParam === 'string' ? pathParam.trim() : '';
 
-    if (path) {
+    if (path.length > 0) {
+      const navigateTo = '/' + path;
       this.router.navigate([navigateTo]);
     }
   }

@@ -46,9 +46,10 @@ export class JwtTokenInterceptor implements HttpInterceptor {
   private handleErrors(err: HttpErrorResponse): Observable<any> {
     console.log("**** handleErrors: err: ", err)
     console.log("**** handleErrors: err.status: ", err.status)
-    console.log("**** handleErrors: err.error.status: ", err.error.status)
+    console.log("**** handleErrors: err.error.status: ", err.error?.status)
 
-    if (err.status == 401 || err.error.status == 401) {
+    const errorStatus = err.error?.status;
+    if (err.status == 401 || errorStatus == 401) {
       let msgTitle = "Vérifiez vos données!", msgBody = "oops! vos données sont erronées";
       // this.utilsIhmService.openModal(false,msgTitle, msgBody,null,null);
       console.log(msgTitle, msgBody)
@@ -63,13 +64,11 @@ export class JwtTokenInterceptor implements HttpInterceptor {
       }
 
       return of(err.message);
-    } else {
-      this.dataSharingService.addError(new MyError(err.status + ' : ' + err.name, err.message))
     }
-    // this.router.navigate(['/login']);
-    if (this.router.url !== '/login') {
-      this.router.navigate(['/login']);
-    }
+
+    // Les erreurs réseau/back (status 0, 4xx/5xx hors 401) ne doivent pas déclencher
+    // de redirection vers login, sinon on recrée le dashboard et on rejoue toutes les requêtes.
+    this.dataSharingService.addError(new MyError(err.status + ' : ' + err.name, err.message))
     return of(err.message);
   }
 }

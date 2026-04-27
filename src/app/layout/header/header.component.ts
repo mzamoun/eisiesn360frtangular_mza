@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { MereComponent } from 'src/app/compo/_utils/mere-component';
 import { NotificationComponent } from 'src/app/compo/notification/notification.component';
 import { UserConnectedComponent } from 'src/app/compo/user-connected/user-connected.component';
-import { MyError } from 'src/app/resource/MyError';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { EsnService } from 'src/app/service/esn.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -53,20 +52,20 @@ export class HeaderComponent extends MereComponent {
     this.language = this.utils.getLocale();
     this.dataSharingService.setHeaderComponent(this);
 
-    let labelEsn = "maj esn on current consultant"
-    this.dataSharingService.addInfo(labelEsn)
-    this.dataSharingService.majEsnOnConsultant(
-      (esn) => {
-        this.dataSharingService.delInfo(labelEsn)
-        if (esn?.name) {
-          this.displayEsnName = esn.name;
-        }
-      },
-      (err) => {
-        this.dataSharingService.delInfo(labelEsn)
-        this.dataSharingService.addError(new MyError("Erreur lors de la récupération de l'ESN de l'utilisateur", JSON.stringify(err)));
-      }
-    )
+    // let labelEsn = "maj esn on current consultant"
+    // this.dataSharingService.addInfo(labelEsn)
+    // this.dataSharingService.majEsnOnConsultant(
+    //   (esn) => {
+    //     this.dataSharingService.delInfo(labelEsn)
+    //     if (esn?.name) {
+    //       this.displayEsnName = esn.name;
+    //     }
+    //   },
+    //   (err) => {
+    //     this.dataSharingService.delInfo(labelEsn)
+    //     this.dataSharingService.addError(new MyError("Erreur lors de la récupération de l'ESN de l'utilisateur", JSON.stringify(err)));
+    //   }
+    // )
 
     // S'abonner aux changements de l'ESN pour mettre à jour l'affichage
     this.subscriptions.push(

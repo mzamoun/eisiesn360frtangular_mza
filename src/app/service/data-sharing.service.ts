@@ -540,7 +540,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   isCurrenUserRespOrAdmin() {
     let currentUser = this.userConnected
-    return currentUser.role == "RESPONSIBLE_ESN" || currentUser.role == "ADMIN"
+    return currentUser?.role == "RESPONSIBLE_ESN" || currentUser?.role == "ADMIN"
+  }
+
+  isCurrentUserAdmin() {
+    let currentUser = this.userConnected
+    return currentUser?.role == "ADMIN"
   }
 
   getLastUserName() {
@@ -1008,18 +1013,28 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   nbCallNotifications = 0
   isCallNotifications = false
+  private readonly notificationsCooldownMs = 3000;
+  private lastNotificationsFetchTs = 0;
 
   public getNotifications(fctOk: Function, fctKo: Function) {
     let label = "loading Notifications ...";
+    const cachedNotifications = this.getListNotifications() || [];
+    const now = Date.now();
+
+    if (!this.isCallNotifications && (now - this.lastNotificationsFetchTs) < this.notificationsCooldownMs) {
+      if (fctOk) fctOk(cachedNotifications);
+      return;
+    }
 
     if (!this.isCallNotifications) {
       this.isCallNotifications = true
     } else {
       console.log(label, "En cours ...")
-      if (fctOk) fctOk(this.getListNotifications());
+      if (fctOk) fctOk(cachedNotifications);
       return
     }
     this.nbCallNotifications++
+    this.lastNotificationsFetchTs = now;
     console.log(label, this.nbCallNotifications)
 
     this.getNotificationsFromServer().subscribe((data) => {
@@ -1028,10 +1043,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.majListNotifications();
       console.log("getNotifications ", this.getListNotifications())
       this.isCallNotifications = false
+      this.lastNotificationsFetchTs = Date.now();
       if (fctOk) fctOk(this.getListNotifications());
     }, error => {
       console.log("getNotifications: this, error", this, error)
       this.isCallNotifications = false
+      this.lastNotificationsFetchTs = Date.now();
       if (fctKo) fctKo(error);
     })
   }
@@ -1040,6 +1057,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     const notifs = this.getListNotifications();
     if (!notifs) return;
     for (let notif of notifs) {
+      if (!notif) {
+        continue;
+      }
       let cra = notif.cra
       if (cra != null) {
         this.majCra(cra);
@@ -1126,6 +1146,32 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.getNotifications(fctOk, fctKo)
     }, error => {
       console.error("delete notification error id=" + id, error);
+      if (fctKo) fctKo(error);
+    })
+  }
+
+  public deleteNotificationsOfConsultant(consultantId: number, fctOk: Function, fctKo: Function) {
+    let label = "deleteNotificationsOfConsultant consultantId=" + consultantId
+    console.log(label, "START")
+    this.http.delete<GenericResponse>(this.notificationUrl + "/deleteByConsultantId/" + consultantId).subscribe((data) => {
+      console.log(label, "deleteByConsultantId success", data)
+      this.getNotifications(fctOk, fctKo)
+    }, error => {
+      console.error(label, "deleteByConsultantId error consultantId=" + consultantId, error);
+      if (fctKo) fctKo(error);
+    })
+  }
+
+  public deleteNotifications(fctOk: Function, fctKo: Function) {
+    let label = "deleteNotifications"
+    this.addInfo(label)
+    this.http.delete<GenericResponse>(this.notificationUrl + "/deleteAllByToUsername/" + this.getLastUserName()).subscribe((data) => {
+      console.log(label, "deleteAll success", data)
+      this.delInfo(label)
+      this.getNotifications(fctOk, fctKo)
+    }, error => {
+      console.error(label, "deleteAll error", error);
+      this.delInfo(label)
       if (fctKo) fctKo(error);
     })
   }

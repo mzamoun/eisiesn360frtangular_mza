@@ -9,6 +9,7 @@ import { NoteFraisService } from 'src/app/service/note-frais.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { Notification } from "../../model/notification";
 // 
+import { MyError } from 'src/app/resource/MyError';
 import { UtilsService } from "../../service/utils.service";
 import { MereComponent } from '../_utils/mere-component';
 
@@ -66,6 +67,8 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
     // Charger les notifications initiales
     this.getNotifications(null, null);
+
+    this.isUserAdmin = this.dataSharingService.isCurrentUserAdmin();
   }
 
   ngAfterViewInit(): void {
@@ -393,6 +396,25 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
     s = show + " " + type;
     return s;
+  }
+
+  deleteAllNotifications() {
+    let mythis = this;
+    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer toutes les notifications", mythis
+      , () => {
+        mythis.dataSharingService.deleteNotifications(
+          () => {
+            console.log("deleteAllNotifications - callback deleteNotifications OK");
+          }
+          , (error) => {
+            console.error("deleteAllNotifications - ERREUR deleteNotifications: ", error);
+            mythis.dataSharingService.addError(new MyError("Erreur lors de la suppression des notifications : " , JSON.stringify(error)));
+          }
+        );
+      }
+      , () => { }
+    );
+
   }
 
 }

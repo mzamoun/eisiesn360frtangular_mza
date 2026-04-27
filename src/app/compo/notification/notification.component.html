@@ -7,6 +7,7 @@
     Every
     <input type="text" [(ngModel)]="refreshEverySec" id="refreshEverySec" name="refreshEverySec" type="number"
         style="width:70px" /> seconds.
+    <button (click)="deleteAllNotifications()">Delete All To Me</button>
 </div>
 
 <div class="card" *ngIf="myList && myList.length>0">
@@ -18,19 +19,24 @@
                 <div class="d-flex w-100 justify-content-between">
 
                     <span>
-                        <span *ngIf="notification.cra" aria-hidden="true" (click)="showCra(notification)"
+                        <span *ngIf="notification.craId" aria-hidden="true" (click)="showCra(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-cra-{{index}}">Voir</button> </span>
+                                id="btn-notif-show-cra-{{index}}">Voir CRA</button>
+                        </span>
 
                         <span *ngIf="notification.noteFrais" aria-hidden="true" (click)="showFee(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-fee-{{index}}">Voir</button> </span>
+                                id="btn-notif-show-fee-{{index}}">Voir Note de Frais</button> </span>
 
                         <span *ngIf="notification.currentDocument" aria-hidden="true"
                             (click)="showDocument(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-doc-{{index}}">Voir</button> </span>
+                                id="btn-notif-show-doc-{{index}}">Voir Document</button> </span>
                     </span>
+
+                    <label *ngIf="isUserAdmin && (notification?.cra?.consultant?.username || notification?.fromUsername)">
+                        {{notification?.cra?.consultant?.username || notification?.fromUsername}}
+                    </label>
 
 
                     <h6 *ngIf="notification && notification.title" class="mb-2 h6">{{notification.title}}

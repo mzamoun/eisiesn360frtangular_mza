@@ -188,6 +188,10 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     return res;
   }
 
+  isADMIN(): boolean {
+    return this.dataSharingService.isCurrentUserAdmin();
+  }
+
   setUserConnected(user: Consultant) {
     this.dataSharingService.setUserConnected(user)
   }
