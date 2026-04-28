@@ -1,15 +1,15 @@
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Optional, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Mail } from 'src/app/model/Mail';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { MsgService } from 'src/app/service/msg.service';
 
 export interface DownloadClientCraDialogData {
-    status : string;
-    fullNameConsultant : string;
-    monthCra : string;
+  status: string;
+  fullNameConsultant: string;
+  monthCra: string;
   clientName: string;
-  clientMail : string;
+  clientMail: string;
   fileName: string;
   linkSource: string;  // base64 PDF data URL
 }
@@ -129,12 +129,28 @@ export interface DownloadClientCraDialogData {
 })
 export class DownloadClientCraDialogComponent {
 
+  @Input() data: DownloadClientCraDialogData = {
+    status: '',
+    fullNameConsultant: '',
+    monthCra: '',
+    clientName: '',
+    clientMail: '',
+    fileName: '',
+    linkSource: ''
+  };
+
+  @Output() closeRequested = new EventEmitter<void>();
+
   constructor(
-    public dialogRef: MatDialogRef<DownloadClientCraDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DownloadClientCraDialogData
-    , private msgService: MsgService
-    , private dataSharingService: DataSharingService
-  ) {}
+    @Optional() public dialogRef: MatDialogRef<DownloadClientCraDialogComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) injectedData: DownloadClientCraDialogData,
+    private msgService: MsgService,
+    private dataSharingService: DataSharingService
+  ) {
+    if (injectedData) {
+      this.data = injectedData;
+    }
+  }
 
   download(): void {
     const downloadLink = document.createElement('a');
@@ -144,33 +160,46 @@ export class DownloadClientCraDialogComponent {
   }
 
   close(): void {
-    this.dialogRef.close();
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.closeRequested.emit();
+    }
   }
 
   sendByEmail(): void {
-    // TODO: Implement email sending functionality
+    if (!this.data?.clientMail) {
+      this.dataSharingService.addErrorTxt('Email client introuvable. Impossible d\'envoyer le CRA.');
+      return;
+    }
+
     console.log(`Sending CRA PDF for client ${this.data.clientName} by email...`);
 
     let mail = new Mail();
     mail.to = this.data.clientMail;
-    mail.cc = ""; // Optionnel : ajouter une adresse en copie
+    mail.cc = "";
     mail.subject = `CRA de ${this.data.fullNameConsultant} au mois de ${this.data.monthCra}`;
     mail.msg = `Bonjour ${this.data.clientName},\n\n<br><br>Veuillez trouver ci-joint le CRA de ${this.data.fullNameConsultant} pour le mois de ${this.data.monthCra}.\n\n<br><br>Cordialement.`;
-    //mail.doc = this.data.linkSource; // base64 PDF data URL
-        mail.attachments = {};
-    mail.attachments[this.data.fileName] = this.data.linkSource; // base64 PDF data URL
+    mail.attachments = {};
+    mail.attachments[this.data.fileName] = this.data.linkSource;
 
     this.dataSharingService.addInfo(mail.subject)
     this.msgService.sendMailSimple(mail, true).subscribe(
       response => {
         this.dataSharingService.delInfo(mail.subject)
+        let labelEmailSent = `Email envoyé avec succès au client ${this.data.clientName}.`;
+        this.dataSharingService.addInfo(labelEmailSent);
         console.log("Email sent successfully:", response);
-        this.dialogRef.close();
+        this.close();
+        setTimeout(() => {
+             this.dataSharingService.delInfo(labelEmailSent);
+        }, 2000);
       },
       error => {
         this.dataSharingService.delInfo(mail.subject)
+        this.dataSharingService.addErrorTxt('Erreur lors de l\'envoi de l\'email client.');
         console.error("Error sending email:", error);
-        this.dialogRef.close();
+        this.close();
       }
     );  
 

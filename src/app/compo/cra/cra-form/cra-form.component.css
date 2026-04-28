@@ -104,3 +104,11 @@
     font-weight: 500;
     padding: 0.35em 0.65em;
 }
+
+#panel_download_send_email_CRA {
+    background-color: #fff9e6;
+    border: 2px solid #f0c36d;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}

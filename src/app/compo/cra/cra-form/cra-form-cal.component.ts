@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -44,7 +45,7 @@ import { CraObservable, CraObserver } from "../../../core/core";
 import { CraReportActivity } from "../../../model/cra-report-activity";
 import { ClientsDialogComponent } from '../../_dialogs/ClientsDialogComponent';
 import { CraHistoStatusComponent } from '../../_dialogs/CraHistoStatusComponent';
-import { DownloadClientCraDialogComponent } from '../../_dialogs/DownloadClientCraDialogComponent';
+import { DownloadClientCraDialogData } from '../../_dialogs/DownloadClientCraDialogComponent';
 import { SelectComponent } from '../../_reuse/select-consultant/select/select.component';
 import { MereComponent } from '../../_utils/mere-component';
 import { AddMultiDateComponent } from "../add-multi-date/add-multi-date.component";
@@ -135,6 +136,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   is_canValidateCraOrConge = false;
   is_canSubmitCra = false;
 
+  showDownloadSendEmailCraPanel = false;
+  downloadSendEmailCraData: DownloadClientCraDialogData = null;
+
   showWeekNumber() {
     // //////////console.log("DBG showWeekNumber")
     if (this.isAffWeekNumber) this.titleShowWeekNumber = 'Show Week Number';
@@ -155,6 +159,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     , public utils: UtilsService
     , public dataSharingService: DataSharingService
     , private utilsIhm: UtilsIhmService
+    , private cdr: ChangeDetectorRef
     , private datePipe: DatePipe
     , public dialog: MatDialog
   ) {
@@ -1297,22 +1302,22 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     let label = "canValidateCraOrConge"
 
-    console.log(label + " this.hasRoleManagerValidate()=",this.hasRoleManagerValidate())
+    console.log(label + " this.hasRoleManagerValidate()=", this.hasRoleManagerValidate())
     console.log(label + " this.currentCra.validByManager=", this.currentCra.validByManager)
     console.log(label + " this.isTimeToModify()=", this.isTimeToModify())
     console.log(label + " this.isCraOfManagerRole()=", this.isCraOfManagerRole())
 
     let res = this.hasRoleManagerValidate() && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
 
-    console.log(label + " res=", res)  
+    console.log(label + " res=", res)
 
     return res;
 
   }
 
-  canSubmitCra(){
+  canSubmitCra() {
     let label = "canSubmitCra"
-    let res = (!this.currentCra?.validByConsultant) && this.hasManager() && this.currentCra.consultant?.id == this.userConnected.id ;
+    let res = (!this.currentCra?.validByConsultant) && this.hasManager() && this.currentCra.consultant?.id == this.userConnected.id;
     console.log(label + " currentCra?.validByConsultant=", this.currentCra?.validByConsultant)
     console.log(label + " res=", res)
     return res;
@@ -2065,12 +2070,32 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
      */
   generateCliPDFGenLinks() {
     let label = "generateCliPDFGenLinks"
-    this.beforeCallServer(label);
+    console.log(label + " DEB this.currentCra=", this.currentCra)
 
-    let userName = this.currentCra.consultant.fullName.replace(" ", "-");
+    if (!this.currentCra?.id) {
+      this.utilsIhm.info("CRA introuvable. Impossible de générer le PDF client.", null, null);
+      return;
+    }
+
+    if (!this.currentCra?.consultant?.fullName) {
+      this.utilsIhm.info("Consultant du CRA introuvable. Impossible de générer le PDF client.", null, null);
+      return;
+    }
+
+    console.log(label + " this.showDownloadSendEmailCraPanel=", this.showDownloadSendEmailCraPanel)
+
+    if (this.showDownloadSendEmailCraPanel) {
+      this.closeDownloadSendEmailPanel();
+      return
+    }
+
+    // this.closeDownloadSendEmailPanel();
+
+    let userName = (this.currentCra.consultant.fullName || "consultant").replace(/\s+/g, "-");
     let now = this.utils.getDateNow()
 
     console.log(label + " : ", now)
+    this.beforeCallServer(label);
 
     // retourne an array of clientName 
     this.craService.getClientsOfCra(this.currentCra.id)
@@ -2080,7 +2105,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           this.afterCallServer(label, response)
           let clients = response.body.result
           console.log(label + " >>> AV ouverture dialog avec clients=", clients);
-          if (clients) {
+          if (clients && clients.length > 0) {
             if (clients.length == 1) {
               let clientName = clients[0].name
               console.log(label + " : one client : ", clientName)
@@ -2091,19 +2116,31 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
                   const linkSource = `data:application/pdf;base64,${response.body.result}`;
                   const fileName = "cra-cli-" + userName + "-" + clientName + "-" + now + ".pdf";
 
-                  // Afficher une dialog contenant : 
+                  // au lieu d'Afficher une dialog contenant cide-ssous, on affiche un panel en dessous du btn "Generer CRA Client" contenant :
                   // - le nom du client 
                   // - le nom du fichier à télécharger
                   // - un bouton pour télécharger le fichier
                   // - un bouton pour appeler le server afin de l'envoyer par mail au client 
-                  // - un btn pour fermer la dialog
-
+                  // - un btn pour fermer le panel
+                  // un click sur le btn "Générer CRA Client" affiche le panel, un click sur le btn "Fermer" ferme le panel, un click sur le btn "Télécharger" télécharge le fichier, un click sur le btn "Envoyer par mail" appelle le server pour envoyer le mail au client avec le fichier en pièce jointe et affiche une notification de succès ou d'erreur selon le résultat de l'appel serveur
+                  // le panel est la div avec id=panel_download_send_email_CRA
+                  // go coding :)
+                  // TODO : afficher le panel avec les infos et les btns
+                  // i am waiting you to code the panel and its btns, in the meantime i will code the download btn and the send mail btn functionality
+                  // changer le DownloadClientCraDialogComponent en composant a afficher dans le panel et le modifier pour afficher les infos et les btns comme décrit ci-dessus
                   this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
 
-                  const dialogRef = this.dialog.open(DownloadClientCraDialogComponent, {
-                    width: '500px',
-                    data: { status : this.currentCra.status, fullNameConsultant: this.currentCra.consultant.fullName, monthCra: this.currentCra.monthStr, clientName: clientName, clientMail: clients[0].email, fileName: fileName, linkSource: linkSource }
+                  this.openDownloadSendEmailPanel({
+                    status: this.currentCra.status,
+                    fullNameConsultant: this.currentCra.consultant?.fullName,
+                    monthCra: this.currentCra.monthStr,
+                    clientName: clientName,
+                    clientMail: clients[0]?.email,
+                    fileName: fileName,
+                    linkSource: linkSource
                   });
+
+
 
                 }, error => {
                   this.addErrorFromErrorOfServer(label, error);
@@ -2118,6 +2155,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             }
           } else {
             console.log(label + " : NO client ")
+            this.utilsIhm.info("Aucun client trouvé pour ce CRA.", null, null);
           }
 
 
@@ -2152,17 +2190,58 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.afterCallServer(label, response)
             console.log(label, "response : ", response)
             const linkSource = `data:application/pdf;base64,${response.body.result}`;
-            const downloadLink = document.createElement("a");
             const fileName = "cra-cli-" + userName + "-" + now + ".pdf";
-            downloadLink.href = linkSource;
-            downloadLink.download = fileName;
-            downloadLink.click();
+
+            this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
+            this.openDownloadSendEmailPanel({
+              status: this.currentCra.status,
+              fullNameConsultant: this.currentCra.consultant?.fullName,
+              monthCra: this.currentCra.monthStr,
+              clientName: selectedClient?.name,
+              clientMail: selectedClient?.email || selectedClient?.mail,
+              fileName: fileName,
+              linkSource: linkSource
+            });
           }, error => {
             this.addErrorFromErrorOfServer(label, error);
             ////console.log(error);
           }
         );
       }
+    });
+  }
+
+  openDownloadSendEmailPanel(data: DownloadClientCraDialogData) {
+    console.log("openDownloadSendEmailPanel this.currentCra=", this.currentCra)
+    this.downloadSendEmailCraData = data;
+    this.showDownloadSendEmailCraPanel = true;
+    this.cdr.markForCheck();
+    setTimeout(() => {
+      this.scrollToDownloadSendEmailPanel();
+    }, 0);
+    console.log("openDownloadSendEmailPanel this.downloadSendEmailCraData=", this.downloadSendEmailCraData)
+    console.log("openDownloadSendEmailPanel this.showDownloadSendEmailCraPanel=", this.showDownloadSendEmailCraPanel)
+  }
+
+  closeDownloadSendEmailPanel() {
+    console.log("closeDownloadSendEmailPanel this.currentCra=", this.currentCra)
+    this.showDownloadSendEmailCraPanel = false;
+    this.downloadSendEmailCraData = null;
+    this.cdr.markForCheck();
+    console.log("closeDownloadSendEmailPanel this.showDownloadSendEmailCraPanel=", this.showDownloadSendEmailCraPanel)
+    console.log("closeDownloadSendEmailPanel this.downloadSendEmailCraData=", this.downloadSendEmailCraData)
+  }
+
+  private scrollToDownloadSendEmailPanel() {
+    const panel = document.getElementById('panel_download_send_email_CRA');
+    if (!panel) {
+      return;
+    }
+
+    panel.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest'
     });
   }
 
