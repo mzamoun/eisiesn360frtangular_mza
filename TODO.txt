@@ -5,7 +5,7 @@ cra pdf client : OK
 env cra pdf to client : OK 
 ----
 cra pdf esn : OK 
-env cra pdf esn to manager  
+env cra pdf esn to manager  : OK
 -----
 
 ajouter les tests (voir scenarios)

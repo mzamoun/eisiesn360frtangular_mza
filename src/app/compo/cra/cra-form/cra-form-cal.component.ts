@@ -40,6 +40,7 @@ import { CraContext } from 'src/app/core/model/cra-context';
 import { Notification } from 'src/app/model/notification';
 import { ActivityTypeService } from 'src/app/service/activityType.service';
 import { ConsultantService } from 'src/app/service/consultant.service';
+import { EsnService } from 'src/app/service/esn.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { CraObservable, CraObserver } from "../../../core/core";
 import { CraReportActivity } from "../../../model/cra-report-activity";
@@ -151,6 +152,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   constructor(private route: ActivatedRoute, private router: Router
     , private craService: CraService
     , private consultantService: ConsultantService
+    , private esnService: EsnService
     // , private craFormsService: CraFormsService
     , private activityService: ActivityService
     , private activityTypeService: ActivityTypeService
@@ -2077,94 +2079,59 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       return;
     }
 
-    if (!this.currentCra?.consultant?.fullName) {
-      this.utilsIhm.info("Consultant du CRA introuvable. Impossible de générer le PDF client.", null, null);
+    let userOfCra = this.currentCra?.consultant
+
+    if (!userOfCra) {
+      this.utilsIhm.info("userOfCra introuvable. Impossible de générer le PDF client.", null, null);
       return;
     }
 
     console.log(label + " this.showDownloadSendEmailCraPanel=", this.showDownloadSendEmailCraPanel)
-
     if (this.showDownloadSendEmailCraPanel) {
       this.closeDownloadSendEmailPanel();
       return
     }
 
-    // this.closeDownloadSendEmailPanel();
-
-    let userName = (this.currentCra.consultant.fullName || "consultant").replace(/\s+/g, "-");
+    let userName = (userOfCra.fullName || "consultant").replace(/\s+/g, "-");
     let now = this.utils.getDateNow()
 
     console.log(label + " : ", now)
-    this.beforeCallServer(label);
 
+    let labelRechClients = "Recherche des clients du CRA"
+    this.beforeCallServer(labelRechClients);
     // retourne an array of clientName 
     this.craService.getClientsOfCra(this.currentCra.id)
       .subscribe(
         response => {
-          console.log(label + " response : ", response)
-          this.afterCallServer(label, response)
+          console.log(labelRechClients + " response : ", response)
+          this.afterCallServer(labelRechClients, response)
           let clients = response.body.result
-          console.log(label + " >>> AV ouverture dialog avec clients=", clients);
+          console.log(labelRechClients + " >>> AV ouverture dialog avec clients=", clients);
           if (clients && clients.length > 0) {
             if (clients.length == 1) {
               let clientName = clients[0].name
-              console.log(label + " : one client : ", clientName)
-              this.craService.generateCliPDFClientName(this.currentCra.id, clientName).subscribe(
-                response => {
-                  this.afterCallServer(label, response)
-                  console.log(label, "response : ", response)
-                  const linkSource = `data:application/pdf;base64,${response.body.result}`;
-                  const fileName = "cra-cli-" + userName + "-" + clientName + "-" + now + ".pdf";
+              const fileName = "cra-cli-" + userName + "-" + clientName + "-" + now + ".pdf";
+              let clientEmail = clients[0]?.email;
 
-                  // au lieu d'Afficher une dialog contenant cide-ssous, on affiche un panel en dessous du btn "Generer CRA Client" contenant :
-                  // - le nom du client 
-                  // - le nom du fichier à télécharger
-                  // - un bouton pour télécharger le fichier
-                  // - un bouton pour appeler le server afin de l'envoyer par mail au client 
-                  // - un btn pour fermer le panel
-                  // un click sur le btn "Générer CRA Client" affiche le panel, un click sur le btn "Fermer" ferme le panel, un click sur le btn "Télécharger" télécharge le fichier, un click sur le btn "Envoyer par mail" appelle le server pour envoyer le mail au client avec le fichier en pièce jointe et affiche une notification de succès ou d'erreur selon le résultat de l'appel serveur
-                  // le panel est la div avec id=panel_download_send_email_CRA
-                  // go coding :)
-                  // TODO : afficher le panel avec les infos et les btns
-                  // i am waiting you to code the panel and its btns, in the meantime i will code the download btn and the send mail btn functionality
-                  // changer le DownloadClientCraDialogComponent en composant a afficher dans le panel et le modifier pour afficher les infos et les btns comme décrit ci-dessus
-                  this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
-
-                  this.openDownloadSendEmailPanel({
-                    status: this.currentCra.status,
-                    fullNameConsultant: this.currentCra.consultant?.fullName,
-                    monthCra: this.currentCra.monthStr,
-                    clientName: clientName,
-                    clientMail: clients[0]?.email,
-                    fileName: fileName,
-                    linkSource: linkSource
-                  });
-
-
-
-                }, error => {
-                  this.addErrorFromErrorOfServer(label, error);
-                  ////console.log(error);
-                }
-              );
+              this.affPanelCraClient(clientName, clientEmail, fileName);
             } else {
               //>1
               // TODO on ouvre une popup avec liste des btn / client 
-              console.log(">>> AV ouverture dialog avec clients=", clients);
               this.openClientsDialog(clients);
             }
           } else {
-            console.log(label + " : NO client ")
+            console.log(labelRechClients + " : NO client ")
             this.utilsIhm.info("Aucun client trouvé pour ce CRA.", null, null);
           }
 
 
         }, error => {
           console.log("ERROR : ", error)
-          this.addErrorFromErrorOfServer(label, error);
+          this.addErrorFromErrorOfServer(labelRechClients, error);
         }
       );
   }
+
 
   // ouverture du dialog
   openClientsDialog(clients: any[]) {
@@ -2185,30 +2152,37 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.afterCallServer(label, selectedClient)
       console.log("selectedClient : ", selectedClient)
       if (selectedClient) {
-        this.craService.generateCliPDFClientName(this.currentCra.id, selectedClient.name).subscribe(
-          response => {
-            this.afterCallServer(label, response)
-            console.log(label, "response : ", response)
-            const linkSource = `data:application/pdf;base64,${response.body.result}`;
-            const fileName = "cra-cli-" + userName + "-" + now + ".pdf";
-
-            this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
-            this.openDownloadSendEmailPanel({
-              status: this.currentCra.status,
-              fullNameConsultant: this.currentCra.consultant?.fullName,
-              monthCra: this.currentCra.monthStr,
-              clientName: selectedClient?.name,
-              clientMail: selectedClient?.email || selectedClient?.mail,
-              fileName: fileName,
-              linkSource: linkSource
-            });
-          }, error => {
-            this.addErrorFromErrorOfServer(label, error);
-            ////console.log(error);
-          }
-        );
+        const fileName = "cra-cli-" + userName + "-" + selectedClient.name + "-" + now + ".pdf";
+        this.affPanelCraClient(selectedClient.name, selectedClient.email, fileName);
       }
     });
+  }
+
+  private affPanelCraClient(clientName: any, clientEmail: any, fileName : string) {
+    let labelGenPDF = "Génération du PDF client pour le client : " + clientName;
+    this.beforeCallServer(labelGenPDF);
+    this.craService.generateCliPDFClientName(this.currentCra.id, clientName).subscribe(
+      response => {
+        this.afterCallServer(labelGenPDF, response);
+        console.log(labelGenPDF, "response : ", response);
+        const linkSource = `data:application/pdf;base64,${response.body.result}`;
+
+        this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy");
+
+        this.openDownloadSendEmailPanel({
+          titleDeb: "CRA Client",
+          status: this.currentCra.status,
+          fullNameConsultant: this.currentCra.consultant?.fullName,
+          monthCra: this.currentCra.monthStr,
+          clientName: clientName,
+          clientMail: clientEmail,
+          fileName: fileName,
+          linkSource: linkSource
+        });
+      }, error => {
+        this.addErrorFromErrorOfServer(labelGenPDF, error);
+      }
+    );
   }
 
   openDownloadSendEmailPanel(data: DownloadClientCraDialogData) {
@@ -2247,22 +2221,43 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   generateEsnPDF() {
     let label = "generateEsnPDF"
-    this.beforeCallServer(label);
 
-    let userName = this.currentCra.consultant.fullName.replace(" ", "-");
+    if (this.showDownloadSendEmailCraPanel) {
+      this.closeDownloadSendEmailPanel();
+      return;
+    }
+
+    let userOfCra = this.currentCra.consultant
+
+    // maj esn of userOfCra
+    this.esnService.majEsnOnConsultant(userOfCra, null, null)
+
+    let userName = userOfCra?.fullName.replace(" ", "-");
     let now = this.utils.getDateNow()
 
+    this.beforeCallServer(label);
     this.craService.generateEsnPDF(this.currentCra.id)
       .subscribe(
         response => {
           this.afterCallServer(label, response)
           console.log(label, "response : ", response)
           const linkSource = `data:application/pdf;base64,${response.body.result}`;
-          const downloadLink = document.createElement("a");
           const fileName = "cra-esn-" + userName + "-" + now + ".pdf";
-          downloadLink.href = linkSource;
-          downloadLink.download = fileName;
-          downloadLink.click();
+
+          this.currentCra.monthStr = this.utils.formatDateByFormat(this.currentCra.month, "dd/MM/yyyy")
+
+          console.log("generateEsnPDF userOfCra=", userOfCra)
+          this.openDownloadSendEmailPanel({
+            titleDeb: "CRA ESN",
+            status: this.currentCra.status,
+            fullNameConsultant: userOfCra?.fullName,
+            monthCra: this.currentCra.monthStr,
+            clientName: userOfCra?.esn?.name,
+            clientMail: userOfCra?.adminConsultant?.email,
+            fileName: fileName,
+            linkSource: linkSource
+          });
+
         }, error => {
           this.addErrorFromErrorOfServer(label, error);
           ////console.log(error);

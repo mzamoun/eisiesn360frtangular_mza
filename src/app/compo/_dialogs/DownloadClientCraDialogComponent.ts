@@ -5,6 +5,7 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { MsgService } from 'src/app/service/msg.service';
 
 export interface DownloadClientCraDialogData {
+  titleDeb: string;
   status: string;
   fullNameConsultant: string;
   monthCra: string;
@@ -20,7 +21,7 @@ export interface DownloadClientCraDialogData {
     <div class="dialog-wrapper">
       <div class="dialog-title">
         <mat-icon class="title-icon">picture_as_pdf</mat-icon>
-        CRA Client — <span class="client-name">{{ data.clientName }}</span>
+        {{data.titleDeb}} — <span class="client-name">{{ data.clientName }}</span>
       </div>
       <div class="dialog-content">
         <div class="info-row">
@@ -130,6 +131,7 @@ export interface DownloadClientCraDialogData {
 export class DownloadClientCraDialogComponent {
 
   @Input() data: DownloadClientCraDialogData = {
+    titleDeb: '',
     status: '',
     fullNameConsultant: '',
     monthCra: '',
