@@ -34,7 +34,7 @@
                         {{title0}} <span class="badge badge-pill badge-danger">{{nbNotificationNotViewed}}</span>
                     </button>
 
-                    <div class="dropdown-menu h_scroll bgcolor_tranp00" aria-labelledby="dropdown02">
+                    <div class="dropdown-menu h_scroll bgcolor_tranp00 notifications-dropdown-menu" aria-labelledby="dropdown02">
                         <app-notification [isOnlyNotViewed]="true" [isShowBtns]="false"
                             idPagination="idPaginationNotViewed" #notificationCompo></app-notification>
                         <a class="btn btn-primary title100pct" (click)="showNotificationsAll()">

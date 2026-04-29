@@ -201,6 +201,9 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   setEsnCurrent(esn: Esn) {
+    if (!this.userConnected) {
+      return;
+    }
     this.userConnected.esn = esn
     this.setUserConnected(this.userConnected)
   }
@@ -242,7 +245,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   isAdmin(): boolean {
-    return this.userConnected.admin;
+    return this.userConnected?.admin ?? false;
   }
 
   // updateInfosObserver() {
@@ -388,7 +391,6 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     this.nbCallServer++;
     this.isLoading = true;
     console.log("before CallServer nbCallServer après=" + this.nbCallServer + " isLoading=" + this.isLoading);
-    if (this.nbCallServer == 1) this.addError(null);
     this.addInfo(info)
   }
   

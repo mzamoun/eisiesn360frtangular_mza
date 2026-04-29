@@ -195,7 +195,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         }
 
         console.log('DashboardComponent: Loading Notifications for consultantId = ', idConsultant);
-        this.dataSharingService.isCallNotifications = false // force refresh
+        this.dataSharingService.forceRefreshNotifications(); // force refresh
         let labelNotif = role === 'ADMIN' ? 'Toutes les Notifications' : 'Mes Notifications';
         console.log('DashboardComponent: labelNotif = ', labelNotif);
         this.dataSharingService.addInfo(labelNotif);

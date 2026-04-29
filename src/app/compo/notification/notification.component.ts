@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Document } from 'src/app/model/document';
@@ -19,7 +19,7 @@ import { MereComponent } from '../_utils/mere-component';
   styleUrls: ['./notification.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NotificationComponent extends MereComponent implements AfterViewInit {
+export class NotificationComponent extends MereComponent implements AfterViewInit, OnDestroy {
 
   @Input() isOnlyNotViewed: boolean = false;
   @Input() isShowBtns: boolean = true;
@@ -61,9 +61,11 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   ngOnInit() {
     // S'abonner aux notifications via le BehaviorSubject
-    this.dataSharingService.listNotifications$.subscribe(notifications => {
-      this.updateNotifications(notifications);
-    });
+    this.subscriptions.push(
+      this.dataSharingService.listNotifications$.subscribe(notifications => {
+        this.updateNotifications(notifications);
+      })
+    );
 
     // Charger les notifications initiales
     this.getNotifications(null, null);
@@ -74,6 +76,12 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
   ngAfterViewInit(): void {
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
     //Add 'implements AfterViewInit' to the class.
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.refreshLoopId);
+    this.refreshStarted = false;
+    super.ngOnDestroy();
   }
 
   getNbElement() {

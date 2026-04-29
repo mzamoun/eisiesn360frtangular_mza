@@ -55,12 +55,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   // Routes publiques qui ne nécessitent pas d'authentification
   private readonly PUBLIC_ROUTES: string[] = [
-    '/validateEmail/',
-    '/resetPassword/',
+    '/validateEmail',
+    '/resetPassword',
     '/login',
     '/inscription',
-    '/',
-    ''
   ];
 
   headerComponent: HeaderComponent;
@@ -169,11 +167,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.isUserLoggedInFct.next(true);
     }
 
-    if (!this.userConnected) {
-      // get it from local storage in case of page refresh
-      this.getCurrentUserFromLocaleStorage();
-
-    }
+    // if (!this.userConnected) {
+    //   // get it from local storage in case of page refresh
+    //   this.getCurrentUserFromLocaleStorage();
+    // }
 
     console.log("constructor, userConnected", this.userConnected)
   }
@@ -191,20 +188,58 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   }
 
+  // public isPublicRoute(url: string): boolean {
+  //   // Vérifie si l'URL correspond à une route publique
+  //   console.log("isPublicRoute url=", url)
+  //   for (let route of this.PUBLIC_ROUTES) {
+  //     if (route === '/' || route === '') {
+  //       if (url === route) {
+  //         return true;
+  //       }
+  //     } else {
+  //       if (url.includes(route)) {
+  //         return true;
+  //       }
+  //     }
+  //   }
+  //   return false;
+  // }
+
   public isPublicRoute(url: string): boolean {
-    // Vérifie si l'URL correspond à une route publique
-    for (let route of this.PUBLIC_ROUTES) {
-      if (route === '/' || route === '') {
-        if (url === route) {
-          return true;
-        }
-      } else {
-        if (url.includes(route)) {
-          return true;
-        }
-      }
+    const path = this.normalizePath(url);
+
+    // Routes publiques exactes
+    const exactPublicRoutes = this.PUBLIC_ROUTES;
+    if (exactPublicRoutes.includes(path)) {
+      return true;
     }
-    return false;
+
+    // Routes publiques à préfixe (avec identifiant/token derrière)
+    const prefixPublicRoutes = this.PUBLIC_ROUTES;
+    return prefixPublicRoutes.some(prefix => path.startsWith(prefix));
+  }
+
+  private normalizePath(url: string): string {
+    if (!url) return '/';
+
+    // Supporte "/login?x=1" ou URL absolue
+    try {
+      const parsed = new URL(url, window.location.origin);
+      return this.cleanPath(parsed.pathname);
+    } catch {
+      // Fallback si ce n'est pas une URL standard
+      const pathOnly = url.split('?')[0].split('#')[0];
+      return this.cleanPath(pathOnly);
+    }
+  }
+
+  private cleanPath(path: string): string {
+    let p = (path || '/').trim();
+
+    if (!p.startsWith('/')) p = '/' + p;
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+
+    return p;
   }
 
   gotoMyProfile() {
@@ -325,7 +360,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   delError(error: MyError) {
     const current = this.errorsSource.value;
-    const index = current.findIndex(e => (e.msg === error.msg && e.title === e.title));
+    const index = current.findIndex(e => (e.msg === error.msg && e.title === error.title));
 
     if (index >= 0) {
       const updated = [...current];
@@ -414,27 +449,31 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
     console.log(label + " avant navigate to cra_form", cra)
     this.addInfo(label)
-    setTimeout(() => {
-      this.router.navigate(["/cra_form"]).then(
-        success => {
-          this.delInfo(label)
-          console.log(label + " navigate to cra_form success", cra)
-        },
-        error => {
-          this.delInfo(label)
-          console.log(label + " ERROR - navigate to cra_form", cra, error)
-        }
-      );
+    this.router.navigate(["/cra_form"]).then(
+      success => {
+        this.delInfo(label)
+        console.log(label + " navigate to cra_form success", cra)
+      },
+      error => {
+        this.delInfo(label)
+        console.log(label + " ERROR - navigate to cra_form", cra, error)
+      }
+    );
 
-      console.log(label + " END - navigate to cra_form", cra)
-    }
-      , 1500);
+    console.log(label + " END - navigate to cra_form", cra)
   }
 
   showFee(fee: NoteFrais) {
     this.currentFee = fee;
     this.isAdd = "";
-    this.router.navigate(["/notefrais_form"])
+    this.router.navigate(["/notefrais_form"]).then(
+      success => {
+        console.log("navigate to notefrais_form success", fee)
+      },
+      error => {
+        console.log("ERROR - navigate to notefrais_form", fee, error)
+      }
+    );
   }
 
   /**
@@ -563,7 +602,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.tokenService.getResponseHeaders(credentials)
       .subscribe(res => {
         this.delInfo(label)
-        console.log("++++++++++++++++login:", credentials, res);
+        // console.log("++++++++++++++++login:", credentials, res);
         if (caller) {
           caller.info = "Info : res=" + JSON.stringify(res)
         }
@@ -596,6 +635,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   public logout(): void {
     console.log("DataSharingService logout() called");
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER);
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED);
     localStorage.removeItem(UtilsService.DEFAULT_LOCALE);
@@ -656,7 +696,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           if (caller) {
             caller.info = "Info : res=" + JSON.stringify(this.userConnected.fullName)
           }
-          this.saveTokenUser(this.userConnected);
 
           if (!this.utils.isEmpty(this.userConnected.adminConsultantUsernameFct)) {
 
@@ -752,11 +791,20 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   private saveToken(token: string) {
     ////////////console.log("saveToken: token=", token);
-    localStorage.setItem(UtilsService.TOKEN_STORAGE_KEY, token);
+    sessionStorage.setItem(UtilsService.TOKEN_STORAGE_KEY, token);
+    localStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
   }
 
   public getToken(): string {
-    let token: string = localStorage.getItem(UtilsService.TOKEN_STORAGE_KEY);
+    let token: string = sessionStorage.getItem(UtilsService.TOKEN_STORAGE_KEY);
+    if (!token) {
+      const legacyToken = localStorage.getItem(UtilsService.TOKEN_STORAGE_KEY);
+      if (legacyToken) {
+        sessionStorage.setItem(UtilsService.TOKEN_STORAGE_KEY, legacyToken);
+        localStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
+        token = legacyToken;
+      }
+    }
     ////////////console.log("getToken:", token);
     return token;
   }
@@ -975,82 +1023,91 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * via l'observable listNotifications$
    */
 
-  /**
-   * Charge les notifications de manière simple
-   * Les composants peuvent s'abonner via listNotifications$ 
+  /***
+   * used to retrieve all notification
    */
-  public loadNotifications(): Observable<Notification[]> {
+  private getNotificationsFromServer(): Observable<GenericResponse> {
+    return this.http.get<GenericResponse>(this.notificationUrl);
+  }
+
+  nbCallNotifications = 0;
+  private isCallNotifications = false;
+  private readonly notificationsCooldownMs = 3000;
+  private lastNotificationsFetchTs = 0;
+
+  /**
+   * Méthode centrale : fetch avec cooldown et garde anti-doublon.
+   * Retourne un Observable sur la liste résultante.
+   * loadNotifications, refreshNotifications et getNotifications délèguent ici.
+   */
+  private fetchNotificationsWithCooldown(): Observable<Notification[]> {
+    const now = Date.now();
+    const cached = this.getListNotifications() || [];
+
+    if (this.isCallNotifications) {
+      console.log('fetchNotificationsWithCooldown: appel en cours, retour du cache');
+      return of(cached);
+    }
+
+    if ((now - this.lastNotificationsFetchTs) < this.notificationsCooldownMs) {
+      return of(cached);
+    }
+
+    this.isCallNotifications = true;
+    this.nbCallNotifications++;
+    this.lastNotificationsFetchTs = now;
+    console.log('fetchNotificationsWithCooldown #', this.nbCallNotifications);
+
     return this.getNotificationsFromServer().pipe(
       tap((resp) => {
         const notifications = resp?.body?.result || [];
         this.setListNotifications(notifications);
         this.majListNotifications();
-        console.log('DataSharingService: Notifications loaded, count =', notifications.length);
+        this.isCallNotifications = false;
+        this.lastNotificationsFetchTs = Date.now();
+        console.log('fetchNotificationsWithCooldown: chargées, count =', notifications.length);
       }),
       map((resp) => resp?.body?.result || []),
       catchError((error) => {
-        console.error('DataSharingService: Error loading notifications', error);
-        this.setListNotifications([]);
-        return of([]);
+        console.error('fetchNotificationsWithCooldown: erreur', error);
+        this.isCallNotifications = false;
+        this.lastNotificationsFetchTs = Date.now();
+        return of(cached);
       })
     );
   }
 
   /**
-   * Recharge les notifications (utile pour les rafraîchissements)
+   * Charge les notifications — API Observable pour les composants.
+   */
+  public loadNotifications(): Observable<Notification[]> {
+    return this.fetchNotificationsWithCooldown();
+  }
+
+  /**
+   * Recharge les notifications (fire-and-forget).
    */
   public refreshNotifications(): void {
-    this.loadNotifications().subscribe();
+    this.fetchNotificationsWithCooldown().subscribe();
   }
 
-  /***
-   * used to retrieve all notification
+  /**
+   * Force un rechargement immédiat en ignorant le cooldown.
    */
-  private getNotificationsFromServer(): Observable<GenericResponse> {
-    ////////console.log("getNotificationsFromServer")
-    return this.http.get<GenericResponse>(this.notificationUrl);
+  public forceRefreshNotifications(): void {
+    this.lastNotificationsFetchTs = 0;
+    this.isCallNotifications = false;
+    this.fetchNotificationsWithCooldown().subscribe();
   }
 
-  nbCallNotifications = 0
-  isCallNotifications = false
-  private readonly notificationsCooldownMs = 3000;
-  private lastNotificationsFetchTs = 0;
-
+  /**
+   * API callback pour les appelants legacy.
+   */
   public getNotifications(fctOk: Function, fctKo: Function) {
-    let label = "loading Notifications ...";
-    const cachedNotifications = this.getListNotifications() || [];
-    const now = Date.now();
-
-    if (!this.isCallNotifications && (now - this.lastNotificationsFetchTs) < this.notificationsCooldownMs) {
-      if (fctOk) fctOk(cachedNotifications);
-      return;
-    }
-
-    if (!this.isCallNotifications) {
-      this.isCallNotifications = true
-    } else {
-      console.log(label, "En cours ...")
-      if (fctOk) fctOk(cachedNotifications);
-      return
-    }
-    this.nbCallNotifications++
-    this.lastNotificationsFetchTs = now;
-    console.log(label, this.nbCallNotifications)
-
-    this.getNotificationsFromServer().subscribe((data) => {
-      console.log("getNotifications: this, data", this, data)
-      this.setListNotifications(data.body.result || []);
-      this.majListNotifications();
-      console.log("getNotifications ", this.getListNotifications())
-      this.isCallNotifications = false
-      this.lastNotificationsFetchTs = Date.now();
-      if (fctOk) fctOk(this.getListNotifications());
-    }, error => {
-      console.log("getNotifications: this, error", this, error)
-      this.isCallNotifications = false
-      this.lastNotificationsFetchTs = Date.now();
-      if (fctKo) fctKo(error);
-    })
+    this.fetchNotificationsWithCooldown().subscribe(
+      (notifications) => { if (fctOk) fctOk(notifications); },
+      (error) => { if (fctKo) fctKo(error); }
+    );
   }
 
   majListNotifications() {

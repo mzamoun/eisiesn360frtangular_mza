@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
       //  this.authService.gotoLogin()
     }
     if (!this.credentials.username) this.credentials.username = lastUserName;
-    console.log("login ngOnInit fin : credentials : ", this.credentials)
+    // console.log("login ngOnInit fin : credentials : ", this.credentials)
 
     // this.isLoading = false;  
   }

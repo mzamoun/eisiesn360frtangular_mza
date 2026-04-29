@@ -1,0 +1,16 @@
+.notifications-dropdown-menu {
+	min-width: 34rem;
+	width: max-content;
+	max-width: 92vw;
+	left: auto;
+	right: 0;
+	padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+	.notifications-dropdown-menu {
+		min-width: 20rem;
+		width: 92vw;
+		max-width: 92vw;
+	}
+}
