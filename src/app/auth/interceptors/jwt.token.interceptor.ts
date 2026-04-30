@@ -44,31 +44,28 @@ export class JwtTokenInterceptor implements HttpInterceptor {
   // }
 
   private handleErrors(err: HttpErrorResponse): Observable<any> {
-    console.log("**** handleErrors: err: ", err)
-    console.log("**** handleErrors: err.status: ", err.status)
-    console.log("**** handleErrors: err.error.status: ", err.error?.status)
+    // Extraction sécurisée : err.error peut être null, une string ou un objet selon le backend/proxy
+    const errorPayload = err.error && typeof err.error === 'object' ? err.error : null;
+    const errorStatus  = errorPayload?.status ?? null;
+    const backendMsg   = errorPayload?.message ?? err.message ?? 'Erreur inconnue';
 
-    const errorStatus = err.error?.status;
-    if (err.status == 401 || errorStatus == 401) {
-      let msgTitle = "Erreur 401 : Vérifiez vos données!"
-      let msgBody = "oops! vos données sont erronées : " + err.error.message;
-      // this.utilsIhmService.openModal(false,msgTitle, msgBody,null,null);
-      console.log(msgTitle, msgBody)
-      this.dataSharingService.addError(new MyError(msgTitle, msgBody))
+    if (err.status === 401 || errorStatus === 401) {
+      const msgTitle = "Erreur 401 : Vérifiez vos données!";
+      const msgBody  = "Identifiants incorrects : " + backendMsg;
+      this.dataSharingService.addError(new MyError(msgTitle, msgBody));
       this.dataSharingService.redirectToUrl = this.router.url;
-      this.utils.showNotification("error", err.error.message)
+      this.utils.showNotification("error", backendMsg);
       this.dataSharingService.logout();
-      
       if (this.router.url !== '/login') {
         this.router.navigate(['/login']);
       }
-
-      return of(err.message);
+      return of(null);
     }
 
-    // Les erreurs réseau/back (status 0, 4xx/5xx hors 401) ne doivent pas déclencher
-    // de redirection vers login, sinon on recrée le dashboard et on rejoue toutes les requêtes.
-    this.dataSharingService.addError(new MyError(err.status + ' : ' + err.name, err.message))
-    return of(err.message);
+    // Erreurs réseau (status 0) ou serveur (4xx/5xx hors 401) :
+    // ne pas rediriger vers /login pour éviter de recréer le dashboard et rejouer toutes les requêtes.
+    const title = err.status ? `Erreur ${err.status} : ${err.name}` : 'Erreur réseau';
+    this.dataSharingService.addError(new MyError(title, backendMsg));
+    return of(null);
   }
 }

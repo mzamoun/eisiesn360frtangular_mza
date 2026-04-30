@@ -53,12 +53,16 @@ import { UtilsIhmService } from './utilsIhm.service';
 })
 export class DataSharingService implements CraStateService, ServiceLocator {
 
-  // Routes publiques qui ne nécessitent pas d'authentification
-  private readonly PUBLIC_ROUTES: string[] = [
-    '/validateEmail',
-    '/resetPassword',
+  // Routes publiques — correspondance exacte (ex: /login)
+  private readonly EXACT_PUBLIC_ROUTES: string[] = [
     '/login',
     '/inscription',
+  ];
+
+  // Routes publiques — correspondance par préfixe (token/code en suffixe, ex: /validateEmail/abc123)
+  private readonly PREFIX_PUBLIC_ROUTES: string[] = [
+    '/validateEmail',
+    '/resetPassword',
   ];
 
   headerComponent: HeaderComponent;
@@ -172,7 +176,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     //   this.getCurrentUserFromLocaleStorage();
     // }
 
-    console.log("constructor, userConnected", this.userConnected)
   }
 
   navigateTo(url) {
@@ -207,16 +210,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   public isPublicRoute(url: string): boolean {
     const path = this.normalizePath(url);
-
-    // Routes publiques exactes
-    const exactPublicRoutes = this.PUBLIC_ROUTES;
-    if (exactPublicRoutes.includes(path)) {
+    // Correspondance exacte (/login, /inscription)
+    if (this.EXACT_PUBLIC_ROUTES.includes(path)) {
       return true;
     }
-
-    // Routes publiques à préfixe (avec identifiant/token derrière)
-    const prefixPublicRoutes = this.PUBLIC_ROUTES;
-    return prefixPublicRoutes.some(prefix => path.startsWith(prefix));
+    // Correspondance préfixe uniquement pour les routes tokenisées (/validateEmail/xxx, /resetPassword/xxx)
+    return this.PREFIX_PUBLIC_ROUTES.some(prefix => path.startsWith(prefix + '/'));
   }
 
   private normalizePath(url: string): string {
@@ -677,22 +676,17 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       data => {
         if (data) {
           this.setUserConnected(data.body.result)
-          console.log("findConsultantByUsername userConnected : ", this.userConnected)
-          console.log("getConsultantConnectedAndHisInfos esnCurrent : ", this.esnCurrent)
-          console.log("getConsultantConnectedAndHisInfos idEsnCurrent : ", this.idEsnCurrent)
 
           this.majEsnOnConsultant(() => {
             if (this.userConnected) {
               this.syncEsnFromUser(this.userConnected);
               this.saveTokenUser(this.userConnected);
-              console.log("majEsnOnConsultant idEsnCurrent : ", this.idEsnCurrent)
             }
             this.navigateToHomeWhenReady();
           }, (error) => {
             this.addErrorTxt(JSON.stringify(error))
             this.navigateToHomeWhenReady();
           })
-          console.log("findConsultantByUsername userConnected.esn : ", this.userConnected.esn)
           if (caller) {
             caller.info = "Info : res=" + JSON.stringify(this.userConnected.fullName)
           }
@@ -1394,7 +1388,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     const resetPasswordUrl = `${environment.urlFront}/#/resetPassword/${codeResetPassword}`;
 
     console.log(label + ": Code de reset généré");
-    console.log(label + ": URL de reset: " + resetPasswordUrl);
 
     // Construction du mail
     const mail = new Mail();
@@ -1422,12 +1415,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         // Sauvegarder le code de reset en base de données lié à l'email
         this.consultantService.saveCodeResetPassword(email, codeResetPassword,
           (data, mesg) => {
-            console.log(label + ": Code de reset sauvegardé en BDD pour l'email. avec data, mesg : ", codeResetPassword, email, data, mesg);
             if (callbacks && callbacks.next) {
               callbacks.next(data);
             }
           }, (errorSave, mesg) => {
-            console.log(label + ": Code de reset sauvegardé ERROR en BDD pour l'email. avec error, mesg : ", codeResetPassword, email, errorSave, mesg);
             this.errorsSource.value.push(new MyError(
               "Erreur lors de la sauvegarde du code de réinitialisation.",
               JSON.stringify(errorSave)

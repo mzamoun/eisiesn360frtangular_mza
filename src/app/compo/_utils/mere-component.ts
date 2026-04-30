@@ -386,19 +386,15 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   beforeCallServer(id: string) {
-    let info = id
-    console.log("before CallServer id=" + id + " nbCallServer avant=" + this.nbCallServer);
     this.nbCallServer++;
     this.isLoading = true;
-    console.log("before CallServer nbCallServer après=" + this.nbCallServer + " isLoading=" + this.isLoading);
-    this.addInfo(info)
+    this.dataSharingService.clearErrors();
+    this.addInfo(id);
   }
-  
+
   afterCallServer(id: string, data: any) {
-    console.log("afterCallServer id=" + id + " this : ", this)
-    console.log("afterCallServer id=" + id + " data :", data)
     this.addErrorFromResultOfServer(id, data);
-    this.endLoading(id)
+    this.endLoading(id);
   }
   
   endLoading(id: string) {

@@ -331,7 +331,6 @@ export class ConsultantFormComponent extends MereComponent {
     // Le serveur va le hasher et le sauvegarder en BDD
     this.dataSharingService.passRespEsnSaved = this.myObj.password;
 
-    console.log("Password saisi : /" + this.myObj.password + "/")
 
     //todo check if email exist : a la saisie . invalider le form si exist via une variable isEmailExist.
     // todo : confirmer avec le user son email en lui rappelant : prenom, nom, soc 
