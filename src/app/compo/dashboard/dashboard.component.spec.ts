@@ -187,4 +187,81 @@ describe('DashBoardComponent (integration)', () => {
 
     expect(dataSharingServiceStub.forceRefreshNotifications).toHaveBeenCalledTimes(1);
   }));
+
+  it('shows confirmDialog when MANAGER has no clients', fakeAsync(() => {
+    const managerUser = { id: 7, role: 'MANAGER', esnId: 42 } as any;
+    dataSharingServiceStub.userConnected = managerUser;
+    dataSharingServiceStub.idEsnCurrent = 42;
+
+    // Override: client returns empty list
+    clientServiceStub.findAll.and.returnValue(okResponse([]));
+
+    userConnectedSubject.next(managerUser);
+    fixture.detectChanges();
+    tick(3100);
+
+    expect(utilsIhmStub.confirmDialog).toHaveBeenCalled();
+    const msg: string = utilsIhmStub.confirmDialog.calls.mostRecent().args[0];
+    expect(msg).toContain('CLIENT');
+  }));
+
+  it('shows confirmDialog when MANAGER has no MISSION activity', fakeAsync(() => {
+    const managerUser = { id: 7, role: 'MANAGER', esnId: 42 } as any;
+    dataSharingServiceStub.userConnected = managerUser;
+    dataSharingServiceStub.idEsnCurrent = 42;
+
+    // Clients and projects present, activity list has no MISSION type
+    clientServiceStub.findAll.and.returnValue(okResponse([{ id: 1 }]));
+    projectServiceStub.findAll.and.returnValue(okResponse([{ id: 10 }]));
+    activityServiceStub.findAll.and.returnValue(okResponse([{ id: 20, typeName: 'AUTRE' }]));
+    // Consultants include a CONSULTANT role so the warning should trigger
+    consultantServiceStub.findAllByEsn.and.returnValue(okResponse([
+      { id: 7, role: 'MANAGER', esnId: 42 },
+      { id: 8, role: 'CONSULTANT', esnId: 42, adminConsultantId: 7 }
+    ]));
+
+    userConnectedSubject.next(managerUser);
+    fixture.detectChanges();
+    tick(3100);
+
+    expect(utilsIhmStub.confirmDialog).toHaveBeenCalled();
+    const callArgs = utilsIhmStub.confirmDialog.calls.allArgs();
+    const missionCall = callArgs.find((args: any[]) => (args[0] as string).includes('MISSION'));
+    expect(missionCall).toBeTruthy();
+  }));
+
+  it('shows confirmDialog when RESPONSIBLE_ESN has no MANAGER consultant', fakeAsync(() => {
+    const respEsnUser = { id: 5, role: 'RESPONSIBLE_ESN', esnId: 42 } as any;
+    dataSharingServiceStub.userConnected = respEsnUser;
+    dataSharingServiceStub.idEsnCurrent = 42;
+
+    // All consultants are CONSULTANT (no MANAGER)
+    consultantServiceStub.findAllByEsn.and.returnValue(okResponse([
+      { id: 8, role: 'CONSULTANT', esnId: 42 }
+    ]));
+
+    userConnectedSubject.next(respEsnUser);
+    fixture.detectChanges();
+    tick(3100);
+
+    expect(utilsIhmStub.confirmDialog).toHaveBeenCalled();
+    const msg: string = utilsIhmStub.confirmDialog.calls.mostRecent().args[0];
+    expect(msg).toContain('MANAGER');
+  }));
+
+  it('calls addError when notifications service fails', fakeAsync(() => {
+    const adminUser = { id: 1, role: 'ADMIN' } as any;
+    dataSharingServiceStub.userConnected = adminUser;
+
+    // Override: getNotifications calls error callback
+    dataSharingServiceStub.getNotifications = jasmine.createSpy('getNotifications').and.callFake(
+      (_ok: Function, err: Function) => { if (err) err({ status: 500 }); }
+    );
+
+    userConnectedSubject.next(adminUser);
+    fixture.detectChanges();
+    tick(3100);
+
+    expect(dataSharingServiceStub.addError).toHaveBeenCalled();
+  }));
 });
