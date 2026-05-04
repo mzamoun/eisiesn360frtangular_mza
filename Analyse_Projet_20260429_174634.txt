@@ -202,7 +202,7 @@ Semaine 1
 
 Semaine 2
 1. Refactor progressif DataSharingService : extractions facades : 04/05/2026
-2. Ajouter tests integration dashboard + notifications.
+2. Ajouter tests integration dashboard + notifications : 04/05/2026
 3. Mettre CI qualite (lint/test/build/coverage).
 4. Nettoyer fichiers copies et code mort.
 
