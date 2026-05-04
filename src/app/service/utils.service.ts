@@ -5,7 +5,6 @@ import { LoggerService } from './logger.service';
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { MyError } from '../resource/MyError';
-// import {NotifierService} from "angular-notifier";
 import { Router } from '@angular/router';
 import { format, parse } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -42,15 +41,11 @@ export class UtilsService {
 
   error: string;
   static URL_PATTERN: string = "^(https?:\\/\\/)?([\\w\\-]+\\.)+[\\w\\-]+(\\/\\S*)?$";
-  // private readonly notifier: NotifierService;
 
-  constructor(private logger: LoggerService, 
-    // notifier: NotifierService
+  constructor(private logger: LoggerService,
     private tradService: TradService
     , private router: Router
-  ) {
-    // this.notifier = notifier;
-  }
+  ) {}
 
   public tr(cle: string, paramJson: Object = null): string {
     return this.tradService.get(cle, paramJson);

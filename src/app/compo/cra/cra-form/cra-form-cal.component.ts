@@ -30,23 +30,22 @@ import {
   startOfDay,
 } from 'date-fns';
 
-import { Subject } from "rxjs";
-import { Consultant } from 'src/app/model/consultant';
-import { Activity } from "../../../model/activity";
-import { CraDayActivity } from "../../../model/cra-day-activity";
-import { DataSharingService } from "../../../service/data-sharing.service";
-import { UtilsService } from "../../../service/utils.service";
-// import {NotifierService} from "angular-notifier";
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject } from "rxjs";
 import { CraContext } from 'src/app/core/model/cra-context';
+import { Consultant } from 'src/app/model/consultant';
 import { Notification } from 'src/app/model/notification';
 import { ActivityTypeService } from 'src/app/service/activityType.service';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { EsnService } from 'src/app/service/esn.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { CraObservable, CraObserver } from "../../../core/core";
+import { Activity } from "../../../model/activity";
+import { CraDayActivity } from "../../../model/cra-day-activity";
 import { CraReportActivity } from "../../../model/cra-report-activity";
+import { DataSharingService } from "../../../service/data-sharing.service";
+import { UtilsService } from "../../../service/utils.service";
 import { ClientsDialogComponent } from '../../_dialogs/ClientsDialogComponent';
 import { CraHistoStatusComponent } from '../../_dialogs/CraHistoStatusComponent';
 import { DownloadClientCraDialogData } from '../../_dialogs/DownloadClientCraDialogComponent';
@@ -156,11 +155,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     , private craService: CraService
     , private consultantService: ConsultantService
     , private esnService: EsnService
-    // , private craFormsService: CraFormsService
     , private activityService: ActivityService
     , private activityTypeService: ActivityTypeService
     , private modal: NgbModal
-    // , private notifier: NotifierService
     , public utils: UtilsService
     , public dataSharingService: DataSharingService
     , private utilsIhm: UtilsIhmService
@@ -172,11 +169,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.logger.debug("DBG: cra-form-cal: constructot: currentCra: ", this.currentCra)
     this.logger.debug("cra list findAll Constr : dataSharingService.listCra:", this.dataSharingService.getListCra())
   }
-
-  // getCurrentCra() {
-  //   // //////////this.logger.debug("DBG: cra-form-cal: getCurrentCra(): currentCra: ", this.currentCra)
-  //   return this.currentCra;
-  // }
 
   /**
    * s'il ne vient pas d'un input , il peut venir des params de l'url

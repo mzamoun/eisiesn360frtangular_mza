@@ -20,9 +20,7 @@ import { Project } from '../model/project';
 import { MyError } from '../resource/MyError';
 import { ActivityService } from './activity.service';
 import { ConsultantService } from './consultant.service';
-// 
 import { UtilsService } from "./utils.service";
-// import { CraService } from './cra.service';
 
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
@@ -72,7 +70,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   headerComponent: HeaderComponent;
 
-  // public static currentUser: BehaviorSubject<Consultant> = new BehaviorSubject<Consultant>(new Consultant());
   craContext: BehaviorSubject<CraContext> = new BehaviorSubject<CraContext>(null);
   public serviceRegistry: Map<string, any> = new Map<string, any>();
   public userSelectedActivity: Consultant;
@@ -93,9 +90,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   listCra$ = this.listCraSource.asObservable();
   userConnected$ = this.userConnectedSource.asObservable();
 
-  // listInfos: Array<string> = [];
-  // listErrors: MyError[] = [];
-  // listInfosObservers: MereComponent[] = [];
   isAdd: string;
   typeCra: string;
   currentFee: NoteFrais;
@@ -179,11 +173,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.isUserLoggedInFct.next(true);
     }
 
-    // if (!this.userConnected) {
-    //   // get it from local storage in case of page refresh
-    //   this.getCurrentUserFromLocaleStorage();
-    // }
-
   }
 
   navigateTo(url) {
@@ -192,29 +181,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   gotoLogin() {
     this.logger.debug("navigate to login ")
-    // this.router.navigate(['/login']);
     if (this.router.url !== '/login') {
       this.router.navigate(['/login']);
     }
 
   }
-
-  // public isPublicRoute(url: string): boolean {
-  //   // Vérifie si l'URL correspond à une route publique
-  //   this.logger.debug("isPublicRoute url=", url)
-  //   for (let route of this.PUBLIC_ROUTES) {
-  //     if (route === '/' || route === '') {
-  //       if (url === route) {
-  //         return true;
-  //       }
-  //     } else {
-  //       if (url.includes(route)) {
-  //         return true;
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
 
   public isPublicRoute(url: string): boolean {
     const path = this.normalizePath(url);
@@ -292,13 +263,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.isUserLoggedInFct.next(false);
     }
     let userStr = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER);
-    // this.logger.debug("getCurrentUserFromLocaleStorage, userStr", userStr)
     if (userStr) {
-      // DataSharingService.currentUser.next(JSON.parse(userStr));
       this.setUserConnected(JSON.parse(userStr))
     }
-
-    // this.currentUser = DataSharingService.currentUser;
 
     return this.userConnected
   }
@@ -698,60 +665,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     );
   }
 
-  //   /**
-  //  * 
-  //  * @param username 
-  //  * @param caller : object appelant 
-  //  */
-  // findConsultantConnectedByUsername(username: string, caller: any) {
-  //   this.setUserConnected(null)
-  //   this.consultantService.findConsultantByUsername(username).subscribe(
-  //     data => {
-  //       if (data) {
-  //         this.setUserConnected(data.body.result)
-  //         this.logger.debug("findConsultantByUsername userConnected : ", this.userConnected)
-  //         this.esnCurrent = this.userConnected?.esn 
-  //         this.idEsnCurrent = this.esnCurrent?.id 
-
-  //         this.majEsnOnConsultant()
-  //         this.logger.debug("findConsultantByUsername userConnected.esn : ", this.userConnected.esn)
-  //         if (caller) {
-  //           caller.info = "Info : res=" + JSON.stringify(this.userConnected.fullName)
-  //         }
-  //         this.saveTokenUser(this.userConnected);
-
-  //         if (!this.utils.isEmpty(this.userConnected.adminConsultantUsernameFct)) {
-
-  //           this.findConsultantByUsername(this.userConnected.adminConsultantUsernameFct,
-  //             (data, user) => {
-  //               this.logger.debug("findConsultantByUsername data : ", data)
-  //               this.logger.debug("findConsultantByUsername user : ", user)
-  //               this.majAdminConsultantFct(this.userConnected, user);
-  //               this.userConnected.adminConsultant = user
-  //               this.logger.debug("findConsultantByUsername userConnected.adminConsultant : ", this.userConnected.adminConsultant)
-  //               this.saveTokenUser(this.userConnected);
-  //             },
-  //             (error) => {
-  //               this.logger.debug("findConsultantByUsername: error ", error);
-  //               if (caller) {
-  //                 caller.error = "ERROR : error=" + JSON.stringify(error)
-  //               }
-  //             }
-  //           );
-  //         }
-
-
-  //         this.router.navigate(['/home']);
-  //       }
-  //     }, error => {
-  //       this.logger.debug("findConsultantByUsername: error ", error);
-  //       if (caller) {
-  //         caller.error = "ERROR : error=" + JSON.stringify(error)
-  //       }
-  //     }
-  //   );
-  // }
-
   private setKey(key: string, value: string) {
     localStorage.setItem(key, value);
   }
@@ -799,15 +712,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
     return this.userConnected;
   }
-
-  // getUserConnected(): Consultant {
-  //   if (!this.userConnected) {
-  //     this.getCurrentUserFromLocaleStorage();
-  //   }
-
-  //   return this.userConnected;
-  // }
-
 
   setUserConnected(user: Consultant) {
     this.userConnected = user;

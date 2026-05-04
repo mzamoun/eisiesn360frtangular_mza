@@ -127,33 +127,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
       })
     );
 
-    // this.userConnected = this.getCurrentUserFromLocaleStorage();
-
-    // setTimeout(
-    //   ()=>{
-
-    //     this.dataSharingService.userConnected = this.userConnected 
-    //     this.esnCurrent = this.userConnected?.esn 
-    //     this.dataSharingService.esnCurrent = this.esnCurrent
-    //     this.dataSharingService.idEsnCurrent = this.esnCurrent?.id 
-    //     this.idEsnCurrent = this.dataSharingService.idEsnCurrent
-
-    //     this.logger.debug("**** setTimeout userConnected : ", this.userConnected)
-    //     this.logger.debug("**** setTimeout dataSharingService.userConnected : ", this.dataSharingService.userConnected)
-    //     if(this.userConnected?.esn == null) this.userConnected = this.dataSharingService.userConnected
-    //     this.esnCurrent = this.userConnected?.esn 
-    //     this.logger.debug("**** setTimeout esnCurrent : ", this.esnCurrent)
-    //     if(this.esnCurrent != null) {
-    //       this.idEsnCurrent = this.esnCurrent.id;
-    //     }
-    //     this.logger.debug("**** setTimeout idEsnCurrent : ", this.idEsnCurrent)
-    //   }, 3000
-    // )
   }
-
-  // isLoggedIn() {
-  //   return this.dataSharingService.isLoggedIn();
-  // }
 
   logout() {
     this.dataSharingService.logout();
@@ -253,17 +227,6 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     return this.userConnected?.admin ?? false;
   }
 
-  // updateInfosObserver() {
-  //   // this.logger.debug("updateInfosObserver deb")
-  //   //////this.logger.debug("MERE updateInfosObservers this", this)
-  //   this.logger.debug("MERE updateInfosObservers listInfos", this.listInfos)
-  //   this.logger.debug("MERE updateInfosObservers listErrors", this.listErrors)
-  //   // this.listInfos = this.dataSharingService.listInfos;
-  //   // this.listErrors = this.dataSharingService.listErrors;
-  //   this.setInfosMere();
-  //   this.userConnected = this.getCurrentUserFromLocaleStorage();
-  //   this.setUserConnected(this.userConnected)
-  // }
 
   clearInfos() {
     //////////this.logger.debug("DBG MereComponent clearInfos")
