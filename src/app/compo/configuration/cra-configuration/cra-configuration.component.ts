@@ -1,3 +1,6 @@
+
+
+
 import { DatePipe } from "@angular/common";
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -62,7 +65,7 @@ export class CraConfigurationComponent extends MereComponent {
 
     setTimeout(() => {
       this.beforeCallServer("viewDateChange")
-      console.log("viewDateChange : viewDate : ", this.viewDate)
+      this.logger.debug("viewDateChange : viewDate : ", this.viewDate)
 
       if (!this.idEsnCurrent || this.idEsnCurrent <= 0) {
         this.addError(new MyError("viewDateChange", "Esn non trouvée pour l'utilisateur connecté"))
@@ -70,12 +73,12 @@ export class CraConfigurationComponent extends MereComponent {
       }
 
       let myDate = this.datePipe.transform(this.viewDate, "MM-yyyy");
-      console.log("viewDateChange : myDate : ", myDate)
+      this.logger.debug("viewDateChange : myDate : ", myDate)
       this.craConfigurationService.getCraConfigByEsnIdAndMonth(this.idEsnCurrent, myDate)
         .subscribe((data) => {
           this.afterCallServer("viewDateChange", data)
           this.craConfigurationData = data?.body?.result || new CraConfiguration();
-          console.log("viewDateChange : craConfigurationData : ", this.craConfigurationData)
+          this.logger.debug("viewDateChange : craConfigurationData : ", this.craConfigurationData)
 
           if (!this.craConfigurationData.holidays) {
             this.craConfigurationData.holidays = [];
@@ -94,7 +97,7 @@ export class CraConfigurationComponent extends MereComponent {
     this.beforeCallServer("update")
     this.craConfigurationData.esn = this.getEsnCurrent();
     const savedLabels = this.craConfigurationData.holidayLabels;
-    console.log("update craConfigurationData : ", this.craConfigurationData)
+    this.logger.debug("update craConfigurationData : ", this.craConfigurationData)
     this.craConfigurationService.updateCraConfiguration(this.craConfigurationData).subscribe((data) => {
       this.afterCallServer("update", data)
       this.craConfigurationData = data?.body?.result || this.craConfigurationData;
@@ -105,20 +108,20 @@ export class CraConfigurationComponent extends MereComponent {
       if (!this.craConfigurationData.holidayLabels && savedLabels) {
         this.craConfigurationData.holidayLabels = savedLabels;
       }
-      console.log("craConfigurationData : ", this.craConfigurationData)
+      this.logger.debug("craConfigurationData : ", this.craConfigurationData)
     }, (error) => {
       this.addErrorFromErrorOfServer("update", error);
     })
   }
 
   dayClicked(day: MonthViewDay<any>, events: CalendarEvent[]) {
-    console.log("dayClicked : day : ", day);
+    this.logger.debug("dayClicked : day : ", day);
 
     const dayDate = this.utils.getDate(day.date);
 
     // Jour férié national : rien à faire
     if (this.isNationalHoliday(dayDate)) {
-      console.log("dayClicked : jour férié national, rien à faire");
+      this.logger.debug("dayClicked : jour férié national, rien à faire");
       return;
     }
 
@@ -204,16 +207,16 @@ export class CraConfigurationComponent extends MereComponent {
   }
 
   private setEvents() {
-    console.log("setEvents : craConfigurationData : ", this.craConfigurationData)
+    this.logger.debug("setEvents : craConfigurationData : ", this.craConfigurationData)
     this.events = [];
     if (!this.craConfigurationData || !this.craConfigurationData.holidays) {
       this.refreshMe();
-      console.log("setEvents : craConfigurationData.holidays is null or undefined")
+      this.logger.debug("setEvents : craConfigurationData.holidays is null or undefined")
       return;
     }
     this.craConfigurationData.holidays.forEach(value => {
       value = this.utils.getDate(value);
-      console.log("setEvents : holiday value : ", value)
+      this.logger.debug("setEvents : holiday value : ", value)
       const dateKey = this.datePipe.transform(value, 'dd-MM-yyyy');
       const label = this.craConfigurationData.holidayLabels?.[dateKey] || ('Congé perso : ' + dateKey);
       this.events.push({

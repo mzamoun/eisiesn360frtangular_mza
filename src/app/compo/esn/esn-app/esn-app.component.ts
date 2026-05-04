@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { Component, OnInit } from '@angular/core';
 
 
@@ -10,7 +14,7 @@ export class EsnAppComponent implements OnInit {
 
 	title: string = "Esns"
 
-  constructor() { }
+  constructor(private logger: LoggerService, ) { }
 
   ngOnInit() {
   }

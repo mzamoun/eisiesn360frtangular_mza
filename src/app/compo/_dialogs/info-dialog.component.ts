@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 // info-dialog.component.ts
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -13,7 +14,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   `
 })
 export class InfoDialogComponent {
-  constructor(
+  constructor(private logger: LoggerService, 
     public dialogRef: MatDialogRef<InfoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
   ) {}

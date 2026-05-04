@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,7 +17,7 @@ import { ModalComponent } from '../compo/resources/ModalComponent';
 export class UtilsIhmService {
   modalChoice: any;
 
-  constructor(private modalService: NgbModal, private dialog: MatDialog) {
+  constructor(private logger: LoggerService, private modalService: NgbModal, private dialog: MatDialog) {
   }
 
   public confirm(content: string, callBackFctResult: any, callBackFctReason: any) {
@@ -37,7 +41,7 @@ export class UtilsIhmService {
   }
 
   public info(content: string, callBackFctResult: any = null, callBackFctReason: any = null) {
-    console.log("msg info content=", content)
+    this.logger.debug("msg info content=", content)
     this.openModal(false, "Infos", content, callBackFctResult, callBackFctReason);
   }
 
@@ -57,11 +61,11 @@ export class UtilsIhmService {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // L’utilisateur a cliqué "Yes"
-        console.log('Confirmed');
+        this.logger.debug('Confirmed');
         if (fctYes) fctYes()
       } else {
         // L’utilisateur a cliqué "No"
-        console.log('Cancelled');
+        this.logger.debug('Cancelled');
         if (fctNo) fctNo()
       }
     });
@@ -82,7 +86,7 @@ export class UtilsIhmService {
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
           // L’utilisateur a cliqué "Yes"
-          console.log('Confirmed');
+          this.logger.debug('Confirmed');
           if (fctYes) fctYes()
         } 
       });
@@ -95,7 +99,7 @@ export class UtilsIhmService {
     const modalRef = this.modalService.open(MyCalendarComponent);
     modalRef.componentInstance.changeRef.markForCheck();
     // return modalRef.result;
-    modalRef.result.then(callBackFctResult).catch((res) => { console.log(res) });
+    modalRef.result.then(callBackFctResult).catch((res) => { this.logger.debug(res) });
 
   }
 
@@ -105,7 +109,7 @@ export class UtilsIhmService {
     modalRef.componentInstance.content = content;
     modalRef.componentInstance.showCancel = showCancel;
 
-    modalRef.result.then(callBackFctResult, callBackFctReason).catch((res) => { console.log(res) });
+    modalRef.result.then(callBackFctResult, callBackFctReason).catch((res) => { this.logger.debug(res) });
   }
 
   downloadFile(file_name: string, attr_href_File_Saved_Path: string) {

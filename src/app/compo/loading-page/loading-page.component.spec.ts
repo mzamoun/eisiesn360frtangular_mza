@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoadingPageComponent } from './loading-page.component';

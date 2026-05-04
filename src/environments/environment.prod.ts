@@ -14,6 +14,7 @@ const app = '/esn360/'
 
 export const environment = {
   production: true,
+  enableDebugLogs: false,
   apiUrl: url + app + 'api',
   divUrl: url + app + 'div',
   extractUrl: url + ':8300',

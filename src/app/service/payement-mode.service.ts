@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from "../../environments/environment";
@@ -21,7 +25,7 @@ export class PayementModeService {
     return this.payement;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.payementModeUrl = environment.apiUrl + '/payementMode/';
   }
 
@@ -35,12 +39,12 @@ export class PayementModeService {
   }
 
   public save(payementMode: PayementMode): Observable<GenericResponse> {
-    // //////////console.log("save id=" + payementMode.id + ".");
+    // //////////this.logger.debug("save id=" + payementMode.id + ".");
     if (payementMode.id > 0) {
-      // //////////console.log("put update")
+      // //////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.payementModeUrl, payementMode);
     } else {
-      // //////////console.log("post add")
+      // //////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.payementModeUrl, payementMode);
     }
   }

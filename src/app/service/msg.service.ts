@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -25,7 +29,7 @@ export class MsgService {
     return this.msg;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.msgUrl = environment.apiUrl + '/msg/';
     this.msgUrlPub = environment.divUrl + '/msg/';
   }
@@ -44,12 +48,12 @@ export class MsgService {
   }
 
   public save(msg: Msg): Observable<GenericResponse> {
-    //////////console.log("Msg service save id=" + msg.id + ".");
+    //////////this.logger.debug("Msg service save id=" + msg.id + ".");
     if (msg.id && msg.id > 0) {
-      //////////console.log("put update")
+      //////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.msgUrl, msg);
     } else {
-      //////////console.log("post add")
+      //////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.msgUrl, msg);
     }
   }

@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -9,7 +13,7 @@ export class CategoryAppComponent implements OnInit {
 
   title: string = "Category"
 
-  constructor() { }
+  constructor(private logger: LoggerService, ) { }
 
   ngOnInit() {
   }

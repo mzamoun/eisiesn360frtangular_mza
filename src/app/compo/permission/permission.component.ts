@@ -42,7 +42,7 @@ export class PermissionComponent extends MereComponent {
    */
   updateList(i: number, action: string, event: any) {
     var checked = event.target.checked 
-    console.log("updateList : i, action, checked, this.myList, event : ", i, action, checked, this.myList, event)
+    this.logger.debug("updateList : i, action, checked, this.myList, event : ", i, action, checked, this.myList, event)
 
     if ('all' == action) {
       this.myList[i].view = checked;
@@ -72,7 +72,7 @@ export class PermissionComponent extends MereComponent {
    * Used to update permissions (only the current page selected)
    */
      updatePermissions() {
-      //console.log(this.myList)
+      //this.logger.debug(this.myList)
       this.beforeCallServer("updatePermissions")
       this.permissionService.updatePermissions(this.myList).subscribe(
         (data) => {
@@ -125,7 +125,7 @@ export class PermissionComponent extends MereComponent {
           this.afterCallServer(label, data)
           this.myList = data.body.result;
           this.myList00 = this.myList;
-          //console.log(this.myList)
+          //this.logger.debug(this.myList)
         }, (error => {
           this.addErrorFromErrorOfServer(label, error);
         }));

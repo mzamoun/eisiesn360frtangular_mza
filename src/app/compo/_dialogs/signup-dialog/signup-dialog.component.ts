@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
@@ -19,7 +23,7 @@ export class SignupDialogComponent {
   infos = ""
   errors = ""
 
-  constructor(
+  constructor(private logger: LoggerService, 
     public dialogRef: MatDialogRef<SignupDialogComponent>, public dataSharingService: DataSharingService
     , private consultantService: ConsultantService
     , private esnService: EsnService
@@ -49,7 +53,7 @@ export class SignupDialogComponent {
         },
         error => {
           this.errors = error
-          console.log("ERROR delete respEsnSaved : ", error)
+          this.logger.debug("ERROR delete respEsnSaved : ", error)
         }
       );
     }
@@ -63,7 +67,7 @@ export class SignupDialogComponent {
         },
         error => {
           this.errors = error
-          console.log("ERROR delete esnSaved : ", error)
+          this.logger.debug("ERROR delete esnSaved : ", error)
         }
       );
     }
@@ -96,11 +100,11 @@ export class SignupDialogComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // L’utilisateur a cliqué "Yes"
-        console.log('Confirmed');
+        this.logger.debug('Confirmed');
         this.deleteAllSavedAndClose();
       } else {
         // L’utilisateur a cliqué "No"
-        console.log('Cancelled');
+        this.logger.debug('Cancelled');
       }
     });
 
@@ -112,7 +116,7 @@ export class SignupDialogComponent {
   }
 
   onSubmit(): void {
-    console.log("Formulaire confirmé");
+    this.logger.debug("Formulaire confirmé");
     this.close();
   }
 }

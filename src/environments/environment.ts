@@ -27,6 +27,7 @@ const urlFront = urlFront_dev
 
 export const environment = {
   production: true,
+  enableDebugLogs: true,
   apiUrl: url + 'api',
   // apiUrl: urlAzure + 'api',
   divUrl: url + 'div',

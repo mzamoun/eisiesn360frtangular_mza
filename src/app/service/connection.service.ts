@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
@@ -8,7 +12,7 @@ import { GenericResponse } from "../model/response/genericResponse";
 export class ConnectionService {
     private apiUrl: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.apiUrl = environment.apiUrl + '/connections/';
   }
 

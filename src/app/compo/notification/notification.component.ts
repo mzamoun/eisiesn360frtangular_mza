@@ -300,7 +300,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
   showForm(notification: Notification) {
 
     const label = "Notification.showForm";
-    console.log(label + " START - notification: ", notification);
+    this.logger.debug(label + " START - notification: ", notification);
 
     this.clearInfos();
 
@@ -324,7 +324,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
       (data) => {
         this.delInfo(label2);
         const allCra = data?.body?.result || [];
-        console.log(label + " - liste CRA trouvée: data : ", data);
+        this.logger.debug(label + " - liste CRA trouvée: data : ", data);
         this.dataSharingService.setListCra(allCra);
 
         const craFromList = allCra.find(cra => cra?.id === notification.cra.id);
@@ -338,7 +338,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
         this.dataSharingService.showCra(notification.cra);
         notification.viewed = true;
         this.saveNotification(notification, (saveData) => {
-          console.log(label + " - callback saveNotification OK: ", saveData);
+          this.logger.debug(label + " - callback saveNotification OK: ", saveData);
           this.dataSharingService.fromNotif = true;
         }, (error) => {
           console.error(label + " - ERREUR saveNotification: ", error);
@@ -373,7 +373,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   showFee(notification: Notification) {
     this.selectedFee = notification.noteFrais;
-    console.log("showFee", notification)
+    this.logger.debug("showFee", notification)
     this.modal.open(this.detailsFeeView, { size: 'lg' });
     this.clearInfos();
     notification.viewed = true;
@@ -385,7 +385,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   showDocument(notification: Notification) {
     this.selectedDocument = notification.currentDocument;
-    console.log("showDoc", notification)
+    this.logger.debug("showDoc", notification)
     this.modal.open(this.detailsDocumentView, { size: 'lg' });
     this.clearInfos();
     notification.viewed = true;
@@ -400,7 +400,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     type = this.utils.tr(type);
     let show = this.utils.tr("Show");
 
-    // console.log("type="+type+".") 
+    // this.logger.debug("type="+type+".") 
 
     s = show + " " + type;
     return s;
@@ -412,7 +412,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
       , () => {
         mythis.dataSharingService.deleteNotifications(
           () => {
-            console.log("deleteAllNotifications - callback deleteNotifications OK");
+            this.logger.debug("deleteAllNotifications - callback deleteNotifications OK");
           }
           , (error) => {
             console.error("deleteAllNotifications - ERREUR deleteNotifications: ", error);

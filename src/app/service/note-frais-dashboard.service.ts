@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
@@ -22,7 +26,7 @@ export class NoteFraisDashboardService {
     return this.fraisConsultantDashboard;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.noteFraisDashboardUrl = environment.apiUrl + '/fraisConsultantDashboard/';
   }
 

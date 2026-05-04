@@ -53,10 +53,10 @@ export class ConnectionComponent extends MereComponent {
         this.afterCallServer("findAll", data)
         this.myList = data.body.result;
         this.myList00 = this.myList;
-        console.log("*** connections : ", this.myList)
+        this.logger.debug("*** connections : ", this.myList)
       }, error => {
         this.addErrorFromErrorOfServer("findAll", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }

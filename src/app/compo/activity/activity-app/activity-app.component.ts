@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { ActivityListComponent } from "src/app/compo/activity/activity-list/activity-list.component";
 import { MyError } from 'src/app/resource/MyError';

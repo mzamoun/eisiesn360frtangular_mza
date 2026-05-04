@@ -19,6 +19,7 @@ import { CraService } from 'src/app/service/cra.service';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { DocumentService } from 'src/app/service/document.service';
 import { EsnService } from 'src/app/service/esn.service';
+import { LoggerService } from 'src/app/service/logger.service';
 import { MsgService } from 'src/app/service/msg.service';
 import { ProjectService } from 'src/app/service/project.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -81,14 +82,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         private esnService: EsnService,
         private documentService: DocumentService,
         private dataSharingService: DataSharingService,
+        private logger: LoggerService,
         private utilsIhm: UtilsIhmService,
         private router: Router
     ) {
-        console.log('DashboardComponent.constructor called');
+        this.logger.debug('DashboardComponent.constructor called');
     }
 
     ngOnInit(): void {
-        console.log('DashboardComponent.ngOnInit called');
+        this.logger.debug('DashboardComponent.ngOnInit called');
         this.refreshVisibleSections();
         this.dataSharingService.userConnected$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
             this.refreshVisibleSections();
@@ -102,11 +104,11 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             filter((esn: Esn) => !!esn),
             distinctUntilChanged((prev, curr) => prev?.id === curr?.id)
         ).subscribe((esn: Esn) => {
-            console.log('DashboardComponent: esnCurrentReady event received, esn = ', esn);
+            this.logger.debug('DashboardComponent: esnCurrentReady event received, esn = ', esn);
             this.esn = esn;
             this.esnId = esn.id;
             if (!this.esnId) this.esnId = this.dataSharingService.userConnected?.esnId;
-            console.log('DashboardComponent: esnId 1 = ', this.esnId);
+            this.logger.debug('DashboardComponent: esnId 1 = ', this.esnId);
             this.loadCountsOncePerEsn();
         });
 
@@ -125,7 +127,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             }
             this.adminCountsLoaded = true;
             this.esnId = 0;
-            console.log('DashboardComponent: admin context detected, loading counts');
+            this.logger.debug('DashboardComponent: admin context detected, loading counts');
             this.loadCounts();
             return;
         }
@@ -137,7 +139,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
         if (fallbackEsnId) {
             this.esnId = fallbackEsnId;
-            console.log('DashboardComponent: fallback esnId = ', this.esnId);
+            this.logger.debug('DashboardComponent: fallback esnId = ', this.esnId);
             this.loadCountsOncePerEsn();
             return;
         }
@@ -168,13 +170,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        console.log('DashboardComponent.ngOnDestroy called');
+        this.logger.debug('DashboardComponent.ngOnDestroy called');
         this.destroy$.next();
         this.destroy$.complete();
     }
 
     private loadCountsOncePerEsn(): void {
-        console.log('DashboardComponent.loadCountsOncePerEsn called');
+        this.logger.debug('DashboardComponent.loadCountsOncePerEsn called');
         const currentEsnId = this.esnId || null;
         if (this.hasLoadedCounts && this.lastLoadedEsnId === currentEsnId) {
             return;
@@ -185,7 +187,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     loadCounts(): void {
-        console.log('DashboardComponent.loadCounts called');
+        this.logger.debug('DashboardComponent.loadCounts called');
         const role = this.dataSharingService.userConnected?.role;
 
         // Notifications (pour tous les rôles)
@@ -194,20 +196,20 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             idConsultant = 0; // pour admin, récupérer toutes les notifications
         }
 
-        console.log('DashboardComponent: Loading Notifications for consultantId = ', idConsultant);
+        this.logger.debug('DashboardComponent: Loading Notifications for consultantId = ', idConsultant);
         this.dataSharingService.forceRefreshNotifications(); // force refresh
         let labelNotif = role === 'ADMIN' ? 'Toutes les Notifications' : 'Mes Notifications';
-        console.log('DashboardComponent: labelNotif = ', labelNotif);
+        this.logger.debug('DashboardComponent: labelNotif = ', labelNotif);
         this.dataSharingService.addInfo(labelNotif);
         this.dataSharingService.getNotifications(
             (listNotif) => {
-                console.log('DashboardComponent: Loaded Notif, count = ', listNotif?.length);
+                this.logger.debug('DashboardComponent: Loaded Notif, count = ', listNotif?.length);
                 this.dataSharingService.delInfo(labelNotif);
                 const listNotifications = listNotif as Notification[];
                 this.listNotifications = this.dataSharingService.getListNotifications() || listNotifications;
                 this.updateSectionCount('Notifications', this.listNotifications.length);
             }, (error) => {
-                console.log('DashboardComponent: Error loading Notifications', error);
+                this.logger.debug('DashboardComponent: Error loading Notifications', error);
                 this.dataSharingService.delInfo(labelNotif);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des Notifications : ', JSON.stringify(error)));
                 this.listNotifications = this.dataSharingService.getListNotifications() || [];
@@ -221,13 +223,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
         this.esnService.findAll().subscribe({
             next: (resp) => {
-                console.log('DashboardComponent: Loaded ESNs, resp = ', resp);
+                this.logger.debug('DashboardComponent: Loaded ESNs, resp = ', resp);
                 this.dataSharingService.delInfo(labelEsn);
                 this.listEsn = resp && resp.body && resp.body.result ? resp.body.result : [];
                 this.updateSectionCount('Esn', this.listEsn.length);
             },
             error: (err) => {
-                console.log('DashboardComponent: Error loading ESNs', err);
+                this.logger.debug('DashboardComponent: Error loading ESNs', err);
                 this.dataSharingService.delInfo(labelEsn);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(err)));
                 this.updateSectionCount('Esn', 0);
@@ -247,13 +249,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                     this.isCraLoading = false;
                     this.isCraLoaded = true;
                     this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    console.log('DashboardComponent: Loaded CRA, listCra = ', this.listCra);
+                    this.logger.debug('DashboardComponent: Loaded CRA, listCra = ', this.listCra);
 
                     this.dataSharingService.setListCra(this.listCra);
                     this.dataSharingService.majListCra();
 
                     setTimeout(() => {
-                        console.log('DashboardComponent: ap set timeout, listCra = ', this.listCra);
+                        this.logger.debug('DashboardComponent: ap set timeout, listCra = ', this.listCra);
                         this.dataSharingService.delInfo(labelCra);
                         this.updateSectionCount('CRA', this.listCra.length);
                     }, 3000);
@@ -336,7 +338,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private loadClientAndCheckHierarchy(): void {
-        console.log('DashboardComponent.loadClientAndCheckHierarchy called');
+        this.logger.debug('DashboardComponent.loadClientAndCheckHierarchy called');
         let labelClient = 'Chargement des Clients...';
         this.dataSharingService.addInfo(labelClient);
         this.clientService.findAll(this.esnId).subscribe({
@@ -372,7 +374,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private loadProjectAndCheckHierarchy(): void {
-        console.log('DashboardComponent.loadProjectAndCheckHierarchy called');
+        this.logger.debug('DashboardComponent.loadProjectAndCheckHierarchy called');
         let labelProject = 'Chargement des Projets...';
         this.dataSharingService.addInfo(labelProject);
         this.projectService.findAll(this.esnId).subscribe({
@@ -404,7 +406,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private loadActivityAndCheckHierarchy(): void {
-        console.log('DashboardComponent.loadActivityAndCheckHierarchy called');
+        this.logger.debug('DashboardComponent.loadActivityAndCheckHierarchy called');
         let labelActivity = 'Chargement des Activités...';
         this.dataSharingService.addInfo(labelActivity);
         this.activityService.findAll().subscribe({
@@ -421,10 +423,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                     (a.type && a.type.name === 'MISSION')
                 );
 
-                console.log('Dashboard - hasConsultantRole:', hasConsultantRole);
-                console.log('Dashboard - hasMissionActivity:', hasMissionActivity);
-                console.log('Dashboard - listActivity:', this.listActivity);
-                console.log('Dashboard - activity types:', this.listActivity.map(a => ({ typeName: a.typeName, type: a.type })));
+                this.logger.debug('Dashboard - hasConsultantRole:', hasConsultantRole);
+                this.logger.debug('Dashboard - hasMissionActivity:', hasMissionActivity);
+                this.logger.debug('Dashboard - listActivity:', this.listActivity);
+                this.logger.debug('Dashboard - activity types:', this.listActivity.map(a => ({ typeName: a.typeName, type: a.type })));
 
                 if (this.listProject.length > 0 && hasConsultantRole && !hasMissionActivity && !this.dataSharingService.missionActivityWarningShown) {
                     this.dataSharingService.missionActivityWarningShown = true;
@@ -444,7 +446,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private loadAllConsultantsAndUpdateCounts(): void {
-        console.log('DashboardComponent.loadAllConsultantsAndUpdateCounts called');
+        this.logger.debug('DashboardComponent.loadAllConsultantsAndUpdateCounts called');
         const user = this.dataSharingService.userConnected;
         const role = user?.role;
 
@@ -554,7 +556,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private updateSectionCount(title: string, count: any): void {
-        console.log('DashboardComponent.updateSectionCount called', { title, count });
+        this.logger.debug('DashboardComponent.updateSectionCount called', { title, count });
         const section = this.sections.find(s => s.title === title);
         if (section) {
             section.count = count;
@@ -562,7 +564,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     private refreshVisibleSections(): void {
-        console.log('DashboardComponent.refreshVisibleSections called');
+        this.logger.debug('DashboardComponent.refreshVisibleSections called');
         const role = this.dataSharingService.userConnected?.role;
         this.visibleSections = this.sections.filter(s => {
             if (s.roles && (!role || !s.roles.includes(role))) return false;
@@ -572,7 +574,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     showChart(section: any): void {
-        console.log('DashboardComponent.showChart called', section);
+        this.logger.debug('DashboardComponent.showChart called', section);
         this.selectedSection = section;
         this.activeTab = 'evolution';
         this.chartData = this.generateChartData(section);
@@ -589,7 +591,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     closeChart(): void {
-        console.log('DashboardComponent.closeChart called');
+        this.logger.debug('DashboardComponent.closeChart called');
         this.selectedSection = null;
         this.chartData = null;
         this.activeTab = 'evolution';
@@ -597,7 +599,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     switchTab(tabName: string): void {
-        console.log('DashboardComponent.switchTab called', tabName);
+        this.logger.debug('DashboardComponent.switchTab called', tabName);
         this.activeTab = tabName;
         
         // Recalculer le multiplicateur auto si activé lors du changement d'onglet
@@ -607,7 +609,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     }
 
     changeTimeGrouping(grouping: 'day' | 'month' | 'year'): void {
-        console.log('DashboardComponent.changeTimeGrouping called', grouping);
+        this.logger.debug('DashboardComponent.changeTimeGrouping called', grouping);
         this.timeGrouping = grouping;
         if (this.selectedSection) {
             this.chartData = this.generateChartData(this.selectedSection);
@@ -626,7 +628,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Calcule le multiplicateur automatique basé sur la valeur maximale
      */
     calculateAutoMultiplier(): void {
-        console.log('DashboardComponent.calculateAutoMultiplier called');
+        this.logger.debug('DashboardComponent.calculateAutoMultiplier called');
         let maxValue = 0;
         
         if (this.activeTab === 'evolution' && this.chartData) {
@@ -646,7 +648,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         // Calculer le multiplicateur pour atteindre la hauteur cible
         if (maxValue > 0) {
             this.heightMultiplier = this.targetBarHeight / maxValue;
-            console.log('Auto-scale calculated:', { maxValue, multiplier: this.heightMultiplier });
+            this.logger.debug('Auto-scale calculated:', { maxValue, multiplier: this.heightMultiplier });
         } else {
             this.heightMultiplier = 1;
         }
@@ -656,7 +658,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Active/désactive l'auto-scaling
      */
     toggleAutoScale(): void {
-        console.log('DashboardComponent.toggleAutoScale called');
+        this.logger.debug('DashboardComponent.toggleAutoScale called');
         if (this.autoScale) {
             this.calculateAutoMultiplier();
         }
@@ -666,7 +668,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Retourne le multiplicateur à utiliser pour les barres
      */
     getEffectiveMultiplier(): number {
-        console.log('DashboardComponent.getEffectiveMultiplier called');
+        this.logger.debug('DashboardComponent.getEffectiveMultiplier called');
         return this.heightMultiplier;
     }
 
@@ -674,7 +676,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Génère les données du graphique basées sur la propriété createdDate
      */
     private generateChartData(section: any): any {
-        console.log('DashboardComponent.generateChartData called', section);
+        this.logger.debug('DashboardComponent.generateChartData called', section);
         let dataList: any[] = [];
 
         // Récupérer les données correspondantes à la section
@@ -708,17 +710,17 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 dataList = [];
         }
 
-        console.log(`DashboardComponent: Generating chart data for ${section.title}, count : `, dataList.length);
+        this.logger.debug(`DashboardComponent: Generating chart data for ${section.title}, count : `, dataList.length);
 
         // Grouper par date de création
         const dateGroups = this.groupByCreatedDate(dataList);
 
-        console.log(`DashboardComponent: Date groups for ${section.title} : `, dateGroups);
+        this.logger.debug(`DashboardComponent: Date groups for ${section.title} : `, dateGroups);
 
         // Convertir en format de graphique avec dates et counts cumulés
         const chartData = this.convertToChartFormat(dateGroups);
 
-        console.log(`DashboardComponent: Chart data for ${section.title} : `, chartData);
+        this.logger.debug(`DashboardComponent: Chart data for ${section.title} : `, chartData);
 
         return chartData;
     }
@@ -727,7 +729,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Groupe les données par date de création selon le mode sélectionné
      */
     private groupByCreatedDate(dataList: any[]): Map<string, number> {
-        console.log('DashboardComponent.groupByCreatedDate called, count =', dataList?.length || 0);
+        this.logger.debug('DashboardComponent.groupByCreatedDate called, count =', dataList?.length || 0);
         const groups = new Map<string, number>();
 
         dataList.forEach(item => {
@@ -759,7 +761,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Convertit les groupes de dates en format de graphique avec cumul
      */
     private convertToChartFormat(dateGroups: Map<string, number>): any {
-        console.log('DashboardComponent.convertToChartFormat called, groups =', dateGroups?.size || 0);
+        this.logger.debug('DashboardComponent.convertToChartFormat called, groups =', dateGroups?.size || 0);
         // Trier les dates
         const sortedDates = Array.from(dateGroups.keys()).sort();
 
@@ -790,7 +792,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Formate une date pour l'affichage selon le mode de groupement
      */
     private formatDate(dateStr: string): string {
-        console.log('DashboardComponent.formatDate called', dateStr);
+        this.logger.debug('DashboardComponent.formatDate called', dateStr);
         switch (this.timeGrouping) {
             case 'year':
                 return dateStr; // Déjà au format YYYY
@@ -809,7 +811,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
      * Génère les données de revenus (sum TJM) par consultant et par période
      */
     private generateRevenueData(): any {
-        console.log('DashboardComponent.generateRevenueData called');
+        this.logger.debug('DashboardComponent.generateRevenueData called');
         const consultantRevenueMap = new Map<number, { consultant: Consultant, periods: Map<string, number> }>();
 
         // Parcourir tous les CRA
@@ -873,7 +875,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             };
         });
 
-        console.log('DashboardComponent: Revenue data generated:', result);
+        this.logger.debug('DashboardComponent: Revenue data generated:', result);
         return result;
     }
 }

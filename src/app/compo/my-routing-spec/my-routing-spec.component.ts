@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoggerService } from 'src/app/service/logger.service';
 
 @Component({
   selector: 'app-my-routing-spec',
@@ -8,15 +9,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class MyRoutingSpecComponent implements OnInit {
 
-  constructor(  private route: ActivatedRoute, private router: Router) { }
+  constructor(private logger: LoggerService,   private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
 
     const r = this.route
-    console.log("MyRoutingSpecComponent: route=", r)
+    this.logger.debug("MyRoutingSpecComponent: route=", r)
 
     const path = this.route.snapshot.paramMap.get('path')
-    console.log("MyRoutingSpecComponent: path=", path)
+    this.logger.debug("MyRoutingSpecComponent: path=", path)
 
     if(path)  this.router.navigate([path]);
 

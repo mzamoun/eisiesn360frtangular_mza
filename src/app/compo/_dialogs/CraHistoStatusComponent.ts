@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CraStatusHisto } from 'src/app/model/cra-status-histo.model';
+import { LoggerService } from 'src/app/service/logger.service';
 
 @Component({
   selector: 'app-cra-histo-status',
@@ -45,22 +46,22 @@ import { CraStatusHisto } from 'src/app/model/cra-status-histo.model';
   `]
 })
 export class CraHistoStatusComponent implements OnInit {
-  constructor(
+  constructor(private logger: LoggerService, 
     public dialogRef: MatDialogRef<CraHistoStatusComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    console.log("constr : CraHistoStatusComponent chargé : ", this.data.myList);
+    this.logger.debug("constr : CraHistoStatusComponent chargé : ", this.data.myList);
     this.myList = this.data.myList
   }
 
   public myList: CraStatusHisto[]
 
   ngOnInit() {
-    console.log("ngOnit CraHistoStatusComponent chargé : ", this.data.myList);
+    this.logger.debug("ngOnit CraHistoStatusComponent chargé : ", this.data.myList);
   }
 
   onOkClick(): void {
-    console.log("onOkClick ")
+    this.logger.debug("onOkClick ")
     this.dialogRef.close();
   }
 

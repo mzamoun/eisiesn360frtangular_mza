@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { MyError } from '../resource/MyError';
@@ -40,7 +44,7 @@ export class UtilsService {
   static URL_PATTERN: string = "^(https?:\\/\\/)?([\\w\\-]+\\.)+[\\w\\-]+(\\/\\S*)?$";
   // private readonly notifier: NotifierService;
 
-  constructor(
+  constructor(private logger: LoggerService, 
     // notifier: NotifierService
     private tradService: TradService
     , private router: Router
@@ -100,14 +104,14 @@ export class UtilsService {
    */
   public getFormGroup(fb: FormBuilder, data: any[], id: number, value: any, controllerName: string, isDatasWithId: boolean = true): FormGroup {
     let formGroup!: FormGroup;
-    ////////////console.log("getFormGroup:")
-    ////console.log(value)
-    ////console.log(data)
-    ////console.log(id)
+    ////////////this.logger.debug("getFormGroup:")
+    ////this.logger.debug(value)
+    ////this.logger.debug(data)
+    ////this.logger.debug(id)
     if (value != undefined) {
       let indexSelected = id;
       if (isDatasWithId) indexSelected = this.getObjectIndex(data, id);
-      ////console.log(indexSelected)
+      ////this.logger.debug(indexSelected)
       formGroup = fb.group(
         {
           [controllerName]: [indexSelected]
@@ -128,7 +132,7 @@ export class UtilsService {
     let formGroup!: FormGroup;
     if (value != undefined) {
       let indexSelected = this.getObjectIndexByValue(data, value);
-      ////////////console.log("*********** index :" + indexSelected);
+      ////////////this.logger.debug("*********** index :" + indexSelected);
       formGroup = fb.group(
         {
           [controllerName]: [indexSelected]
@@ -221,8 +225,8 @@ export class UtilsService {
       day = '0' + day;
 
     let res = [day, month, year].join('/') + ' ' + [hour, min, sec].join(':');
-    ////////////console.log("res:")
-    ////console.log(res)
+    ////////////this.logger.debug("res:")
+    ////this.logger.debug(res)
     return res;
   }
 
@@ -243,8 +247,8 @@ export class UtilsService {
       day = '0' + day;
 
     let res = [year, month, day].join('_') + '_' + [hour, min, sec].join('_');
-    ////////////console.log("res:")
-    ////console.log(res)
+    ////////////this.logger.debug("res:")
+    ////this.logger.debug(res)
     return res;
   }
 
@@ -332,9 +336,9 @@ export class UtilsService {
 
     const dayKeyLocal = this.formatDate(day);
 
-    // console.log("isDateHolidayPerso : date : ", day, " holidays : ", holidays)
+    // this.logger.debug("isDateHolidayPerso : date : ", day, " holidays : ", holidays)
     for (let holiday of holidays) {
-      // console.log("isDateHolidayPerso : holiday : ", holiday)
+      // this.logger.debug("isDateHolidayPerso : holiday : ", holiday)
 
       const raw = holiday?.date ?? holiday?.day ?? holiday?.dayDate ?? holiday;
       if (typeof raw === 'string') {
@@ -371,11 +375,11 @@ export class UtilsService {
 
     let label = "isDateHolidayNational"
 
-    // console.log(label + " : date : ", date, " pays : ", pays)
+    // this.logger.debug(label + " : date : ", date, " pays : ", pays)
     // isDateHolidayNational : date :  2026-04-01  pays :  fr
     date = this.getDate(date);
     if (!date || isNaN(date.getTime())) return false;
-    // console.log(label + " : date after getDate : ", date);
+    // this.logger.debug(label + " : date after getDate : ", date);
 
     let key = pays + "_" + date.getFullYear();
     let holidays: DateLabelHoliday[] = this.holidaysCache[key];
@@ -497,8 +501,8 @@ export class UtilsService {
 
     if (!date) return "";
 
-    ////////////console.log("formatDate:")
-    ////console.log(date)
+    ////////////this.logger.debug("formatDate:")
+    ////this.logger.debug(date)
 
     let d: Date = this.getDate(date);
 
@@ -512,8 +516,8 @@ export class UtilsService {
       day = '0' + day;
 
     let res = [year, month].join('-');
-    ////////////console.log("res:")
-    ////console.log(res)
+    ////////////this.logger.debug("res:")
+    ////this.logger.debug(res)
     return res;
   }
 
@@ -525,8 +529,8 @@ export class UtilsService {
 
     if (!date) return "";
 
-    ////////////console.log("formatDate:")
-    ////console.log(date)
+    ////////////this.logger.debug("formatDate:")
+    ////this.logger.debug(date)
 
     let d: Date = this.getDate(date);
 
@@ -540,8 +544,8 @@ export class UtilsService {
       day = '0' + day;
 
     let res = [month, year].join('-');
-    ////////////console.log("res:")
-    ////console.log(res)
+    ////////////this.logger.debug("res:")
+    ////this.logger.debug(res)
     return res;
   }
 
@@ -554,8 +558,8 @@ export class UtilsService {
 
     if (!date) return "";
 
-    ////////////console.log("formatDate:")
-    ////console.log(date)
+    ////////////this.logger.debug("formatDate:")
+    ////this.logger.debug(date)
 
     if (!lang) lang = "FR"
 
@@ -578,8 +582,8 @@ export class UtilsService {
     } else {
       res = [year, month, day].join('-');
     }
-    ////////////console.log("res:")
-    ////console.log(res)
+    ////////////this.logger.debug("res:")
+    ////this.logger.debug(res)
     return res;
   }
 
@@ -606,11 +610,11 @@ export class UtilsService {
   }
 
   public getErrorFromResultOfServer(data: any): MyError {
-    //////console.log("getErrorFromResultOfServer: data", data)
+    //////this.logger.debug("getErrorFromResultOfServer: data", data)
     let error!: MyError;
     if (data != null && data.header != null) {
       let errorMsg = data.header.errorMsg
-      //////console.log("getErrorFromResultOfServer: errorMsg", errorMsg)
+      //////this.logger.debug("getErrorFromResultOfServer: errorMsg", errorMsg)
       if (errorMsg) {
         error = new MyError(errorMsg, data.header.description);
         error.providerCode = data.header.providerCode;
@@ -618,17 +622,17 @@ export class UtilsService {
         error.statusCode = data.header.statusCode;
       }
     }
-    //////console.log("getErrorFromResultOfServer: error", error)
+    //////this.logger.debug("getErrorFromResultOfServer: error", error)
     return error
   }
 
   public getErrorFromErrorOfServer(err: any): MyError {
-    console.log("getErrorFromErrorOfServer: err", err)
+    this.logger.debug("getErrorFromErrorOfServer: err", err)
     let error!: MyError;
     let msg = "";
     if (err) {
       msg = (err.error != null && err.error.message != null) ? err.error.message : err.message;
-      console.log("getErrorFromErrorOfServer: msg", msg)
+      this.logger.debug("getErrorFromErrorOfServer: msg", msg)
       if (msg) {
         error = new MyError("Error", msg);
       } else {
@@ -665,7 +669,7 @@ export class UtilsService {
    */
   public showNotification(type: NotificationType, message: string): void {
     //this.notifier.notify(type, message);
-    // console.log("TODO showNotification", type, message);
+    // this.logger.debug("TODO showNotification", type, message);
   }
 
   /**
@@ -746,7 +750,7 @@ export class UtilsService {
       if (tab[1].length == 2) m = parseInt(tab[1]) - one; else throw "date string. month not in format mm. d=" + s;
       if (tab[2].length == 2) d = parseInt(tab[2]); else throw "date string. day not in format dd. d=" + s;
 
-      // ////////console.log("getDate: y, m, d: ", y, m, d)
+      // ////////this.logger.debug("getDate: y, m, d: ", y, m, d)
 
       arr = [y, m, d];
     } else {
@@ -784,7 +788,7 @@ export class UtilsService {
       if (tab[1].length == 2) m = parseInt(tab[1]) - 1; else throw "getTimeFromHHMMSS: min not in format mm. d=" + s;
       if (tab[2].length == 2) ss = parseInt(tab[2]); else throw "getTimeFromHHMMSS: sec not in format ss. d=" + s;
 
-      // ////////console.log("getDate: y, m, d: ", y, m, d)
+      // ////////this.logger.debug("getDate: y, m, d: ", y, m, d)
 
       arr[0] = h; arr[1] = m; arr[2] = ss;
     } else {
@@ -795,8 +799,8 @@ export class UtilsService {
 
   public getDate(d: any) {
 
-    // ////////console.log("getDate: d: ", d)
-    // ////////console.log("getDate: json: ", JSON.stringify(d))
+    // ////////this.logger.debug("getDate: d: ", d)
+    // ////////this.logger.debug("getDate: json: ", JSON.stringify(d))
 
     if (!d) return null;
     else if (d instanceof Date) return d;
@@ -810,11 +814,11 @@ export class UtilsService {
       date = new Date(d)
 
     } else {
-      // ////////console.log("getDate: NOT string: ", d)
+      // ////////this.logger.debug("getDate: NOT string: ", d)
       throw "getDate: NOT string and NOT DATE !!!: d=" + d;
     }
 
-    // ////////console.log("getDate: res: ", date)
+    // ////////this.logger.debug("getDate: res: ", date)
 
     return date;
   }
@@ -851,18 +855,18 @@ export class UtilsService {
 
   public getDateToDebug(d: any) {
 
-    // ////////console.log("getDate: d: ", d)
-    // ////////console.log("getDate: json: ", JSON.stringify(d))
+    // ////////this.logger.debug("getDate: d: ", d)
+    // ////////this.logger.debug("getDate: json: ", JSON.stringify(d))
 
     var date: Date;
 
     let isInstOfDate = d instanceof Date;
-    // ////////console.log("getDate: myInstOfDate: ", myInstOfDate)
+    // ////////this.logger.debug("getDate: myInstOfDate: ", myInstOfDate)
 
     if (typeof d == "string") {
       // 2021-06-28T15:36:21.977+0000
       d = d.replace('"', '')
-      // ////////console.log("getDate: string: ", d)
+      // ////////this.logger.debug("getDate: string: ", d)
 
       let tab = []
       let date1: Date;
@@ -879,20 +883,20 @@ export class UtilsService {
       }
 
     } else {
-      // ////////console.log("getDate: NOT string: ", d)
+      // ////////this.logger.debug("getDate: NOT string: ", d)
       if (isInstOfDate) date = d;
       else {
         throw "getDate: NOT string and NOT DATE !!!: d=" + d;
       }
     }
 
-    // ////////console.log("getDate: res: ", date)
+    // ////////this.logger.debug("getDate: res: ", date)
 
     return date;
   }
 
   public getWeekNumber(date: any): number {
-    // //////////console.log("getWeekNumber: date: ", date)
+    // //////////this.logger.debug("getWeekNumber: date: ", date)
     var n = 0;
     if (date) {
       date = this.getDate(date)
@@ -907,7 +911,7 @@ export class UtilsService {
         - 3 + (week1.getDay() + 6) % 7) / 7);
 
     }
-    // //////////console.log("getWeekNumber: n: ", n)
+    // //////////this.logger.debug("getWeekNumber: n: ", n)
     return n;
   }
 
@@ -932,7 +936,7 @@ export class UtilsService {
 
   public getWeekNumbersOfMonth(date: Date) {
 
-    // //////////console.log("**** getWeekNumbersOfMonth deb " , date);
+    // //////////this.logger.debug("**** getWeekNumbersOfMonth deb " , date);
 
     if (!date) return [];
 
@@ -948,7 +952,7 @@ export class UtilsService {
       tab.push(w);
     }
 
-    // //////////console.log("**** getWeekNumbersOfMonth fin " , tab);
+    // //////////this.logger.debug("**** getWeekNumbersOfMonth fin " , tab);
 
     return tab;
   }
@@ -968,7 +972,7 @@ export class UtilsService {
 
     let list = []
 
-    // console.log("searchStr : ", searchStr )
+    // this.logger.debug("searchStr : ", searchStr )
     for (let el of myList) {
       let s = "";
       if (cols == null || cols.length == 0) {
@@ -980,7 +984,7 @@ export class UtilsService {
       }
       s = s.toLowerCase()
       if (s.includes(searchStr)) {
-        // console.log("s contains : searchStr : ", s )
+        // this.logger.debug("s contains : searchStr : ", s )
         list.push(el)
       }
     }

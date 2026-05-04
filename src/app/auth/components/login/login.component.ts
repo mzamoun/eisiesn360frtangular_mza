@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from "@angular/router";
 import { SignupDialogComponent } from 'src/app/compo/_dialogs/signup-dialog/signup-dialog.component';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
+import { LoggerService } from 'src/app/service/logger.service';
 import { Credentials } from '../../credentials';
 
 @Component({
@@ -20,21 +21,21 @@ export class LoginComponent implements OnInit {
   forgotPasswordEmail = "";
   isLoadingResetEmail = false;
 
-  constructor(private dataSharingService: DataSharingService, private router: Router, private dialog: MatDialog) {
+  constructor(private logger: LoggerService, private dataSharingService: DataSharingService, private router: Router, private dialog: MatDialog) {
   }
 
   ngOnInit() {
 
     let lastUserName = this.dataSharingService.getLastUserName()
-    console.log("login ngOnInit deb lastUserName : ", lastUserName)
+    this.logger.debug("login ngOnInit deb lastUserName : ", lastUserName)
     if (this.dataSharingService.isLoggedIn()) {
-      console.log("login ngOnInit : user déjà loggé, redirection vers home")
+      this.logger.debug("login ngOnInit : user déjà loggé, redirection vers home")
       this.dataSharingService.gotoMyHome()
       // this.dataSharingService.gotoMyProfile()
       //  this.authService.gotoLogin()
     }
     if (!this.credentials.username) this.credentials.username = lastUserName;
-    // console.log("login ngOnInit fin : credentials : ", this.credentials)
+    // this.logger.debug("login ngOnInit fin : credentials : ", this.credentials)
 
     // this.isLoading = false;  
   }
@@ -76,18 +77,18 @@ export class LoginComponent implements OnInit {
     
     if (!this.forgotPasswordEmail) {
       this.error = 'Email requis';
-      console.error(label + ': Email manquant');
+      this.logger.error(label + ': Email manquant');
       return;
     }
 
-    console.log(label + ': START - Email: ' + this.forgotPasswordEmail);
+    this.logger.debug(label + ': START - Email: ' + this.forgotPasswordEmail);
     this.isLoadingResetEmail = true;
     this.error = '';
     this.info = '';
 
     this.dataSharingService.sendResetPasswordEmail(this.forgotPasswordEmail, {
       next: (response) => {
-        console.log(label + ': ✅ Email de reset envoyé avec succès');
+        this.logger.debug(label + ': ✅ Email de reset envoyé avec succès');
         this.isLoadingResetEmail = false;
         this.info = '✅ Un lien de réinitialisation a été envoyé à ' + this.forgotPasswordEmail;
         this.forgotPasswordEmail = '';
@@ -99,8 +100,8 @@ export class LoginComponent implements OnInit {
         }, 3000);
       },
       error: (error) => {
-        console.error(label + ': ❌ Erreur lors de l\'envoi du mail');
-        console.error(label + ': Error: ', error);
+        this.logger.error(label + ': ❌ Erreur lors de l\'envoi du mail');
+        this.logger.error(label + ': Error: ', error);
         this.isLoadingResetEmail = false;
         
         if (error.status === 404) {

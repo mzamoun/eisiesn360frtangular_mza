@@ -2,6 +2,7 @@ import { Component, EventEmitter, Inject, Input, Optional, Output } from '@angul
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Mail } from 'src/app/model/Mail';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
+import { LoggerService } from 'src/app/service/logger.service';
 import { MsgService } from 'src/app/service/msg.service';
 
 export interface DownloadClientCraDialogData {
@@ -143,7 +144,7 @@ export class DownloadClientCraDialogComponent {
 
   @Output() closeRequested = new EventEmitter<void>();
 
-  constructor(
+  constructor(private logger: LoggerService, 
     @Optional() public dialogRef: MatDialogRef<DownloadClientCraDialogComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) injectedData: DownloadClientCraDialogData,
     private msgService: MsgService,
@@ -175,7 +176,7 @@ export class DownloadClientCraDialogComponent {
       return;
     }
 
-    console.log(`Sending CRA PDF for client ${this.data.clientName} by email...`);
+    this.logger.debug(`Sending CRA PDF for client ${this.data.clientName} by email...`);
 
     let mail = new Mail();
     mail.to = this.data.clientMail;
@@ -191,7 +192,7 @@ export class DownloadClientCraDialogComponent {
         this.dataSharingService.delInfo(mail.subject)
         let labelEmailSent = `Email envoyé avec succès au client ${this.data.clientName}.`;
         this.dataSharingService.addInfo(labelEmailSent);
-        console.log("Email sent successfully:", response);
+        this.logger.debug("Email sent successfully:", response);
         this.close();
         setTimeout(() => {
              this.dataSharingService.delInfo(labelEmailSent);

@@ -1,3 +1,6 @@
+
+
+
 import { Component, Input, ViewChild } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -73,7 +76,7 @@ export class NotefraisFormComponent extends MereComponent {
   }
 
   initByNoteFrais() {
-    // ////console.log('initByNoteFrais')
+    // ////this.logger.debug('initByNoteFrais')
     if (this.isAdd == null) {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
     }
@@ -90,7 +93,7 @@ export class NotefraisFormComponent extends MereComponent {
       this.btnSaveTitle = this.utils.tr("Save");
       this.titre = this.utils.tr("Edit") + " " + this.utils.tr("Frais");
       const noteFraisP: NoteFrais = this.noteFraisService.getNoteFrais();
-      // ////console.log('clientP='+clientP);
+      // ////this.logger.debug('clientP='+clientP);
 
       if (noteFraisP != null) { this.myObj = noteFraisP; } else if (this.myObj == null) { this.myObj = new NoteFrais(); }
     }
@@ -98,7 +101,7 @@ export class NotefraisFormComponent extends MereComponent {
 
   onSubmit() {
     this.isLoading = true
-    console.log("*** onSubmit : ", this.myObj);
+    this.logger.debug("*** onSubmit : ", this.myObj);
     this.myObj.consultant = this.consultantSelected;
     if(this.myObj.activity) this.myObj.activity.consultant = this.consultantSelected;
     this.myObj.state = 'Waiting';
@@ -179,7 +182,7 @@ export class NotefraisFormComponent extends MereComponent {
 
   getCategorieIndexById(categoryId: number): number {
     const res = -1;
-    // ////console.log(this.categories);
+    // ////this.logger.debug(this.categories);
     for (let i = 0; i < this.categories.length; i++) {
       if (this.categories[i].id == categoryId) {
         return i;
@@ -212,7 +215,7 @@ export class NotefraisFormComponent extends MereComponent {
 
   getPayementModeIndexById(payementModeId: number): number {
     const res = -1;
-    // ////console.log(this.payementsModes);
+    // ////this.logger.debug(this.payementsModes);
     for (let i = 0; i < this.payementsModes.length; i++) {
       if (this.payementsModes[i].id == payementModeId) {
         return i;
@@ -245,7 +248,7 @@ export class NotefraisFormComponent extends MereComponent {
 
   getActivityIndexById(activityId: number): number {
     const res = -1;
-    // ////console.log(this.categories);
+    // ////this.logger.debug(this.categories);
     for (let i = 0; i < this.activities.length; i++) {
       if (this.activities[i].id == activityId) {
         return i;
@@ -289,7 +292,7 @@ export class NotefraisFormComponent extends MereComponent {
           this.majChamps();
         }, error => {
           this.isLoading = false
-          console.log("onFileSelect : error ", error)
+          this.logger.debug("onFileSelect : error ", error)
         }
       )
 
@@ -299,7 +302,7 @@ export class NotefraisFormComponent extends MereComponent {
   onFileSelect(event: any) {
     this.myObj = new NoteFrais();
     const file: File = event.target.files[0];
-    console.log("file : ", file)
+    this.logger.debug("file : ", file)
 
     if (!file) {
       return
@@ -308,7 +311,7 @@ export class NotefraisFormComponent extends MereComponent {
     this.setContentFile(file)
 
     if (file.type.startsWith("image")) {
-      console.log("+++image")
+      this.logger.debug("+++image")
       const reader = new FileReader();
       reader.readAsDataURL(file);
       this.isLoading = true
@@ -323,12 +326,12 @@ export class NotefraisFormComponent extends MereComponent {
           this.majChamps();
         }).catch(err => {
           this.isLoading = false
-          console.error('Erreur OCR:', err)
+          this.logger.error('Erreur OCR:', err)
         }
         );
       };
     } else {
-      console.log("+++pdf")
+      this.logger.debug("+++pdf")
       this.isLoading = true
       this.fileService.uploadFile(file).subscribe(
         data => {
@@ -337,7 +340,7 @@ export class NotefraisFormComponent extends MereComponent {
           this.majChamps();
         }, error => {
           this.isLoading = false
-          console.log("onFileSelect : error ", error)
+          this.logger.debug("onFileSelect : error ", error)
         }
       )
     }
@@ -358,17 +361,17 @@ export class NotefraisFormComponent extends MereComponent {
 
     const lines = text.split('\n');
     let line0 = this.getFirstLineNonVide(lines)
-    console.log("majChamps : line0 : ", line0)
+    this.logger.debug("majChamps : line0 : ", line0)
     this.myObj.title = line0
 
     if (line0.includes("mobile.free.fr")) {
-      console.log("majChamps : cas free mobile")
+      this.logger.debug("majChamps : cas free mobile")
       this.majChampsFreeMobile(lines)
     } else if (line0) {
-      console.log("majChamps : cas line0 non vide : ", line0)
+      this.logger.debug("majChamps : cas line0 non vide : ", line0)
       this.majChampsAutre(lines)
     } else {
-      console.log("majChamps : fichier vide !")
+      this.logger.debug("majChamps : fichier vide !")
     }
 
     this.calculAmounts()
@@ -393,7 +396,7 @@ export class NotefraisFormComponent extends MereComponent {
 
     for (let line of lines) {
 
-      console.log("*** ttc : this.myObj.amount 1 : ", this.myObj.amount)
+      this.logger.debug("*** ttc : this.myObj.amount 1 : ", this.myObj.amount)
 
       if (!this.myObj.amount) {
 
@@ -412,26 +415,26 @@ export class NotefraisFormComponent extends MereComponent {
       }
     }
 
-    console.log("*** ttc : this.myObj.amount 2 : ", this.myObj.amount)
+    this.logger.debug("*** ttc : this.myObj.amount 2 : ", this.myObj.amount)
     if (!this.myObj.amount || !this.myObj.pretax_amount) {
       // apres une ligne contenant tva HT TTC (ignore case et dans le desordre), si on trouve une ligne contenant au moins 3 nombres, alors tva = min, ttc = max, ht=ttc-tva
       const regexNumbers = /(?<![\d\w%])\d+[\.,]?\d*(?![\w%])/g;
       for (let i = 0; i < lines.length - 1; i++) {
         let line = lines[i]
         let linei = line.toLowerCase()
-        console.log("*** ttc : linei : ", linei)
+        this.logger.debug("*** ttc : linei : ", linei)
         if (linei.includes("ttc") || linei.includes("total")) {
-          console.log("*** ttc : on a une line ttc : ", line)
+          this.logger.debug("*** ttc : on a une line ttc : ", line)
           let numbers = []
           numbers = (line.match(regexNumbers) || []).map(num => parseFloat(num.replace(",", ".")));
           if (!numbers || numbers.length < 3) {
             numbers = (lines[i + 1].match(regexNumbers) || []).map(num => parseFloat(num.replace(",", ".")));
           }
 
-          console.log("*** ttc : numbers : ", numbers)
+          this.logger.debug("*** ttc : numbers : ", numbers)
 
           if (numbers.length >= 3) {
-            console.log("*** ttc : 3 numbers : ")
+            this.logger.debug("*** ttc : 3 numbers : ")
             const tva = Math.min(...numbers);
             const ttc = Math.max(...numbers);
             const ht = ttc - tva;
@@ -442,31 +445,31 @@ export class NotefraisFormComponent extends MereComponent {
             break;
           }
         } else if (linei.includes("montant") && !this.myObj.amount) {
-          console.log("*** ttc : montant linei : ", linei)
+          this.logger.debug("*** ttc : montant linei : ", linei)
           let numbers = []
           numbers = (line.match(regexNumbers) || []).map(num => parseFloat(num.replace(",", ".")));
-          console.log("*** ttc : montant numbers : ", numbers)
+          this.logger.debug("*** ttc : montant numbers : ", numbers)
           if (numbers.length == 1) {
             this.myObj.amount = numbers[0]
-            console.log("*** ttc : montant this.myObj.amount : ", this.myObj.amount)
+            this.logger.debug("*** ttc : montant this.myObj.amount : ", this.myObj.amount)
           }
         } else if (linei.includes(" cb ") && !this.myObj.amount) {
-          console.log("*** ttc : cb linei : ", linei)
+          this.logger.debug("*** ttc : cb linei : ", linei)
           let numbers = []
           numbers = (line.match(regexNumbers) || []).map(num => parseFloat(num.replace(",", ".")));
-          console.log("*** ttc : cb numbers : ", numbers)
+          this.logger.debug("*** ttc : cb numbers : ", numbers)
           if (numbers.length == 1) {
             this.myObj.amount = numbers[0]
-            console.log("*** ttc : cb this.myObj.amount : ", this.myObj.amount)
+            this.logger.debug("*** ttc : cb this.myObj.amount : ", this.myObj.amount)
           }
         } else if (linei.includes("pay") && !this.myObj.amount) {
-          console.log("*** ttc : pay linei : ", linei)
+          this.logger.debug("*** ttc : pay linei : ", linei)
           let numbers = []
           numbers = (line.match(regexNumbers) || []).map(num => parseFloat(num.replace(",", ".")));
-          console.log("*** ttc : pay numbers : ", numbers)
+          this.logger.debug("*** ttc : pay numbers : ", numbers)
           if (numbers.length == 1) {
             this.myObj.amount = numbers[0]
-            console.log("*** ttc : pay this.myObj.amount : ", this.myObj.amount)
+            this.logger.debug("*** ttc : pay this.myObj.amount : ", this.myObj.amount)
           }
         }
       }
@@ -483,7 +486,7 @@ export class NotefraisFormComponent extends MereComponent {
     lines.forEach(line => {
       const match = line.match(regex);
       if (match && !this.myObj.invoice_number) {
-        console.log(`Numéro de facture trouvé : ${match[1]}`);
+        this.logger.debug(`Numéro de facture trouvé : ${match[1]}`);
         this.myObj.invoice_number = match[1]
       }
     });
@@ -516,9 +519,9 @@ export class NotefraisFormComponent extends MereComponent {
         if (match) {
           try {
             this.myObj.dateNf = parse(match[0], formats[j], new Date(), { locale: fr });
-            console.log("Date trouvée :", this.myObj.dateNf);
+            this.logger.debug("Date trouvée :", this.myObj.dateNf);
           } catch (error) {
-            console.error("Erreur de parsing pour :", match[0], error);
+            this.logger.error("Erreur de parsing pour :", match[0], error);
           }
           break; // On arrête la boucle dès qu'on trouve un match
         }
@@ -563,20 +566,20 @@ export class NotefraisFormComponent extends MereComponent {
 
   onFileSelect00(event) {
     if (event.target.files.length > 0) {
-      console.log("onFileSelect 1")
+      this.logger.debug("onFileSelect 1")
       this.extractDataPdf(event);
-      console.log("onFileSelect 2")
+      this.logger.debug("onFileSelect 2")
       const file: File = event.target.files[0];
       const ext = file.name.substr(file.name.lastIndexOf('.') + 1);
-      console.log("onFileSelect 3")
+      this.logger.debug("onFileSelect 3")
       const x = true;
       if (x) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        console.log("onFileSelect 4")
+        this.logger.debug("onFileSelect 4")
         reader.onload = () => {
           this.myObj.invoice_file = reader.result;
-          console.log("onFileSelect 5")
+          this.logger.debug("onFileSelect 5")
         };
       } else {
         // alert('Oops, Format de fichier erroné, seulement fichier Pdf/png/jpg.');
@@ -587,20 +590,20 @@ export class NotefraisFormComponent extends MereComponent {
   }
 
   async extractDataPdf(file: any) {
-    console.log("extractDataPdf 1 file: ", file)
+    this.logger.debug("extractDataPdf 1 file: ", file)
     this.load = true;
     let res = file.target.files[0].name;
     const worker = createWorker({
-      logger: m => console.log(m),
+      logger: m => this.logger.debug(m),
     });
     await worker.load();
-    console.log("extractDataPdf 2  ")
+    this.logger.debug("extractDataPdf 2  ")
     await worker.loadLanguage('eng', 'fr');
-    console.log("extractDataPdf 3  ")
+    this.logger.debug("extractDataPdf 3  ")
     await worker.initialize('eng');
-    console.log("extractDataPdf 4 file.target.files[0] : ", file.target.files[0])
+    this.logger.debug("extractDataPdf 4 file.target.files[0] : ", file.target.files[0])
     const { data: { text } } = await worker.recognize(file.target.files[0]);
-    console.log("extractDataPdf 5  ")
+    this.logger.debug("extractDataPdf 5  ")
     const regexExp = /(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})/gi;
     const caracSpec = /[€$£!@#$%^&*()_+\-=\[\]{};:\\|,.<>\/?]/;
 
@@ -613,7 +616,7 @@ export class NotefraisFormComponent extends MereComponent {
       }
     }
 
-    console.log("extractDataPdf 6  ")
+    this.logger.debug("extractDataPdf 6  ")
 
     let montantFinded = false;
     let montantHTFinded = false;
@@ -623,7 +626,7 @@ export class NotefraisFormComponent extends MereComponent {
     //Extraction du DATE / MONTANT / MONTANT HT / TVA
     for (let ligne of lignes) {
       let champs = ligne.split(' ');
-      //console.log(champs);
+      //this.logger.debug(champs);
       let pos = 0;
       for (let champ of champs) {
         pos++;
@@ -633,7 +636,7 @@ export class NotefraisFormComponent extends MereComponent {
           if (champ.indexOf('-') != -1) {
             var date = new Date(champ.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
             this.myObj.dateNf = date;
-            //console.log(champ, date);
+            //this.logger.debug(champ, date);
           }
           else if (champ.indexOf('/') != -1) {
             var splitedDate = champ.split('/');
@@ -653,7 +656,7 @@ export class NotefraisFormComponent extends MereComponent {
           for (let i = pos; i < champs.length; i++) {
             //le champ ne contient ni espace ni champs vide
             if (champs[i] != "" && champs[i] != " " && !montantFinded) {
-              //console.log("le mot Montant detecté", champs[i]);
+              //this.logger.debug("le mot Montant detecté", champs[i]);
               let montant = "";
               if (champs[i].indexOf('£') != -1) {
                 montant = champs[i].replace('£', '');
@@ -686,7 +689,7 @@ export class NotefraisFormComponent extends MereComponent {
                 montant = champs[i];
               }
               if (!isNaN(Number(montant)) && montant != "") {
-                //console.log(Number(montant));
+                //this.logger.debug(Number(montant));
                 this.myObj.amount = Number(montant);
                 montantFinded = true;
               }
@@ -700,7 +703,7 @@ export class NotefraisFormComponent extends MereComponent {
           for (let i = pos; i < champs.length; i++) {
             //le champ ne contient ni espace ni champs vide
             if (champs[i] != "" && champs[i] != " " && !montantHTFinded) {
-              //console.log("le mot Montant HT detecté", champs[i]);
+              //this.logger.debug("le mot Montant HT detecté", champs[i]);
               let montantHT = "";
               if (champs[i].indexOf('£') != -1) {
                 montantHT = champs[i].replace('£', '');
@@ -733,7 +736,7 @@ export class NotefraisFormComponent extends MereComponent {
                 montantHT = champs[i];
               }
               if (!isNaN(Number(montantHT)) && montantHT != "") {
-                //console.log(Number(montantHT));
+                //this.logger.debug(Number(montantHT));
                 this.myObj.pretax_amount = Number(montantHT);
                 montantHTFinded = true;
               }
@@ -746,7 +749,7 @@ export class NotefraisFormComponent extends MereComponent {
           for (let i = pos; i < champs.length; i++) {
             //le champ ne contient ni espace ni champs vide
             if (champs[i] != "" && champs[i] != " " && !tvaFinded) {
-              //console.log("TVA detecté", champs[i]);
+              //this.logger.debug("TVA detecté", champs[i]);
               let tva = "";
               if (champs[i].indexOf('£') != -1) {
                 tva = champs[i].replace('£', '');
@@ -779,7 +782,7 @@ export class NotefraisFormComponent extends MereComponent {
                 tva = champs[i];
               }
               if (!isNaN(Number(tva)) && tva != "" && Number(tva) <= 50) {
-                //console.log(Number(tva));
+                //this.logger.debug(Number(tva));
                 this.myObj.vat = Number(tva);
                 tvaFinded = true;
               }
@@ -789,7 +792,7 @@ export class NotefraisFormComponent extends MereComponent {
 
       }
     }
-    //console.log(this.myObj);
+    //this.logger.debug(this.myObj);
     this.load = false;
     await worker.terminate();
   }

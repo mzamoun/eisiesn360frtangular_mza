@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -26,7 +30,7 @@ export class DocumentService {
     return this.document;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.documentUrl = environment.apiUrl + '/document/';
   }
 

@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -10,7 +14,7 @@ import { Project } from '../model/project';
 })
 export class CraFormsService {
 
-  constructor() {
+  constructor(private logger: LoggerService, ) {
   }
 
   /**
@@ -19,43 +23,43 @@ export class CraFormsService {
    * @param objetId
    */
   getObjetIndexById(tab: any, objetId): number {
-    ////////////console.log("getObjetIndexById objetId:" + objetId)
+    ////////////this.logger.debug("getObjetIndexById objetId:" + objetId)
     let res = -1;
-    ////console.log(tab)
+    ////this.logger.debug(tab)
     for (let i = 0; i < tab.length; i++) {
       if (tab[i].id == objetId) {
         res = i;
         break;
       }
     }
-    ////////////console.log("getObjetIndexById res:" + res);
+    ////////////this.logger.debug("getObjetIndexById res:" + res);
     return res;
   }
 
   selectProject(fb: FormBuilder, projects: Project[], myObj: Activity): FormGroup {
-    ////////////console.log("selectProject:")
+    ////////////this.logger.debug("selectProject:")
     let projectForm: FormGroup;
     if (myObj.project != undefined) {
       let indexSelected = this.getObjetIndexById(projects, myObj.project.id);
-      ////console.log(indexSelected)
+      ////this.logger.debug(indexSelected)
       projectForm = fb.group(
         {
           ["projectControl"]: [indexSelected]
         }
       );
     }
-    ////////////console.log("selectProject:END")
+    ////////////this.logger.debug("selectProject:END")
     return projectForm;
   }
 
   //////////////////////////////////////////////////////////
 
   selectConsultant(fb: FormBuilder, consultants: Consultant[], myObj: Activity): FormGroup {
-    ////////////console.log("selectConsultant:")
+    ////////////this.logger.debug("selectConsultant:")
     let consultantForm: FormGroup;
     if (myObj.consultant != undefined) {
       let indexSelected = this.getObjetIndexById(consultants, myObj.consultant.id);
-      ////console.log(indexSelected)
+      ////this.logger.debug(indexSelected)
 
       consultantForm = fb.group(
         {
@@ -63,7 +67,7 @@ export class CraFormsService {
         }
       );
     }
-    ////////////console.log("selectConsultant:END")
+    ////////////this.logger.debug("selectConsultant:END")
     return consultantForm;
   }
 

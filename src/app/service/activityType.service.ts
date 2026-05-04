@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -24,7 +28,7 @@ export class ActivityTypeService {
 		return this.activityType ;
 	}
 
-	constructor(private http: HttpClient) {
+	constructor(private logger: LoggerService, private http: HttpClient) {
 		this.activityTypeUrl = environment.apiUrl + '/activityType/';
 	}
 
@@ -37,12 +41,12 @@ export class ActivityTypeService {
 	  }
 	
 	  public save(activityType: ActivityType): Observable<GenericResponse> {
-		////////////console.log("save id=" + activityType.id + ".");
+		////////////this.logger.debug("save id=" + activityType.id + ".");
 		if (activityType.id > 0) {
-		  ////////////console.log("put update")
+		  ////////////this.logger.debug("put update")
 		  return this.http.put<GenericResponse>(this.activityTypeUrl, activityType);
 		} else {
-		  ////////////console.log("post add")
+		  ////////////this.logger.debug("post add")
 		  return this.http.post<GenericResponse>(this.activityTypeUrl, activityType);
 		}
 	  }
@@ -67,11 +71,11 @@ export class ActivityTypeService {
 		if(myObj && id && !obj ) {
 		  this.findById(id).subscribe(
 			data => {
-			  console.log(label, data)
+			  this.logger.debug(label, data)
 			  myObj.type = data.body.result;
 			},
 			error => {
-			  console.log("ERROR label myObj, err", label, myObj, error )
+			  this.logger.debug("ERROR label myObj, err", label, myObj, error )
 			}
 		  );
 		}

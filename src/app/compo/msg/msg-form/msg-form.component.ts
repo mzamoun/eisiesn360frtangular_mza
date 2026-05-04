@@ -1,3 +1,6 @@
+
+
+
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IDatePickerDirectiveConfig } from 'ng2-date-picker';
@@ -39,11 +42,11 @@ export class MsgFormComponent extends MereComponent {
 
   initByMsg() {
 
-    ////console.log('initByMsg')
+    ////this.logger.debug('initByMsg')
     if (this.isAdd == null) {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
     }
-    ////console.log(isAdd)
+    ////this.logger.debug(isAdd)
 
     if (this.isAdd == 'true') {
       this.btnSaveTitle = "Add"
@@ -53,7 +56,7 @@ export class MsgFormComponent extends MereComponent {
       this.btnSaveTitle = "Save"
       this.title = "Edit Msg"
       let msgP: Msg = this.msgService.getMsg();
-      ////console.log('msgP='+msgP);
+      ////this.logger.debug('msgP='+msgP);
 
       if (msgP != null) this.myObj = msgP;
       else if (this.myObj == null) this.myObj = new Msg();
@@ -63,7 +66,7 @@ export class MsgFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    ////console.log(this.myObj);
+    ////this.logger.debug(this.myObj);
     this.beforeCallServer("onSubmit");
     this.msgService.save(this.myObj).subscribe(
       data => {

@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { LoggerService } from 'src/app/service/logger.service';
 
 @Component({
     selector: 'app-clients-dialog',
@@ -25,15 +26,15 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ClientsDialogComponent implements OnInit  {
     infos: string = "";
-    constructor(
+    constructor(private logger: LoggerService, 
         public dialogRef: MatDialogRef<ClientsDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) { 
-        console.log("constr : ClientsDialogComponent chargé, clients =", this.data.clients);
+        this.logger.debug("constr : ClientsDialogComponent chargé, clients =", this.data.clients);
     }
 
     ngOnInit() {
-        console.log("ClientsDialogComponent chargé, clients =", this.data.clients);
+        this.logger.debug("ClientsDialogComponent chargé, clients =", this.data.clients);
         // si aucun client, infos = "Aucun client disponible,  fermer le dialog apres 2s
         if (!this.data.clients || this.data.clients.length === 0) {
             let nbSec = 3 
@@ -45,12 +46,12 @@ export class ClientsDialogComponent implements OnInit  {
     }
 
     onNoClick(): void {
-        console.log("onNoClick ")
+        this.logger.debug("onNoClick ")
         this.dialogRef.close();
     }
 
     selectClient(client: any) {
-        console.log("selectClient client : ", client)
+        this.logger.debug("selectClient client : ", client)
         this.dialogRef.close(client);
     }
 }

@@ -1,3 +1,6 @@
+
+
+
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -81,7 +84,7 @@ export class AdminDocListComponent extends MereComponent {
     setTimeout(
       () => {
         this.manager = this.userConnected.adminConsultant ? this.userConnected.adminConsultant : this.userConnected
-        console.log("dans setTimeout : manager : ", this.manager)
+        this.logger.debug("dans setTimeout : manager : ", this.manager)
       }
       , 3000
     )
@@ -121,7 +124,7 @@ export class AdminDocListComponent extends MereComponent {
         else s = s + ", " + f.name
       }
     }
-    // console.log("*****************Document : s=", s)
+    // this.logger.debug("*****************Document : s=", s)
     return s;
   }
 
@@ -146,7 +149,7 @@ export class AdminDocListComponent extends MereComponent {
     this.load = true;
     this.categoryDocService.findAll().subscribe(
       data => {
-        console.log("showMyDocuments : data ", data)
+        this.logger.debug("showMyDocuments : data ", data)
         this.myCategoryDocList = data.body.result;
         // if (!this.isManager) {
         //   this.myCategoryDocList = this.myCategoryDocList.filter(c => c.enabled_for_consultant);
@@ -173,7 +176,7 @@ export class AdminDocListComponent extends MereComponent {
     this.load = true;
     this.categoryDocService.findAll().subscribe(
       data => {
-        console.log("showDocumentsSharedWithMe : data ", data)
+        this.logger.debug("showDocumentsSharedWithMe : data ", data)
         this.categoryDocList = data.body.result;
         this.load = false;
 
@@ -188,12 +191,12 @@ export class AdminDocListComponent extends MereComponent {
   }
 
   showDocumentsOfCategory(category: CategoryDoc) {
-    console.log("*** showDocumentsOfCategory deb : category : ", category)
+    this.logger.debug("*** showDocumentsOfCategory deb : category : ", category)
     category.showingDocumentList = true;
     this.load = true;
     this.documentService.findAllByCategory(category.id).subscribe(
       data => {
-        console.log("*** showDocumentsOfCategory data : ", data)
+        this.logger.debug("*** showDocumentsOfCategory data : ", data)
         category.documentList = data?.body?.result;
 
         if (category.documentList) {
@@ -235,16 +238,16 @@ export class AdminDocListComponent extends MereComponent {
   downloadFiles(doc: Document) {
     // un doc peut avoir plusieurs files 
 
-    console.log("downloadFiles doc : ", doc)
-    console.log("files : ", doc.files);
+    this.logger.debug("downloadFiles doc : ", doc)
+    this.logger.debug("files : ", doc.files);
 
     for (let file of doc.files) {
-      console.log("file : ", file)
+      this.logger.debug("file : ", file)
       const linkSource = file.content.toString();
       let typeFile = linkSource.split('/', 2)[0];
-      console.log("typeFile : ", typeFile)
+      this.logger.debug("typeFile : ", typeFile)
       let fileName = file.name;
-      console.log("fileName : ", fileName)
+      this.logger.debug("fileName : ", fileName)
       const downloadLink = document.createElement('a');
       downloadLink.href = linkSource;
       downloadLink.download = fileName;
@@ -254,7 +257,7 @@ export class AdminDocListComponent extends MereComponent {
 
   deleteDocument(document: Document) {
 
-    console.log("deleteDocument document : ", document);
+    this.logger.debug("deleteDocument document : ", document);
 
     let mythis = this;
 
@@ -288,12 +291,12 @@ export class AdminDocListComponent extends MereComponent {
     this.dataSharingService.idEsnCurrent = this.esnCurrent?.id 
     this.idEsnCurrent = this.dataSharingService.idEsnCurrent
 
-    console.log("---- getAllConsultant userConnected : ", this.userConnected)
-    console.log("---- getAllConsultant idEsnCurrent : ", this.idEsnCurrent)
+    this.logger.debug("---- getAllConsultant userConnected : ", this.userConnected)
+    this.logger.debug("---- getAllConsultant idEsnCurrent : ", this.idEsnCurrent)
     this.consultantService.findAllByEsn(this.idEsnCurrent).subscribe(
       data => {
         this.consultantsList = data.body.result;
-        console.log("---- getAllConsultant consultantsList : ", this.consultantsList)
+        this.logger.debug("---- getAllConsultant consultantsList : ", this.consultantsList)
       }, error => {
         this.addErrorFromErrorOfServer('consultantSelect', error);
       }
@@ -302,7 +305,7 @@ export class AdminDocListComponent extends MereComponent {
   }
 
   onSelectConsultant(consultant: any) {
-    console.log(consultant);
+    this.logger.debug(consultant);
     this.selectedConsultants.push(this.consultantsList.find(c => c.id == consultant.id));
     this.isSelectedConsultant = true;
   }
@@ -360,15 +363,15 @@ export class AdminDocListComponent extends MereComponent {
     let ok = false ;
     let ed = document.expired_date 
     ed = this.utils.getDate(ed)
-    // console.log("*** ed : ", ed )
+    // this.logger.debug("*** ed : ", ed )
     if(ed == null ) {
-      // console.log("--- 1")
+      // this.logger.debug("--- 1")
       ok = false  
     }else {
-      // console.log("--- 2")
+      // this.logger.debug("--- 2")
       let now = new Date();
       if(ed.getTime() <= now.getTime()) {
-        // console.log("--- 3")
+        // this.logger.debug("--- 3")
         ok = true 
       }
     }
@@ -376,7 +379,7 @@ export class AdminDocListComponent extends MereComponent {
   }
 
   classDateExpired(document: Document): string {
-    // console.log('Document:', document, 'Expired:', this.isExpired(document));
+    // this.logger.debug('Document:', document, 'Expired:', this.isExpired(document));
     return this.isExpired(document) ? 'strike' : '';
   }   
 
@@ -392,7 +395,7 @@ export class AdminDocListComponent extends MereComponent {
       this.selectedConsultants.push(this.dataSharingService.adminConsultant[this.manager.id]);
       this.adminConsultant = this.dataSharingService.adminConsultant[this.manager.id];
       if (!this.adminConsultant) this.adminConsultant = this.manager.adminConsultant
-      console.log("showAddingDocumentModal adminConsultant : ", this.adminConsultant)
+      this.logger.debug("showAddingDocumentModal adminConsultant : ", this.adminConsultant)
       if (!this.adminConsultant && this.manager.role == "RESPONSIBLE_ESN") this.adminConsultant = this.manager
       this.isSelectedConsultant = true;
     }
@@ -437,7 +440,7 @@ export class AdminDocListComponent extends MereComponent {
     this.myObj.categoryId = this.myObj.category.id
     this.myObj.category = null 
 
-    console.log(this.myObj);
+    this.logger.debug(this.myObj);
     this.documentService.save(this.myObj).subscribe(
       data => {
         this.afterCallServer("onSubmit", data)
@@ -475,7 +478,7 @@ export class AdminDocListComponent extends MereComponent {
     this.myObj.lastModifiedDate = new Date();
     this.myObj.consultant = this.manager;
     this.myObj.valid = true;
-    console.log(this.myObj);
+    this.logger.debug(this.myObj);
     this.documentService.save(this.myObj).subscribe(
       data => {
         this.afterCallServer("onSubmit", data)
@@ -497,7 +500,7 @@ export class AdminDocListComponent extends MereComponent {
   }
 
   sendNotification(title, message) {
-    console.log("sendNotification this.doc=", this.myObj)
+    this.logger.debug("sendNotification this.doc=", this.myObj)
 
     // let isManager = this.hasRoleManagerValidate();
     let currentUser = this.dataSharingService.userConnected;

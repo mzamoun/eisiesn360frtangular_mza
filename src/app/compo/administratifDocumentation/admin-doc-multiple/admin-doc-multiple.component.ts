@@ -1,3 +1,6 @@
+
+
+
 import { Component } from '@angular/core';
 import { FileUpload } from 'src/app/model/FileUpload';
 import { CategoryDoc } from 'src/app/model/categoryDoc';
@@ -117,7 +120,7 @@ export class AdminDocMultipleComponent extends MereComponent {
     else {
       this.isErrorInSelect = true;
     }
-    console.log(this.consultantFileUploadList);
+    this.logger.debug(this.consultantFileUploadList);
   }
 
   deleteElement(element: ConsultantFileUpload) {
@@ -139,7 +142,7 @@ export class AdminDocMultipleComponent extends MereComponent {
 
         // document.consultants_docs.push(consultantFileUpload.consultant);
         // document.files.push(consultantFileUpload.fileUpload);
-        console.log("document Ajouté", document);
+        this.logger.debug("document Ajouté", document);
         this.documentService.save(document).subscribe(
           data => {
             this.afterCallServer("onSubmit", data)
@@ -162,7 +165,7 @@ export class AdminDocMultipleComponent extends MereComponent {
   }
 
   sendNotification(title, message) {
-    console.log("sendNotification this.doc=", this.myObj)
+    this.logger.debug("sendNotification this.doc=", this.myObj)
 
     // let isManager = this.hasRoleManagerValidate();
     let currentUser = this.dataSharingService.userConnected;

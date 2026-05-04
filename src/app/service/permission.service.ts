@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
@@ -11,7 +15,7 @@ import {Permission} from "../model/permission";
 export class PermissionService {
   permissionUrl: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.permissionUrl = environment.apiUrl + "/permissions";
   }
 

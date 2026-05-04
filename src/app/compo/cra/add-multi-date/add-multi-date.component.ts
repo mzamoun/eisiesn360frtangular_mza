@@ -1,3 +1,6 @@
+
+
+
 import { DatePipe } from "@angular/common";
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from "@angular/forms";
@@ -101,7 +104,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
   onStartDateInputChanged(date: Date, error: string) {
     this.myObj.startDate=date;
     this.errorDates=error;
-    ////////////console.log("main onChangeDateDeb myDatePickerDeb", date, error);
+    ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if(this.errorDates) {
       this.utils.showNotification("error", "The end date of project you have been above of the start date !")
     }
@@ -110,7 +113,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
   onEndDateInputChanged(date: Date, error: string) {
     this.myObj.endDate=new Date(date.getTime() + 24*60*60*1000);  //debug du fin-1
     this.errorDates=error;
-    ////////////console.log("main onChangeDateDeb myDatePickerDeb", date, error);
+    ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if(this.errorDates) {
       this.utils.showNotification("error", "The end date of project you have been above of the start date !")
     }
@@ -127,7 +130,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
     this.timesForm.reset();
     if(this.myDatePickerDebFin)     this.myDatePickerDebFin.reset();
     else {
-      ////////console.log("cant reset because: myDatePickerDebFin IS NULL")
+      ////////this.logger.debug("cant reset because: myDatePickerDebFin IS NULL")
     }
   }
 
@@ -168,7 +171,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
       if (currentActivity.type.name == "MISSION") {
         let startDate: string = this.datePipe.transform(currentActivity.dateDeb, 'yyyy-MM-dd');
         let endDate: string = this.datePipe.transform(currentActivity.dateFin, 'yyyy-MM-dd');
-        // //////////console.log("DBG isBetweenActivity : currentActivity: ", currentActivity)
+        // //////////this.logger.debug("DBG isBetweenActivity : currentActivity: ", currentActivity)
         if (new Date(startDate).getTime() <= date.getTime()
           && date.getTime() <= new Date(endDate).getTime()) {
           state = true;

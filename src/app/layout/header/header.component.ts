@@ -41,11 +41,11 @@ export class HeaderComponent extends MereComponent {
     , private cdr: ChangeDetectorRef
   ) {
     super(utils, dataSharingService);
-    console.log('HeaderComponent.constructor called');
+    this.logger.debug('HeaderComponent.constructor called');
   }
 
   ngOnInit() {
-    console.log('HeaderComponent.ngOnInit called');
+    this.logger.debug('HeaderComponent.ngOnInit called');
 
     super.ngOnInit()
 
@@ -82,7 +82,7 @@ export class HeaderComponent extends MereComponent {
         // Mettre à jour displayEsnName quand userConnected change
 
         this.userConnected = user
-        console.log("HeaderComponent - userConnected change : ", user)
+        this.logger.debug("HeaderComponent - userConnected change : ", user)
 
         if (user) {
           const esnName = user?.esnName || user?.esn?.name;
@@ -128,7 +128,7 @@ export class HeaderComponent extends MereComponent {
   }
 
   private setClock() {
-    console.log('HeaderComponent.setClock called');
+    this.logger.debug('HeaderComponent.setClock called');
     setInterval(
       () => {
         let dateHeure = this.utils.formatDateToDateHeure(new Date);
@@ -140,20 +140,20 @@ export class HeaderComponent extends MereComponent {
   }
 
   showCalendar() {
-    console.log('HeaderComponent.showCalendar called');
+    this.logger.debug('HeaderComponent.showCalendar called');
     this.utilsIhm.openCalendarModal()
   }
 
 
   showNotificationsAll() {
-    console.log('HeaderComponent.showNotificationsAll called');
+    this.logger.debug('HeaderComponent.showNotificationsAll called');
     this.clearInfos();
     this.dataSharingService.showNotificationsAll();
   }
 
   public getNotifications() {
-    console.log('HeaderComponent.getNotifications called');
-    // //////////console.log("getListNotifications")
+    this.logger.debug('HeaderComponent.getNotifications called');
+    // //////////this.logger.debug("getListNotifications")
 
     if (this.notificationCompo) this.notificationCompo.getNotifications(null, null);
     this.notifications = this.notificationCompo ? this.notificationCompo.myList : new Array();
@@ -161,8 +161,8 @@ export class HeaderComponent extends MereComponent {
     return this.notifications;
   }
   getNbNotifications() {
-    console.log('HeaderComponent.getNbNotifications called');
-    // //////////console.log("getNbNotifications")
+    this.logger.debug('HeaderComponent.getNbNotifications called');
+    // //////////this.logger.debug("getNbNotifications")
     // this.getListNotifications();
     this.nbNotificationNotViewed = this.notificationCompo ? this.notificationCompo.nbNotification : 0;
     return this.nbNotificationNotViewed;
@@ -174,7 +174,7 @@ export class HeaderComponent extends MereComponent {
 
   //ICON USER
   menuUserConnected() {
-    console.log('HeaderComponent.menuUserConnected called');
+    this.logger.debug('HeaderComponent.menuUserConnected called');
     if (this.dataSharingService.isLoggedIn()) {
 
       this.dataSharingService.isDisableSearchStrInput = true;

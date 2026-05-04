@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -63,10 +66,10 @@ export class EsnListComponent extends MereComponent {
 				this.afterCallServer("findAll", data)
 				this.myList = data.body.result;
 				this.myList00 = this.myList;
-				console.log("findAll Esn : " , this.myList)
+				this.logger.debug("findAll Esn : " , this.myList)
 			}, error => {
 	            this.addErrorFromErrorOfServer("findAll", error);
-			 	////console.log(error);
+			 	////this.logger.debug(error);
 		 	}
 		 );
 	}
@@ -77,7 +80,7 @@ export class EsnListComponent extends MereComponent {
 
 	edit(esn: Esn) {
 		this.clearInfos();
-		console.log("esn-list set esn", esn )
+		this.logger.debug("esn-list set esn", esn )
 		this.esnService.setEsn(esn);
 		this.refreshEsn(esn);
 		this.router.navigate(['/esn_form']);
@@ -89,10 +92,10 @@ export class EsnListComponent extends MereComponent {
 			data => {
 				this.afterCallServer("refreshEsn", data)
 				this.myObj = data.body.result;
-				console.log("refreshEsn Esn : " , this.myObj)
+				this.logger.debug("refreshEsn Esn : " , this.myObj)
 			}, error => {
 	            this.addErrorFromErrorOfServer("refreshEsn", error);
-			 	////console.log(error);
+			 	////this.logger.debug(error);
 		 	}
 		 );
 	}
@@ -112,7 +115,7 @@ export class EsnListComponent extends MereComponent {
 							}
 						}, error => {
 							mythis.addErrorFromErrorOfServer("delete", error);
-							////console.log(error);
+							////this.logger.debug(error);
 						}
 					);
 			}

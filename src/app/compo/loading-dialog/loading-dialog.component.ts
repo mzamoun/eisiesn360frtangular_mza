@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -28,5 +29,5 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   `]
 })
 export class LoadingDialogComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { message: string }) {}
+  constructor(private logger: LoggerService, @Inject(MAT_DIALOG_DATA) public data: { message: string }) {}
 }

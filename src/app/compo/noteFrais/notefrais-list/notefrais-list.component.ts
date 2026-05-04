@@ -1,3 +1,6 @@
+
+
+
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -53,7 +56,7 @@ export class NotefraisListComponent extends MereComponent {
     , private modal: NgbModal
     , private SpinnerService: NgxSpinnerService) {
     super(utils, dataSharingService);
-    // console.log("here 2");
+    // this.logger.debug("here 2");
     // this.loadingComponenet = true;
 
     this.colsSearch = ["title", "date", "category", "brand_name", "vat", "pretax_amount", "amount"]
@@ -165,7 +168,7 @@ export class NotefraisListComponent extends MereComponent {
         this.categoryService.findById(nf.categoryId).subscribe(
           data => {
             nf.category = data.body.result
-            // console.log("*** cat : " , nf.category)
+            // this.logger.debug("*** cat : " , nf.category)
           }
         )
       }
@@ -267,7 +270,7 @@ export class NotefraisListComponent extends MereComponent {
     this.myObj = noteFrais
     this.myObj.textFilePdf = noteFrais.description
 
-    console.log("*** edit noteFrais: ", noteFrais)
+    this.logger.debug("*** edit noteFrais: ", noteFrais)
 
     this.noteFraisService.setNoteFrais(this.myObj);
     
@@ -283,7 +286,7 @@ export class NotefraisListComponent extends MereComponent {
     this.myObj = noteFrais
     this.myObj.textFilePdf = noteFrais.description
 
-    console.log("*** edit noteFrais: ", noteFrais)
+    this.logger.debug("*** edit noteFrais: ", noteFrais)
 
     this.noteFraisService.setNoteFrais(this.myObj);
     this.router.navigate(['/notefrais_form']);
@@ -304,7 +307,7 @@ export class NotefraisListComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -387,7 +390,7 @@ export class NotefraisListComponent extends MereComponent {
   }
 
   sendNotification(title, message) {
-    console.log("sendNotification this.feeForPayement=", this.feeForPayement)
+    this.logger.debug("sendNotification this.feeForPayement=", this.feeForPayement)
 
     // let isManager = this.hasRoleManagerValidate();
     let currentUser = this.dataSharingService.userConnected;

@@ -45,7 +45,7 @@ export class MenuComponent extends MereComponent {
 
     super.ngOnInit()
 
-    console.log("**** menu isUserLoggedIn=", this.isUserLoggedIn)
+    this.logger.debug("**** menu isUserLoggedIn=", this.isUserLoggedIn)
 
   }
 
@@ -66,7 +66,7 @@ export class MenuComponent extends MereComponent {
         mythis.esnService.addEsnDemo().subscribe(
           data => {
             mythis.afterCallServer(label, data)
-            console.log(JSON.stringify(data))
+            this.logger.debug(JSON.stringify(data))
     
             if (!mythis.isError()) {
               // mythis.addInfo("l'Esn Demo a bien ete ajoutee", false)
@@ -77,7 +77,7 @@ export class MenuComponent extends MereComponent {
           }, error => {
             mythis.afterCallServer(label, error);
             mythis.addErrorFromErrorOfServer(label, error);
-            ////console.log(error);
+            ////this.logger.debug(error);
             // this.addError(error)
           }
         );
@@ -97,7 +97,7 @@ export class MenuComponent extends MereComponent {
         this.router.navigate(["/permission"]);
       }, error => {
         this.addErrorFromErrorOfServer("setDefaultPermissions", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
         // this.addError(error)
       }
     );

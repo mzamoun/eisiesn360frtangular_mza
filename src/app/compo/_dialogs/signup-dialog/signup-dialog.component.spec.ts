@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SignupDialogComponent } from './signup-dialog.component';

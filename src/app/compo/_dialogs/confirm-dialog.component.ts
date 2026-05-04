@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 // confirm-dialog.component.ts
 import { AfterViewInit, Component, ElementRef, HostListener, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -16,7 +17,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 export class ConfirmDialogComponent implements AfterViewInit {
   @ViewChild('yesButton', { read: ElementRef }) yesButton: ElementRef;
 
-  constructor(
+  constructor(private logger: LoggerService, 
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string; autoFocus?: boolean }
   ) {}

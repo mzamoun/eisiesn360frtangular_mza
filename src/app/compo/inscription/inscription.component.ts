@@ -8,6 +8,7 @@ import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
 import { ConsultantService } from 'src/app/service/consultant.service';
+import { LoggerService } from 'src/app/service/logger.service';
 import { LoadingDialogComponent } from '../loading-dialog/loading-dialog.component';
 
 @Component({
@@ -30,6 +31,7 @@ export class InscriptionComponent implements OnInit {
     // , public dialogRef: MatDialogRef<ConfirmDialogComponent>
     , private consultantService: ConsultantService
     , private dialog: MatDialog
+    , private logger: LoggerService
   ) {
 
     // super(utils, dataSharingService);
@@ -80,7 +82,7 @@ export class InscriptionComponent implements OnInit {
               },
               error => {
                 this.errors = error
-                console.log("ERROR delete esnSaved : ", error)
+                this.logger.debug("ERROR delete esnSaved : ", error)
                 msg += "\n" + JSON.stringify(error)
                 this.utilsIhm.infoDialog(msg,
                   () => {
@@ -99,7 +101,7 @@ export class InscriptionComponent implements OnInit {
         },
         error => {
           this.errors = error
-          console.log("ERROR delete respEsnSaved : ", error)
+          this.logger.debug("ERROR delete respEsnSaved : ", error)
           msg += "\n" + JSON.stringify(error)
           this.utilsIhm.infoDialog(msg,
             () => {
@@ -168,7 +170,7 @@ export class InscriptionComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log("Formulaire confirmé");
+    this.logger.debug("Formulaire confirmé");
 
     let label2 = "sendMail"
 
@@ -178,7 +180,7 @@ export class InscriptionComponent implements OnInit {
 
     this.dataSharingService.sendMailToValidEmailInscription(
       (data2, to, codeEmailToValidate) => {
-        console.log(label2 + " data2, to : ", data2, to)
+        this.logger.debug(label2 + " data2, to : ", data2, to)
         // FIN du msg loading
         this.closeLoadingDialog();
         this.utilsIhm.infoDialog("Un email a bien été envoyé à " + to,
@@ -190,7 +192,7 @@ export class InscriptionComponent implements OnInit {
         )
       },
       (error) => {
-        console.log(label2 + " error : ", error)
+        this.logger.debug(label2 + " error : ", error)
         // FIN du msg loading
         this.closeLoadingDialog();
         this.utilsIhm.infoDialog(label2 + " Erreur envoie email : " + JSON.stringify(error))

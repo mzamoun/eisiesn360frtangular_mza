@@ -1,3 +1,6 @@
+
+
+
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MyError } from 'src/app/resource/MyError';
@@ -40,7 +43,7 @@ export class ClientFormComponent extends MereComponent {
 
   initByClient() {
 
-    ////console.log('initByClient')
+    ////this.logger.debug('initByClient')
 
     if (this.isAdd == null) {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
@@ -56,7 +59,7 @@ export class ClientFormComponent extends MereComponent {
       this.btnSaveTitle = this.utils.tr("Save")
       this.title = this.utils.tr("EditClient")
       let clientP: Client = this.clientService.getClient();
-      ////console.log('clientP='+clientP);
+      ////this.logger.debug('clientP='+clientP);
 
       if (clientP != null) this.myObj = clientP;
       else if (this.myObj == null) this.myObj = new Client();
@@ -76,7 +79,7 @@ export class ClientFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    ////console.log(this.myObj);
+    ////this.logger.debug(this.myObj);
     this.beforeCallServer("onSubmit");
     if (!this.myObj.esn) {
       this.myObj.esn = this.esnCurrent;
@@ -90,7 +93,7 @@ export class ClientFormComponent extends MereComponent {
       this.myObj.esnId = this.myObj.esn?.id
     }
 
-    console.log("onSubmit this.myObj.esn : ", this.myObj.esn)
+    this.logger.debug("onSubmit this.myObj.esn : ", this.myObj.esn)
     if(!this.myObj.esn) {
       this.addError(new MyError("", "esn absente !! "))
       return 

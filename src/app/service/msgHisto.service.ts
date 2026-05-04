@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MsgHisto } from '../model/msgHisto';
@@ -23,7 +27,7 @@ export class MsgHistoService {
 		return this.msgHisto ;
 	}
 
-	constructor(private http: HttpClient) {
+	constructor(private logger: LoggerService, private http: HttpClient) {
 		this.msgHistoUrl = environment.apiUrl + '/msgHisto/';
 	}
 
@@ -36,12 +40,12 @@ export class MsgHistoService {
   }
 
   public save(msgHisto: MsgHisto): Observable<GenericResponse> {
-    ////////////console.log("save id=" + msgHisto.id + ".");
+    ////////////this.logger.debug("save id=" + msgHisto.id + ".");
     if (msgHisto.id > 0) {
-      ////////////console.log("put update")
+      ////////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.msgHistoUrl, msgHisto);
     } else {
-      ////////////console.log("post add")
+      ////////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.msgHistoUrl, msgHisto);
     }
   }

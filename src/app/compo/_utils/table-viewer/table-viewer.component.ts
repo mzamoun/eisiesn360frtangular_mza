@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Relation } from 'src/app/model/relation';
 import { TableService } from 'src/app/service/table.service';
@@ -41,7 +45,7 @@ export class TableViewerComponent implements OnInit {
   apiUrl = environment.apiUrl
 
 
-  constructor(private tableService: TableService) {
+  constructor(private logger: LoggerService, private tableService: TableService) {
   }
 
   ngOnInit(): void {
@@ -82,9 +86,9 @@ export class TableViewerComponent implements OnInit {
     this.tableService.getLinesOfTable(this.selectedTable,
       data => {
         this.lines = data;
-        console.log(fct + " getLinesOfTable data : ", data)
+        this.logger.debug(fct + " getLinesOfTable data : ", data)
       }, (err) => {
-        console.log(fct + " getLinesOfTable err : ", err)
+        this.logger.debug(fct + " getLinesOfTable err : ", err)
       }
     );
 
@@ -92,28 +96,28 @@ export class TableViewerComponent implements OnInit {
 
     this.tableService.getColsOfTable(this.selectedTable,
       (columnMetadata, mapColType, mapColTypeInput) => {
-        console.log(fct + " getColsOfTable columnMetadata : ", columnMetadata)
+        this.logger.debug(fct + " getColsOfTable columnMetadata : ", columnMetadata)
         this.columnMetadata = columnMetadata;
         this.mapColType = mapColType;
         this.mapColTypeInput = mapColTypeInput;
-        console.log(fct + " getColsOfTable mapColType : ", mapColType)
+        this.logger.debug(fct + " getColsOfTable mapColType : ", mapColType)
       }, err => {
-        console.log(fct + " getColsOfTable err : ", err)
+        this.logger.debug(fct + " getColsOfTable err : ", err)
       }
     );
 
     // setTimeout(() => {
 
-    //   console.log(fct + " go to call getColsOfTable")
+    //   this.logger.debug(fct + " go to call getColsOfTable")
 
     //   this.tableService.getColsOfTable(this.selectedTable,
     //     (columnMetadata, mapColType, mapColTypeInput) => {
     //       this.columnMetadata = columnMetadata;
     //       this.mapColType = mapColType;
     //       this.mapColTypeInput = mapColTypeInput;
-    //       console.log(fct + " getColsOfTable mapColType : ", mapColType)
+    //       this.logger.debug(fct + " getColsOfTable mapColType : ", mapColType)
     //     }, (err) => {
-    //       console.log(fct + " getColsOfTable err : ", err)
+    //       this.logger.debug(fct + " getColsOfTable err : ", err)
     //     }
     //   );
     // }, 1000);
@@ -180,27 +184,27 @@ export class TableViewerComponent implements OnInit {
     // const metadata = this.columnMetadata.find(col => col.columnName === key);
     const metadata = this.columnMetadata.find(col => col.columnName === key);
 
-    // console.log("formatSqlValue : key, value, metadata : ", key, value, metadata)
+    // this.logger.debug("formatSqlValue : key, value, metadata : ", key, value, metadata)
 
     let res = null
 
     // Si pas de metadata (cela ne devrait pas arriver si selectTable a fonctionné)
     if (!metadata) {
       res = `'${value}'`; // Par défaut, traitez comme une chaîne
-      // console.log("formatSqlValue : res : ", res)
+      // this.logger.debug("formatSqlValue : res : ", res)
       return res;
     }
 
     // 2. Gérer le cas 'null'
     if (!value || (value + "").toUpperCase() === 'NULL') {
       res = 'null';
-      // console.log("formatSqlValue : res : ", res)
+      // this.logger.debug("formatSqlValue : res : ", res)
       return res;
     }
 
     // 3. Normaliser le type de données
     const dataType = metadata.dataType.toLowerCase();
-    // console.log("formatSqlValue : dataType : =/" + dataType + "/", dataType)
+    // this.logger.debug("formatSqlValue : dataType : =/" + dataType + "/", dataType)
 
     // Exemples de types numériques/booléens (à adapter à votre SGBD)
     if (dataType.includes('int') || dataType.includes('numeric') || dataType.includes('decimal') || dataType.includes('real')) {
@@ -208,19 +212,19 @@ export class TableViewerComponent implements OnInit {
       // Assurez-vous que la valeur est propre (si elle vient du champ input, elle est déjà string)
       // On enlève les quotes
       res = String(value);
-      // console.log("formatSqlValue NUM : res : ", res)
+      // this.logger.debug("formatSqlValue NUM : res : ", res)
     }
 
     else if (dataType.includes('bool') || dataType.includes('boolean')) {
       // Types booléens
       // On renvoie 'true' ou 'false' (sans quotes) ou la valeur elle-même si elle est déjà un nombre (0/1)
       res = String(value).toLowerCase() === 'true' || value === 1 ? true : false;
-      // console.log("formatSqlValue : res : ", res)
+      // this.logger.debug("formatSqlValue : res : ", res)
     }
 
     else if (dataType.includes('char') || dataType.includes('string')) {
       res = "'" + String(value) + "'";
-      // console.log("formatSqlValue : res : ", res)
+      // this.logger.debug("formatSqlValue : res : ", res)
     } else {
 
       // 4. Par défaut (texte, varchar, date, timestamp, etc.) : entourer de quotes
@@ -228,7 +232,7 @@ export class TableViewerComponent implements OnInit {
       // Pour la simplicité ici, on assume que ce n'est pas nécessaire, mais c'est un risque.
       const escapedValue = String(value).replace(/'/g, "''"); // Échappement classique SQL
       res = `'${escapedValue}'`;
-      // console.log("formatSqlValue : res : ", res)
+      // this.logger.debug("formatSqlValue : res : ", res)
     }
 
     return res;
@@ -243,12 +247,12 @@ export class TableViewerComponent implements OnInit {
 
   executeSql(fctSuccess: Function = null) {
     this.infos = ""
-    console.log("executeSql : sql : ", this.sql)
+    this.logger.debug("executeSql : sql : ", this.sql)
 
     this.tableService.executeSql(this.sql,
       (sqlResult) => {
         this.sqlResult = sqlResult
-        console.log("executeSql : sqlResult : ", sqlResult)
+        this.logger.debug("executeSql : sqlResult : ", sqlResult)
         if (!sqlResult.body && sqlResult.header && sqlResult.header.description) {
           this.infos = sqlResult.header.description
         } else {
@@ -261,7 +265,7 @@ export class TableViewerComponent implements OnInit {
       },
       (infos) => {
         this.infos = infos
-        console.log("executeSql : infos : ", infos)
+        this.logger.debug("executeSql : infos : ", infos)
       }
     )
   }
@@ -576,7 +580,7 @@ export class TableViewerComponent implements OnInit {
 
     this.activeTab = "relations";
 
-    console.log("openRelations : selectedTable : ", this.selectedTable)
+    this.logger.debug("openRelations : selectedTable : ", this.selectedTable)
 
     // Charger les relations du backend
     this.tableService.openRelations(
@@ -604,7 +608,7 @@ export class TableViewerComponent implements OnInit {
 
     this.activeTab = "data";
 
-    console.log(fct + " : selectedTable : ", this.selectedTable)
+    this.logger.debug(fct + " : selectedTable : ", this.selectedTable)
 
     // Charger les relations du backend
     this.selectTable(this.selectedTable)
@@ -612,7 +616,7 @@ export class TableViewerComponent implements OnInit {
   }
 
   onCellTableDblClick(event: any) {
-    console.log("onCellTableDblClick")
+    this.logger.debug("onCellTableDblClick")
     // TODO : copier la valeur de la cellule dans le presse-papier. et afficher une notification : cell copied to clipboard. Implementer cela.
     const text = event.target.innerText;
     navigator.clipboard.writeText(text).then(() => {
@@ -702,11 +706,11 @@ export class TableViewerComponent implements OnInit {
       reader.onload = event => {
         try {
           const jsonData = JSON.parse(event.target.result as string);
-          // console.log("importFromJsonToTableSelected : jsonData : ", jsonData)
+          // this.logger.debug("importFromJsonToTableSelected : jsonData : ", jsonData)
           if (Array.isArray(jsonData)) {
             this.tableService.importFromJsonToTable(this.selectedTable, jsonData,
               (res) => {
-                console.log("importFromJsonToTableSelected : res : ", res);
+                this.logger.debug("importFromJsonToTableSelected : res : ", res);
                 if (!res) {
                   alert("Failed to import data: " + (res ? JSON.stringify(res) : "Unknown error"));
                   return;
@@ -739,7 +743,7 @@ export class TableViewerComponent implements OnInit {
     this.tableService.runBatchCraExportManually(
       (res) => {
         // alert("Batch Cra executed successfully! res = " + JSON.stringify(res));
-        console.log("Batch Cra executed successfully! res = ", res);
+        this.logger.debug("Batch Cra executed successfully! res = ", res);
       },
       (err) => {
         alert("Failed to execute Batch Cra: " + JSON.stringify(err));
@@ -751,7 +755,7 @@ export class TableViewerComponent implements OnInit {
     this.tableService.runBatchConsultantImportManually(
       (res) => {
         alert("Batch Consultant Import executed successfully! res = " + JSON.stringify(res));
-        console.log("Batch Consultant Import executed successfully! res = ", res);
+        this.logger.debug("Batch Consultant Import executed successfully! res = ", res);
         this.selectTable(this.selectedTable) // refresh data
       },
       (err) => {

@@ -13,6 +13,7 @@
 
 export const environment = {
   production: false,
+  enableDebugLogs: true,
   apiUrl: 'http://localhost:8080/esn360/api',
   extractUrl: 'http://127.0.0.1:8300',
 };

@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
@@ -12,7 +16,7 @@ export class CraConfigurationService {
 
   craConfigurationUrl: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.craConfigurationUrl = environment.apiUrl + "/cra-configuration"
   }
 
@@ -21,7 +25,7 @@ export class CraConfigurationService {
   }
 
   public getCraConfigByEsnIdAndMonth(esnId: number, month: string): Observable<GenericResponse> {
-    console.log("getCraConfigByEsnIdAndMonth : esnId : ", esnId, " month : ", month)
+    this.logger.debug("getCraConfigByEsnIdAndMonth : esnId : ", esnId, " month : ", month)
     return this.http.get<GenericResponse>(this.craConfigurationUrl + "/" + esnId + "/" + month );
   }
 

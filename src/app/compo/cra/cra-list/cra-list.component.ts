@@ -1,3 +1,6 @@
+
+
+
 import { DatePipe } from "@angular/common";
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
@@ -49,7 +52,7 @@ export class CraListComponent extends MereComponent {
 
   ngOnInit() {
 
-    console.log("cla-list ngOnInit userConnected", this.userConnected)
+    this.logger.debug("cla-list ngOnInit userConnected", this.userConnected)
 
     this.dataSharingService.getNotifications(null, null);
 
@@ -73,7 +76,7 @@ export class CraListComponent extends MereComponent {
     this.beforeCallServer("findAll");
     this.craService.findAll().subscribe(
       data => {
-        console.log("cra list findAll data:", data)
+        this.logger.debug("cra list findAll data:", data)
         this.afterCallServer("findAll", data);
         // this.info00 = ''
         this.myList = data.body.result;
@@ -82,17 +85,17 @@ export class CraListComponent extends MereComponent {
 
         this.dataSharingService.majListCra();
 
-        console.log("cra list findAll myList:", this.myList)
-        console.log("cra list findAll dataSharingService.listCra:", this.dataSharingService.getListCra())
+        this.logger.debug("cra list findAll myList:", this.myList)
+        this.logger.debug("cra list findAll dataSharingService.listCra:", this.dataSharingService.getListCra())
 
-        // //////////console.log("**********"+JSON.stringify(this.myList))
+        // //////////this.logger.debug("**********"+JSON.stringify(this.myList))
         if (!this.isError() && this.myList && this.myList.length > 0) this.myList = this.myList.sort((a, b) => this.compareCraDesc(a, b))
 
         this.getListConsultants();
       }, error => {
-        console.log("cra list findAll error:", error)
+        this.logger.debug("cra list findAll error:", error)
         this.addErrorFromErrorOfServer("findAll", error);
-        //console.log(error);
+        //this.logger.debug(error);
       }
     );
     this.getFilteredCra();
@@ -109,10 +112,10 @@ export class CraListComponent extends MereComponent {
     this.craService.save(cra).subscribe(
       data => {
         this.afterCallServer("saveCra", data)
-        //////console.log("saveCra data=", data)
+        //////this.logger.debug("saveCra data=", data)
       }, error => {
         this.addErrorFromErrorOfServer("saveCra", error);
-        //////console.log("saveCra error=", error)
+        //////this.logger.debug("saveCra error=", error)
       })
   }
 
@@ -139,7 +142,7 @@ export class CraListComponent extends MereComponent {
   }
 
   showCra(cra: Cra, event: any) {
-    console.log("showCra craList ", cra)
+    this.logger.debug("showCra craList ", cra)
     this.clearInfos()
     this.dataSharingService.showCra(cra);
   }
@@ -165,7 +168,7 @@ export class CraListComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -200,23 +203,23 @@ export class CraListComponent extends MereComponent {
   getFilteredCra() {
     let month: string = null;
     if (this.filterMonth) month = this.datePipe.transform(this.filterMonth, 'yyyy-MM');
-    //////////console.log("getFilteredCra", this.filterConsultant.username, month );
+    //////////this.logger.debug("getFilteredCra", this.filterConsultant.username, month );
     this.beforeCallServer("getFilteredCra");
     this.craService.getFilteredCra(this.filterConsultant.username, month).subscribe(
       data => {
         this.afterCallServer("getFilteredCra", data);
         this.listCraFiltred = data.body.result;
         this.dataSharingService.majListCraParam(this.listCraFiltred)
-        console.log("**** showCra getFilteredCra: listCraFiltred=", this.listCraFiltred);
+        this.logger.debug("**** showCra getFilteredCra: listCraFiltred=", this.listCraFiltred);
 
         // this.saveListCra(this.listCraFiltred)
 
         if (!this.isError()) this.listCraFiltred = this.listCraFiltred.sort((a, b) => this.compareCraDesc(a, b))
-        //////////console.log("**** getFilteredCra: listCraFiltred=", this.listCraFiltred);
+        //////////this.logger.debug("**** getFilteredCra: listCraFiltred=", this.listCraFiltred);
       }, error => {
         this.addErrorFromErrorOfServer("getFilteredCra", error);
-        ////console.log(error);
-        //////////console.log("**** getFilteredCra: error=", error);
+        ////this.logger.debug(error);
+        //////////this.logger.debug("**** getFilteredCra: error=", error);
 
       }
     );

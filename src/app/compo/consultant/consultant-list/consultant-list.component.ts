@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -78,11 +81,11 @@ export class ConsultantListComponent extends MereComponent {
             this.consultantService.findAllByEsn(esnId).subscribe(
                 data => {
                     this.afterCallServer("findAll", data)
-                    console.log("data : ", data)
+                    this.logger.debug("data : ", data)
                     // Filter consultants where adminConsultantId = userConnected.id, include manager himself
                     const allConsultants = data.body.result || [];
                     this.myList = allConsultants.filter(c => c.adminConsultantId === user.id || c.id === user.id);
-                    console.log("myList : ", this.myList)
+                    this.logger.debug("myList : ", this.myList)
                     this.myList00 = this.myList;
 
                     // this.dataSharingService.addEsnInConsultantList(this.myList )
@@ -92,7 +95,7 @@ export class ConsultantListComponent extends MereComponent {
 
                 }, error => {
                     this.addErrorFromErrorOfServer("findAll", error);
-                    ////console.log(error);
+                    ////this.logger.debug(error);
                 }
             );
             return;
@@ -101,9 +104,9 @@ export class ConsultantListComponent extends MereComponent {
         this.consultantService.findAll().subscribe(
             data => {
                 this.afterCallServer("findAll", data)
-                console.log("data : ", data)
+                this.logger.debug("data : ", data)
                 this.myList = data.body.result;
-                console.log("myList : ", this.myList)
+                this.logger.debug("myList : ", this.myList)
                 this.myList00 = this.myList;
 
                 // this.dataSharingService.addEsnInConsultantList(this.myList )
@@ -113,7 +116,7 @@ export class ConsultantListComponent extends MereComponent {
 
             }, error => {
                 this.addErrorFromErrorOfServer("findAll", error);
-                ////console.log(error);
+                ////this.logger.debug(error);
             }
         );
     }
@@ -145,7 +148,7 @@ export class ConsultantListComponent extends MereComponent {
                             }
                         }, error => {
                             mythis.addErrorFromErrorOfServer("delete", error);
-                            ////console.log(error);
+                            ////this.logger.debug(error);
                         }
                     );
             }
@@ -162,7 +165,7 @@ export class ConsultantListComponent extends MereComponent {
         this.consultantService.setConsultant(myObj)
 
         this.myObj = myObj;
-        // console.log("role", myObj.role)
+        // this.logger.debug("role", myObj.role)
         if (this.myObjEditView != null) {
 
             this.myObjEditView.myObj = myObj

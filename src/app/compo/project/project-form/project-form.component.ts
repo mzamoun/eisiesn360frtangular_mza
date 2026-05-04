@@ -45,7 +45,7 @@ export class ProjectFormComponent extends MereComponent {
 
   initByProject() {
 
-    ////console.log('initByProject');
+    ////this.logger.debug('initByProject');
 
     if (this.isAdd == null) {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
@@ -59,7 +59,7 @@ export class ProjectFormComponent extends MereComponent {
       this.btnSaveTitle = this.utils.tr("Save");
       this.title = this.title = this.utils.tr("Edit") + " " + this.utils.tr("Project") ;
       let projectP: Project = this.projectService.getProject();
-      ////console.log(projectP);
+      ////this.logger.debug(projectP);
 
       if (projectP != null) {
         this.myObj = projectP;
@@ -87,7 +87,7 @@ export class ProjectFormComponent extends MereComponent {
         }
       }, error => {
         this.addErrorFromErrorOfServer("getClients", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -113,10 +113,10 @@ export class ProjectFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    ////console.log(this.myObj);
+    ////this.logger.debug(this.myObj);
     let info_id = "onSubmit add proj"
     this.beforeCallServer(info_id);
-    console.log("client : " , this.myObj.client)
+    this.logger.debug("client : " , this.myObj.client)
     this.projectService.save(this.myObj).subscribe(
       data => {
         this.afterCallServer(info_id, data)

@@ -1,3 +1,6 @@
+
+
+
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
@@ -65,7 +68,7 @@ export class AdminDocFormComponent extends MereComponent {
       this.adminConsultant = this.dataSharingService.adminConsultant[this.connectedUser.id];
       this.isSelectedConsultant = true;
     }
-    console.log(this.connectedUser);
+    this.logger.debug(this.connectedUser);
 
     this.dropdownConsultantSettings = {
       singleSelection: false,
@@ -179,30 +182,30 @@ export class AdminDocFormComponent extends MereComponent {
     this.myObj.consultant = this.connectedUser;
     this.myObj.files = this.listSelectedFiles
 
-    console.log("onSubmit myObj.files 1 : ", this.myObj.files)
+    this.logger.debug("onSubmit myObj.files 1 : ", this.myObj.files)
 
     if (this.myObj.files != null ) {
       for (let f of this.myObj.files) {
-        console.log("onSubmit f 1 : ", f)
+        this.logger.debug("onSubmit f 1 : ", f)
         f.documentId = this.myObj.id;
-        console.log("onSubmit f 2 : ", f)
+        this.logger.debug("onSubmit f 2 : ", f)
       }
     }
 
-    console.log("onSubmit myObj.files 2 : ", this.myObj.files)
+    this.logger.debug("onSubmit myObj.files 2 : ", this.myObj.files)
 
     if (this.selectedItems.length == this.consultantsList.length && this.isAllSelectedConsultant) {
-      console.log("onSubmit set listConsultant vide ")
+      this.logger.debug("onSubmit set listConsultant vide ")
       this.myObj.for_all_users = true;
       this.myObj.listConsultantIds = [];
       this.myObj.listConsultant = [];
     }
 
-    console.log(this.myObj);
+    this.logger.debug(this.myObj);
 
     this.documentService.save(this.myObj).subscribe(
       data => {
-        // console.log(JSON.stringify(this.myObj));
+        // this.logger.debug(JSON.stringify(this.myObj));
 
         this.afterCallServer("onSubmit", data)
         if (!this.isError()) {

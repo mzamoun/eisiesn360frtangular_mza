@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 import {AuthGroup, Feature} from "../authorization.types";
 import {AuthorizationService} from "../service/authorization.service";
@@ -11,7 +12,7 @@ export class AuthorizationDirective implements OnInit {
   @Input('feature') feature: Feature;
   @Input('permission') permission: AuthGroup;
 
-  constructor(private authorizationService: AuthorizationService, private el: ElementRef) {
+  constructor(private logger: LoggerService, private authorizationService: AuthorizationService, private el: ElementRef) {
 
   }
 

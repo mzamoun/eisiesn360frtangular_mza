@@ -1,3 +1,6 @@
+
+
+
 import { Component } from '@angular/core';
 import { CategoryDoc } from 'src/app/model/categoryDoc';
 import { CategoryDocService } from 'src/app/service/category-doc.service';
@@ -53,7 +56,7 @@ export class AdminDocPermissionComponent extends MereComponent {
 
   updatePermissions() {
     this.load = true;
-    console.log(this.categoryDocList);
+    this.logger.debug(this.categoryDocList);
     this.categoryDocService.updateCategories(this.categoryDocList).subscribe(
       data => {
         this.load = false;

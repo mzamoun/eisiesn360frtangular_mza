@@ -197,7 +197,7 @@ P3 - Mode support/admin
 Semaine 1
 1. Stabiliser auth/error path (interceptor + guards + tests associes). : 30/04/2026 
 2. Nettoyer route publique (exact/prefix securise). : 30/04/2026 
-3. Mettre en place LoggerService + suppression logs sensibles.
+3. Mettre en place LoggerService + suppression logs sensibles. : 
 4. Fiabiliser scripts build cross-platform.
 
 Semaine 2

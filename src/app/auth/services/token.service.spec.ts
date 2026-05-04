@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { TestBed, getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 

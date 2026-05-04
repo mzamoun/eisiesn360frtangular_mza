@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 ﻿import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -47,7 +51,7 @@ export class CraService {
     return this.cra;
   }
 
-  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService
+  constructor(private logger: LoggerService, private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService
     , private activityTypeService: ActivityTypeService
     , private craConfigurationService: CraConfigurationService) {
     this.craUrl = environment.apiUrl + '/cra/';
@@ -64,7 +68,7 @@ export class CraService {
    * @param month
    **/
   public getFilteredCra(consultantUsername: string, month: string): Observable<GenericResponse> {
-    //////console.log("+++ getFilteredCra", consultantUsername, month)
+    //////this.logger.debug("+++ getFilteredCra", consultantUsername, month)
     if (month == null) month = '';
     let currentUser: Consultant = this.dataSharingService.userConnected;
     //VALIDBYCONSULTANT
@@ -79,7 +83,7 @@ export class CraService {
 
 
   public getListCraOfUser(consultantUsername: string): Observable<GenericResponse> {
-    //////console.log("+++ getFilteredCra", consultantUsername, month)
+    //////this.logger.debug("+++ getFilteredCra", consultantUsername, month)
     //VALIDBYCONSULTANT
     let predicate = '';
     predicate += 'consultantUsername=' + consultantUsername;
@@ -88,7 +92,7 @@ export class CraService {
   }
 
   public getValidatedCraByConsultantAndDate(consultantUsername: string, month: string): Observable<GenericResponse> {
-    //////console.log("+++ getValidatedCraByConsultantAndDate", consultantUsername, month)
+    //////this.logger.debug("+++ getValidatedCraByConsultantAndDate", consultantUsername, month)
     if (month == null) month = '';
     let currentUser: Consultant = this.dataSharingService.userConnected
     //VALIDBYCONSULTANT
@@ -105,12 +109,12 @@ export class CraService {
   }
 
   public save(cra: Cra): Observable<GenericResponse> {
-    console.log("save cra, url", cra, this.craUrl)
+    this.logger.debug("save cra, url", cra, this.craUrl)
     if (cra.id > 0) {
-      console.log("save cra update")
+      this.logger.debug("save cra update")
       return this.http.put<GenericResponse>(this.craUrl, cra);
     } else {
-      console.log("save cra add new")
+      this.logger.debug("save cra add new")
       return this.http.post<GenericResponse>(this.craUrl, cra);
     }
   }
@@ -125,7 +129,7 @@ export class CraService {
    * @param date
    */
   public getNewCraOfDate(date: Date): Observable<GenericResponse> {
-    ////////console.log("getCraOfDate: post craUrl, date", this.craUrl, date)
+    ////////this.logger.debug("getCraOfDate: post craUrl, date", this.craUrl, date)
     return this.http.post<GenericResponse>(this.craUrl + "init", date);
   }
 
@@ -142,7 +146,7 @@ export class CraService {
   }
 
   public generateCliPDFClientName(idCra: number, clientName: string): Observable<GenericResponse> {
-    console.log("generateCliPDFClientName generateCliPDFGenLinks : ", idCra, clientName)
+    this.logger.debug("generateCliPDFClientName generateCliPDFGenLinks : ", idCra, clientName)
     return this.http.get<GenericResponse>(this.craUrl + "generate-cra-pdf/cli/" + idCra + "/" + clientName)
   }
 
@@ -164,7 +168,7 @@ export class CraService {
         }
       );
     } else {
-      console.log("canAddActivity: can add KO : craDay is null, craDayActivity : ", craDay, craDayActivity)
+      this.logger.debug("canAddActivity: can add KO : craDay is null, craDayActivity : ", craDay, craDayActivity)
     }
 
     return t <= 1;
@@ -178,7 +182,7 @@ export class CraService {
    * @param date
    */
   public getCraDayByDate(cra: Cra, date: Date): CraDay {
-    console.log("getCraDayByDate : cra, date : ", cra, date)
+    this.logger.debug("getCraDayByDate : cra, date : ", cra, date)
     let craDay: CraDay;
 
     // this.majNewCra(cra, date);
@@ -196,36 +200,36 @@ export class CraService {
   }
 
   majHolidays(date: Date) {
-    console.log("majHolidays DEB : date : ", date)
+    this.logger.debug("majHolidays DEB : date : ", date)
 
     let user = this.dataSharingService.userConnected;
     let esn = user?.esn || null;
-    console.log("majHolidays : user, user.esn : ", user, esn)
+    this.logger.debug("majHolidays : user, user.esn : ", user, esn)
 
     if (!date) {
-      console.log("majHolidays : date is null")
+      this.logger.debug("majHolidays : date is null")
       return;
     }
 
     date = this.utils.getDate(date);
 
     // if (this.craConfigurationData && this.craConfigurationData.holidays && this.craConfigurationData.holidays.length > 0) {
-    //   console.log("majHolidays : holidays exist, craConfigurationData, holidays : ", this.craConfigurationData, this.craConfigurationData.holidays)
+    //   this.logger.debug("majHolidays : holidays exist, craConfigurationData, holidays : ", this.craConfigurationData, this.craConfigurationData.holidays)
     //   return;
     // }
 
     let label = "majHolidays : Récupération des jours fériés du mois en cours, date : " + date;
 
     const loadHolidays = (esnId: number) => {
-      console.log("majHolidays : idEsnCurrent : ", esnId)
+      this.logger.debug("majHolidays : idEsnCurrent : ", esnId)
 
-      console.log(label)
+      this.logger.debug(label)
       const dataSharingServiceAny: any = this.dataSharingService;
       if (typeof dataSharingServiceAny.addInfo === 'function') {
-        console.log("majHolidays : addInfo label : ", label)
+        this.logger.debug("majHolidays : addInfo label : ", label)
         dataSharingServiceAny.addInfo(label);
       } else {
-        console.log("majHolidays : dataSharingService.addInfo indisponible, impossible d'ajouter le message info : ", label)
+        this.logger.debug("majHolidays : dataSharingService.addInfo indisponible, impossible d'ajouter le message info : ", label)
       }
 
       this.craConfigurationService.getCraConfigByEsnIdAndMonth(esnId, this.utils.formatDateToMonth2(date))
@@ -235,7 +239,7 @@ export class CraService {
           }
           this.craConfigurationData = data.body?.result || null
           this.holidaysLoadedSource.next(this.craConfigurationData);
-          console.log("majHolidays : holidays récupérés, date, holidays : ", date, this.craConfigurationData?.holidays)
+          this.logger.debug("majHolidays : holidays récupérés, date, holidays : ", date, this.craConfigurationData?.holidays)
         }, error => {
           if (typeof dataSharingServiceAny.delInfo === 'function') {
             dataSharingServiceAny.delInfo(label);
@@ -243,7 +247,7 @@ export class CraService {
           if (typeof dataSharingServiceAny.addError === 'function') {
             dataSharingServiceAny.addError(new MyError("Erreur: " + label, "majHolidays : error, err : " + JSON.stringify(error)));
           }
-          console.log("majHolidays : error, err", error)
+          this.logger.debug("majHolidays : error, err", error)
         })
     };
 
@@ -264,7 +268,7 @@ export class CraService {
     // si déjà non-null, sinon attend la prochaine émission du setter).
     // NOTE : peut être undefined au runtime à cause de la dépendance circulaire
     // CraService ↔ DataSharingService → garder la guard typeof.
-    console.log("majHolidays : chemin réactif via idEsnCurrent$...")
+    this.logger.debug("majHolidays : chemin réactif via idEsnCurrent$...")
     const idEsn$ = (this.dataSharingService as any).idEsnCurrent$;
     if (idEsn$ && typeof idEsn$.pipe === 'function') {
       idEsn$.pipe(filter((id: number) => id != null), take(1)).subscribe((esnId: number) => {
@@ -276,7 +280,7 @@ export class CraService {
     }
 
     // Dernier recours : esnCurrentReady$ (émis par getCurrentUserFromLocaleStorage et majEsnOnConsultant)
-    console.log("majHolidays : idEsnCurrent$ indisponible, tentative via esnCurrentReady$...")
+    this.logger.debug("majHolidays : idEsnCurrent$ indisponible, tentative via esnCurrentReady$...")
     const esnReady$ = (this.dataSharingService as any).esnCurrentReady$;
     if (esnReady$ && typeof esnReady$.pipe === 'function') {
       esnReady$.pipe(filter((e: any) => e != null && e.id != null), take(1)).subscribe((e: any) => {
@@ -285,18 +289,18 @@ export class CraService {
         }
       });
     } else {
-      console.warn("majHolidays : aucun observable ESN disponible, impossible de récupérer les jours fériés");
+      this.logger.warn("majHolidays : aucun observable ESN disponible, impossible de récupérer les jours fériés");
     }
 
   }
 
   majNewCra(cra: Cra, date: Date) {
-    console.log("majNewCra : cra, date : ", cra, date)
+    this.logger.debug("majNewCra : cra, date : ", cra, date)
     if (cra && cra.id == null && date) {
       let month = this.utils.getDateFirstDay(date);
       cra.month = month;
       if (cra.craDays && cra.craDays.length > 0) {
-        console.log("majNewCra : cra.craDays exist, cra.craDays : ", cra.craDays)
+        this.logger.debug("majNewCra : cra.craDays exist, cra.craDays : ", cra.craDays)
         const holidays = this.craConfigurationData?.holidays || [];
         this.utils.addHolidays(month, "fr", holidays)
         // le 1er element (i=0) craDay : day = month
@@ -322,7 +326,7 @@ export class CraService {
           i++;
         });
 
-        console.log("majNewCra : cra.craDays after maj, cra.craDays : ", cra.craDays)
+        this.logger.debug("majNewCra : cra.craDays after maj, cra.craDays : ", cra.craDays)
       }
     }
   }
@@ -367,7 +371,7 @@ export class CraService {
    * @param craDay
    */
   public updateCraDay(currentCra: Cra, craDay: CraDay): Cra {
-    console.log("updateCraDay currentCra, craDay : ", currentCra, craDay)
+    this.logger.debug("updateCraDay currentCra, craDay : ", currentCra, craDay)
     if (currentCra == null) {
       currentCra = new Cra();
     }
@@ -406,14 +410,14 @@ export class CraService {
    craDay.dayAbs =   // true ssi isDayWorked=false and day open
    */
   setDayProps(craDay: CraDay) {
-    //////console.log("***setDayProps: craDay", craDay)
+    //////this.logger.debug("***setDayProps: craDay", craDay)
     if (craDay != null) {
       craDay.isDayWorked = false;
       craDay.dayBill = false;
       craDay.dayAbs = false;
 
       craDay.craDayActivities.forEach((cda, k) => {
-        //////console.log("***setDayProps: cda", cda)
+        //////this.logger.debug("***setDayProps: cda", cda)
         let activity: Activity = cda.activity;
         let type: ActivityType = activity.type;
         if (type == null) {
@@ -425,7 +429,7 @@ export class CraService {
               this.majCraDayByType(craDay, type);
             },
             error => {
-              console.log("ERROR activityTypeService.findById, activity.typeId, err", activity.typeId, error)
+              this.logger.debug("ERROR activityTypeService.findById, activity.typeId, err", activity.typeId, error)
             }
           );
         } else {
@@ -436,7 +440,7 @@ export class CraService {
       );
 
       if (this.isCraDayOpen(craDay) && !craDay.isDayWorked) {
-        //////////console.log("***setDayProps:", craDay.day, craDay.isDayWorked)
+        //////////this.logger.debug("***setDayProps:", craDay.day, craDay.isDayWorked)
         craDay.dayAbs = true;
       }
     }
@@ -468,7 +472,7 @@ export class CraService {
   //////////////////
 
   setEventTitle(craDay: CraDay, events: CalendarEvent[]) {
-    //////////console.log("setEventTitle:", craDay, events)
+    //////////this.logger.debug("setEventTitle:", craDay, events)
     if (craDay) {
       craDay.craDayActivities.forEach((cda, k) => {
         let title = UtilsService.getEventTitle(cda);
@@ -500,22 +504,22 @@ export class CraService {
   ////////////////
 
   getCraInDate(date: Date, myList: Cra[]): Cra {
-    console.log("getCraValidInDate date, list", date, myList)
+    this.logger.debug("getCraValidInDate date, list", date, myList)
     if (!date) {
-      console.log("getCraValidInDate date NULL")
+      this.logger.debug("getCraValidInDate date NULL")
       return null;
     }
     let dateMonth = this.utils.formatDateToMonth(date);
-    console.log("getCraValidInDate dateMonth", dateMonth)
+    this.logger.debug("getCraValidInDate dateMonth", dateMonth)
 
     let res: Cra = null;
     if (myList) {
       for (let cra of myList) {
         // if (cra.type != "CONGE") {
         let dateCra = cra.month;
-        // console.log("getCraValidInDate dateValide", dateValide)
+        // this.logger.debug("getCraValidInDate dateValide", dateValide)
         let dateCraMonth = this.utils.formatDateToMonth(dateCra);
-        // console.log("getCraValidInDate dateValideMonth", dateValideMonth)
+        // this.logger.debug("getCraValidInDate dateValideMonth", dateValideMonth)
         if (dateCra && dateMonth == dateCraMonth) {
           res = cra
           break;
@@ -523,7 +527,7 @@ export class CraService {
         // }
       }
     }
-    // console.log("getCraValidInDate res", res)
+    // this.logger.debug("getCraValidInDate res", res)
     return res;
   }
 
@@ -538,12 +542,12 @@ export class CraService {
     if (myObj && id && (!obj || isForce)) {
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.cra = data.body.result;
           if (fct) fct()
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     } else {

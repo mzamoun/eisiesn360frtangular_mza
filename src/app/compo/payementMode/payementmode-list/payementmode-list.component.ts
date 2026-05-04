@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -49,7 +52,7 @@ export class PayementmodeListComponent extends MereComponent {
         this.myList00 = this.myList;
       }, error => {
         this.addErrorFromErrorOfServer("findAll", error);
-        //console.log(error);
+        //this.logger.debug(error);
       }
     );
   }
@@ -92,7 +95,7 @@ export class PayementmodeListComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              // //console.log(error);
+              // //this.logger.debug(error);
             }
           );
       }

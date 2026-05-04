@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -5,5 +9,5 @@ import { Injectable } from '@angular/core';
 })
 export class BaseService {
 
-  constructor() { }
+  constructor(private logger: LoggerService, ) { }
 }

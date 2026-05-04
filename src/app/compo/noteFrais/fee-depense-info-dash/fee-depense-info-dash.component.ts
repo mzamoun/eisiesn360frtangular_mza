@@ -1,3 +1,6 @@
+
+
+
 import { Component } from '@angular/core';
 import { FeeDepensesGeneral } from 'src/app/model/feeDepensesGeneral';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -32,9 +35,9 @@ export class FeeDepenseInfoDashComponent extends MereComponent {
     this.noteFraisDashboardService.getDepensesGeneral().subscribe(
       data => {
         this.feeDepensesGeneral = data.body.result;
-        console.log("getGeneralInfoDepenses feeDepensesGeneral : ", this.feeDepensesGeneral)
+        this.logger.debug("getGeneralInfoDepenses feeDepensesGeneral : ", this.feeDepensesGeneral)
       }, error => {
-        console.log("getGeneralInfoDepenses error : ", error)
+        this.logger.debug("getGeneralInfoDepenses error : ", error)
         this.error = this.utils.getErrorFromErrorOfServer(error);
       }
     );

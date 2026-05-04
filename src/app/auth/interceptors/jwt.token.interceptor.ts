@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { Injectable } from '@angular/core';
 
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
@@ -13,7 +14,7 @@ import { UtilsService } from "../../service/utils.service";
 @Injectable({ providedIn: 'root' })
 export class JwtTokenInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router, private utils: UtilsService
+  constructor(private logger: LoggerService, private router: Router, private utils: UtilsService
     , private utilsIhmService: UtilsIhmService
     , private dataSharingService: DataSharingService
   ) {

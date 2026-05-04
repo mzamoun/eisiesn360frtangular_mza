@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Test2Component } from './test2.component';

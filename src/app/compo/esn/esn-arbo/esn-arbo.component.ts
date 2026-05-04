@@ -1,3 +1,6 @@
+
+
+
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Activity } from 'src/app/model/activity';
@@ -51,7 +54,7 @@ export class EsnArboComponent extends MereComponent {
   getListResp(esn: Esn) {
     this.t1 = Date.now()
 
-    console.log("t2-t1", this.t2 - this.t1)
+    this.logger.debug("t2-t1", this.t2 - this.t1)
 
     this.beforeCallServer("getListResp")
     this.esnService.refreshEsn(esn).subscribe(
@@ -59,10 +62,10 @@ export class EsnArboComponent extends MereComponent {
         this.t2 = Date.now()
         this.afterCallServer("getListResp", data)
         esn = data.body.result;
-        console.log("getListResp data : ", data)
+        this.logger.debug("getListResp data : ", data)
       }, error => {
         this.addErrorFromErrorOfServer("getListResp", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -73,10 +76,10 @@ export class EsnArboComponent extends MereComponent {
       data => {
         this.afterCallServer("getListClients", data)
         this.esn.listClient = data.body.result;
-        console.log("getListClients Esn : ", this.esn.listConsultant)
+        this.logger.debug("getListClients Esn : ", this.esn.listConsultant)
       }, error => {
         this.addErrorFromErrorOfServer("getListClients", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -87,10 +90,10 @@ export class EsnArboComponent extends MereComponent {
       data => {
         this.afterCallServer("getProjectsOfClient", data)
         cli.listProject = data.body.result;
-        console.log("getProjectsOfClient : ", cli.listProject)
+        this.logger.debug("getProjectsOfClient : ", cli.listProject)
       }, error => {
         this.addErrorFromErrorOfServer("getProjectsOfClient", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -101,10 +104,10 @@ export class EsnArboComponent extends MereComponent {
       data => {
         this.afterCallServer("getListActivityOfProject", data)
         proj.listActivity = data.body.result;
-        console.log("getListActivityOfProject : ", proj.listActivity)
+        this.logger.debug("getListActivityOfProject : ", proj.listActivity)
       }, error => {
         this.addErrorFromErrorOfServer("getListClients", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -124,7 +127,7 @@ export class EsnArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -146,7 +149,7 @@ export class EsnArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -168,7 +171,7 @@ export class EsnArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -190,7 +193,7 @@ export class EsnArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -212,7 +215,7 @@ export class EsnArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }

@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -24,7 +28,7 @@ export class ClientService {
     return this.client;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.clientUrl = environment.apiUrl + '/client/';
   }
 
@@ -41,12 +45,12 @@ export class ClientService {
   }
 
   public save(client: Client): Observable<GenericResponse> {
-    ////////////console.log("save id=" + client.id + ".");
+    ////////////this.logger.debug("save id=" + client.id + ".");
     if (client.id > 0) {
-      ////////////console.log("put update")
+      ////////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.clientUrl, client);
     } else {
-      ////////////console.log("post add")
+      ////////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.clientUrl, client);
     }
   }
@@ -70,11 +74,11 @@ export class ClientService {
     if (myObj && clientId && !obj) {
       this.findById(clientId).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.client = data.body.result;
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     }

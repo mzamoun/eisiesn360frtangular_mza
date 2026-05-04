@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -22,7 +26,7 @@ export class EsnService {
     return this.esn;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.esnUrl = environment.apiUrl + '/esn/';
     this.esnUrlPub = environment.divUrl + '/esn/';
   }
@@ -44,13 +48,13 @@ export class EsnService {
   }
 
   public save(esn: Esn, isPub : boolean = false): Observable<GenericResponse> {
-    ////////////console.log("save id=" + esn.id + ".");
+    ////////////this.logger.debug("save id=" + esn.id + ".");
     let url = isPub ? this.esnUrlPub : this.esnUrl
     if (esn.id > 0) {
-      ////////////console.log("put update")
+      ////////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(url, esn);
     } else {
-      ////////////console.log("post add")
+      ////////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(url, esn);
     }
   }
@@ -79,22 +83,22 @@ export class EsnService {
   }
 
   majEsnOnConsultant(myObj: Consultant, fct : Function = null, fctErr : Function ) {
-    console.log("majEsnOnConsultant myObj, esnId, myObj.esn : ", myObj, myObj?.esnId, myObj?.esn)
+    this.logger.debug("majEsnOnConsultant myObj, esnId, myObj.esn : ", myObj, myObj?.esnId, myObj?.esn)
     if (myObj && myObj.esnId && !myObj.esn) {
-      console.log("majEsnOnConsultant DEB find esn by id=" + myObj.esnId);
+      this.logger.debug("majEsnOnConsultant DEB find esn by id=" + myObj.esnId);
       let esnId = myObj.esnId
       let label = "majEsnOnConsultant find esn by id=" + esnId;
-      console.log(label)
+      this.logger.debug(label)
       this.findById(esnId).subscribe(
         data => {
-          console.log("majEsnOnConsultant setEsnOnConsultant : data :", data)
+          this.logger.debug("majEsnOnConsultant setEsnOnConsultant : data :", data)
           myObj.esn = data.body != null ? data.body.result : null;
-          console.log("majEsnOnConsultant setEsnOnConsultant : myObj.esn :", myObj.esn)
+          this.logger.debug("majEsnOnConsultant setEsnOnConsultant : myObj.esn :", myObj.esn)
           myObj.esnName = myObj.esn?.name
           if(fct) fct(myObj.esn)
         },
         error => {
-          console.log("majEsnOnConsultant ERROR setEsnOnConsultant consultant, err", myObj, error)
+          this.logger.debug("majEsnOnConsultant ERROR setEsnOnConsultant consultant, err", myObj, error)
           if (fctErr) fctErr(error)
         }
       );
@@ -112,11 +116,11 @@ export class EsnService {
     if (myObj && id && !obj) {
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.esn = data.body.result;
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     }
@@ -132,11 +136,11 @@ export class EsnService {
     if (myObj && id && !obj) {
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.esn = data.body.result;
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     }

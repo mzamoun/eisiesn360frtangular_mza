@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CategoryDoc } from '../model/categoryDoc';
@@ -23,7 +27,7 @@ export class CategoryDocService {
     })
   };
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.categoryDocUrl = environment.apiUrl + '/categoryDoc';
   }
 

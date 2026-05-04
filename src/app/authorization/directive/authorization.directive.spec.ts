@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { AuthorizationDirective } from './authorization.directive';
 
 describe('AuthorizationDirective', () => {

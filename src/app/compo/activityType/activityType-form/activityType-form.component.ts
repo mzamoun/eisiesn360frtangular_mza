@@ -1,3 +1,6 @@
+
+
+
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -40,17 +43,17 @@ export class ActivityTypeFormComponent extends MereComponent {
 
   setFocusName(): void {
     if (this.nameHtml && this.nameHtml.nativeElement) {
-      //console.log('focus')
+      //this.logger.debug('focus')
       this.nameHtml.nativeElement.focus();
     }
   }
 
   initByActivityType() {
 
-    ////console.log('initByActivityType')
+    ////this.logger.debug('initByActivityType')
 
     if (this.isAdd == null) {
-      //////////console.log("isAdd null")
+      //////////this.logger.debug("isAdd null")
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
     }
 
@@ -66,7 +69,7 @@ export class ActivityTypeFormComponent extends MereComponent {
       this.btnSaveTitle = this.utils.tr("Save");
       this.title = this.utils.tr("EditActivityType")
       let activityTypeP: ActivityType = this.activityTypeService.getActivityType();
-      ////console.log('activityTypeP='+activityTypeP);
+      ////this.logger.debug('activityTypeP='+activityTypeP);
 
       if (activityTypeP != null) this.myObj = activityTypeP;
       else if (this.myObj == null) this.myObj = new ActivityType();
@@ -76,7 +79,7 @@ export class ActivityTypeFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    //////////console.log("onSubmit: myObj=", this.myObj);
+    //////////this.logger.debug("onSubmit: myObj=", this.myObj);
     this.beforeCallServer("onSubmit");
     this.myObj.esn = this.myObj.esn == null ? this.getEsnCurrent() : null ;
     this.myObj.esnId = this.myObj.esn != null ? this.myObj.esn.id  : -1 ;
@@ -88,7 +91,7 @@ export class ActivityTypeFormComponent extends MereComponent {
         if (!this.isError()) this.gotoActivityTypeList()
       },
       error => {
-        //////////console.log("error:", error);
+        //////////this.logger.debug("error:", error);
         this.addErrorFromErrorOfServer("onSubmit", error);
       }
     );

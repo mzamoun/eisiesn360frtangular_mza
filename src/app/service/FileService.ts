@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
@@ -16,12 +20,12 @@ export class FileService {
 
   private myUrl: string;
 
-  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService : DataSharingService) {
+  constructor(private logger: LoggerService, private http: HttpClient, private utils: UtilsService, private dataSharingService : DataSharingService) {
     this.myUrl = environment.apiUrl + '/file/';
   }
 
     // public getNewCraOfDate(date: Date): Observable<GenericResponse> {
-    //   ////////console.log("getCraOfDate: post craUrl, date", this.craUrl, date)
+    //   ////////this.logger.debug("getCraOfDate: post craUrl, date", this.craUrl, date)
     //   return this.http.post<GenericResponse>(this.myUrl + "init", date);
     // }
 
@@ -29,7 +33,7 @@ export class FileService {
     const formData = new FormData();
     formData.append('file', file);
 
-    console.log("formData : ", formData)
+    this.logger.debug("formData : ", formData)
 
     return this.http.post<GenericResponse>(this.myUrl + "upload", formData);
   }
@@ -38,7 +42,7 @@ export class FileService {
     const formData = new FormData();
     formData.append('file', file);
 
-    console.log("formData : ", formData)
+    this.logger.debug("formData : ", formData)
 
     return this.http.post<string>(this.myUrl + "upload", formData)
 
@@ -48,7 +52,7 @@ export class FileService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    console.error('Error uploading file:', error);
+    this.logger.error('Error uploading file:', error);
     return throwError(() => new Error('File upload failed. Please try again.'));
   }
 

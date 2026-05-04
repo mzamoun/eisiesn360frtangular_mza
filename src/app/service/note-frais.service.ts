@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -29,7 +33,7 @@ export class NoteFraisService {
     return this.noteFrais;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
     this.noteFraisUrl = environment.apiUrl + '/noteFrais/';
   }
 
@@ -43,12 +47,12 @@ export class NoteFraisService {
   }
 
   public save(noteFrais: NoteFrais): Observable<GenericResponse> {
-    // //////////console.log("save id=" + noteFrais.id + ".");
+    // //////////this.logger.debug("save id=" + noteFrais.id + ".");
     if (noteFrais.id > 0) {
-      // //////////console.log("put update")
+      // //////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.noteFraisUrl, noteFrais);
     } else {
-      // //////////console.log("post add")
+      // //////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.noteFraisUrl, noteFrais);
     }
   }
@@ -76,12 +80,12 @@ export class NoteFraisService {
       if(myObj && id && !obj ) {
         this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.noteFrais = data.body.result;
           if(fct) fct()
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error )
+          this.logger.debug("ERROR label myObj, err", label, myObj, error )
         }
         );
       }else {

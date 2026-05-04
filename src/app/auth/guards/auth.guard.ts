@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
+import { LoggerService } from 'src/app/service/logger.service';
 
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 
@@ -9,7 +10,7 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: DataSharingService, private router: Router) { }
+  constructor(private logger: LoggerService, private authService: DataSharingService, private router: Router) { }
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -17,7 +18,7 @@ export class AuthGuard implements CanActivate {
 
     let url: string = state.url;
 
-    console.log("AuthGuard canActivate url=", url)
+    this.logger.debug("AuthGuard canActivate url=", url)
     
     // Routes publiques qui n'ont pas besoin d'authentification
     if (this.authService.isPublicRoute(url)) {
@@ -28,15 +29,15 @@ export class AuthGuard implements CanActivate {
   }
 
   private checkLogin(url: string): boolean {
-    //////////console.log("checkLogin url", url)
+    //////////this.logger.debug("checkLogin url", url)
     if (this.authService.isLoggedIn()) {
-      console.log("checkLogin OK url = ", url)
+      this.logger.debug("checkLogin OK url = ", url)
       // return true;
       // this.router.navigate(['/home']);
       // this.router.navigate([ '/#/'+ url ]);
       return true;
     }
-    //////////console.log("checkLogin KO")
+    //////////this.logger.debug("checkLogin KO")
     this.authService.redirectToUrl = url;
     // this.router.navigate(['/login']);
     if (this.router.url !== '/login') {

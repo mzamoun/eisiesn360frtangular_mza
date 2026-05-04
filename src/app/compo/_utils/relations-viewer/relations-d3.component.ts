@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as d3 from 'd3';
@@ -47,7 +51,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
 
   private resizeObserver: ResizeObserver | null = null;
 
-  constructor(
+  constructor(private logger: LoggerService, 
     private route: ActivatedRoute,
     private router: Router,
     private tableService: TableService
@@ -117,7 +121,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
         }
 
         setTimeout(() => {
-          console.log("ngOnChanges : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
+          this.logger.debug("ngOnChanges : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
           this.render(dataToRender.nodes, dataToRender.links);
         }, 500);
       }
@@ -185,22 +189,22 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     const relations = this.tableService.relationsData;
     const dataExists = relations && Array.isArray(relations) && relations.length > 0;
 
-    console.log(fct + " : relations : ", relations, ", dataExists : ", dataExists)
+    this.logger.debug(fct + " : relations : ", relations, ", dataExists : ", dataExists)
 
     if (!dataExists) {
       this.tableService.openRelations(
         (res: any[]) => {
-          console.log(fct + " : res : ", res)
+          this.logger.debug(fct + " : res : ", res)
           // le service doit avoir mis à jour relationsData ; on accepte res aussi
           const currentRelations = (res && Array.isArray(res) && res.length > 0) ? res : (this.tableService.relationsData || []);
-          console.log(fct + " : currentRelations : ", currentRelations)
+          this.logger.debug(fct + " : currentRelations : ", currentRelations)
 
           // Supporte backend qui renvoie majuscules: map automatique
           // const mapped = this.mapRelationsKeys(currentRelations);
 
           // const targetId = this.isolatedTable || this.selectedTable || this.focusedTable;
           const targetId = this.isolatedTable || null;
-          console.log(fct + " : targetId : ", targetId)
+          this.logger.debug(fct + " : targetId : ", targetId)
 
           // const dataToRender = targetId ? this.filterGraph(mapped, targetId) : this.buildGraph(mapped);
           // this.render(dataToRender.nodes, dataToRender.links);
@@ -211,12 +215,12 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
             dataToRender = this.buildGraph(currentRelations); // <-- TOUTES LES TABLES
           }
 
-          console.log(fct + " : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
+          this.logger.debug(fct + " : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
           this.render(dataToRender.nodes, dataToRender.links);
 
         },
         (err: any) => {
-          console.error(fct + ' Erreur récupération relations', err);
+          this.logger.error(fct + ' Erreur récupération relations', err);
           // même si erreur, tenter d'afficher ce qu'on a
           const fallback = this.tableService.relationsData || [];
           const mapped = this.mapRelationsKeys(fallback);
@@ -230,7 +234,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
       const targetId = this.isolatedTable || this.focusedTable;
       const dataToRender = targetId ? this.filterGraph(mapped, targetId) : this.buildGraph(mapped);
 
-      console.log(fct + " : else : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
+      this.logger.debug(fct + " : else : Av call render : dataToRender : ", dataToRender, "targetId : ", targetId)
       this.render(dataToRender.nodes, dataToRender.links);
     }
   }
@@ -253,9 +257,9 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
    */
   private buildGraph(relations: Relation[]) {
     let fct ="buildGraph"
-    console.log(fct + " : relations : ", relations)
+    this.logger.debug(fct + " : relations : ", relations)
     if (!Array.isArray(relations)) {
-      console.warn(fct + " : Relations data is not an array, returning empty graph.");
+      this.logger.warn(fct + " : Relations data is not an array, returning empty graph.");
       return { nodes: [], links: [] };
     }
 
@@ -263,14 +267,14 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     const links: any[] = [];
 
     relations.forEach(r => {
-      console.log(fct + " : r : ", r)
+      this.logger.debug(fct + " : r : ", r)
       const src = r.table;
       const tgt = r.target_table;
 
       if (!nodeMap.has(src)) nodeMap.set(src, { id: src, tables: [src], columns: [] });
       if (!nodeMap.has(tgt)) nodeMap.set(tgt, { id: tgt, tables: [tgt], columns: [] });
 
-      console.log(fct + " : nodeMap : ", nodeMap)
+      this.logger.debug(fct + " : nodeMap : ", nodeMap)
 
       // link: source -> target
       let link = {
@@ -282,12 +286,12 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
         target_pk: r.target_pk,
         type: 'fk'
       }
-      console.log(fct + " : push link : ", link)
+      this.logger.debug(fct + " : push link : ", link)
       links.push(link);
     });
 
     const nodes = Array.from(nodeMap.values());
-    console.log(fct + " : nodes : ", nodes , ", links : ", links )
+    this.logger.debug(fct + " : nodes : ", nodes , ", links : ", links )
     return { nodes, links };
   }
 
@@ -295,11 +299,11 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
 
     let fct = "render"
 
-    console.log(fct + ' nodes:', nodes.length, 'links:', links.length);
+    this.logger.debug(fct + ' nodes:', nodes.length, 'links:', links.length);
 
     // Si la liste des nœuds est vide, on ne fait rien
     if (!nodes || nodes.length === 0) {
-      console.log(fct + ' END')
+      this.logger.debug(fct + ' END')
       this.linkGroup.selectAll('*').remove();
       this.nodeGroup.selectAll('*').remove();
       if (this.simulation) this.simulation.stop();
@@ -307,7 +311,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     }
 
     const targetId = this.isolatedTable || null;
-    console.log(fct + ' targetId : ', targetId)
+    this.logger.debug(fct + ' targetId : ', targetId)
 
     const centerX = this.width / 2;
     const centerY = this.height * 0.1;
@@ -419,9 +423,9 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     // const this = this;
 
     node.on('dblclick', (event: any, d: any) => {
-      console.log("dblclick node : ", node)
-      console.log("dblclick d : ", d)
-      console.log("dblclick isolatedTable : ", this.isolatedTable)
+      this.logger.debug("dblclick node : ", node)
+      this.logger.debug("dblclick d : ", d)
+      this.logger.debug("dblclick isolatedTable : ", this.isolatedTable)
 
       if (this.isolatedTable === d.id) {
         this.isolatedTable = null;
@@ -439,7 +443,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
         dataToRender = this.buildGraph(relationsData);
       }
 
-      console.log("Av call render : dataToRender : ", dataToRender, "targetIdToFilter : ", targetIdToFilter)
+      this.logger.debug("Av call render : dataToRender : ", dataToRender, "targetIdToFilter : ", targetIdToFilter)
 
       this.render(dataToRender.nodes, dataToRender.links);
     });
@@ -517,7 +521,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     this.simulation.alpha(1).restart();
     // this.fit();
 
-    console.log(fct + " : END ")
+    this.logger.debug(fct + " : END ")
   }
 
   /**
@@ -525,7 +529,7 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
    */
   private filterGraph(allRelations: Relation[], targetTableId: string) {
     let fct = "filterGraph"
-    console.log(fct + " : allRelations : ", allRelations, "targetTableId : ", targetTableId)
+    this.logger.debug(fct + " : allRelations : ", allRelations, "targetTableId : ", targetTableId)
     if (!targetTableId || !Array.isArray(allRelations)) {
       return this.buildGraph(allRelations);
     }
@@ -533,14 +537,14 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
     const nodesToShow = new Set<string>();
 
     const filteredLinks = allRelations.filter(r => {
-      console.log(fct + " : r : ", r )
+      this.logger.debug(fct + " : r : ", r )
       if (r.table === targetTableId || r.target_table === targetTableId) {
         nodesToShow.add(r.table);
         nodesToShow.add(r.target_table);
-        console.log(fct + " return true . r : ", r )
+        this.logger.debug(fct + " return true . r : ", r )
         return true;
       }
-      console.log(fct + " return false . r : ", r )
+      this.logger.debug(fct + " return false . r : ", r )
       return false;
     });
 
@@ -548,17 +552,17 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
       id: id,
       tables: [id]
     }));
-    console.log(fct + " filteredNodes : ", filteredNodes )
+    this.logger.debug(fct + " filteredNodes : ", filteredNodes )
 
     const validNodeIds = new Set(filteredNodes.map(n => n.id));
-    console.log(fct + " validNodeIds : ", validNodeIds )
+    this.logger.debug(fct + " validNodeIds : ", validNodeIds )
 
     const finalLinks = filteredLinks.map(l => ({
       ...l,
       source: l.table,
       target: l.target_table
     })).filter(l => validNodeIds.has(l.source) && validNodeIds.has(l.target));
-    console.log(fct + " finalLinks : ", finalLinks )
+    this.logger.debug(fct + " finalLinks : ", finalLinks )
 
     return { nodes: filteredNodes, links: finalLinks };
   }

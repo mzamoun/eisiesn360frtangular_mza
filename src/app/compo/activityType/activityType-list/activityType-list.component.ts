@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Esn } from 'src/app/model/esn';
@@ -42,7 +45,7 @@ export class ActivityTypeListComponent extends MereComponent {
 
   ngOnInit() {
 
-    console.log("ngOnInit DEB")
+    this.logger.debug("ngOnInit DEB")
 
     let mythis = this;
     // this.dataSharingService.addEsnInConsultant(this.userConnected)
@@ -51,63 +54,63 @@ export class ActivityTypeListComponent extends MereComponent {
       this.userConnected = this.dataSharingService.userConnected
       this.esnCurrent = this.userConnected.esn ;
 
-      console.log("userconnected : ", this.userConnected)
-      console.log("esnCurrent of userconnected : ", this.userConnected.esn)
+      this.logger.debug("userconnected : ", this.userConnected)
+      this.logger.debug("esnCurrent of userconnected : ", this.userConnected.esn)
       // this.esnCurrent = this.getEsnCurrent();
-      // console.log("esnCurrent 1 : ", this.esnCurrent)
+      // this.logger.debug("esnCurrent 1 : ", this.esnCurrent)
       this.findAll();
       this.findAllEsn();
-      console.log("esnCurrent  : ", this.esnCurrent)
+      this.logger.debug("esnCurrent  : ", this.esnCurrent)
   
       // this.refreshUserConnected();
   
-      console.log("ngOnInit FIN")
+      this.logger.debug("ngOnInit FIN")
     }, 2000);
 
   }
 
   ngAfterViewInit(): void {
-    console.log("ngAfterViewInit DEB")
-    console.log("userconnected : ", this.userConnected)
-    console.log("esnCurrent of userconnected : ", this.userConnected.esn)
+    this.logger.debug("ngAfterViewInit DEB")
+    this.logger.debug("userconnected : ", this.userConnected)
+    this.logger.debug("esnCurrent of userconnected : ", this.userConnected.esn)
     this.esnCurrent = this.getEsnCurrent();
-    console.log("esnCurrent  : ", this.esnCurrent)
-    console.log("ngAfterViewInit FIN")
+    this.logger.debug("esnCurrent  : ", this.esnCurrent)
+    this.logger.debug("ngAfterViewInit FIN")
   }
 
   ngAfterContentInit(): void {
-    console.log("ngAfterContentInit DEB")
-    console.log("userconnected : ", this.userConnected)
-    console.log("esnCurrent of userconnected : ", this.userConnected.esn)
+    this.logger.debug("ngAfterContentInit DEB")
+    this.logger.debug("userconnected : ", this.userConnected)
+    this.logger.debug("esnCurrent of userconnected : ", this.userConnected.esn)
     this.esnCurrent = this.getEsnCurrent();
-    console.log("esnCurrent  : ", this.esnCurrent)
-    console.log("ngAfterContentInit FIN")
+    this.logger.debug("esnCurrent  : ", this.esnCurrent)
+    this.logger.debug("ngAfterContentInit FIN")
   }
 
   refreshUserConnected() {
-    console.log("userconnected 1: ", this.userConnected)
+    this.logger.debug("userconnected 1: ", this.userConnected)
     if(this.userConnected.esn == null && this.userConnected.role != 'ADMIN') {
       this.beforeCallServer("refreshUserConnected");
       this.consultantService.getEsnOfConsId(this.userConnected.id).subscribe(
         data => {
           this.afterCallServer("refreshUserConnected", data)
-          console.log(JSON.stringify(data))
+          this.logger.debug(JSON.stringify(data))
           
           this.userConnected.esn = data.body.result;
           this.setUserConnected(this.userConnected)
 
           //////
-          console.log("userconnected 2: ", this.userConnected)
+          this.logger.debug("userconnected 2: ", this.userConnected)
           this.esnCurrent = this.getEsnCurrent();
-          console.log("esnCurrent 1 : ", this.esnCurrent)
+          this.logger.debug("esnCurrent 1 : ", this.esnCurrent)
           this.findAll();
           this.findAllEsn();
-          console.log("esnCurrent 2 : ", this.esnCurrent)
+          this.logger.debug("esnCurrent 2 : ", this.esnCurrent)
           //////
   
         }, error => {
           this.addErrorFromErrorOfServer("refreshUserConnected", error);
-          ////console.log(error);
+          ////this.logger.debug(error);
           // this.addError(error)
         }
       );
@@ -131,10 +134,10 @@ export class ActivityTypeListComponent extends MereComponent {
         this.myList = data.body.result;
         this.myList00 = this.myList;
         // this.filterByEsnCurrent();
-        console.log("findAll myList : ", this.myList)
+        this.logger.debug("findAll myList : ", this.myList)
       }, error => {
         this.addErrorFromErrorOfServer(label, error);
-        //console.log(error);
+        //this.logger.debug(error);
       }
     );
   }
@@ -165,7 +168,7 @@ export class ActivityTypeListComponent extends MereComponent {
 				this.esnList = data.body.result;
 			}, error => {
 	      this.addErrorFromErrorOfServer(label, error);
-			 	////console.log(error);
+			 	////this.logger.debug(error);
 		 	}
 		 );
 	}
@@ -196,7 +199,7 @@ export class ActivityTypeListComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
 			}
@@ -210,7 +213,7 @@ export class ActivityTypeListComponent extends MereComponent {
   }
 
   showForm(activityType: ActivityType) {
-    ////////////console.log("showForm:", activityType)
+    ////////////this.logger.debug("showForm:", activityType)
     this.myObj = activityType;
     if (this.activityTypeDetail != null) {
       this.activityTypeDetail.myObj = this.myObj

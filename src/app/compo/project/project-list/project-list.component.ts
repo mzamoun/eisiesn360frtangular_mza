@@ -67,10 +67,10 @@ export class ProjectListComponent extends MereComponent {
             this.myList00 = this.myList;
           }, 5000
         )
-        console.log("findAll : myList : ", this.myList);
+        this.logger.debug("findAll : myList : ", this.myList);
       }, error => {
         this.addErrorFromErrorOfServer("findAll", error);
-        ////console.log(error);
+        ////this.logger.debug(error);
       }
     );
   }
@@ -100,7 +100,7 @@ export class ProjectListComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }

@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 
 export interface PasswordValidationResult {
@@ -10,7 +14,7 @@ export interface PasswordValidationResult {
 })
 export class PasswordValidatorService {
 
-  constructor() { }
+  constructor(private logger: LoggerService, ) { }
 
   /**
    * Valide un password selon les critères:

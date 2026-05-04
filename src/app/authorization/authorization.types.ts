@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 /**
  * Copyright (C) 2020-@year@ by Eisi Cnsulting.
  * All rights reserved.

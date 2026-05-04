@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
@@ -16,7 +17,7 @@ const API_URL = environment.apiUrl;
 })
 export class TokenService {
 
-  constructor(private http: HttpClient) {
+  constructor(private logger: LoggerService, private http: HttpClient) {
   }
 
   public getResponseHeaders(credentials: Credentials): Observable<HttpResponse<any>> {

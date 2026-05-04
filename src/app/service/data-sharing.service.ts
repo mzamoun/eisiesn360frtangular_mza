@@ -1,4 +1,7 @@
-﻿import { Injectable, Injector } from '@angular/core';
+import { LoggerService } from './logger.service';
+
+
+import { Injectable, Injector } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from "rxjs";
@@ -32,6 +35,7 @@ import { ClientService } from './client.service';
 // CraService importé en lazy via Injector pour éviter la dépendance circulaire
 import { CraService } from './cra.service';
 import { EsnService } from './esn.service';
+
 import { MsgService } from './msg.service';
 import { UtilsIhmService } from './utilsIhm.service';
 
@@ -149,7 +153,8 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     return this.injector.get(CraService);
   }
 
-  constructor(public router: Router
+  constructor(
+    public router: Router
     , private injector: Injector
     , private utils: UtilsService
     , private utilsIhmService: UtilsIhmService
@@ -159,9 +164,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     , private clientService: ClientService
     , private tokenService: TokenService
     , private http: HttpClient
+    , public logger: LoggerService
     , private msgService: MsgService
   ) {
-    console.log("data-sharing constructor deb")
+    this.logger.debug("data-sharing constructor deb")
     this.notificationUrl = environment.apiUrl + "/notifications";
     this.getCurrentUserFromLocaleStorage()
 
@@ -183,7 +189,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   gotoLogin() {
-    console.log("navigate to login ")
+    this.logger.debug("navigate to login ")
     // this.router.navigate(['/login']);
     if (this.router.url !== '/login') {
       this.router.navigate(['/login']);
@@ -193,7 +199,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   // public isPublicRoute(url: string): boolean {
   //   // Vérifie si l'URL correspond à une route publique
-  //   console.log("isPublicRoute url=", url)
+  //   this.logger.debug("isPublicRoute url=", url)
   //   for (let route of this.PUBLIC_ROUTES) {
   //     if (route === '/' || route === '') {
   //       if (url === route) {
@@ -242,12 +248,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   gotoMyProfile() {
-    console.log("navigate to myProfile ")
+    this.logger.debug("navigate to myProfile ")
     this.router.navigate(['/my-profile'])
   }
 
   gotoMyHome() {
-    console.log("navigate to home ")
+    this.logger.debug("navigate to home ")
     this.navigateToHomeWhenReady();
   }
 
@@ -284,7 +290,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       this.isUserLoggedInFct.next(false);
     }
     let userStr = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER);
-    // console.log("getCurrentUserFromLocaleStorage, userStr", userStr)
+    // this.logger.debug("getCurrentUserFromLocaleStorage, userStr", userStr)
     if (userStr) {
       // DataSharingService.currentUser.next(JSON.parse(userStr));
       this.setUserConnected(JSON.parse(userStr))
@@ -342,9 +348,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   addError(error: MyError) {
-    console.log("DS addError error", error)
+    this.logger.debug("DS addError error", error)
     if (!error || !error.msg) return
-    //////console.log("DS addError msg", error.msg ) 
+    //////this.logger.debug("DS addError msg", error.msg ) 
     if (error.title) {
       let title = error.title.toUpperCase();
       if (title == "ERREUR 401" || title == "ERROR 401") {
@@ -436,9 +442,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   showCra(cra: Cra) {
     let label = "navigate to cra_form with cra id=" + cra.id
-    console.log(label + " START - cra: ", cra)
+    this.logger.debug(label + " START - cra: ", cra)
     if (!cra) {
-      console.log(label + " ERROR - cra NULL !", cra)
+      this.logger.debug(label + " ERROR - cra NULL !", cra)
       return
     }
 
@@ -446,20 +452,20 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.isAdd = "";
     this.typeCra = cra.type;
 
-    console.log(label + " avant navigate to cra_form", cra)
+    this.logger.debug(label + " avant navigate to cra_form", cra)
     this.addInfo(label)
     this.router.navigate(["/cra_form"]).then(
       success => {
         this.delInfo(label)
-        console.log(label + " navigate to cra_form success", cra)
+        this.logger.debug(label + " navigate to cra_form success", cra)
       },
       error => {
         this.delInfo(label)
-        console.log(label + " ERROR - navigate to cra_form", cra, error)
+        this.logger.debug(label + " ERROR - navigate to cra_form", cra, error)
       }
     );
 
-    console.log(label + " END - navigate to cra_form", cra)
+    this.logger.debug(label + " END - navigate to cra_form", cra)
   }
 
   showFee(fee: NoteFrais) {
@@ -467,10 +473,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.isAdd = "";
     this.router.navigate(["/notefrais_form"]).then(
       success => {
-        console.log("navigate to notefrais_form success", fee)
+        this.logger.debug("navigate to notefrais_form success", fee)
       },
       error => {
-        console.log("ERROR - navigate to notefrais_form", fee, error)
+        this.logger.debug("ERROR - navigate to notefrais_form", fee, error)
       }
     );
   }
@@ -601,14 +607,14 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.tokenService.getResponseHeaders(credentials)
       .subscribe(res => {
         this.delInfo(label)
-        // console.log("++++++++++++++++login:", credentials, res);
+        // this.logger.debug("++++++++++++++++login:", credentials, res);
         if (caller) {
           caller.info = "Info : res=" + JSON.stringify(res)
         }
 
         if (res.status == 200) {
           this.authorization = res.headers.get('authorization');
-          // //////////console.log("login: authorization: ", this.authorization);
+          // //////////this.logger.debug("login: authorization: ", this.authorization);
           this.saveToken(this.authorization);
           this.isUserLoggedInFct.next(true);
 
@@ -625,14 +631,14 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         this.delInfo(label)
         if (caller) {
           caller.error = "ERROR : error=" + JSON.stringify(error)
-          //////console.log("error:", credentials, error);
+          //////this.logger.debug("error:", credentials, error);
         }
       }
       );
   }
 
   public logout(): void {
-    console.log("DataSharingService logout() called");
+    this.logger.debug("DataSharingService logout() called");
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
     sessionStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER);
@@ -641,12 +647,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.isUserLoggedInFct.next(false);
     this.setUserConnected(null)
     this.router.navigate(["/login"]);
-    console.log("DataSharingService logout() finished");
+    this.logger.debug("DataSharingService logout() finished");
   }
 
   findConsultantByUsername(username: string, fctOk: Function, fctKo: Function) {
     let user: Consultant = null;
-    console.log("data-sharing : findConsultantByUsername username:", username)
+    this.logger.debug("data-sharing : findConsultantByUsername username:", username)
     this.consultantService.findConsultantByUsername(username).subscribe(
       data => {
         if (data && data.body) {
@@ -670,7 +676,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    */
   getConsultantConnectedAndHisInfos(username: string, caller: any) {
 
-    console.log("getConsultantConnectedAndHisInfos username:", username)
+    this.logger.debug("getConsultantConnectedAndHisInfos username:", username)
 
     this.consultantService.getConsultantAndHisInfos(username).subscribe(
       data => {
@@ -695,15 +701,15 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
             this.findConsultantByUsername(this.userConnected.adminConsultantUsernameFct,
               (data, user) => {
-                console.log("findConsultantByUsername data : ", data)
-                console.log("findConsultantByUsername user : ", user)
+                this.logger.debug("findConsultantByUsername data : ", data)
+                this.logger.debug("findConsultantByUsername user : ", user)
                 this.majAdminConsultantFct(this.userConnected, user);
                 this.userConnected.adminConsultant = user
-                console.log("findConsultantByUsername userConnected.adminConsultant : ", this.userConnected.adminConsultant)
+                this.logger.debug("findConsultantByUsername userConnected.adminConsultant : ", this.userConnected.adminConsultant)
                 this.saveTokenUser(this.userConnected);
               },
               (error) => {
-                console.log("findConsultantByUsername: error ", error);
+                this.logger.debug("findConsultantByUsername: error ", error);
                 if (caller) {
                   caller.error = "ERROR : error=" + JSON.stringify(error)
                 }
@@ -712,7 +718,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           }
         }
       }, error => {
-        console.log("findConsultantByUsername: error ", error);
+        this.logger.debug("findConsultantByUsername: error ", error);
         if (caller) {
           caller.error = "ERROR : error=" + JSON.stringify(error)
         }
@@ -731,12 +737,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   //     data => {
   //       if (data) {
   //         this.setUserConnected(data.body.result)
-  //         console.log("findConsultantByUsername userConnected : ", this.userConnected)
+  //         this.logger.debug("findConsultantByUsername userConnected : ", this.userConnected)
   //         this.esnCurrent = this.userConnected?.esn 
   //         this.idEsnCurrent = this.esnCurrent?.id 
 
   //         this.majEsnOnConsultant()
-  //         console.log("findConsultantByUsername userConnected.esn : ", this.userConnected.esn)
+  //         this.logger.debug("findConsultantByUsername userConnected.esn : ", this.userConnected.esn)
   //         if (caller) {
   //           caller.info = "Info : res=" + JSON.stringify(this.userConnected.fullName)
   //         }
@@ -746,15 +752,15 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   //           this.findConsultantByUsername(this.userConnected.adminConsultantUsernameFct,
   //             (data, user) => {
-  //               console.log("findConsultantByUsername data : ", data)
-  //               console.log("findConsultantByUsername user : ", user)
+  //               this.logger.debug("findConsultantByUsername data : ", data)
+  //               this.logger.debug("findConsultantByUsername user : ", user)
   //               this.majAdminConsultantFct(this.userConnected, user);
   //               this.userConnected.adminConsultant = user
-  //               console.log("findConsultantByUsername userConnected.adminConsultant : ", this.userConnected.adminConsultant)
+  //               this.logger.debug("findConsultantByUsername userConnected.adminConsultant : ", this.userConnected.adminConsultant)
   //               this.saveTokenUser(this.userConnected);
   //             },
   //             (error) => {
-  //               console.log("findConsultantByUsername: error ", error);
+  //               this.logger.debug("findConsultantByUsername: error ", error);
   //               if (caller) {
   //                 caller.error = "ERROR : error=" + JSON.stringify(error)
   //               }
@@ -766,7 +772,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   //         this.router.navigate(['/home']);
   //       }
   //     }, error => {
-  //       console.log("findConsultantByUsername: error ", error);
+  //       this.logger.debug("findConsultantByUsername: error ", error);
   //       if (caller) {
   //         caller.error = "ERROR : error=" + JSON.stringify(error)
   //       }
@@ -784,7 +790,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   private saveToken(token: string) {
-    ////////////console.log("saveToken: token=", token);
+    ////////////this.logger.debug("saveToken: token=", token);
     sessionStorage.setItem(UtilsService.TOKEN_STORAGE_KEY, token);
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_KEY);
   }
@@ -799,18 +805,18 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         token = legacyToken;
       }
     }
-    ////////////console.log("getToken:", token);
+    ////////////this.logger.debug("getToken:", token);
     return token;
   }
 
   saveTokenUser(user: Consultant) {
     localStorage.setItem(UtilsService.TOKEN_STORAGE_USER, JSON.stringify(user));
     localStorage.setItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED, "true");
-    //////////console.log("saveTokenUser:", JSON.stringify(user));
+    //////////this.logger.debug("saveTokenUser:", JSON.stringify(user));
   }
 
   public isLoggedIn(): boolean {
-    // console.log("isLoggin this.getToken() = ", this.getToken())
+    // this.logger.debug("isLoggin this.getToken() = ", this.getToken())
     return this.getToken() != null;
   }
 
@@ -877,7 +883,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   majConsultantInCra(cra: Cra, fct: Function = null) {
 
-    // console.log("majConsultantInCra cra : ", cra);
+    // this.logger.debug("majConsultantInCra cra : ", cra);
     if (cra == null) {
       return;
     }
@@ -896,12 +902,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             consul = data.body.result;
             this.consultantService.mapConsul[consultantId] = consul;
             cra.consultant = consul;
-            console.log("majCra act : ", consul);
-            console.log("majCra listCra : ", this.listCraSource.value);
+            this.logger.debug("majCra act : ", consul);
+            this.logger.debug("majCra listCra : ", this.listCraSource.value);
             this.consultantService.majAdminConsultant(cra.consultant)
             if (fct) fct()
           }, error => {
-            console.log("majCra ERROR : ", error);
+            this.logger.debug("majCra ERROR : ", error);
           }
         );
       }
@@ -913,7 +919,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   majConsultantInActivity(activity: Activity, fct: Function) {
 
-    // console.log("majConsultantInActivity activity : ", activity);
+    // this.logger.debug("majConsultantInActivity activity : ", activity);
     if (activity == null) {
       return;
     }
@@ -932,11 +938,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             consul = data.body.result;
             this.consultantService.mapConsul[consultantId] = consul;
             activity.consultant = consul;
-            console.log("majActivity act : ", consul);
+            this.logger.debug("majActivity act : ", consul);
             this.consultantService.majAdminConsultant(activity.consultant)
             if (fct) fct(activity)
           }, error => {
-            console.log("majActivity ERROR : ", error);
+            this.logger.debug("majActivity ERROR : ", error);
           }
         );
       }
@@ -957,7 +963,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   majActivityInCraDayActivity(craDayActivities: CraDayActivity) {
 
-    // console.log("majActivityInCraDayActivity craDayActivities : ", craDayActivities);
+    // this.logger.debug("majActivityInCraDayActivity craDayActivities : ", craDayActivities);
     if (craDayActivities == null) {
       return;
     }
@@ -974,10 +980,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             act = data.body.result;
             this.mapAct[activityId] = act;
             craDayActivities.activity = act;
-            // console.log("majListCra act : ", act);
-            // console.log("majListCra listCra : ", this.listCra);
+            // this.logger.debug("majListCra act : ", act);
+            // this.logger.debug("majListCra listCra : ", this.listCra);
           }, error => {
-            console.log("majListCra ERROR : ", error);
+            this.logger.debug("majListCra ERROR : ", error);
           }
         );
       }
@@ -1039,7 +1045,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     const cached = this.getListNotifications() || [];
 
     if (this.isCallNotifications) {
-      console.log('fetchNotificationsWithCooldown: appel en cours, retour du cache');
+      this.logger.debug('fetchNotificationsWithCooldown: appel en cours, retour du cache');
       return of(cached);
     }
 
@@ -1050,7 +1056,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.isCallNotifications = true;
     this.nbCallNotifications++;
     this.lastNotificationsFetchTs = now;
-    console.log('fetchNotificationsWithCooldown #', this.nbCallNotifications);
+    this.logger.debug('fetchNotificationsWithCooldown #', this.nbCallNotifications);
 
     return this.getNotificationsFromServer().pipe(
       tap((resp) => {
@@ -1059,11 +1065,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         this.majListNotifications();
         this.isCallNotifications = false;
         this.lastNotificationsFetchTs = Date.now();
-        console.log('fetchNotificationsWithCooldown: chargées, count =', notifications.length);
+        this.logger.debug('fetchNotificationsWithCooldown: chargées, count =', notifications.length);
       }),
       map((resp) => resp?.body?.result || []),
       catchError((error) => {
-        console.error('fetchNotificationsWithCooldown: erreur', error);
+        this.logger.error('fetchNotificationsWithCooldown: erreur', error);
         this.isCallNotifications = false;
         this.lastNotificationsFetchTs = Date.now();
         return of(cached);
@@ -1126,7 +1132,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
                 notif.cra = data.body.result
                 this.majCra(notif.cra);
               }, error => {
-                console.error("majListNotifications majCra craId=" + craId, error);
+                this.logger.error("majListNotifications majCra craId=" + craId, error);
               }
             )
           }
@@ -1136,7 +1142,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   getCraInListCraById(craId: number) {
-    // console.log("getCraInListCraById : craId, this.listCra = ", craId, this.listCra)
+    // this.logger.debug("getCraInListCraById : craId, this.listCra = ", craId, this.listCra)
     const list = this.listCraSource.value;
     if (list) {
       for (let cra of list) {
@@ -1162,7 +1168,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.addNotificationServer(notification).subscribe((data) => {
       this.getNotifications(fctOk, fctKo)
     }, error => {
-      console.error("add notification error", error);
+      this.logger.error("add notification error", error);
       if (fctKo) fctKo(error);
     })
   }
@@ -1179,7 +1185,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.saveNotificationServer(notification).subscribe((data) => {
       this.getNotifications(fctOk, fctKo)
     }, error => {
-      console.error("save notification error", error);
+      this.logger.error("save notification error", error);
       if (fctKo) fctKo(error);
     })
   }
@@ -1196,19 +1202,19 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.deleteNotificationServer(id).subscribe((data) => {
       this.getNotifications(fctOk, fctKo)
     }, error => {
-      console.error("delete notification error id=" + id, error);
+      this.logger.error("delete notification error id=" + id, error);
       if (fctKo) fctKo(error);
     })
   }
 
   public deleteNotificationsOfConsultant(consultantId: number, fctOk: Function, fctKo: Function) {
     let label = "deleteNotificationsOfConsultant consultantId=" + consultantId
-    console.log(label, "START")
+    this.logger.debug(label, "START")
     this.http.delete<GenericResponse>(this.notificationUrl + "/deleteByConsultantId/" + consultantId).subscribe((data) => {
-      console.log(label, "deleteByConsultantId success", data)
+      this.logger.debug(label, "deleteByConsultantId success", data)
       this.getNotifications(fctOk, fctKo)
     }, error => {
-      console.error(label, "deleteByConsultantId error consultantId=" + consultantId, error);
+      this.logger.error(label, "deleteByConsultantId error consultantId=" + consultantId, error);
       if (fctKo) fctKo(error);
     })
   }
@@ -1217,11 +1223,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     let label = "deleteNotifications"
     this.addInfo(label)
     this.http.delete<GenericResponse>(this.notificationUrl + "/deleteAllByToUsername/" + this.getLastUserName()).subscribe((data) => {
-      console.log(label, "deleteAll success", data)
+      this.logger.debug(label, "deleteAll success", data)
       this.delInfo(label)
       this.getNotifications(fctOk, fctKo)
     }, error => {
-      console.error(label, "deleteAll error", error);
+      this.logger.error(label, "deleteAll error", error);
       this.delInfo(label)
       if (fctKo) fctKo(error);
     })
@@ -1239,22 +1245,22 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
   public majClientInProject(p: Project, fct: Function = null) {
     let cond = p && !p.client && p.clientId
-    console.log("majClientInProject : cond, p, p.client, p.clientId", cond, p, !p.client, p.clientId)
+    this.logger.debug("majClientInProject : cond, p, p.client, p.clientId", cond, p, !p.client, p.clientId)
     if (p && !p.client && p.clientId) {
       this.clientService.findById(p.clientId).subscribe(
         data => {
           p.client = data.body.result;
-          console.log("maj client in project p.client : ", p.client)
+          this.logger.debug("maj client in project p.client : ", p.client)
           if (fct) fct()
         }, error => {
-          console.log("majCra ERROR : ", error);
+          this.logger.debug("majCra ERROR : ", error);
         }
       );
     }
   }
 
   public majClientInProjectList(list: Project[]) {
-    console.log("majClientInProjectList list : ", list)
+    this.logger.debug("majClientInProjectList list : ", list)
     if (list) {
       for (let p of list) {
         this.majClientInProject(p);
@@ -1297,10 +1303,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
               `;
 
     let label2 = "sendMailSimple"
-    console.log("goto " + label2)
+    this.logger.debug("goto " + label2)
     this.msgService.sendMailSimple(mail, this.IsAddEsnAndResp).subscribe(
       data => {
-        console.log(label2 + " data : ", data)
+        this.logger.debug(label2 + " data : ", data)
         if (fctOk) fctOk(data, to)
       },
       error => {
@@ -1348,20 +1354,20 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.respEsnSaved.password = this.passRespEsnSaved;
 
     // 🔹 Envoi du mail
-    console.log("goto " + label);
+    this.logger.debug("goto " + label);
 
     this.msgService.sendMailSimple(mail, this.IsAddEsnAndResp).subscribe(
       (data) => {
-        console.log(label + " data : ", data);
+        this.logger.debug(label + " data : ", data);
         // insertion du code de validation en base, lié au respEsnSaved et avec une date d'expiration 
         this.consultantService.saveCodeEmailToValidate(this.respEsnSaved, codeEmailToValidate).subscribe(
           (dataSave) => {
-            console.log("saveCodeEmailToValidate data : ", dataSave);
+            this.logger.debug("saveCodeEmailToValidate data : ", dataSave);
 
             if (fctOk) fctOk(data, respEsnMail, codeEmailToValidate);
 
           }, (errorSave) => {
-            console.error("saveCodeEmailToValidate error : ", errorSave);
+            this.logger.error("saveCodeEmailToValidate error : ", errorSave);
 
             this.errorsSource.value.push(new MyError("Erreur lors de l'enregistrement du code de validation d'email.", JSON.stringify(errorSave)));
           }
@@ -1369,7 +1375,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
       },
       (error) => {
-        console.error(label + " error : ", error);
+        this.logger.error(label + " error : ", error);
         if (fctKo) fctKo(error);
       }
     );
@@ -1381,13 +1387,13 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   sendResetPasswordEmail(email: string, callbacks: any): void {
     const label = "sendResetPasswordEmail";
 
-    console.log(label + ": START - Email: " + email);
+    this.logger.debug(label + ": START - Email: " + email);
 
     // Générer un code unique de réinitialisation
     const codeResetPassword = this.utils.generateRandomCode(32);
     const resetPasswordUrl = `${environment.urlFront}/#/resetPassword/${codeResetPassword}`;
 
-    console.log(label + ": Code de reset généré");
+    this.logger.debug(label + ": Code de reset généré");
 
     // Construction du mail
     const mail = new Mail();
@@ -1404,13 +1410,13 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     L'équipe <strong>ESN360</strong><br>
   `;
 
-    console.log(label + ": Mail construit, envoi en cours...");
+    this.logger.debug(label + ": Mail construit, envoi en cours...");
 
     // Envoi du mail
     this.msgService.sendMailSimple(mail, true).subscribe(
       (data) => {
-        console.log(label + ": ✅ Mail envoyé avec succès");
-        console.log(label + ": Response: ", data);
+        this.logger.debug(label + ": ✅ Mail envoyé avec succès");
+        this.logger.debug(label + ": Response: ", data);
 
         // Sauvegarder le code de reset en base de données lié à l'email
         this.consultantService.saveCodeResetPassword(email, codeResetPassword,
@@ -1431,8 +1437,8 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         );
       },
       (error) => {
-        console.error(label + ": ❌ Erreur lors de l'envoi du mail");
-        console.error(label + ": Error: ", error);
+        this.logger.error(label + ": ❌ Erreur lors de l'envoi du mail");
+        this.logger.error(label + ": Error: ", error);
 
         this.errorsSource.value.push(new MyError(
           "❌ Erreur lors de l'envoi du mail de réinitialisation.",

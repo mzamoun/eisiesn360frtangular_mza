@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { Injectable } from '@angular/core';
 import jwt_decode from "jwt-decode";
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -10,7 +11,7 @@ import { AuthGroup, Feature } from "../authorization.types";
 export class
 AuthorizationService {
 
-  constructor(private authService: DataSharingService) {
+  constructor(private logger: LoggerService, private authService: DataSharingService) {
 
   }
 

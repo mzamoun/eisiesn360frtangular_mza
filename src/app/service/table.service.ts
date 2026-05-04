@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
@@ -15,7 +19,7 @@ export class TableService {
   private myUrl: string;
   private myUrlBatch: string;
 
-  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService) {
+  constructor(private logger: LoggerService, private http: HttpClient, private utils: UtilsService, private dataSharingService: DataSharingService) {
     this.myUrl = environment.apiUrl + '/tables/';
     this.myUrlBatch = environment.apiUrl + '/batch/';
   }
@@ -27,11 +31,11 @@ export class TableService {
       tables => {
         tables = tables.map(t => t)
         tables = tables.sort((a, b) => a.localeCompare(b));
-        console.log("getTables tables : ", tables)
+        this.logger.debug("getTables tables : ", tables)
         if (fOk) fOk(tables)
       },
       error => {
-        console.log("getTables error : ", error)
+        this.logger.debug("getTables error : ", error)
         if (fKo) fKo(error)
       }
     );
@@ -70,11 +74,11 @@ export class TableService {
 
     this.http.get<any[]>(this.myUrl + table).subscribe(
       data => {
-        console.log(fct + " table, data : ", table, data)
+        this.logger.debug(fct + " table, data : ", table, data)
         if (fOk) fOk(data)
       },
       error => {
-        console.log(fct + " error : ", error)
+        this.logger.debug(fct + " error : ", error)
         if (fKo) fKo(error)
       }
     );
@@ -82,7 +86,7 @@ export class TableService {
 
   getColsOfTable(table: string, fOk: Function, fKo: Function) {
     let fct = "getColsOfTable"
-    console.log(fct + " : table : ", table)
+    this.logger.debug(fct + " : table : ", table)
     // let columnMetadata: ColumnDetails[] = [];
     let columnMetadata: any[] = [];
     let mapColType = {}
@@ -90,7 +94,7 @@ export class TableService {
 
     this.http.get<any[]>(this.myUrl + table + '/columns').subscribe(
       data => {
-        console.log(fct + " data : ", data)
+        this.logger.debug(fct + " data : ", data)
         columnMetadata = data;
 
         columnMetadata = columnMetadata.map(col => ({
@@ -99,7 +103,7 @@ export class TableService {
           dataType: col.dataType
         }));
 
-        console.log(fct + " columnMetadata : ", columnMetadata)
+        this.logger.debug(fct + " columnMetadata : ", columnMetadata)
 
         if (columnMetadata && columnMetadata.length) {
           for (let ct of columnMetadata) {
@@ -111,12 +115,12 @@ export class TableService {
 
           if (fOk) fOk(columnMetadata, mapColType, mapColTypeInput)
 
-          console.log(fct + " mapColType : ", mapColType)
-          console.log(fct + " mapColTypeInput : ", mapColTypeInput)
+          this.logger.debug(fct + " mapColType : ", mapColType)
+          this.logger.debug(fct + " mapColTypeInput : ", mapColTypeInput)
         }
       },
       error => {
-        console.log(fct + " error : ", error)
+        this.logger.debug(fct + " error : ", error)
         if (fKo) fKo(error)
       }
     );
@@ -144,7 +148,7 @@ export class TableService {
       .get<any[]>(this.myUrl + "relations")
       .subscribe({
         next: (res) => {
-          console.log("openRelations : res : ", res)
+          this.logger.debug("openRelations : res : ", res)
           this.relationsData = res;
           // 🔥 map pour corriger les noms de colonnes
           if (res && res.length) {
@@ -155,13 +159,13 @@ export class TableService {
               target_pk: r.TARGET_PK
             }));
           }
-          console.log("openRelations : relationsData : ", this.relationsData)
+          this.logger.debug("openRelations : relationsData : ", this.relationsData)
 
           if (fOk) fOk(this.relationsData)
         },
         error: (err) => {
-          console.log("openRelations : err : ", err)
-          console.error(err);
+          this.logger.debug("openRelations : err : ", err)
+          this.logger.error(err);
           if (fKo) fKo(err)
         },
       });
@@ -170,11 +174,11 @@ export class TableService {
   exportAllTablesToJson(arg0: (res: any) => void, arg1: (err: any) => void) {
     this.http.get<any>(this.myUrl + "exportAllToJson").subscribe(
       res => {
-        console.log("exportAllTablesToJson : res : ", res)
+        this.logger.debug("exportAllTablesToJson : res : ", res)
         if (arg0) arg0(res)
       },
       err => {
-        console.log("exportAllTablesToJson : err : ", err)
+        this.logger.debug("exportAllTablesToJson : err : ", err)
         if (arg1) arg1(err)
       }
     );
@@ -183,11 +187,11 @@ export class TableService {
   importFromJsonToTable(selectedTable: string, jsonData: any[], fctOk: Function, fctKo: Function) {
     this.http.post(this.myUrl + "importFromJson/" + selectedTable, jsonData).subscribe(
       res => {
-        console.log("importFromJsonToTable : res : ", res)
+        this.logger.debug("importFromJsonToTable : res : ", res)
         if (fctOk) fctOk(res)
       },
       err => {
-        console.log("importFromJsonToTable : err : ", err)
+        this.logger.debug("importFromJsonToTable : err : ", err)
         if (fctKo) fctKo(err)
       }
     );
@@ -211,11 +215,11 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
          * ainsi que les erreurs rencontrées, et d'obtenir le fichier PDF généré par le job de génération des CRA.
    */
   runBatchCraExportManually(fOk: Function, fKo: Function) {
-    console.log("runBatchCraManually : start")
+    this.logger.debug("runBatchCraManually : start")
     let url = this.myUrlBatch + "cra/runExportJobPdf"
     this.http.post(url, null, { responseType: 'blob', observe: 'response' }).subscribe(
       (res: any) => {
-        console.log("runBatchCraManually : res : ", res)
+        this.logger.debug("runBatchCraManually : res : ", res)
         if (res && res.body) {
           const blob = new Blob([res.body!], { type: 'application/pdf' });
           const a = document.createElement('a');
@@ -224,13 +228,13 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
           a.click();
           URL.revokeObjectURL(a.href);
         }else {
-          console.log("runBatchCraManually : no body in response")
+          this.logger.debug("runBatchCraManually : no body in response")
           alert("No PDF generated, response body is empty")
         }
         if (fOk) fOk(res)
       },
       err => {
-        console.log("runBatchCraManually : err : ", err)
+        this.logger.debug("runBatchCraManually : err : ", err)
         alert("Error during batch execution : " + (err.message || err.statusText || "Unknown error"))
         if (fKo) fKo(err)
       }
@@ -238,9 +242,9 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
 
     // this.http.post<any>(url, {}).subscribe(
     //   (res: any) => {
-    //     console.log("runBatchCraManually : res : ", res)
+    //     this.logger.debug("runBatchCraManually : res : ", res)
     //     if (res && res.body && res.body.result && res.body.result.content) {
-    //       console.log("runBatchCraManually OK : content : ", res.body.result.content)
+    //       this.logger.debug("runBatchCraManually OK : content : ", res.body.result.content)
     //       const blob = new Blob([new Uint8Array(res.body.result.content)], { type: 'application/pdf' });
     //       const url = window.URL.createObjectURL(blob);
     //       const a = document.createElement('a');
@@ -252,14 +256,14 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
     //     if (fOk) fOk(res)
     //   },
     //   err => {
-    //     console.log("runBatchCraManually : err : ", err)
+    //     this.logger.debug("runBatchCraManually : err : ", err)
     //     if (fKo) fKo(err)
     //   }
     // );
   }
 
   runBatchConsultantImportManually(fOk: Function, fKo: Function) {
-    console.log("runBatchConsultantImportManually : start")
+    this.logger.debug("runBatchConsultantImportManually : start")
     const formData = new FormData();
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -269,11 +273,11 @@ changer cette methode afin d'afficher le fichier pdf du resultat de l'objet reto
       formData.append('file', file);
       this.http.post(this.myUrlBatch + "consultant/runImportJob", formData).subscribe(
         res => {
-          console.log("runBatchConsultantImportManually : res : ", res)
+          this.logger.debug("runBatchConsultantImportManually : res : ", res)
           if (fOk) fOk(res)
         },
         err => {
-          console.log("runBatchConsultantImportManually : err : ", err)
+          this.logger.debug("runBatchConsultantImportManually : err : ", err)
           if (fKo) fKo(err)
         }
       );

@@ -1,3 +1,6 @@
+
+
+
 import {
   Component,
   Input,
@@ -78,7 +81,7 @@ export class ActivityFormComponent extends MereComponent {
   }
 
   initByActivity() {
-    console.log('myObj DEB', this.myObj);
+    this.logger.debug('myObj DEB', this.myObj);
 
     this.projects = this.dataSharingService.projects
     this.activityTypes = this.dataSharingService.activityTypes
@@ -91,7 +94,7 @@ export class ActivityFormComponent extends MereComponent {
       this.isAdd = this.route.snapshot.queryParamMap.get("isAdd");
     }
 
-    console.log("initByActivity isAdd=", this.isAdd);
+    this.logger.debug("initByActivity isAdd=", this.isAdd);
 
     if (this.isForCurentUser == null) {
       this.isForCurentUser = this.route.snapshot.queryParamMap.get(
@@ -113,8 +116,8 @@ export class ActivityFormComponent extends MereComponent {
       this.title = this.btnSaveTitle = this.btnSaveTitle = this.utils.tr("EditActivity");
       let activityP: Activity = this.activityService.getActivity();
 
-      console.log('activityP=', activityP);
-      console.log('myObj=', this.myObj);
+      this.logger.debug('activityP=', activityP);
+      this.logger.debug('myObj=', this.myObj);
 
       if (activityP != null && this.myObj == null) this.myObj = activityP;
       else if (this.myObj == null) {
@@ -145,20 +148,20 @@ export class ActivityFormComponent extends MereComponent {
 
     this.isActivityLabelVisibleFct()
 
-    console.log('activityTypes ', this.activityTypes);
-    console.log('projects ', this.projects);
+    this.logger.debug('activityTypes ', this.activityTypes);
+    this.logger.debug('projects ', this.projects);
 
-    console.log('myObj FIN', this.myObj);
+    this.logger.debug('myObj FIN', this.myObj);
 
   }
 
   /////////////////
 
   getProjects() {
-    console.log("getProjects:", this.projects);
+    this.logger.debug("getProjects:", this.projects);
     if (this.projects == null) {
 
-      ////////////console.log("getProjects:", this.myObj);
+      ////////////this.logger.debug("getProjects:", this.myObj);
       this.beforeCallServer("getProjects");
       this.projectService.findAll(this.getEsnId()).subscribe(
         (data) => {
@@ -175,10 +178,10 @@ export class ActivityFormComponent extends MereComponent {
         },
         (error) => {
           this.addErrorFromErrorOfServer("getProjects", error);
-          ////console.log(error);
+          ////this.logger.debug(error);
         }
       );
-      ////////////console.log("getProjects:END");
+      ////////////this.logger.debug("getProjects:END");
     }
   }
 
@@ -187,9 +190,9 @@ export class ActivityFormComponent extends MereComponent {
     if (this.myObj.project == null) {
       this.myObj.project = new Project();
     } else {
-      console.log("project : ", project)
+      this.logger.debug("project : ", project)
       let cli = this.myObj.project.client
-      console.log("cli : ", cli)
+      this.logger.debug("cli : ", cli)
       if (!cli) {
         // this.myObj.name = this.myObj.type.name + ' / ' + cli.name
         this.dataSharingService.majClientInProject(project,
@@ -234,7 +237,7 @@ export class ActivityFormComponent extends MereComponent {
   //////////////////
 
   // getConsultants() {
-  //   console.log("+++++++++++++++++++getConsultants: myObj : ", this.myObj);
+  //   this.logger.debug("+++++++++++++++++++getConsultants: myObj : ", this.myObj);
   //   this.beforeCallServer("getConsultants");
   //   this.consultantService.findNotAdminConsultant().subscribe(
   //     (data) => {
@@ -249,10 +252,10 @@ export class ActivityFormComponent extends MereComponent {
   //     },
   //     (error) => {
   //       this.addErrorFromErrorOfServer("getConsultants", error);
-  //       ////console.log(error);
+  //       ////this.logger.debug(error);
   //     }
   //   );
-  //   ////////////console.log("getConsultants:END");
+  //   ////////////this.logger.debug("getConsultants:END");
   // }
 
   // onSelectConsultant(consultant: Consultant) {
@@ -271,18 +274,18 @@ export class ActivityFormComponent extends MereComponent {
    * used to initialize the component activity types
    */
   private getActivityTypes() {
-    console.log("getActivityTypes:", this.activityTypes);
+    this.logger.debug("getActivityTypes:", this.activityTypes);
     if (this.activityTypes == null) {
 
-      ////////////console.log("getActivityTypes:");
+      ////////////this.logger.debug("getActivityTypes:");
       this.beforeCallServer("getActivityTypes");
 
       this.activityTypeService.findAll(this.getEsnId()).subscribe(
         (data) => {
           this.afterCallServer("getActivityTypes", data)
-          ////console.log(data);
+          ////this.logger.debug(data);
           this.activityTypes = data.body.result;
-          ////console.log(this.activityTypes);
+          ////this.logger.debug(this.activityTypes);
           if (data == undefined) {
             this.activityTypes = new Array();
           }
@@ -306,21 +309,21 @@ export class ActivityFormComponent extends MereComponent {
 
         },
         (error) => {
-          //console.log(error);
+          //this.logger.debug(error);
           this.addErrorFromErrorOfServer("getActivityTypes", error);
         }
       );
-      ////////////console.log("getProjects:END");
+      ////////////this.logger.debug("getProjects:END");
 
     }
   }
 
   onSelectActivityType(obj: ActivityType) {
-    console.log("onSelectActivityType this.myObj, this.myObj.type, obj ", this.myObj, this.myObj.type, obj)
+    this.logger.debug("onSelectActivityType this.myObj, this.myObj.type, obj ", this.myObj, this.myObj.type, obj)
     try {
       this.myObj.type = obj;
     } catch (error) {
-      // console.log(error)
+      // this.logger.debug(error)
     }
 
     this.isViewListProject = false
@@ -353,7 +356,7 @@ export class ActivityFormComponent extends MereComponent {
 
     var compoSelect: HTMLSelectElement = document.getElementById(this.compoSelectActivityType.selectId) as HTMLSelectElement;
     // var id = this.activitytypes != null ? this.activitytypes.indexOf(activitytype) : -1
-    // console.log('compoSelect', compoSelect)
+    // this.logger.debug('compoSelect', compoSelect)
 
     if (activityType == null) {
       if (this.compoSelectActivityType != null) this.compoSelectActivityType.selectedObj = null
@@ -367,7 +370,7 @@ export class ActivityFormComponent extends MereComponent {
       if (this.activityTypes != null) {
         for (var p of this.activityTypes) {
           id++
-          // console.log('p.name', p.name)
+          // this.logger.debug('p.name', p.name)
           if (p != null && activityType != null && p.name == activityType.name) {
             break;
           }
@@ -378,7 +381,7 @@ export class ActivityFormComponent extends MereComponent {
 
       this.compoSelectActivityType.selectedObj = activityType;
 
-      // console.log('id, activitytype', id, activitytype)
+      // this.logger.debug('id, activitytype', id, activitytype)
 
       // id = 0 : est 'Select ActivityType'
       compoSelect.selectedIndex = id + 1;
@@ -394,7 +397,7 @@ export class ActivityFormComponent extends MereComponent {
   }
 
   isTypeCongeFct(): boolean {
-    ////////////console.log("isTypeConge:", this.myObj.type)
+    ////////////this.logger.debug("isTypeConge:", this.myObj.type)
     let ok = false;
     if (this.myObj.type && this.myObj.type.name != null) ok = this.myObj.type.congeDay;
     this.isTypeConge = ok
@@ -431,7 +434,7 @@ export class ActivityFormComponent extends MereComponent {
   /////////////
   onSubmit() {
     //////////
-    console.log("onSubmit: myObj", this.myObj);
+    this.logger.debug("onSubmit: myObj", this.myObj);
     if (!this.myObj.name && this.myObj.type) {
       this.myObj.name = this.myObj.type.name;
     }
@@ -441,7 +444,7 @@ export class ActivityFormComponent extends MereComponent {
       this.myObj.consultantId = this.consultantSelected?.id;
     }
 
-    console.log("onSubmit ", this.myObj)
+    this.logger.debug("onSubmit ", this.myObj)
 
     this.beforeCallServer("onSubmit");
     this.activityService.save(this.myObj).subscribe(
@@ -471,14 +474,14 @@ export class ActivityFormComponent extends MereComponent {
     msg.to = this.userConnected.adminConsultant
     msg.isReadByTo = false;
 
-    //////////console.log("sendMsgToManager", msg);
+    //////////this.logger.debug("sendMsgToManager", msg);
 
     this.beforeCallServer("sendMsgToManager")
     this.msgService.save(msg).subscribe(
       (data) => {
-        ////////////console.log("data:"+data);
+        ////////////this.logger.debug("data:"+data);
         this.afterCallServer("sendMsgToManager", data)
-        ////////////console.log("error:", this.error );
+        ////////////this.logger.debug("error:", this.error );
 
         if (!this.isError()) this.gotoActivityList();
       },
@@ -492,7 +495,7 @@ export class ActivityFormComponent extends MereComponent {
 
   errorDates = "";
   onStartDateChanged(date: Date, error: string) {
-    console.log("onStartDateChanged date ", date)
+    this.logger.debug("onStartDateChanged date ", date)
     this.myObj.dateDeb = date;
     this.errorDates = error;
     if (error) {
@@ -504,7 +507,7 @@ export class ActivityFormComponent extends MereComponent {
   }
 
   onEndDateChanged(date: Date, error: string) {
-    console.log("onEndDateChanged date ", date)
+    this.logger.debug("onEndDateChanged date ", date)
     this.myObj.dateFin = date;
     this.errorDates = error;
     this.utils.showNotification(
@@ -542,14 +545,14 @@ export class ActivityFormComponent extends MereComponent {
     this.myObj.dateDeb = new Date(dateDeb);
     this.myObj.dateFin = new Date(dateFin);
 
-    console.log(' Date Deb:', this.myObj.dateDeb);
-    console.log(' Date Fin:', this.myObj.dateFin);
+    this.logger.debug(' Date Deb:', this.myObj.dateDeb);
+    this.logger.debug(' Date Fin:', this.myObj.dateFin);
 
     this.myObj.dateDeb = new Date(this.myObj.dateDeb);
     this.myObj.dateFin = new Date(this.myObj.dateFin);
 
-    console.log('Final Date Deb:', this.myObj.dateDeb);
-    console.log('Final Date Fin:', this.myObj.dateFin);
+    this.logger.debug('Final Date Deb:', this.myObj.dateDeb);
+    this.logger.debug('Final Date Fin:', this.myObj.dateFin);
   }
 
   // private addMonthsToDate2(date: Date, nbMonth: number): Date {
@@ -580,9 +583,9 @@ export class ActivityFormComponent extends MereComponent {
   ///////////////
 
   isForMyConsultants() {
-    ////////////console.log("isForMyConsultants isForCurentUser="+this.isForCurentUser);
+    ////////////this.logger.debug("isForMyConsultants isForCurentUser="+this.isForCurentUser);
     let ok = this.isForCurentUser != "true";
-    ////////////console.log("ok="+ok);
+    ////////////this.logger.debug("ok="+ok);
     return ok;
   }
 

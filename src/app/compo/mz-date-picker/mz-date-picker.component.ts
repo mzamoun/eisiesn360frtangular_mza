@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 
@@ -16,7 +17,7 @@ export class MzDatePickerComponent implements OnInit {
   @Input() onChangeCaller!: string; 
   @Input() dateInputId: string;
 
-  constructor(private dateAdapter: DateAdapter<Date>) {
+  constructor(private logger: LoggerService, private dateAdapter: DateAdapter<Date>) {
     //  this.dateAdapter.setLocale('en-GB'); // dd/MM/yyyy
       this.dateAdapter.setLocale('fr-FR'); // dd/MM/yyyy
     }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
+import { LoggerService } from 'src/app/service/logger.service';
 
 @Component({
   selector: 'app-mz-date-picker-deb-fin',
@@ -31,7 +32,7 @@ export class MzDatePickerDebFinComponent implements OnInit {
 
   myForm: FormGroup;
 
-  constructor(private dateAdapter: DateAdapter<Date>, private formBuilder: FormBuilder) {
+  constructor(private logger: LoggerService, private dateAdapter: DateAdapter<Date>, private formBuilder: FormBuilder) {
     //  this.dateAdapter.setLocale('en-GB'); // dd/MM/yyyy
     this.dateAdapter.setLocale('fr-FR'); // dd/MM/yyyy
 
@@ -48,14 +49,14 @@ export class MzDatePickerDebFinComponent implements OnInit {
     if (!this.myDatePickerDeb) this.myDatePickerDeb = new Date();
     if (!this.myDatePickerFin) this.myDatePickerFin = new Date();
 
-    console.log("ngOnInit : myDatePickerDeb ", this.myDatePickerDeb)
-    console.log("ngOnInit : myDatePickerFin ", this.myDatePickerFin)
+    this.logger.debug("ngOnInit : myDatePickerDeb ", this.myDatePickerDeb)
+    this.logger.debug("ngOnInit : myDatePickerFin ", this.myDatePickerFin)
 
     this.myForm.get('myDateRange').get('startDate').setValue(this.myDatePickerDeb)
     this.myForm.get('myDateRange').get('endDate').setValue(this.myDatePickerFin)
 
-    console.log("app-mz-date-picker-deb-fin' ngOnit myDatePickerDeb : ", this.myDatePickerDeb)
-    console.log("app-mz-date-picker-deb-fin' ngOnit this.myForm.get('myDateRange').get('startDate').value : ", this.myForm.get('myDateRange').get('startDate').value)
+    this.logger.debug("app-mz-date-picker-deb-fin' ngOnit myDatePickerDeb : ", this.myDatePickerDeb)
+    this.logger.debug("app-mz-date-picker-deb-fin' ngOnit this.myForm.get('myDateRange').get('startDate').value : ", this.myForm.get('myDateRange').get('startDate').value)
 
   }
 
@@ -83,7 +84,7 @@ export class MzDatePickerDebFinComponent implements OnInit {
   }
 
   isDateFinBigger(): boolean {
-    console.log("isDateFinBigger : myDatePickerFin, myDatePickerDeb : ", this.myDatePickerFin, this.myDatePickerDeb)
+    this.logger.debug("isDateFinBigger : myDatePickerFin, myDatePickerDeb : ", this.myDatePickerFin, this.myDatePickerDeb)
     return this.compareDates(this.myDatePickerFin, this.myDatePickerDeb) >= 0;
   }
 
@@ -103,12 +104,12 @@ export class MzDatePickerDebFinComponent implements OnInit {
   }
 
   dateRangeChange(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
-    console.log("dateRangeChange: dateRangeStart, dateRangeEnd : ", dateRangeStart, dateRangeEnd)
+    this.logger.debug("dateRangeChange: dateRangeStart, dateRangeEnd : ", dateRangeStart, dateRangeEnd)
 
     this.myDatePickerDeb = this.getDate(dateRangeStart.value);
     this.myDatePickerFin = this.getDate(dateRangeEnd.value);
 
-    ////////console.log("dateRangeChange:", this.myDatePickerDeb, this.myDatePickerFin)
+    ////////this.logger.debug("dateRangeChange:", this.myDatePickerDeb, this.myDatePickerFin)
 
 
     if (this.objCaller && this.onChangeCallerDeb) this.objCaller[this.onChangeCallerDeb](this.myDatePickerDeb, this.error);
@@ -118,15 +119,15 @@ export class MzDatePickerDebFinComponent implements OnInit {
 
   onFormSubmit() {
 
-    console.log("onFormSubmit this.myDatePickerDeb:", this.myDatePickerDeb)
-    console.log("onFormSubmit this.myDatePickerFin:", this.myDatePickerFin)
+    this.logger.debug("onFormSubmit this.myDatePickerDeb:", this.myDatePickerDeb)
+    this.logger.debug("onFormSubmit this.myDatePickerFin:", this.myDatePickerFin)
 
   }
 
   public reset() {
 
-    console.log("reset this.dateRangeStart:", this.dateRangeStart)
-    console.log("reset this.dateRangeEnd:", this.dateRangeEnd)
+    this.logger.debug("reset this.dateRangeStart:", this.dateRangeStart)
+    this.logger.debug("reset this.dateRangeEnd:", this.dateRangeEnd)
 
     this.dateRangeStart.value = '';
     this.dateRangeEnd.value = '';

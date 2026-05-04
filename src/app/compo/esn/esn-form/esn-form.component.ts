@@ -1,3 +1,6 @@
+
+
+
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Consultant } from 'src/app/model/consultant';
@@ -56,7 +59,7 @@ export class EsnFormComponent extends MereComponent {
       this.btnSaveTitle = this.utils.tr("Save")
       this.title = this.utils.tr("Edit") + " ESN";
       let esnP: Esn = this.esnService.getEsn();
-      console.log('esn-form : esnP=', esnP);
+      this.logger.debug('esn-form : esnP=', esnP);
 
       if (esnP != null) {
         this.myObj = esnP;
@@ -86,16 +89,16 @@ export class EsnFormComponent extends MereComponent {
   @Output() esnSaved = new EventEmitter<void>();
 
   onSubmit() {
-    console.log("onSubmit: ", this.myObj);
+    this.logger.debug("onSubmit: ", this.myObj);
     this.beforeCallServer("onSubmit");
     // this.esnService.setEsn(this.myObj);
     this.dataSharingService.esnSaved = null
     this.esnService.save(this.myObj, this.dataSharingService.IsAddEsnAndResp).subscribe(
       data => {
         this.afterCallServer("onSubmit", data)
-        console.log("onSubmit: isError:", this.isError());
+        this.logger.debug("onSubmit: isError:", this.isError());
         if (!this.isError()) {
-          console.info("data: ", data)
+          this.logger.info("data: ", data)
           if (data && data.body && data.body.result) {
             this.myObj = data.body.result
             if (this.dataSharingService.IsAddEsnAndResp) {
@@ -113,7 +116,7 @@ export class EsnFormComponent extends MereComponent {
         }
       },
       error => {
-        console.log("onSubmit: error:", error);
+        this.logger.debug("onSubmit: error:", error);
         this.addErrorFromErrorOfServer("onSubmit", error);
         ;
       }
@@ -126,7 +129,7 @@ export class EsnFormComponent extends MereComponent {
       this.beforeCallServer("getListConsultants")
       this.consultantService.findAllChildConsultants(resp).subscribe(
         data => {
-          console.log("findAllChildConsultants : data", data)
+          this.logger.debug("findAllChildConsultants : data", data)
           this.afterCallServer("getListConsultants", data)
           if (data != null && data.body != null) {
             resp.listConsultant = data.body.result;
@@ -153,7 +156,7 @@ export class EsnFormComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -184,23 +187,23 @@ export class EsnFormComponent extends MereComponent {
 
   getListCra(consultant: Consultant) {
 
-    console.log("listCra ", consultant.listCra)
+    this.logger.debug("listCra ", consultant.listCra)
 
     if (consultant.listCra == null) {
       this.beforeCallServer("getListCra");
       this.craService.getListCraOfUser(consultant.username).subscribe(
         data => {
-          console.log("cra list getListCra data:", data)
+          this.logger.debug("cra list getListCra data:", data)
           this.afterCallServer("getListCra", data);
           // this.info00 = ''
           consultant.listCra = data.body.result;
 
-          console.log("listCra ", consultant.listCra)
+          this.logger.debug("listCra ", consultant.listCra)
 
         }, error => {
-          console.log("cra list getListCra error:", error)
+          this.logger.debug("cra list getListCra error:", error)
           this.addErrorFromErrorOfServer("getListCra", error);
-          //console.log(error);
+          //this.logger.debug(error);
         }
       );
     }
@@ -221,7 +224,7 @@ export class EsnFormComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }

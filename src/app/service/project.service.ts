@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -25,13 +29,13 @@ export class ProjectService {
 		return this.project;
 	}
 
-	constructor(private http: HttpClient) {
+	constructor(private logger: LoggerService, private http: HttpClient) {
 		this.projectUrl = environment.apiUrl + '/project/';
 	}
 
 	public findAll(esnId: number): Observable<GenericResponse> {
 		if(esnId == null) esnId = 0;
-		console.log("findAll projects of esnId : ", esnId);
+		this.logger.debug("findAll projects of esnId : ", esnId);
 		return this.http.get<GenericResponse>(this.projectUrl + "esn/" + esnId);
 	}
 
@@ -44,18 +48,18 @@ export class ProjectService {
 	}
 
 	public save(project: Project): Observable<GenericResponse> {
-		////////////console.log("save id="+project.id+".");
+		////////////this.logger.debug("save id="+project.id+".");
 		if (project.id > 0) {
-			////////////console.log("put update")
+			////////////this.logger.debug("put update")
 			return this.http.put<GenericResponse>(this.projectUrl, project);
 		} else {
-			////////////console.log("post add")
+			////////////this.logger.debug("post add")
 			return this.http.post<GenericResponse>(this.projectUrl, project);
 		}
 	}
 
 	public deleteById(id: number): Observable<GenericResponse> {
-		console.log("delete project : " + this.projectUrl + id)
+		this.logger.debug("delete project : " + this.projectUrl + id)
 		return this.http.delete<GenericResponse>(this.projectUrl + id);
 	}
 
@@ -71,16 +75,16 @@ export class ProjectService {
 		let label = "find project by id=" + id;
 		let obj = myObj.project
 
-		console.log("majActivity id, myObj, obj : " , id, myObj, obj)
+		this.logger.debug("majActivity id, myObj, obj : " , id, myObj, obj)
 
 		if (myObj && id && !obj) {
 			this.findById(id).subscribe(
 				data => {
-					console.log(label, data)
+					this.logger.debug(label, data)
 					myObj.project = data.body.result;
 				},
 				error => {
-					console.log("ERROR label myObj, err", label, myObj, error)
+					this.logger.debug("ERROR label myObj, err", label, myObj, error)
 				}
 			);
 		}

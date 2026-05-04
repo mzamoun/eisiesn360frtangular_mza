@@ -1,3 +1,6 @@
+
+
+
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
@@ -114,20 +117,20 @@ export class AddMultipleActivityComponent extends MereComponent {
    * used to initialize the component activity types
    */
   private getActivityTypes() {
-    ////////////console.log("getActivityTypes:");
+    ////////////this.logger.debug("getActivityTypes:");
     this.beforeCallServer("getActivityTypes");
     this.activityTypeService.findAll(this.getEsnId()).subscribe(
       data => {
         this.afterCallServer("getActivityTypes", data)
-        ////console.log(data);
+        ////this.logger.debug(data);
         this.activityTypes = data.body.result;
-        ////console.log(this.activityTypes);
+        ////this.logger.debug(this.activityTypes);
         if (data == undefined) {
           this.activityTypes = new Array();
         }
 
       }, error => {
-        //console.log(error);
+        //this.logger.debug(error);
         this.addErrorFromErrorOfServer("getActivityTypes", error);
       }
     );
@@ -145,20 +148,20 @@ export class AddMultipleActivityComponent extends MereComponent {
   onStartDateChanged(date: Date, error: string) {
     this.myObj.dateDeb=date;
     this.errorDates=error;
-    ////////////console.log("main onChangeDateFin myDatePickerFin", date, error);
+    ////////////this.logger.debug("main onChangeDateFin myDatePickerFin", date, error);
   }
 
   onEndDateChanged(date: Date, error: string) {
     this.myObj.dateFin=date;
     this.errorDates=error;
-    ////////////console.log("main onChangeDateFin myDatePickerFin", date, error);
+    ////////////this.logger.debug("main onChangeDateFin myDatePickerFin", date, error);
     if(this.errorDates) {
       this.utils.showNotification("error", "The end date of project you have been above of the start date !")
     }
   }
 
   isTypeMission(): boolean {
-    ////////////console.log("isTypeMission", this.myObj)
+    ////////////this.logger.debug("isTypeMission", this.myObj)
     return this.myObj.type.name == 'MISSION';
   }
 

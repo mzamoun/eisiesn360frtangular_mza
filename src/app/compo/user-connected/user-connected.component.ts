@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ConsultantService } from 'src/app/service/consultant.service';
-import { UtilsService } from 'src/app/service/utils.service';
 import { PasswordValidatorService } from 'src/app/service/password-validator.service';
+import { UtilsService } from 'src/app/service/utils.service';
 import { DataSharingService } from "../../service/data-sharing.service";
 import { MereComponent } from '../_utils/mere-component';
 
@@ -33,13 +33,13 @@ export class UserConnectedComponent extends MereComponent {
   ngOnInit() {
     super.ngOnInit()
     // this.setUserConnected(this.userConnected);
-    ////////////console.log("UserConnectedComponent: data=", this.data)
+    ////////////this.logger.debug("UserConnectedComponent: data=", this.data)
   }
 
   close() {
-    console.log("UserConnectedComponent close() called")
+    this.logger.debug("UserConnectedComponent close() called")
     this.dialogRef.close();
-    console.log("UserConnectedComponent closed")
+    this.logger.debug("UserConnectedComponent closed")
   }
 
   isLoggedIn() {
@@ -65,7 +65,7 @@ export class UserConnectedComponent extends MereComponent {
     this.consultantService.savePost(this.userConnected).subscribe(
       data => {
         this.afterCallServer("changePassword", data)
-        console.log("changePassword this.isError() : ", this.isError())
+        this.logger.debug("changePassword this.isError() : ", this.isError())
         if (!this.isError()) this.addInfo("password changed.")
         // this.isLoading = false;
         this.close();
@@ -74,7 +74,7 @@ export class UserConnectedComponent extends MereComponent {
 
       },
       error => {
-        console.log("ERROR changePassword : ", error)
+        this.logger.debug("ERROR changePassword : ", error)
         this.addErrorFromErrorOfServer("changePassword", error);
       }
     );

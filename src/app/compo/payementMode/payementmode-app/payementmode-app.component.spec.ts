@@ -1,3 +1,7 @@
+import { LoggerService } from 'src/app/service/logger.service';
+
+
+
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PayementmodeAppComponent } from './payementmode-app.component';

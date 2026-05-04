@@ -1,3 +1,6 @@
+
+
+
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Activity } from 'src/app/model/activity';
@@ -56,7 +59,7 @@ export class ConsultantArboComponent extends MereComponent {
   getListConsultants(resp: Consultant, isForce = false) {
 
     if(resp == null) {
-      console.log("resp NULL")
+      this.logger.debug("resp NULL")
       this.addErrorTitleMsg("Error getListConsultants()", "resp NULL")
       return 
     }
@@ -65,7 +68,7 @@ export class ConsultantArboComponent extends MereComponent {
       this.beforeCallServer("getListConsultants")
       this.consultantService.findAllChildConsultants(resp).subscribe(
         data => {
-          console.log("findAllChildConsultants : data", data)
+          this.logger.debug("findAllChildConsultants : data", data)
           this.afterCallServer("getListConsultants", data)
           if (data != null && data.body != null) {
             resp.listConsultant = data.body.result;
@@ -98,7 +101,7 @@ export class ConsultantArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -109,23 +112,23 @@ export class ConsultantArboComponent extends MereComponent {
 
   getListCra(consultant: Consultant, isForce = false) {
 
-    console.log("listCra ", consultant.listCra)
+    this.logger.debug("listCra ", consultant.listCra)
 
     if (consultant.listCra == null || isForce) {
       this.beforeCallServer("getListCra");
       this.craService.getListCraOfUser(consultant.username).subscribe(
         data => {
-          console.log("cra list getListCra data:", data)
+          this.logger.debug("cra list getListCra data:", data)
           this.afterCallServer("getListCra", data);
           // this.info00 = ''
           consultant.listCra = data.body.result;
 
-          console.log("listCra ", consultant.listCra)
+          this.logger.debug("listCra ", consultant.listCra)
 
         }, error => {
-          console.log("cra list getListCra error:", error)
+          this.logger.debug("cra list getListCra error:", error)
           this.addErrorFromErrorOfServer("getListCra", error);
-          //console.log(error);
+          //this.logger.debug(error);
         }
       );
     }
@@ -145,7 +148,7 @@ export class ConsultantArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }
@@ -163,7 +166,7 @@ export class ConsultantArboComponent extends MereComponent {
       this.beforeCallServer("getListActivity")
       this.activityService.getListActivityOfUser(consultant).subscribe(
         data => {
-          console.log("getListActivity : data", data)
+          this.logger.debug("getListActivity : data", data)
           this.afterCallServer("getListActivity", data)
           if (data != null && data.body != null) {
             consultant.listActivity = data.body.result;
@@ -189,7 +192,7 @@ export class ConsultantArboComponent extends MereComponent {
               }
             }, error => {
               mythis.addErrorFromErrorOfServer("delete", error);
-              ////console.log(error);
+              ////this.logger.debug(error);
             }
           );
       }

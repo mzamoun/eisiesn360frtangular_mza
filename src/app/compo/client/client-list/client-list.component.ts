@@ -1,3 +1,6 @@
+
+
+
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -62,10 +65,10 @@ export class ClientListComponent extends MereComponent {
 				this.afterCallServer("findAll", data)
 				this.myList = data.body.result;
 				this.myList00 = this.myList;
-				////console.log(this.myList)
+				////this.logger.debug(this.myList)
 			}, error => {
 				this.addErrorFromErrorOfServer("findAll", error);
-				////console.log(error);
+				////this.logger.debug(error);
 			}
 		);
 	}
@@ -95,7 +98,7 @@ export class ClientListComponent extends MereComponent {
 							}
 						}, error => {
 							mythis.addErrorFromErrorOfServer("delete", error);
-							////console.log(error);
+							////this.logger.debug(error);
 						}
 					);
 			}

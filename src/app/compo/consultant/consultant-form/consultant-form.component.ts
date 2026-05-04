@@ -1,3 +1,6 @@
+
+
+
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -77,7 +80,7 @@ export class ConsultantFormComponent extends MereComponent {
     }
 
     this.initByConsultant();
-    //console.log('myObj', this.myObj)
+    //this.logger.debug('myObj', this.myObj)
   }
 
   initParams() {
@@ -212,7 +215,7 @@ export class ConsultantFormComponent extends MereComponent {
         this.myObj.esnId = this.esnCurrent?.id
       }
 
-      console.log("setEsn this.myObj.esn  : ", this.myObj.esn)
+      this.logger.debug("setEsn this.myObj.esn  : ", this.myObj.esn)
     } else {
       if (this.esnId > 0) {
         this.findEsnById(this.esnId)
@@ -287,7 +290,7 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   public onSelectRole(role: string) {
-    //////////console.log("onSelectRole:", this, this.myObj)
+    //////////this.logger.debug("onSelectRole:", this, this.myObj)
     this.myObj.role = role;
     this.myObj.admin = (this.myObj.role == Constants.MANAGER || this.myObj.role == Constants.RESPONSIBLE_ESN);
     if (this.myObj.role == Constants.MANAGER || this.myObj.role == Constants.CONSULTANT) {
@@ -301,7 +304,7 @@ export class ConsultantFormComponent extends MereComponent {
   selectRole(role: string) {
 
     var compoSelect: HTMLSelectElement = document.getElementById(this.compoSelectRole.selectId) as HTMLSelectElement;
-    // console.log("selectRole compoSelect:", compoSelect)
+    // this.logger.debug("selectRole compoSelect:", compoSelect)
 
     this.compoSelectRole.selectedObj = role;
     var id = this.roles != null ? this.roles.indexOf(role) : -1
@@ -316,9 +319,9 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    console.log("onSubmit : deb ")
-    console.log("this.myObj.email ", this.myObj.email)
-    console.log("this.myObj.username ", this.myObj.username)
+    this.logger.debug("onSubmit : deb ")
+    this.logger.debug("this.myObj.email ", this.myObj.email)
+    this.logger.debug("this.myObj.username ", this.myObj.username)
 
     if (!this.myObj.username || !this.myObj.email) {
       this.utilsIhmService.infoDialog('email or username is null !!')
@@ -335,30 +338,30 @@ export class ConsultantFormComponent extends MereComponent {
     //todo check if email exist : a la saisie . invalider le form si exist via une variable isEmailExist.
     // todo : confirmer avec le user son email en lui rappelant : prenom, nom, soc 
 
-    console.log("this.manager.role:", '.' + this.manager?.role + '.')
-    console.log("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
+    this.logger.debug("this.manager.role:", '.' + this.manager?.role + '.')
+    this.logger.debug("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
     if (this.userConnected && this.userConnected.role + '' != 'ADMIN') {
-      console.log('NOT ADMIN')
+      this.logger.debug('NOT ADMIN')
       this.dataSharingService.majAdminConsultantId(this.myObj, this.manager);
 
     }
     this.setEsn();
-    console.log("onSubmit obj", this.myObj);
+    this.logger.debug("onSubmit obj", this.myObj);
     let label = "onSubmit"
     this.beforeCallServer(label);
-    console.log("this.myObj.adminConsultant : before save ", this.myObj.adminConsultant)
+    this.logger.debug("this.myObj.adminConsultant : before save ", this.myObj.adminConsultant)
     this.consultantService.save(this.myObj, this.dataSharingService.IsAddEsnAndResp).subscribe(
       data => {
         this.afterCallServer(label, data)
 
         this.myObj = data.body.result
 
-        console.log("after save this.myObj : ", this.myObj)
-        console.log("this.myObj.adminConsultant : after save ", this.myObj.adminConsultant)
+        this.logger.debug("after save this.myObj : ", this.myObj)
+        this.logger.debug("this.myObj.adminConsultant : after save ", this.myObj.adminConsultant)
 
         if (this.dataSharingService.IsAddEsnAndResp) {
           this.dataSharingService.respEsnSaved = this.myObj
-          console.log("after save respEsnSaved : ", this.dataSharingService.respEsnSaved)
+          this.logger.debug("after save respEsnSaved : ", this.dataSharingService.respEsnSaved)
 
           this.gotoFirstName()
 
@@ -380,7 +383,7 @@ export class ConsultantFormComponent extends MereComponent {
                   this.afterCallServer(label2, data2)
                   // FIN du msg loading
                   this.closeLoadingDialog();
-                  console.log(label2 + " isError : ", this.isError())
+                  this.logger.debug(label2 + " isError : ", this.isError())
                   if (!this.isError()) {
                     this.utilsIhmService.infoDialog("Un email a bien été envoyé à " + to,
                       () => {
@@ -390,7 +393,7 @@ export class ConsultantFormComponent extends MereComponent {
                       }
                     )
                   } else {
-                    console.log(label2 + " Error : ", this.error)
+                    this.logger.debug(label2 + " Error : ", this.error)
                   }
                 },
                 (error) => {
@@ -401,7 +404,7 @@ export class ConsultantFormComponent extends MereComponent {
                 }
               )
             }, () => {
-              console.log("sendMailSimple " + " annuler tout en supprimant les deux objs. ")
+              this.logger.debug("sendMailSimple " + " annuler tout en supprimant les deux objs. ")
               // annuler tout en supprimant les deux objs.
             }
           )
@@ -422,7 +425,7 @@ export class ConsultantFormComponent extends MereComponent {
 
 
   gotoConsultantList() {
-    console.log("gotoConsultantList")
+    this.logger.debug("gotoConsultantList")
     this.clearInfos();
     this.router.navigate(['/consultant_list']);
   }
@@ -443,7 +446,7 @@ export class ConsultantFormComponent extends MereComponent {
           this.roles = data.body.result;
         }
 
-        console.log("*** roles : ", this.roles)
+        this.logger.debug("*** roles : ", this.roles)
 
       }, error => {
         this.addErrorFromErrorOfServer(label, error);
@@ -500,8 +503,8 @@ export class ConsultantFormComponent extends MereComponent {
 
   emailFocus() {
     this.setEsn();
-    console.log("emailFocus", this.myObj)
-    console.log("emailFocus Email : ", this.myObj.email)
+    this.logger.debug("emailFocus", this.myObj)
+    this.logger.debug("emailFocus Email : ", this.myObj.email)
     if (!this.myObj.esn) {
       this.myObj.esn = this.esnCurrent
     }
@@ -520,9 +523,9 @@ export class ConsultantFormComponent extends MereComponent {
     } else {
       domaine = (this.myObj.esn?.name + ".com").toLowerCase().replace(/\s+/g, '-');
     }
-    console.log("emailFocus Esn : ", this.myObj.esn)
+    this.logger.debug("emailFocus Esn : ", this.myObj.esn)
     if (this.utils.isEmpty(this.myObj.email)) {
-      console.log("email NULL")
+      this.logger.debug("email NULL")
       if (!this.utils.isEmpty(this.myObj.firstName) && !this.utils.isEmpty(this.myObj.lastName) && !this.utils.isEmpty(this.myObj.esn?.name)) {
         this.myObj.email = (this.myObj.firstName + "." + this.myObj.lastName + "@" + domaine).toLowerCase();
         this.myObj.email = this.myObj.email.toLowerCase().replace(/\s+/g, '-');
@@ -534,7 +537,7 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   emailChange() {
-    console.log("emailChange this.myObj.email ", this.myObj.email)
+    this.logger.debug("emailChange this.myObj.email ", this.myObj.email)
     if (this.utils.isEmpty(this.myObj.username)) {
       this.myObj.username = this.myObj.email
     }

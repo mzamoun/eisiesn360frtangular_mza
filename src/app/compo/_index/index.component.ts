@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 import { Component, OnInit } from '@angular/core';
 import { DataSharingService } from "../../service/data-sharing.service";
 
@@ -8,7 +9,7 @@ import { DataSharingService } from "../../service/data-sharing.service";
 })
 export class IndexComponent implements OnInit {
 
-  constructor(
+  constructor(private logger: LoggerService, 
     private dataSharingService : DataSharingService
     ) {
   }

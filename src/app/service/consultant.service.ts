@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -26,7 +30,7 @@ export class ConsultantService {
   private consultant: Consultant;
   private managerSelected: Consultant = null;
 
-  constructor(private http: HttpClient, private datasharingService: DataSharingService, private injector: Injector) {
+  constructor(private logger: LoggerService, private http: HttpClient, private datasharingService: DataSharingService, private injector: Injector) {
     this.consultantUrl = environment.apiUrl + '/consultant';
     this.consultantUrlPub = environment.divUrl + '/consultant';
   }
@@ -113,13 +117,13 @@ export class ConsultantService {
   }
 
   findConsultantByUsername(username: string, isPub: boolean = false): Observable<GenericResponse> {
-    console.log("findConsultantByUsername username:", username)
+    this.logger.debug("findConsultantByUsername username:", username)
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
     return this.http.post<GenericResponse>(url + "/findByUsername", username);
   }
 
   getConsultantAndHisInfos(username: string): Observable<GenericResponse> {
-    console.log("getConsultantAndHisInfos username:", username)
+    this.logger.debug("getConsultantAndHisInfos username:", username)
     return this.http.post<GenericResponse>(this.consultantUrl + "/getConsultantAndHisInfos", username);
   }
 
@@ -128,13 +132,13 @@ export class ConsultantService {
    * @param consultant
    */
   public save(consultant: Consultant, isPub: boolean = false): Observable<GenericResponse> {
-    ////console.log('save id=' + consultant.id + '.');
+    ////this.logger.debug('save id=' + consultant.id + '.');
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
     if (consultant.id > 0) {
-      ////console.log('put update');
+      ////this.logger.debug('put update');
       return this.http.put<GenericResponse>(url + "/", consultant);
     } else {
-      ////console.log('post add');
+      ////this.logger.debug('post add');
       return this.savePost(consultant, isPub);
     }
   }
@@ -154,35 +158,35 @@ export class ConsultantService {
     const label = "saveCodeResetPassword";
     const url = `${this.consultantUrlPub}/resetPassword`;
 
-    console.log(label + ": Sauvegarde du code pour email: " + email);
+    this.logger.debug(label + ": Sauvegarde du code pour email: " + email);
 
     this.findConsultantByUsername(email, true).subscribe(
       data => {
-        console.log(label + ": Consultant trouvé: ", data);
+        this.logger.debug(label + ": Consultant trouvé: ", data);
         const consultant: Consultant = data.body.result;
         if (consultant) {
           consultant.codeEmailToValidate = codeResetPassword;
           this.savePost(consultant, true).subscribe(
             saveData => {
               let msg = "Code de réinitialisation sauvegardé avec succès pour l'email: " + email;
-              console.log(label + ": " + msg);
+              this.logger.debug(label + ": " + msg);
               if (fctOnSuccess) fctOnSuccess(saveData, msg);
             },
             error => {
               let msg = "Erreur lors de la sauvegarde du code de réinitialisation pour l'email: " + email;
-              console.log(label + ": " + msg, error);
+              this.logger.debug(label + ": " + msg, error);
               if (fctOnError) fctOnError(error, msg);
             }
           );
         } else {
           let msg = "Aucun consultant trouvé pour l'email: " + email;
-          console.log(label + ": " + msg);
+          this.logger.debug(label + ": " + msg);
           if (fctOnError) fctOnError(null, msg);
         }
       },
       error => {
         let msg = "Erreur lors de la recherche du consultant: " + email;
-        console.log(label + ": " + msg, error);
+        this.logger.debug(label + ": " + msg, error);
         if (fctOnError) fctOnError(error, msg);
       }
     );
@@ -193,9 +197,9 @@ export class ConsultantService {
    * @param consultant
    */
   public savePost(consultant: Consultant, isPub: boolean = false): Observable<GenericResponse> {
-    console.log('savePost consultant=', consultant);
+    this.logger.debug('savePost consultant=', consultant);
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
-    console.log('savePost url=', url);
+    this.logger.debug('savePost url=', url);
     return this.http.post<GenericResponse>(url + "/", consultant);
   }
 
@@ -248,7 +252,7 @@ export class ConsultantService {
         let ca = this.mapConsul[id]
         if (ca != null) {
           consultant.adminConsultant = ca
-          console.log("setAdminConsultant trouve dans map ca : ", ca);
+          this.logger.debug("setAdminConsultant trouve dans map ca : ", ca);
           if (fct) fct()
           return
         }
@@ -260,12 +264,12 @@ export class ConsultantService {
         return;
       }
 
-      console.log("setAdminConsultant DEB consultant, idAdmin, admin : ", consultant, id, obj)
+      this.logger.debug("setAdminConsultant DEB consultant, idAdmin, admin : ", consultant, id, obj)
       this.pendingAdminConsultantById.set(id, [{ consultant, fct }]);
 
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           const adminConsultant = data.body.result;
           const waiting = this.pendingAdminConsultantById.get(id) || [];
 
@@ -279,7 +283,7 @@ export class ConsultantService {
             let ca = this.mapConsul[id]
             this.mapConsul[id] = adminConsultant
           }
-          console.log("setAdminConsultant trouve dans server ca : ", adminConsultant);
+          this.logger.debug("setAdminConsultant trouve dans server ca : ", adminConsultant);
           this.pendingAdminConsultantById.delete(id);
         },
         error => {
@@ -288,7 +292,7 @@ export class ConsultantService {
             item.consultant.adminConsultant = null;
           }
           this.pendingAdminConsultantById.delete(id);
-          console.log("setAdminConsultant ERROR label consultant, err", label, consultant, error)
+          this.logger.debug("setAdminConsultant ERROR label consultant, err", label, consultant, error)
         }
       );
     }
@@ -304,11 +308,11 @@ export class ConsultantService {
     if (myObj && id && !obj) {
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj.consultant = data.body.result;
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     }
@@ -317,7 +321,7 @@ export class ConsultantService {
 
   majCra(myObj: Cra) {
     ////////////////
-    console.log("*** majCra DEB : myObj Cra : ", myObj)
+    this.logger.debug("*** majCra DEB : myObj Cra : ", myObj)
     let id = myObj.consultantId
     let label = "find consultant by id=" + id;
     let obj = myObj.consultant
@@ -327,17 +331,17 @@ export class ConsultantService {
     if (myObj && id && (!obj || !admin || !managerCra)) {
       this.findById(id).subscribe(
         data => {
-          console.log("*** majCra : label, data : ", label, data)
+          this.logger.debug("*** majCra : label, data : ", label, data)
           myObj.consultant = data.body.result;
-          console.log("*** majCra : myObj : ", myObj)
+          this.logger.debug("*** majCra : myObj : ", myObj)
           this.majAdminConsultant(myObj.consultant, () => {
             myObj.manager = myObj.consultant.adminConsultant
             this.majActivityInCra(myObj)
-            console.log("*** majCra END : myObj : Cra : ", myObj)
+            this.logger.debug("*** majCra END : myObj : Cra : ", myObj)
           });
         },
         error => {
-          console.log("majCra ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("majCra ERROR label myObj, err", label, myObj, error)
         }
       );
 
@@ -369,11 +373,11 @@ export class ConsultantService {
     if (myObj && id && !obj) {
       this.findById(id).subscribe(
         data => {
-          console.log(label, data)
+          this.logger.debug(label, data)
           myObj[consultantName] = data.body.result;
         },
         error => {
-          console.log("ERROR label myObj, err", label, myObj, error)
+          this.logger.debug("ERROR label myObj, err", label, myObj, error)
         }
       );
     }

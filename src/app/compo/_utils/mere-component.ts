@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { Consultant } from 'src/app/model/consultant';
 import { Esn } from 'src/app/model/esn';
 import { MyError } from 'src/app/resource/MyError';
+import { LoggerService } from 'src/app/service/logger.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { DataSharingService } from "../../service/data-sharing.service";
 
@@ -54,6 +55,10 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     this.userConnected = dataSharingService.userConnected;
     if (!this.listErrors) this.listErrors = []
   }
+
+  protected get logger(): LoggerService {
+    return this.dataSharingService.logger;
+  }
   ngAfterContentInit(): void {
     //
   }
@@ -70,7 +75,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   ngOnInit() {
-    console.log("Mere.ngOnInit deb")
+    this.logger.debug("Mere.ngOnInit deb")
 
     this.subscriptions.push(
       this.dataSharingService.infos$.subscribe(infos => this.listInfos = infos),
@@ -91,7 +96,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
           this.esnCurrent = esn;
           this.idEsnCurrent = esn.id;
           this.esnName = esn.name;
-          console.log("*** esnName mis à jour via esnCurrentReady$:", this.esnName);
+          this.logger.debug("*** esnName mis à jour via esnCurrentReady$:", this.esnName);
         }
       })
     );
@@ -133,15 +138,15 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     //     this.dataSharingService.idEsnCurrent = this.esnCurrent?.id 
     //     this.idEsnCurrent = this.dataSharingService.idEsnCurrent
 
-    //     console.log("**** setTimeout userConnected : ", this.userConnected)
-    //     console.log("**** setTimeout dataSharingService.userConnected : ", this.dataSharingService.userConnected)
+    //     this.logger.debug("**** setTimeout userConnected : ", this.userConnected)
+    //     this.logger.debug("**** setTimeout dataSharingService.userConnected : ", this.dataSharingService.userConnected)
     //     if(this.userConnected?.esn == null) this.userConnected = this.dataSharingService.userConnected
     //     this.esnCurrent = this.userConnected?.esn 
-    //     console.log("**** setTimeout esnCurrent : ", this.esnCurrent)
+    //     this.logger.debug("**** setTimeout esnCurrent : ", this.esnCurrent)
     //     if(this.esnCurrent != null) {
     //       this.idEsnCurrent = this.esnCurrent.id;
     //     }
-    //     console.log("**** setTimeout idEsnCurrent : ", this.idEsnCurrent)
+    //     this.logger.debug("**** setTimeout idEsnCurrent : ", this.idEsnCurrent)
     //   }, 3000
     // )
   }
@@ -161,7 +166,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
       if(this.userConnected) this.isUserLoggedIn = true ;
       res = userConnected.fullName;
     }
-    // //////////console.log("**** getUserFullName : res=", res, userConnected);
+    // //////////this.logger.debug("**** getUserFullName : res=", res, userConnected);
     return res;
   }
 
@@ -249,10 +254,10 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   // updateInfosObserver() {
-  //   // console.log("updateInfosObserver deb")
-  //   //////console.log("MERE updateInfosObservers this", this)
-  //   console.log("MERE updateInfosObservers listInfos", this.listInfos)
-  //   console.log("MERE updateInfosObservers listErrors", this.listErrors)
+  //   // this.logger.debug("updateInfosObserver deb")
+  //   //////this.logger.debug("MERE updateInfosObservers this", this)
+  //   this.logger.debug("MERE updateInfosObservers listInfos", this.listInfos)
+  //   this.logger.debug("MERE updateInfosObservers listErrors", this.listErrors)
   //   // this.listInfos = this.dataSharingService.listInfos;
   //   // this.listErrors = this.dataSharingService.listErrors;
   //   this.setInfosMere();
@@ -261,7 +266,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   // }
 
   clearInfos() {
-    //////////console.log("DBG MereComponent clearInfos")
+    //////////this.logger.debug("DBG MereComponent clearInfos")
     this.dataSharingService.clearInfosErrors()
     this.nbCallServer = 0
 
@@ -270,29 +275,29 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   setInfosMere() {
-    //////console.log("MERE setInfosMere infors", this.infors)
+    //////this.logger.debug("MERE setInfosMere infors", this.infors)
     if (this.infors) {
       this.infors.listInfos = this.listInfos;
       this.infors.listErrors = this.listErrors;
-      //////console.log("MERE setInfosMere infors.listInfos", this.infors.listInfos)
-      //////console.log("MERE setInfosMere infors.listErrors", this.infors.listErrors)
+      //////this.logger.debug("MERE setInfosMere infors.listInfos", this.infors.listInfos)
+      //////this.logger.debug("MERE setInfosMere infors.listErrors", this.infors.listErrors)
     }
     else {
-      //////console.log("!!!!!!!!!!!!!!!!!!!!!!! setInfosMere infors NOT EXIST !!!!!!!!!!!!!!!!!!!!!!!!", this)
+      //////this.logger.debug("!!!!!!!!!!!!!!!!!!!!!!! setInfosMere infors NOT EXIST !!!!!!!!!!!!!!!!!!!!!!!!", this)
     }
 
     if(this.userConnected) this.isUserLoggedIn = true ;
   }
 
   addInfo(info: string, isShowLoading = true) {
-    console.log("CallServer addInfo: info=" + info);
-    //////////console.log("///////// DATA SHARING add info " , info, this)
+    this.logger.debug("CallServer addInfo: info=" + info);
+    //////////this.logger.debug("///////// DATA SHARING add info " , info, this)
     this.isShowLoading = isShowLoading;
     this.dataSharingService.addInfo(info);
   }
 
   delInfo(info: string) {
-    console.log("CallServer delInfo: info=" + info);
+    this.logger.debug("CallServer delInfo: info=" + info);
     this.dataSharingService.delInfo(info)
   }
 
@@ -302,7 +307,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   //   //   this.listInfos = this.infors.listInfos ;
   //   // }
   //   // else {
-  //   //   //////console.log("!!!!!!!!!!!!!!!!!!!!!!! getlistInfos infors NOT EXIST !!!!!!!!!!!!!!!!!!!!!!!!", this)
+  //   //   //////this.logger.debug("!!!!!!!!!!!!!!!!!!!!!!! getlistInfos infors NOT EXIST !!!!!!!!!!!!!!!!!!!!!!!!", this)
   //   // }
   //   this.listInfos = this.dataSharingService.listInfos;
   //   return this.listInfos;
@@ -323,7 +328,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
 
   isError() {
     // this.listErrors = this.dataSharingService.listErrors;
-    //////console.log("IsError listErrors:", this.listErrors)
+    //////this.logger.debug("IsError listErrors:", this.listErrors)
     return this.listErrors && this.listErrors.length > 0;
   }
 
@@ -342,14 +347,14 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   addError(error: MyError) {
-    // console.log("addError error:", error)
+    // this.logger.debug("addError error:", error)
     if (!error || !error.msg) return
-    //////console.log("addError add msg:", error.msg)
+    //////this.logger.debug("addError add msg:", error.msg)
     this.dataSharingService.addError(error)
   }
 
   getErrorTitleMsg(err: MyError) {
-    // ////////console.log("getErrorTitleMsg err:", err)
+    // ////////this.logger.debug("getErrorTitleMsg err:", err)
     let s = '';
     if (err) {
       let title = err.title;
@@ -359,7 +364,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
         s = s + " : " + msg;
       }
     }
-    // ////////console.log("getErrorTitleMsg s="+ s)
+    // ////////this.logger.debug("getErrorTitleMsg s="+ s)
     return s;
   }
 
@@ -369,17 +374,17 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
 
   addErrorFromResultOfServer(id: string, data: any) {
     let error = this.utils.getErrorFromResultOfServer(data)
-    //////////console.log(">>>> addErrorFromResultOfServer: error=", error)
+    //////////this.logger.debug(">>>> addErrorFromResultOfServer: error=", error)
     this.addError(error);
-    //////////console.log("addErrorFromResultOfServer id="+id+" data:", data, error)
+    //////////this.logger.debug("addErrorFromResultOfServer id="+id+" data:", data, error)
     this.utils.showNotifSuccessOrError(error);
   }
 
   addErrorFromErrorOfServer(id: string, error: MyError) {
-    console.log("CallServer addErrorFromErrorOfServer id=" + id + " error:", error)
+    this.logger.debug("CallServer addErrorFromErrorOfServer id=" + id + " error:", error)
     // this.setError( this.getErrorStr() + " ; " + this.utils.getErrorFromErrorOfServer(error) );
     error = this.utils.getErrorFromErrorOfServer(error)
-    console.log("CallServer addErrorFromErrorOfServer processed error:", error)
+    this.logger.debug("CallServer addErrorFromErrorOfServer processed error:", error)
     this.addError(error);
     this.utils.showNotification("error", this.getErrorTitleMsg(error));
     this.endLoading(id)
@@ -399,36 +404,36 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   
   endLoading(id: string) {
     this.nbCallServer--;
-    console.log("endLoading id=" + id + " nbCallServer=" + this.nbCallServer);
+    this.logger.debug("endLoading id=" + id + " nbCallServer=" + this.nbCallServer);
     this.delInfo(id);
     
     // Correction: ne mettre isLoading à false que si plus aucun appel en cours
     if (this.nbCallServer <= 0) {
       this.nbCallServer = 0;
       this.isLoading = false;
-      console.log("CallServer endLoading: tous les appels terminés, isLoading=false");
+      this.logger.debug("CallServer endLoading: tous les appels terminés, isLoading=false");
     } else {
-      console.log("CallServer endLoading: encore " + this.nbCallServer + " appel(s) en cours, isLoading reste true");
+      this.logger.debug("CallServer endLoading: encore " + this.nbCallServer + " appel(s) en cours, isLoading reste true");
     }
 
-    console.log("CallServerendLoading id=" + id + " listInfos=" + this.listInfos);
-    console.log("CallServer endLoading id=" + id + " listErrors=" + this.listErrors);
+    this.logger.debug("CallServerendLoading id=" + id + " listInfos=" + this.listInfos);
+    this.logger.debug("CallServer endLoading id=" + id + " listErrors=" + this.listErrors);
   }
 
   setMyList(list: any[]): void { 
-    console.log("MereComponent.setMyList list :", list)
+    this.logger.debug("MereComponent.setMyList list :", list)
     // this.myList = list 
   }
 
   search() {
     // this.searchStr = this.searchStr.trim();
-    // console.log("this.searchStr="+this.searchStr)
+    // this.logger.debug("this.searchStr="+this.searchStr)
     if (!this.searchStr) { this.setMyList(this.myList00); }
     else { this.setMyList(this.utils.search(this.myList00, this.searchStr, this.colsSearch)); }
   }
 
   searchStrClick() {
-    console.log("disabsearchStrClick searchStrInput : ", this.searchStrInput)
+    this.logger.debug("disabsearchStrClick searchStrInput : ", this.searchStrInput)
     this.enableInputSearchStr();
   }
 
@@ -439,7 +444,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   disableInputSearchStr() {
-    // console.log("disableInputSearchStr DEB searchStrInput : ", this.constructor.name, this.searchStrInput)
+    // this.logger.debug("disableInputSearchStr DEB searchStrInput : ", this.constructor.name, this.searchStrInput)
     if (this.searchStrInput != null) {
       let inputElement = this.searchStrInput.nativeElement;
       inputElement.disabled = true;
@@ -447,7 +452,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   }
 
   enableInputSearchStr() {
-    // console.log("enableInputSearchStr DEB searchStrInput : ", this.constructor.name, this.searchStrInput)
+    // this.logger.debug("enableInputSearchStr DEB searchStrInput : ", this.constructor.name, this.searchStrInput)
     if (this.searchStrInput != null) {
       this.dataSharingService.isDisableSearchStrInput = false;
     }

@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { LoggerService } from 'src/app/service/logger.service';
 import { UtilsService } from 'src/app/service/utils.service';
 
 @Component({
@@ -12,27 +13,27 @@ export class MyCalendarComponent implements OnInit {
   selectedDate:Date = new Date();
   selectedDateStr : string = "";
 
-  constructor(public activeModal: NgbActiveModal, public changeRef: ChangeDetectorRef, private utils: UtilsService) { }
+  constructor(private logger: LoggerService, public activeModal: NgbActiveModal, public changeRef: ChangeDetectorRef, private utils: UtilsService) { }
 
   ngOnInit(): void {
     this.dateChanged(this.selectedDate)
   }
 
   dateChanged(event){
-    console.log(event)
+    this.logger.debug(event)
     this.selectedDate = event;
     this.selectedDateStr = this.utils.formatDate(this.selectedDate)
   }
 
   ok() {
-    //  //////////console.log("ok")
+    //  //////////this.logger.debug("ok")
     //this.choix="ok";
     //this.choix.emit("ok");
     this.activeModal.close('ok')
   }
 
   cancel() {
-    ////////////console.log("cancel")
+    ////////////this.logger.debug("cancel")
     //this.choix="cancel";
     //this.choix.emit("cancel");
     this.activeModal.close('cancel')

@@ -1,3 +1,6 @@
+
+
+
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { DataSharingService } from 'src/app/service/data-sharing.service';
@@ -37,7 +40,7 @@ export class PayementmodeFormComponent extends MereComponent {
 
   setFocusName(): void {
     if (this.nameHtml && this.nameHtml.nativeElement) {
-      //console.log('focus');
+      //this.logger.debug('focus');
       this.nameHtml.nativeElement.focus();
     }
   }
@@ -60,7 +63,7 @@ export class PayementmodeFormComponent extends MereComponent {
   }
 
   onSubmit() {
-    //console.log('onSubmit: myObj=', this.myObj);
+    //this.logger.debug('onSubmit: myObj=', this.myObj);
     this.beforeCallServer("onSubmit");
     this.payementModeService.save(this.myObj).subscribe(
       data => {
@@ -69,7 +72,7 @@ export class PayementmodeFormComponent extends MereComponent {
         if (!this.isError()) { this.gotoPayementsModesList(); }
       },
       error => {
-        //console.log('error:', error);
+        //this.logger.debug('error:', error);
         this.addErrorFromErrorOfServer("onSubmit", error);
       }
     );

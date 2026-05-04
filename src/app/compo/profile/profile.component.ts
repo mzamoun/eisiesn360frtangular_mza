@@ -44,9 +44,9 @@ export class ProfileComponent extends MereComponent {
   }
 
   onSubmit() {
-    console.log("profile onSubmit deb")
+    this.logger.debug("profile onSubmit deb")
     this.myObj.username = this.myObj.email;
-    //////////console.log("*************" + JSON.stringify(this.myObj))
+    //////////this.logger.debug("*************" + JSON.stringify(this.myObj))
     this.beforeCallServer("onSubmit");
     this.consultantService.save(this.myObj).subscribe(
       data => {
@@ -58,7 +58,7 @@ export class ProfileComponent extends MereComponent {
 
         if (!this.isError()) {
           this.dataSharingService.gotoMyProfile()
-          console.log("profile onSubmit fin no error")
+          this.logger.debug("profile onSubmit fin no error")
         }
       },
       error => {

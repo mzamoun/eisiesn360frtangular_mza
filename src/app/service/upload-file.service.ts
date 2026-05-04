@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,7 +14,7 @@ export class UploadFileService {
 
 	private url: string = environment.apiUrl+'/upload/';
 
-	constructor(private http: HttpClient) { }
+	constructor(private logger: LoggerService, private http: HttpClient) { }
   
   	upload(file: File): Observable<HttpEvent<any>> {
 		    const formData: FormData = new FormData();

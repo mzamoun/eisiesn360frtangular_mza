@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -27,12 +31,12 @@ export class ActivityService {
     return this.activity;
   }
 
-  constructor(private http: HttpClient, private utils: UtilsService, private dataSharingService : DataSharingService) {
+  constructor(private logger: LoggerService, private http: HttpClient, private utils: UtilsService, private dataSharingService : DataSharingService) {
     this.activityUrl = environment.apiUrl + '/activity/';
   }
 
   public findAllByConsultant(idConsultant : number): Observable<GenericResponse> {
-    console.log("findAllByConsultant idConsultant : ", idConsultant)
+    this.logger.debug("findAllByConsultant idConsultant : ", idConsultant)
 	  let url = this.activityUrl + "all";
 	  if(idConsultant > 0) url = this.activityUrl + "idConsultant/"+ idConsultant;
     return this.http.get<GenericResponse>(url);
@@ -49,12 +53,12 @@ export class ActivityService {
   }
 
   public save(activity: Activity): Observable<GenericResponse> {
-    ////////////console.log("save id=" + activity.id + ".");
+    ////////////this.logger.debug("save id=" + activity.id + ".");
     if (activity.id > 0) {
-      ////////////console.log("put update")
+      ////////////this.logger.debug("put update")
       return this.http.put<GenericResponse>(this.activityUrl, activity);
     } else {
-      ////////////console.log("post add")
+      ////////////this.logger.debug("post add")
       return this.http.post<GenericResponse>(this.activityUrl, activity);
     }
   }

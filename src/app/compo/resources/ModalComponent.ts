@@ -1,3 +1,4 @@
+import { LoggerService } from 'src/app/service/logger.service';
 // mymodal.component.ts
 import { Component, OnInit, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,7 +16,7 @@ export class ModalComponent implements OnInit {
 
   //@Output() choix = new EventEmitter();
  
-  constructor(public activeModal: NgbActiveModal) {}
+  constructor(private logger: LoggerService, public activeModal: NgbActiveModal) {}
  
   ngOnInit() {
   }

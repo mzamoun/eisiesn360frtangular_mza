@@ -1,3 +1,7 @@
+import { LoggerService } from './logger.service';
+
+
+
 import { Injectable } from '@angular/core';
 
 const lang0 = "fr";  //default lang"
@@ -7,7 +11,7 @@ const lang0 = "fr";  //default lang"
 })
 export class TradService {
 
-  constructor() {
+  constructor(private logger: LoggerService, ) {
     // localStorage.setItem('locale', code);
     this.lang = localStorage.getItem('locale');
   }
