@@ -1,9 +1,13 @@
-import { LoggerService } from 'src/app/service/logger.service';
+import { ElementRef } from '@angular/core';
 import { AuthorizationDirective } from './authorization.directive';
 
 describe('AuthorizationDirective', () => {
   it('should create an instance', () => {
-    const directive = new AuthorizationDirective();
+    const loggerStub: any = { debug: jasmine.createSpy('debug') };
+    const authzStub: any = { hasPermission: jasmine.createSpy('hasPermission').and.returnValue(true) };
+    const elementRefStub = { nativeElement: { style: {} } } as ElementRef;
+
+    const directive = new AuthorizationDirective(loggerStub, authzStub, elementRefStub);
     expect(directive).toBeTruthy();
   });
 });

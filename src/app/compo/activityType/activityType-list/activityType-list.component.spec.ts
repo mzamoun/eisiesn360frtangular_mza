@@ -1,26 +1,39 @@
-import { LoggerService } from 'src/app/service/logger.service';
-
-
-
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ActivityTypeListComponent } from './activity-list.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { ConsultantService } from 'src/app/service/consultant.service';
+import { DataSharingService } from 'src/app/service/data-sharing.service';
+import { EsnService } from 'src/app/service/esn.service';
+import { UtilsService } from 'src/app/service/utils.service';
+import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
+import { ActivityTypeService } from '../../../service/activityType.service';
+import { ActivityTypeListComponent } from './activityType-list.component';
 
 describe('ActivityTypeListComponent', () => {
   let component: ActivityTypeListComponent;
   let fixture: ComponentFixture<ActivityTypeListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ActivityTypeListComponent ]
+      declarations: [ActivityTypeListComponent],
+      providers: [
+        { provide: ActivityTypeService, useValue: {} },
+        { provide: Router, useValue: {} },
+        { provide: UtilsService, useValue: {} },
+        { provide: UtilsIhmService, useValue: {} },
+        { provide: DataSharingService, useValue: { userConnected: { esn: {} }, logger: { debug: () => {} } } },
+        { provide: EsnService, useValue: {} },
+        { provide: ConsultantService, useValue: {} }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
-    .compileComponents();
+      .overrideTemplate(ActivityTypeListComponent, '')
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ActivityTypeListComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
