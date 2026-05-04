@@ -5,7 +5,6 @@ import { Injectable, Injector } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { catchError, map, tap } from 'rxjs/operators';
 import { Credentials } from '../auth/credentials';
 import { TokenService } from '../auth/services/token.service';
 import { CraStateService, ServiceLocator } from "../core/core";
@@ -37,6 +36,8 @@ import { CraService } from './cra.service';
 import { EsnService } from './esn.service';
 
 import { MsgService } from './msg.service';
+import { NotificationFacade } from './notification.facade';
+import { UiFeedbackFacade } from './ui-feedback.facade';
 import { UtilsIhmService } from './utilsIhm.service';
 
 
@@ -76,22 +77,20 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   public serviceRegistry: Map<string, any> = new Map<string, any>();
   public userSelectedActivity: Consultant;
 
-  private infosSource = new BehaviorSubject<string[]>([]);
-  private errorsSource = new BehaviorSubject<MyError[]>([]);
   private esnCurrentReadySource = new BehaviorSubject<Esn>(null);
   private idEsnCurrentSource = new BehaviorSubject<number>(null);
   private currentCraSource = new BehaviorSubject<Cra>(null);
   private listCraSource = new BehaviorSubject<Cra[]>([]);
-  private listNotificationsSource = new BehaviorSubject<Notification[]>([]);
   private userConnectedSource = new BehaviorSubject<Consultant>(null);
 
-  infos$ = this.infosSource.asObservable();
-  errors$ = this.errorsSource.asObservable();
+  // -- Délégation aux facades (refactor progressif) --
+  get infos$() { return this.uiFeedback.infos$; }
+  get errors$() { return this.uiFeedback.errors$; }
+  get listNotifications$() { return this.notificationFacade.listNotifications$; }
   esnCurrentReady$ = this.esnCurrentReadySource.asObservable();
   idEsnCurrent$ = this.idEsnCurrentSource.asObservable();
   currentCra$ = this.currentCraSource.asObservable();
   listCra$ = this.listCraSource.asObservable();
-  listNotifications$ = this.listNotificationsSource.asObservable();
   userConnected$ = this.userConnectedSource.asObservable();
 
   // listInfos: Array<string> = [];
@@ -166,9 +165,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     , private http: HttpClient
     , public logger: LoggerService
     , private msgService: MsgService
+    , public uiFeedback: UiFeedbackFacade
+    , public notificationFacade: NotificationFacade
   ) {
     this.logger.debug("data-sharing constructor deb")
-    this.notificationUrl = environment.apiUrl + "/notifications";
+    // Hook : DataSharingService enrichit les CRA dans les notifications après chaque fetch
+    this.notificationFacade.postLoadHook = () => this.majListNotifications();
     this.getCurrentUserFromLocaleStorage()
 
     // Push initial userConnected value to observers
@@ -325,69 +327,39 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   addInfo(info: string) {
-    // this.listInfos.push(info);
-    // this.updateInfosObservers();
-    const current = this.infosSource.value;
-    this.infosSource.next([...current, info]);
+    this.uiFeedback.addInfo(info);
   }
 
   delInfo(info: string) {
-    const current = this.infosSource.value;
-    const index = current.indexOf(info);
-
-    if (index >= 0) {
-      const updated = [...current]; // copie
-      updated.splice(index, 1);
-      this.infosSource.next(updated);
-    }
+    this.uiFeedback.delInfo(info);
   }
 
 
   addErrorTxt(errorTxt: string) {
-    this.addError(new MyError("", errorTxt))
+    this.uiFeedback.addErrorTxt(errorTxt);
   }
 
   addError(error: MyError) {
-    this.logger.debug("DS addError error", error)
-    if (!error || !error.msg) return
-    //////this.logger.debug("DS addError msg", error.msg ) 
-    if (error.title) {
-      let title = error.title.toUpperCase();
-      if (title == "ERREUR 401" || title == "ERROR 401") {
-        error.msg += "\n" + ". Il est recomand\u00e9 de se reconnecter.";
-      }
-    }
-    // this.listErrors.push(error)
-    // this.updateInfosObservers();
-    const current = this.errorsSource.value;
-    this.errorsSource.next([...current, error]);
+    this.uiFeedback.addError(error);
   }
 
   delError(error: MyError) {
-    const current = this.errorsSource.value;
-    const index = current.findIndex(e => (e.msg === error.msg && e.title === error.title));
-
-    if (index >= 0) {
-      const updated = [...current];
-      updated.splice(index, 1);
-      this.errorsSource.next(updated);
-    }
+    this.uiFeedback.delError(error);
   }
 
 
   /** Efface toutes les infos */
   clearInfos() {
-    this.infosSource.next([]);
+    this.uiFeedback.clearInfos();
   }
 
   /** Efface toutes les erreurs */
   clearErrors() {
-    this.errorsSource.next([]);
+    this.uiFeedback.clearErrors();
   }
 
   clearInfosErrors() {
-    this.clearInfos()
-    this.clearErrors();
+    this.uiFeedback.clearInfosErrors();
   }
 
   /***
@@ -993,121 +965,30 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   /////////////// dash board 
 
 
-  notificationUrl: string;
+  // ---- Notifications : délégation à NotificationFacade ----
 
   public getListNotifications(): Notification[] {
-    return this.listNotificationsSource.value;
+    return this.notificationFacade.getListNotifications();
   }
 
   public setListNotifications(list: Notification[]): void {
-    this.listNotificationsSource.next(list);
+    this.notificationFacade.setListNotifications(list);
   }
 
-  /**
-   * GESTION SIMPLIFIÉE DES NOTIFICATIONS
-   * 
-   * Utilisation dans les composants :
-   * 
-   * 1. S'abonner aux notifications :
-   *    this.dataSharingService.listNotifications$.subscribe(notifications => {
-   *      this.notifications = notifications;
-   *    });
-   * 
-   * 2. Charger les notifications au démarrage :
-   *    this.dataSharingService.loadNotifications().subscribe();
-   * 
-   * 3. Rafraîchir les notifications :
-   *    this.dataSharingService.refreshNotifications();
-   * 
-   * Les notifications sont automatiquement mises à jour pour tous les abonnés
-   * via l'observable listNotifications$
-   */
-
-  /***
-   * used to retrieve all notification
-   */
-  private getNotificationsFromServer(): Observable<GenericResponse> {
-    return this.http.get<GenericResponse>(this.notificationUrl);
-  }
-
-  nbCallNotifications = 0;
-  private isCallNotifications = false;
-  private readonly notificationsCooldownMs = 3000;
-  private lastNotificationsFetchTs = 0;
-
-  /**
-   * Méthode centrale : fetch avec cooldown et garde anti-doublon.
-   * Retourne un Observable sur la liste résultante.
-   * loadNotifications, refreshNotifications et getNotifications délèguent ici.
-   */
-  private fetchNotificationsWithCooldown(): Observable<Notification[]> {
-    const now = Date.now();
-    const cached = this.getListNotifications() || [];
-
-    if (this.isCallNotifications) {
-      this.logger.debug('fetchNotificationsWithCooldown: appel en cours, retour du cache');
-      return of(cached);
-    }
-
-    if ((now - this.lastNotificationsFetchTs) < this.notificationsCooldownMs) {
-      return of(cached);
-    }
-
-    this.isCallNotifications = true;
-    this.nbCallNotifications++;
-    this.lastNotificationsFetchTs = now;
-    this.logger.debug('fetchNotificationsWithCooldown #', this.nbCallNotifications);
-
-    return this.getNotificationsFromServer().pipe(
-      tap((resp) => {
-        const notifications = resp?.body?.result || [];
-        this.setListNotifications(notifications);
-        this.majListNotifications();
-        this.isCallNotifications = false;
-        this.lastNotificationsFetchTs = Date.now();
-        this.logger.debug('fetchNotificationsWithCooldown: chargées, count =', notifications.length);
-      }),
-      map((resp) => resp?.body?.result || []),
-      catchError((error) => {
-        this.logger.error('fetchNotificationsWithCooldown: erreur', error);
-        this.isCallNotifications = false;
-        this.lastNotificationsFetchTs = Date.now();
-        return of(cached);
-      })
-    );
-  }
-
-  /**
-   * Charge les notifications — API Observable pour les composants.
-   */
   public loadNotifications(): Observable<Notification[]> {
-    return this.fetchNotificationsWithCooldown();
+    return this.notificationFacade.loadNotifications();
   }
 
-  /**
-   * Recharge les notifications (fire-and-forget).
-   */
   public refreshNotifications(): void {
-    this.fetchNotificationsWithCooldown().subscribe();
+    this.notificationFacade.refreshNotifications();
   }
 
-  /**
-   * Force un rechargement immédiat en ignorant le cooldown.
-   */
   public forceRefreshNotifications(): void {
-    this.lastNotificationsFetchTs = 0;
-    this.isCallNotifications = false;
-    this.fetchNotificationsWithCooldown().subscribe();
+    this.notificationFacade.forceRefreshNotifications();
   }
 
-  /**
-   * API callback pour les appelants legacy.
-   */
   public getNotifications(fctOk: Function, fctKo: Function) {
-    this.fetchNotificationsWithCooldown().subscribe(
-      (notifications) => { if (fctOk) fctOk(notifications); },
-      (error) => { if (fctKo) fctKo(error); }
-    );
+    this.notificationFacade.getNotifications(fctOk, fctKo);
   }
 
   majListNotifications() {
@@ -1161,16 +1042,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * add new notification
    */
   public addNotificationServer(notification: Notification): Observable<GenericResponse> {
-    return this.http.post<GenericResponse>(this.notificationUrl, notification);
+    return this.notificationFacade.addNotificationServer(notification);
   }
 
   addNotification(notification: Notification, fctOk: Function, fctKo: Function) {
-    this.addNotificationServer(notification).subscribe((data) => {
-      this.getNotifications(fctOk, fctKo)
-    }, error => {
-      this.logger.error("add notification error", error);
-      if (fctKo) fctKo(error);
-    })
+    this.notificationFacade.addNotification(notification, fctOk, fctKo);
   }
 
   /***
@@ -1178,16 +1054,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * @param notification
    */
   public saveNotificationServer(notification: Notification): Observable<GenericResponse> {
-    return this.http.put<GenericResponse>(this.notificationUrl, notification);
+    return this.notificationFacade.saveNotificationServer(notification);
   }
 
   saveNotification(notification: Notification, fctOk: Function, fctKo: Function) {
-    this.saveNotificationServer(notification).subscribe((data) => {
-      this.getNotifications(fctOk, fctKo)
-    }, error => {
-      this.logger.error("save notification error", error);
-      if (fctKo) fctKo(error);
-    })
+    this.notificationFacade.saveNotification(notification, fctOk, fctKo);
   }
 
   /***
@@ -1195,50 +1066,23 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    * @param id
    */
   public deleteNotificationServer(id: number): Observable<GenericResponse> {
-    return this.http.delete<GenericResponse>(this.notificationUrl + "/deleteById/" + id);
+    return this.notificationFacade.deleteNotificationServer(id);
   }
 
   deleteNotification(id: number, fctOk: Function, fctKo: Function) {
-    this.deleteNotificationServer(id).subscribe((data) => {
-      this.getNotifications(fctOk, fctKo)
-    }, error => {
-      this.logger.error("delete notification error id=" + id, error);
-      if (fctKo) fctKo(error);
-    })
+    this.notificationFacade.deleteNotification(id, fctOk, fctKo);
   }
 
   public deleteNotificationsOfConsultant(consultantId: number, fctOk: Function, fctKo: Function) {
-    let label = "deleteNotificationsOfConsultant consultantId=" + consultantId
-    this.logger.debug(label, "START")
-    this.http.delete<GenericResponse>(this.notificationUrl + "/deleteByConsultantId/" + consultantId).subscribe((data) => {
-      this.logger.debug(label, "deleteByConsultantId success", data)
-      this.getNotifications(fctOk, fctKo)
-    }, error => {
-      this.logger.error(label, "deleteByConsultantId error consultantId=" + consultantId, error);
-      if (fctKo) fctKo(error);
-    })
+    this.notificationFacade.deleteNotificationsOfConsultant(consultantId, fctOk, fctKo);
   }
 
   public deleteNotifications(fctOk: Function, fctKo: Function) {
-    let label = "deleteNotifications"
-    this.addInfo(label)
-    this.http.delete<GenericResponse>(this.notificationUrl + "/deleteAllByToUsername/" + this.getLastUserName()).subscribe((data) => {
-      this.logger.debug(label, "deleteAll success", data)
-      this.delInfo(label)
-      this.getNotifications(fctOk, fctKo)
-    }, error => {
-      this.logger.error(label, "deleteAll error", error);
-      this.delInfo(label)
-      if (fctKo) fctKo(error);
-    })
+    this.notificationFacade.deleteNotifications(this.getLastUserName(), fctOk, fctKo);
   }
 
   public getNotificationNettoyee(notification: Notification): Notification {
-
-    notification.createdDate = this.utils.getDate(notification.createdDate);
-
-    return notification;
-
+    return this.notificationFacade.getNotificationNettoyee(notification);
   }
 
   ///////////////////
@@ -1369,7 +1213,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           }, (errorSave) => {
             this.logger.error("saveCodeEmailToValidate error : ", errorSave);
 
-            this.errorsSource.value.push(new MyError("Erreur lors de l'enregistrement du code de validation d'email.", JSON.stringify(errorSave)));
+            this.uiFeedback.addError(new MyError("Erreur lors de l'enregistrement du code de validation d'email.", JSON.stringify(errorSave)));
           }
         );
 
@@ -1425,7 +1269,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
               callbacks.next(data);
             }
           }, (errorSave, mesg) => {
-            this.errorsSource.value.push(new MyError(
+            this.uiFeedback.addError(new MyError(
               "Erreur lors de la sauvegarde du code de réinitialisation.",
               JSON.stringify(errorSave)
             ));
@@ -1440,7 +1284,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         this.logger.error(label + ": ❌ Erreur lors de l'envoi du mail");
         this.logger.error(label + ": Error: ", error);
 
-        this.errorsSource.value.push(new MyError(
+        this.uiFeedback.addError(new MyError(
           "❌ Erreur lors de l'envoi du mail de réinitialisation.",
           JSON.stringify(error)
         ));
