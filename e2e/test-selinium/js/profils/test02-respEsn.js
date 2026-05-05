@@ -1,5 +1,6 @@
 import { Builder } from 'selenium-webdriver';
 
+import * as cte from "../lib/_ctes.js";
 import * as utils from "../lib/_utils.js";
 import * as activity from "../lib/lib-test-activity.js";
 import * as client from "../lib/lib-test-client.js";
@@ -10,7 +11,7 @@ import * as project from "../lib/lib-test-project.js";
 
 
 var username = 'resp.esn.demo1@ens-demo1.com';
-var password = "Eisi2020";
+var password = cte.password;
 var driver = null;
 var isLogued = false;
 

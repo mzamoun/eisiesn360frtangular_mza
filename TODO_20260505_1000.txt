@@ -1,0 +1,130 @@
+================================================================================
+  BACKLOG PRIORISÉ - eisiesn360frtangular
+  Généré le : 2026-05-05 10:00
+  Etat de départ : build OK, 160/160 tests unitaires OK, commit propre
+================================================================================
+
+--------------------------------------------------------------------------
+PRIORITÉ 1 — QUICK WINS FRONTEND (self-contained, haute valeur UX)
+--------------------------------------------------------------------------
+
+DONE : 2026-05-05 10:30 : P1-01 : Tableau "5 derniers logins" sur la page de connexion :
+    Fichiers : src/app/auth/components/login/login.component.{html,ts}
+    Description : Afficher sous le formulaire login un tableau des 5 dernières
+                  connexions différentes (triées par date desc) stockées en
+                  localStorage. Colonnes : login, date/heure.
+    Critères : clé localStorage 'lastLogins' (tableau JSON max 5 entrées unique
+               par username, mis à jour après chaque connexion réussie).
+
+DONE : 2026-05-05 10:45 : P1-02 : Bouton unique "Ajouter CRA / Congé" avec sélecteur de type
+    Fichiers : src/app/compo/cra/cra-list/cra-list.component.{html,ts}
+    Description : Remplacer les deux boutons séparés (addCra / addConge) par
+                  un seul bouton "Ajouter". Au clic : dialog ou radio-btn inline
+                  permettant de choisir le type (CRA par défaut, ou CONGE),
+                  puis navigation vers le formulaire avec le bon typeCra.
+    Critères : un seul bouton visible, type sélectionnable, comportement identique
+               à l'ancien double-bouton.
+
+--------------------------------------------------------------------------
+PRIORITÉ 2 — SERVICES FONCTIONNELS (refactoring / nouveaux services)
+--------------------------------------------------------------------------
+
+DONE : 2026-05-05 11:00 : P2-01 : Service i18n - mapping pays/langue
+    Fichiers : src/app/service/i18n.service.ts (nouveau)
+    Description : Créer un service injectable contenant :
+                  - mapPaysLangue : { pays, lang }[]
+                  - getLangueByPays(pays: string): string
+                  - pays par défaut : France → fr
+                  - fallback si pays inconnu : en
+                  Pays ciblés en priorité : FR, NL, UK, DE, CA, DZ, TN, LY, MR
+    Critères : service testé (spec), utilisable par TradService.
+
+DONE : 2026-05-05 11:15 : P2-02 : Extraction service jours fériés par pays
+    Fichiers : src/app/service/jours-feries.service.ts (nouveau)
+    Description : Extraire la logique de calcul des jours fériés (actuellement
+                  dans le composant CRA ou service existant) vers un service
+                  dédié paramétré par pays/langue :
+                  FR → jours fériés français
+                  NL → néerlandais
+                  UK → anglais
+                  DE → allemands
+                  CA → canadiens (fr)
+    Critères : service injectable, méthode getJoursFeries(year, pays): Date[].
+
+DONE : 2026-05-05 11:30 : P2-03 : Extension TradService — ajout EN et AR
+    Fichiers : src/app/service/trad.service.ts
+    Description : Pour chaque clé de traduction existante en 'fr', ajouter les
+                  équivalents en 'en' (anglais) et 'ar' (arabe, RTL).
+                  Priorité sur les labels de l'interface principale (dashboard,
+                  CRA, login, notifications).
+    Critères : getLang() retourne 'fr'|'en'|'ar', toutes les clés UI principales
+               ont leurs 3 traductions.
+
+--------------------------------------------------------------------------
+PRIORITÉ 3 — FONCTIONNEL MÉTIER (flows complexes)
+--------------------------------------------------------------------------
+
+DONE : 2026-05-05 11:45 : P3-01 : Navigation dashboard par rôle — vérification / complétion
+    Fichiers : src/app/compo/dashboard/dashboard.component.{html,ts}
+    Description : Vérifier que les tabs dashboard respectent le plan :
+                  ADMIN      → profil, notifications, list_esn, list_consultants
+                  RESP_ESN   → profil, notifications, my_esn, list_consultants, list_cra
+                  MANAGER    → profil, notifications, my_esn, list_consultants, list_cra
+                  CONSULTANT → profil, notifications, my_esn, list_consultants, list_cra
+                  Corriger les écarts si nécessaire.
+
+[ ] P3-02 : Flux inscription ESN complet (frontend)  [DIFFÉRÉ — complexité élevée]
+    Fichiers : src/app/compo/inscription/, src/app/auth/
+    Description : Mettre en place côté frontend :
+                  a) Formulaire d'inscription ESN (nom ESN, email resp, mdp)
+                  b) Page de confirmation "vérifiez votre email"
+                  c) Page de validation email (/validateEmail/:token)  ← déjà partielle
+                  d) Redirection vers login avec message post-inscription
+                  e) Ecran "accès bloqué - paiement en attente" pour ESN en dépassement
+                  f) Formulaire de changement de mot de passe provisoire (1ère connexion)
+    Critères : parcours navigable de bout en bout côté frontend.
+
+--------------------------------------------------------------------------
+PRIORITÉ 4 — TESTS D'INTÉGRATION / E2E
+--------------------------------------------------------------------------
+
+DONE : 2026-05-05 14:00 : P4-01 : Structure tests Selenium — 4 profils
+    Fichiers : e2e/test-selinium/ (existant)
+    Description : Créer des scripts Selenium (JS) pour les scénarios principaux :
+                  - admin : créer ESN, créer consultant, voir tableau de bord
+                  - resp_esn : ajouter manager, voir liste consultants
+                  - manager : ajouter consultant, valider CRA
+                  - consultant : créer CRA, soumettre pour validation
+    Critères : fichiers de scénarios lisibles, commentés, exécutables manuellement.
+
+--------------------------------------------------------------------------
+PRIORITÉ 5 — DOCUMENTATION
+--------------------------------------------------------------------------
+
+DONE : 2026-05-05 14:15 : P5-01 : Documentation installation Azure
+    Fichier : docs/INSTALL_AZURE.md
+    Description : Étapes pour déployer le frontend Angular sur Azure Static Web Apps
+                  ou Azure App Service. Prérequis, commandes, variables d'env.
+
+DONE : 2026-05-05 14:20 : P5-02 : Documentation installation locale
+    Fichier : docs/INSTALL_LOCAL.md
+    Description : Prérequis Node/Angular, clone, npm install, ng serve,
+                  configuration environment local.
+
+DONE : 2026-05-05 14:25 : P5-03 : Documentation utilisation
+    Fichier : docs/USAGE.md
+    Description : Guide utilisateur par rôle (admin, resp_esn, manager, consultant).
+                  Captures d'écran optionnelles.
+
+================================================================================
+SUIVI D'EXÉCUTION
+================================================================================
+(les tâches complétées seront marquées : DONE : YYYY-MM-DD HH:MM)
+
+================================================================================
+RÉSUMÉ FINAL
+================================================================================
+Complétées : P1-01, P1-02, P2-01, P2-02, P2-03, P3-01, P4-01, P5-01, P5-02, P5-03
+Différées   : P3-02 (flux inscription ESN — trop complexe pour cette session)
+Tests unita : 184/184 SUCCESS
+Build       : ng build --configuration development → OK

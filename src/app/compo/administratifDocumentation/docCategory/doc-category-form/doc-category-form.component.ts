@@ -12,7 +12,7 @@ import { UtilsService } from 'src/app/service/utils.service';
 })
 export class DocCategoryFormComponent extends MereComponent {
 
-  title = 'Category Form';
+  title = '';
   titleList = this.utils.tr("List") + " " + "Categories";
   btnSaveTitle = 'Add';
   isAdd: string;

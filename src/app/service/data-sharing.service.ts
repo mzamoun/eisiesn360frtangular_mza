@@ -558,6 +558,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           this.isUserLoggedInFct.next(true);
 
           this.setKey(UtilsService.TOKEN_STORAGE_KEY_LAST_USERNAME, credentials.username)
+          this.saveLastLoginHistory(credentials.username)
 
           this.getConsultantConnectedAndHisInfos(credentials.username, caller);
 
@@ -574,6 +575,19 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         }
       }
       );
+  }
+
+  saveLastLoginHistory(username: string): void {
+    const key = UtilsService.TOKEN_STORAGE_KEY_LAST_LOGINS;
+    const now = new Date().toISOString();
+    let logins: { username: string; date: string }[] = [];
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) logins = JSON.parse(raw);
+    } catch (_) { logins = []; }
+    // Insert new entry at top, keep max 5 unique entries
+    logins = [{ username, date: now }, ...logins.filter(l => l.username !== username)].slice(0, 5);
+    localStorage.setItem(key, JSON.stringify(logins));
   }
 
   public logout(): void {

@@ -53,12 +53,12 @@ export class CategoryFormComponent extends MereComponent {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
     }
     if (this.isAdd == 'true') {
-      this.btnSaveTitle = 'Add';
-      this.title = 'Nouvelle Categorie de Note de Frais';
+      this.btnSaveTitle = this.utils.tr('Add');
+      this.title = this.utils.tr('app.compo.category.form.new');
       this.myObj = new Category();
     } else {
-      this.btnSaveTitle = 'Save';
-      this.title = 'Edit Category';
+      this.btnSaveTitle = this.utils.tr('Save');
+      this.title = this.utils.tr('app.compo.category.form.edit');
       const categoryP: Category = this.categoryService.getCategorie();
 
       if (categoryP != null) { this.myObj = categoryP; } else if (this.myObj == null) { this.myObj = new Category(); }

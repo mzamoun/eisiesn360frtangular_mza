@@ -24,7 +24,7 @@ export class CraListComponent extends MereComponent {
 
   // info00: string = '' ;
 
-  title: string = "List Cra/" + this.utils.tr('Conge')
+  title: string = ""
   myList: Cra[];
   listCraFiltred: Cra[];
   consultants: Consultant[];
@@ -52,6 +52,7 @@ export class CraListComponent extends MereComponent {
 
   ngOnInit() {
 
+    this.title = this.utils.tr('List') + " " + this.utils.tr('Cra') + "/" + this.utils.tr('Conge');
     this.logger.debug("cla-list ngOnInit userConnected", this.userConnected)
 
     this.dataSharingService.getNotifications(null, null);
@@ -136,9 +137,13 @@ export class CraListComponent extends MereComponent {
   }
 
   addNewCra() {
+    this.addNew('CRA');
+  }
+
+  addNew(type: string) {
     this.clearInfos();
-    this.dataSharingService.typeCra = "CRA"
-    this.router.navigate(['/cra_form'], { queryParams: { 'isAdd': 'true' } });
+    this.dataSharingService.typeCra = type;
+    this.router.navigate(['/cra_form'], { queryParams: { 'isAdd': 'true', 'typeCra': type } });
   }
 
   showCra(cra: Cra, event: any) {

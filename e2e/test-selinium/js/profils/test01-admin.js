@@ -9,7 +9,7 @@ import * as mp from "../lib/lib-test-mode-paiment.js";
 import * as vac from "../lib/lib-test-vacance.js";
 
 var username = 'admin@eisi-consulting.fr';
-var password = "Eisi2020";
+var password = cte.password;
 var driver = null;
 var isLogued = false;
 

@@ -5,6 +5,10 @@ export async function createCra(driver) {
         await driver.findElement(By.id('myNavbar')).click();
         await driver.findElement(By.id('craAppLink')).click();
         await driver.sleep(1000);
+        // Ouvrir le dropdown Ajouter CRA/Conge
+        await driver.findElement(By.id('addCraDropdown')).click();
+        await driver.sleep(300);
+        // Selectionner CRA dans le menu
         await driver.findElement(By.id('addCra')).click();
         await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
 

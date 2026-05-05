@@ -16,7 +16,6 @@ import { UtilsService } from "../../service/utils.service";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent extends MereComponent {
-  title0 = "Notifications"
   language: string;
   notifications: Notification[]
   nbNotificationNotViewed = 0

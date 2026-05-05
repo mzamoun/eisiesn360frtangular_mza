@@ -3,13 +3,13 @@
         <div class="left">
             <div class="btn-group">
                 <div class="btn btn-primary" id="cra-config-view-date1" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate" (click)="viewDateChange()">
-                    Previous
+                    {{utils.tr('Previous')}}
                 </div>
                 <div class="btn btn-secondary" id="cra-config-view-date2" mwlCalendarToday [(viewDate)]="viewDate" (click)="viewDateChange()">
-                    Today
+                    {{utils.tr('Today')}}
                 </div>
                 <div class="btn btn-primary" id="cra-config-view-date3" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate" (click)="viewDateChange()">
-                    Next
+                    {{utils.tr('Next')}}
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
         </mwl-calendar-month-view>
     </div>
     <div class="card-footer">
-        <button class="btn btn-primary right" id="cra-config-update" (click)="update()" [appAuthorization] feature="HOLIDAY_MANAGEMENT" permission="UPDATE">UPDATE</button>
+        <button class="btn btn-primary right" id="cra-config-update" (click)="update()" [appAuthorization] feature="HOLIDAY_MANAGEMENT" permission="UPDATE">{{utils.tr('Update')}}</button>
     </div>
 </div>
 
@@ -48,20 +48,20 @@
 <ng-template #holidayDialogView let-modal>
   <div class="modal-header">
     <h5 class="modal-title">
-      {{ isEditingExistingHoliday ? 'Modifier le congé personnel' : 'Ajouter un congé personnel' }}
+      {{ isEditingExistingHoliday ? utils.tr('app.compo.craConfig.editHoliday') : utils.tr('app.compo.craConfig.addHoliday') }}
     </h5>
     <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    <label class="form-label">Titre de l'événement</label>
+    <label class="form-label">{{utils.tr('app.compo.craConfig.eventTitle')}}</label>
     <input type="text" class="form-control" [(ngModel)]="editingHolidayTitle" />
   </div>
   <div class="modal-footer">
-    <button *ngIf="isEditingExistingHoliday" class="btn btn-danger" (click)="deleteSelectedHoliday()">Supprimer</button>
+    <button *ngIf="isEditingExistingHoliday" class="btn btn-danger" (click)="deleteSelectedHoliday()">{{utils.tr('Delete')}}</button>
     <button class="btn btn-primary" (click)="confirmHoliday()">
-      {{ isEditingExistingHoliday ? 'Modifier' : 'Ajouter' }}
+      {{ isEditingExistingHoliday ? utils.tr('Edit') : utils.tr('Add') }}
     </button>
-    <button class="btn btn-secondary" (click)="modal.dismiss()">Annuler</button>
+    <button class="btn btn-secondary" (click)="modal.dismiss()">{{utils.tr('app.common.cancel')}}</button>
   </div>
 </ng-template>
 

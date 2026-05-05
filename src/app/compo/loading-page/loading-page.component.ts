@@ -1,5 +1,6 @@
-import { LoggerService } from 'src/app/service/logger.service';
 import { Component, OnInit } from '@angular/core';
+import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 @Component({
   selector: 'app-loading-page',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoadingPageComponent implements OnInit {
 
-  constructor(private logger: LoggerService, ) { }
+  constructor(private logger: LoggerService, public utils: UtilsService) { }
 
   ngOnInit(): void {
   }

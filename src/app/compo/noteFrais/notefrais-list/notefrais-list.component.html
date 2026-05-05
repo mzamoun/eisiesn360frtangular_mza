@@ -7,7 +7,7 @@
     <div *ngIf="!loadingComponenet" class="card-body">
         <div style="display: flex; justify-content: center; align-items: center; " class=""> 
 	<h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
-	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">Refresh</button>
+	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">{{utils.tr('Refresh')}}</button>
 </div>
 
         <div class="right" style="width: 40%;" name="searchDiv">
@@ -15,7 +15,7 @@
                 placeholder="search" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()"
                 (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
             <button class="right" style="width: 10%; height: 40px; text-align: center;"
-                (click)="clearSearch()">X</button>
+                (click)="clearSearch()">{{utils.tr('Clear')}}</button>
         </div>
 
         <div class="col-4" [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="VIEW">
@@ -111,7 +111,7 @@
     <!--dateView start-->
     <ng-template #dateView let-modal>
         <div class="modal-header">
-            <h5 class="modal-title">Séléctionnez la date de paiement</h5>
+            <h5 class="modal-title">{{utils.tr('app.compo.frais.list.selectPaymentDate')}}</h5>
             <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -132,7 +132,7 @@
         <div class="modal-footer">
             <button (click)="payNoteFrais()" id="btn-notefrais-list-valid-pay" class="btn btn-info" type="submit">
                 <i class="fas fa-check-circle"></i>
-                Valider
+                {{utils.tr('Validate')}}
             </button>
         </div>
     </ng-template>

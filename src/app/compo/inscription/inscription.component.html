@@ -1,5 +1,5 @@
 <div style="width: 100%; margin-top: 30px; margin-left: 20px;">
-    <h2 class="left">Inscription ESN & Responsable</h2>
+    <h2 class="left">{{utils.tr('app.compo.inscription.title')}}</h2>
 
     <button mat-button (click)="cancel()" class="right" title="Cancel">
         <h2>X</h2>
@@ -34,10 +34,10 @@
 
         <div *ngIf="dataSharingService.esnSaved && dataSharingService.respEsnSaved">
             <button mat-raised-button color="primary" (click)="onSubmit()" title="Valider">
-                <h2>Valider</h2>
+                <h2>{{utils.tr('Validate')}}</h2>
             </button>
             <button mat-button (click)="cancel()" title="Cancel">
-                <h2>Annuler</h2>
+                <h2>{{utils.tr('app.common.cancel')}}</h2>
             </button>
         </div>
     </div>

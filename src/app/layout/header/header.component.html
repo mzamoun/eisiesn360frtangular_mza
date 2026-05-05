@@ -22,23 +22,25 @@
                         aria-expanded="true">{{language | uppercase}}</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" id="header-language-en" (click)="changeLanguage('en')"><span
-                                class="flag-icon flag-icon-us"> </span> EN</a>
+                            class="flag-icon flag-icon-us"> </span> {{utils.tr('app.header.language.en')}}</a>
                         <a class="dropdown-item" id="header-language-fr" (click)="changeLanguage('fr')"><span
-                                class="flag-icon flag-icon-fr"> </span> FR</a>
+                            class="flag-icon flag-icon-fr"> </span> {{utils.tr('app.header.language.fr')}}</a>
+                        <a class="dropdown-item" id="header-language-ar" (click)="changeLanguage('ar')"><span
+                            class="flag-icon flag-icon-sa"> </span> {{utils.tr('app.header.language.ar')}}</a>
                     </div>
                 </div>
 
                 <div class="bgcolor_tranp00" class="left">
                     <button type="button" class="btn btn-light" id="dropdown02" data-toggle="dropdown"
                         aria-haspopup="true">
-                        {{title0}} <span class="badge badge-pill badge-danger">{{nbNotificationNotViewed}}</span>
+                        {{utils.tr('main.menu.navbar.navitem.setting.user.notification')}} <span class="badge badge-pill badge-danger">{{nbNotificationNotViewed}}</span>
                     </button>
 
                     <div class="dropdown-menu h_scroll bgcolor_tranp00 notifications-dropdown-menu" aria-labelledby="dropdown02">
                         <app-notification [isOnlyNotViewed]="true" [isShowBtns]="false"
                             idPagination="idPaginationNotViewed" #notificationCompo></app-notification>
                         <a class="btn btn-primary title100pct" (click)="showNotificationsAll()">
-                            <h5>Voir toutes les notifications</h5>
+                            <h5>{{utils.tr('app.header.notifications.showAll')}}</h5>
                         </a>
                     </div>
 
@@ -60,7 +62,7 @@
             </div>
 
             <div *ngIf="!isUserLoggedIn">
-                <a routerLink="/login" id="header-login" class="btn btn-auth-gen">LOGIN</a>
+                <a routerLink="/login" id="header-login" class="btn btn-auth-gen">{{utils.tr('app.header.login')}}</a>
             </div>
 
 

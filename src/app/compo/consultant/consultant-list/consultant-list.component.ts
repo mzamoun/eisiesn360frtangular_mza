@@ -22,7 +22,7 @@ export class ConsultantListComponent extends MereComponent {
 
     @ViewChild('myConsultants', { static: false }) myConsultants;
 
-    title: string = "List Consultants"
+    title: string = this.utils.tr("List") + " " + this.utils.tr("Consultant")
 
     myList: Consultant[];
     myObj: Consultant;

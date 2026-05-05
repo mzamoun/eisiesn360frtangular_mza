@@ -4,7 +4,7 @@
 
         <div style="display: flex; justify-content: center; align-items: center; " class=""> 
 	<h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
-	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">Refresh</button>
+	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">{{utils.tr('Refresh')}}</button>
 </div>
 
         <div class="right" style="width: 40%;" name="searchDiv">
@@ -12,7 +12,7 @@
                 placeholder="search" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()"
                 (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
             <button class="right" style="width: 10%; height: 40px; text-align: center;"
-                (click)="clearSearch()">X</button>
+                (click)="clearSearch()">{{utils.tr('Clear')}}</button>
         </div>
 
         <table class="table table-bordered table-striped">
@@ -67,15 +67,19 @@
         </div>
         <div class="right" style="width: 50%;" *ngIf="nbCallServer == 0">
 
-            <div style="float: right;"><a id="addConge" [routerLink]="['/cra_form']"
-                    [queryParams]="{isAdd:true,typeCra:'CONGE'}" class="btn btn-info bg-conge" [appAuthorization]
-                    feature="CRA_MANAGEMENT"
-                    permission="CREATE">{{utils.tr("app.compo.cra.list.table.action.addConge")}}</a>
-            </div>
-
-            <div id="addCra" class="btn btn-info" style="float: right;" [appAuthorization] feature="CRA_MANAGEMENT"
-                permission="CREATE" (click)="addNewCra()">
-                {{utils.tr("app.compo.cra.list.table.action.addCra")}}
+            <div class="dropdown" style="float: right;" [appAuthorization] feature="CRA_MANAGEMENT" permission="CREATE">
+                <button class="btn btn-info dropdown-toggle" type="button" id="addCraDropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{utils.tr("app.compo.cra.list.table.action.addCra")}}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="addCraDropdown">
+                    <a class="dropdown-item" id="addCra" (click)="addNew('CRA')">
+                        {{utils.tr("app.compo.cra.list.table.action.addCra")}}
+                    </a>
+                    <a class="dropdown-item bg-conge" id="addConge" (click)="addNew('CONGE')">
+                        {{utils.tr("app.compo.cra.list.table.action.addConge")}}
+                    </a>
+                </div>
             </div>
 
         </div>
@@ -83,13 +87,13 @@
         <hr />
         <div class="card" *ngIf="accessCraConsultants()">
             <div class="card-header text-center">
-                <h4>HISTORY CRA CONSULTANT</h4>
+                <h4>{{utils.tr('app.compo.cra.list.historyTitle')}}</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group">
-                            <label for="esnList">Consultant</label>
+                            <label for="esnList">{{utils.tr('Consultant')}}</label>
                             <app-select #compoSelectConsultant [selectId]="'cra-list-select-consultant'"
                                 [objectName]="'Consultant'" [myList]="consultants" [initObj]="filterConsultant"
                                 [objCaller]="this" onChangeCaller="onSelectConsultant"
@@ -99,7 +103,7 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                            <label class="px-2"> Month : </label>
+                            <label class="px-2">{{utils.tr('Month')}} :</label>
                             <span *ngIf="filterMonth" class="label label-info"> {{filterMonth | date :'yyyy-MM'}}
                             </span>
                             <button *ngIf="filterMonth" id="btn-cra-list-delete-filter-month"
@@ -111,19 +115,19 @@
                     </div>
                 </div>
                 <button class="btn btn-outline-primary  mb-2" id="btn-cra-list-filter-cra"
-                    (click)="getFilteredCra()">Search</button>
+                    (click)="getFilteredCra()">{{utils.tr('Search')}}</button>
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Consultant</th>
-                            <th scope="col">Month</th>
-                            <th scope="col">Valid By Consultant</th>
-                            <th scope="col">Valid By Manager</th>
-                            <th scope="col">Date CR</th>
+                            <th scope="col">{{utils.tr('Consultant')}}</th>
+                            <th scope="col">{{utils.tr('Month')}}</th>
+                            <th scope="col">{{utils.tr('app.compo.cra.list.validByConsultant')}}</th>
+                            <th scope="col">{{utils.tr('app.compo.cra.list.validByManager')}}</th>
+                            <th scope="col">{{utils.tr('app.compo.cra.list.dateCR')}}</th>
                             <th scope="col">{{ utils.tr('app.compo.esn.list.table.thead.lastUpdateDate') }}</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">{{utils.tr('Status')}}</th>
+                            <th scope="col">{{utils.tr('Action')}}</th>
                         </tr>
                     </thead>
                     <tbody>

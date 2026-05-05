@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { SignupDialogComponent } from 'src/app/compo/_dialogs/signup-dialog/signup-dialog.component';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 import { Credentials } from '../../credentials';
 
 @Component({
@@ -20,8 +21,15 @@ export class LoginComponent implements OnInit {
   showForgotPasswordForm = false;
   forgotPasswordEmail = "";
   isLoadingResetEmail = false;
+  lastLogins: { username: string; date: string }[] = [];
 
-  constructor(private logger: LoggerService, private dataSharingService: DataSharingService, private router: Router, private dialog: MatDialog) {
+  constructor(
+    private logger: LoggerService,
+    private dataSharingService: DataSharingService,
+    private router: Router,
+    private dialog: MatDialog,
+    public utils: UtilsService
+  ) {
   }
 
   ngOnInit() {
@@ -31,13 +39,19 @@ export class LoginComponent implements OnInit {
     if (this.dataSharingService.isLoggedIn()) {
       this.logger.debug("login ngOnInit : user déjà loggé, redirection vers home")
       this.dataSharingService.gotoMyHome()
-      // this.dataSharingService.gotoMyProfile()
-      //  this.authService.gotoLogin()
     }
     if (!this.credentials.username) this.credentials.username = lastUserName;
-    // this.logger.debug("login ngOnInit fin : credentials : ", this.credentials)
 
-    // this.isLoading = false;  
+    this.loadLastLogins();
+  }
+
+  loadLastLogins(): void {
+    try {
+      const raw = localStorage.getItem(UtilsService.TOKEN_STORAGE_KEY_LAST_LOGINS);
+      this.lastLogins = raw ? JSON.parse(raw) : [];
+    } catch (_) {
+      this.lastLogins = [];
+    }
   }
 
   /**
@@ -76,7 +90,7 @@ export class LoginComponent implements OnInit {
     const label = 'resetPassword';
     
     if (!this.forgotPasswordEmail) {
-      this.error = 'Email requis';
+      this.error = this.utils.tr('app.login.error.emailRequired');
       this.logger.error(label + ': Email manquant');
       return;
     }
@@ -90,7 +104,7 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.logger.debug(label + ': ✅ Email de reset envoyé avec succès');
         this.isLoadingResetEmail = false;
-        this.info = '✅ Un lien de réinitialisation a été envoyé à ' + this.forgotPasswordEmail;
+        this.info = this.utils.tr('app.login.info.resetLinkSent', { email: this.forgotPasswordEmail });
         this.forgotPasswordEmail = '';
         
         // Fermer le formulaire après 3 secondes
@@ -105,9 +119,9 @@ export class LoginComponent implements OnInit {
         this.isLoadingResetEmail = false;
         
         if (error.status === 404) {
-          this.error = '❌ Aucun utilisateur trouvé avec cet email.';
+          this.error = this.utils.tr('app.login.error.userNotFound');
         } else {
-          this.error = '⚠️ Erreur lors de l\'envoi du mail. Veuillez réessayer.';
+          this.error = this.utils.tr('app.login.error.sendMail');
         }
       }
     });

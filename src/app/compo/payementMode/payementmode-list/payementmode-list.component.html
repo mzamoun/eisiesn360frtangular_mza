@@ -3,19 +3,19 @@
     <div class="card-body">
         <div style="display: flex; justify-content: center; align-items: center; " class=""> 
 	<h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
-	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">Refresh</button>
+	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">{{utils.tr('Refresh')}}</button>
 </div>
 
         <div class="right" style="width: 40%;" name="searchDiv">
             <input id="searchStr" #searchStrInput class="form-control left" style="width: 90%;" type="text" placeholder="search" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()" (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
-            <button class="right" style="width: 10%; height: 40px; text-align: center;" (click)="clearSearch()">X</button>
+            <button class="right" style="width: 10%; height: 40px; text-align: center;" (click)="clearSearch()">{{utils.tr('Clear')}}</button>
         </div>
 
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Name</th>
+                    <th scope="col">{{utils.tr('Name')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,10 +24,10 @@
                     <td> {{ element.name }} </td>
                     <td>
                         <button (click)="showForm(element)" id="btn-payementmode-edit-{{i}}" class='btn btn-info'>
-            Edit
+            {{utils.tr('Edit')}}
           </button>
                         <button (click)="delete(element)" id="btn-payementmode-delete-{{i}}" class='btn btn-danger'>
-            Delete
+            {{utils.tr('Delete')}}
           </button>
                     </td>
                 </tr>
@@ -39,7 +39,7 @@
         </div>
         <div class="right" style="width: 50%;" *ngIf="nbCallServer == 0">
 
-            <li class="list-inline-item"><a id="addModePaiment" [routerLink]="['/payementmode_form']" [queryParams]="{isAdd:true}" class="btn btn-info">Add PayementMode</a></li>
+            <li class="list-inline-item"><a id="addModePaiment" [routerLink]="['/payementmode_form']" [queryParams]="{isAdd:true}" class="btn btn-info">{{utils.tr('app.compo.payementMode.addBtn')}}</a></li>
 
         </div>
 

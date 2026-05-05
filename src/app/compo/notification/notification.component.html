@@ -1,13 +1,12 @@
 <h3 class="card-title text-center py-3">{{title}}</h3>
 
 <div style="text-align: center;">
-    <button (click)="getNotifications(null, null)" id="btn-notif-refresh" class='btn btn-primary mr-1'>Refresh
-    </button>
+    <button (click)="getNotifications(null, null)" id="btn-notif-refresh" class='btn btn-primary mr-1'>{{utils.tr('Refresh')}}</button>
     <input type="checkbox" [(ngModel)]="refreshStarted" id="refreshStarted" name="refreshStarted" (click)="refresh()" />
     Every
     <input type="text" [(ngModel)]="refreshEverySec" id="refreshEverySec" name="refreshEverySec" type="number"
         style="width:70px" /> seconds.
-    <button (click)="deleteAllNotifications()">Delete All To Me</button>
+    <button (click)="deleteAllNotifications()">{{utils.tr('app.compo.notification.deleteAll')}}</button>
 </div>
 
 <div class="card" *ngIf="myList && myList.length>0">
@@ -21,17 +20,17 @@
                     <span>
                         <span *ngIf="notification.craId" aria-hidden="true" (click)="showCra(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-cra-{{index}}">Voir CRA</button>
+                                id="btn-notif-show-cra-{{index}}">{{utils.tr('app.compo.cra.list.table.action.showDetails')}}</button>
                         </span>
 
                         <span *ngIf="notification.noteFrais" aria-hidden="true" (click)="showFee(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-fee-{{index}}">Voir Note de Frais</button> </span>
+                                id="btn-notif-show-fee-{{index}}">{{utils.tr('app.compo.notification.showFee')}}</button> </span>
 
                         <span *ngIf="notification.currentDocument" aria-hidden="true"
                             (click)="showDocument(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-doc-{{index}}">Voir Document</button> </span>
+                                id="btn-notif-show-doc-{{index}}">{{utils.tr('app.compo.notification.showDoc')}}</button> </span>
                     </span>
 
                     <label *ngIf="isUserAdmin && (notification?.cra?.consultant?.username || notification?.fromUsername)">
@@ -57,10 +56,10 @@
 
                             <span aria-hidden="true" (click)="showForm(notification)" aria-label="Edit"
                                 class="picto-item">
-                                <button id="btn-notif-edit-{{index}}">E</button> </span>
+                                <button id="btn-notif-edit-{{index}}">{{utils.tr('Edit')}}</button> </span>
 
                             <span aria-hidden="true" (click)="deleteNotification(notification)" aria-label="Delete"
-                                class="picto-item"> <button id="btn-notif-delete-{{index}}">X</button> </span>
+                                class="picto-item"> <button id="btn-notif-delete-{{index}}">{{utils.tr('Delete')}}</button> </span>
                         </span>
 
                     </div>
@@ -79,7 +78,7 @@
     </div>
 </div>
 <div style="text-align: center;" *ngIf="isMyListEmpty()">
-    Aucune notification.
+    {{utils.tr('app.compo.notification.empty')}}
 </div>
 
 <ng-template #detailsFeeView let-modal>
@@ -88,7 +87,7 @@
             <div style="display: flex; justify-content: center; align-items: center; " class="">
                 <h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
                 <button style="height: 40px; text-align: center; margin-left: 10px;"
-                    (click)="findAll()">Refresh</button>
+                    (click)="findAll()">{{utils.tr('Refresh')}}</button>
             </div>
 
             <table class="table table-bordered table-striped">
@@ -122,17 +121,17 @@
             <div style="display: flex; justify-content: center; align-items: center; " class="">
                 <h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
                 <button style="height: 40px; text-align: center; margin-left: 10px;"
-                    (click)="findAll()">Refresh</button>
+                    (click)="findAll()">{{utils.tr('Refresh')}}</button>
             </div>
 
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Document</th>
-                        <th scope="col">Catégorie</th>
-                        <th scope="col" *ngIf="selectedDocument.categoryName">Nom Catégorie</th>
-                        <th scope="col">Créer par</th>
+                        <th scope="col">{{utils.tr('app.compo.notification.document')}}</th>
+                        <th scope="col">{{utils.tr('app.compo.notification.category')}}</th>
+                        <th scope="col" *ngIf="selectedDocument.categoryName">{{utils.tr('app.compo.notification.categoryName')}}</th>
+                        <th scope="col">{{utils.tr('app.compo.notification.createdBy')}}</th>
                     </tr>
                 </thead>
                 <tbody>

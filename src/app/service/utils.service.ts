@@ -4,12 +4,12 @@ import { LoggerService } from './logger.service';
 
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { MyError } from '../resource/MyError';
 import { Router } from '@angular/router';
 import { format, parse } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { IMyDpOptions } from "mydatepicker";
 import { CraDayActivity } from "../model/cra-day-activity";
+import { MyError } from '../resource/MyError';
 import { TradService } from './trad.service';
 
 export interface DateLabelHoliday {
@@ -38,6 +38,7 @@ export class UtilsService {
   static readonly myDatePickerOptions: IMyDpOptions = { dateFormat: 'yyyy-mm-dd' };
 
   static readonly TOKEN_STORAGE_KEY_LAST_USERNAME = 'lastUsername';
+  static readonly TOKEN_STORAGE_KEY_LAST_LOGINS = 'lastLogins';
 
   error: string;
   static URL_PATTERN: string = "^(https?:\\/\\/)?([\\w\\-]+\\.)+[\\w\\-]+(\\/\\S*)?$";

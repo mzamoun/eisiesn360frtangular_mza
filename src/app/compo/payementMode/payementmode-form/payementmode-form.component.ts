@@ -50,12 +50,12 @@ export class PayementmodeFormComponent extends MereComponent {
       this.isAdd = this.route.snapshot.queryParamMap.get('isAdd');
     }
     if (this.isAdd == 'true') {
-      this.btnSaveTitle = 'Add';
-      this.title = 'Nouvelle Mode Payement';
+      this.btnSaveTitle = this.utils.tr('Add');
+      this.title = this.utils.tr('app.compo.payementMode.form.new');
       this.myObj = new PayementMode();
     } else {
-      this.btnSaveTitle = 'Save';
-      this.title = 'Edit Payement Mode';
+      this.btnSaveTitle = this.utils.tr('Save');
+      this.title = this.utils.tr('app.compo.payementMode.form.edit');
       const payementModeP: PayementMode = this.payementModeService.getPayementMode();
 
       if (payementModeP != null) { this.myObj = payementModeP; } else if (this.myObj == null) { this.myObj = new PayementMode(); }

@@ -11,7 +11,7 @@ import { MereComponent } from '../_utils/mere-component';
 })
 export class SpinnerComponent extends MereComponent {
 
-  @Input() title: string = "Chargement...";
+  @Input() title: string = "";
 
   constructor(public utils: UtilsService
     , public dataSharingService: DataSharingService
@@ -21,6 +21,9 @@ export class SpinnerComponent extends MereComponent {
   }
 
   ngOnInit(): void {
+    if (!this.title) {
+      this.title = this.utils.tr('app.common.loading');
+    }
   }
 
 }

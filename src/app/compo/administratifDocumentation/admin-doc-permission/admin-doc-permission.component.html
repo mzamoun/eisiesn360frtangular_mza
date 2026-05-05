@@ -2,17 +2,17 @@
     <div class="card-body">
         <app-spinner *ngIf="load"></app-spinner>
 
-        <h3 class="card-title text-center py-3">Manage Document Permissions</h3>
+        <h3 class="card-title text-center py-3">{{utils.tr('app.compo.adminDoc.permission.title')}}</h3>
 
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col" class="center">Categorie Document</th>
-                    <th scope="col" class="center">Management Name</th>
-                    <th scope="col" class="center">Date Création</th>
-                    <th scope="col" class="center">Activé pour Manager</th>
-                    <th scope="col" class="center">Activé pour Consultant</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.adminDoc.permission.categoryDoc')}}</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.adminDoc.permission.managementName')}}</th>
+                    <th scope="col" class="center">{{utils.tr('DateCreation')}}</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.adminDoc.permission.enabledForManager')}}</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.docCategory.enabledForConsultant')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +32,7 @@
         </table>
 
         <div class="right" style="width: 50%;">
-            <li class="list-inline-item"><a (click)="updatePermissions()" id="btn-save-admin-doc-permission" class="btn btn-info">UPDATE</a>
+            <li class="list-inline-item"><a (click)="updatePermissions()" id="btn-save-admin-doc-permission" class="btn btn-info">{{utils.tr('Update')}}</a>
             </li>
         </div>
 

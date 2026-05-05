@@ -22,6 +22,7 @@ import { EsnService } from 'src/app/service/esn.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { MsgService } from 'src/app/service/msg.service';
 import { ProjectService } from 'src/app/service/project.service';
+import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 
 @Component({
@@ -40,17 +41,26 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     revenueData: any = null;
     visibleSections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [];
 
-    sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
+        sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
+        // Visible par tous les roles (selon permissions)
+        { title: 'Mon Profil', route: '/my-profile', feature: null },
         { title: 'Notifications', route: '/notification' },
+        // ADMIN uniquement
+        { title: 'Esn', route: '/esn_app', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'] },
+        // ADMIN + RESPONSIBLE_ESN
         { title: 'Consultants', route: '/consultant_app', feature: 'CONSULTANT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        { title: 'Clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        { title: 'Projets', route: '/project_app', feature: 'PROJECT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        // MANAGER : ses consultants uniquement
         { title: 'Mes Consultants', route: '/consultant_list', feature: 'CONSULTANT_MANAGEMENT', roles: ['MANAGER'], queryParams: { myConsultants: true } },
-        { title: 'Esn', route: '/esn_app', feature: 'ESN_MANAGEMENT' },
-        { title: 'Clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT' },
-        { title: 'Projets', route: '/project_app', feature: 'PROJECT_MANAGEMENT' },
-        { title: 'Activités', route: '/activity_app', feature: 'ACTIVITY_MANAGEMENT' },
-        { title: 'CRA', route: '/cra_app', feature: 'CRA_MANAGEMENT' },
+        // ADMIN + RESPONSIBLE_ESN + MANAGER : toutes les activites
+        { title: 'Activites', route: '/activity_app', feature: 'ACTIVITY_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        // ADMIN + RESPONSIBLE_ESN + MANAGER : tous les CRA
+        { title: 'CRA', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        // CONSULTANT : uniquement ses CRA
+        { title: 'Mes CRA', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
+        // Documents administratifs
         { title: 'Documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
-        // { title: 'Mon Profil', route: '/my-profile', feature: null }
     ];
 
     listNotifications: Notification[] = [];
@@ -84,7 +94,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         private dataSharingService: DataSharingService,
         private logger: LoggerService,
         private utilsIhm: UtilsIhmService,
-        private router: Router
+        private router: Router,
+        public utils: UtilsService
     ) {
         this.logger.debug('DashboardComponent.constructor called');
     }

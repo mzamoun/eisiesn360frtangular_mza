@@ -1,6 +1,6 @@
 <ng-template #addRangeDateView let-modal>
     <div class="modal-header">
-        <h5 class="modal-title">ADD MULTI DATE RANGE</h5>
+        <h5 class="modal-title">{{utils.tr('app.compo.cra.addMultiDate.title')}}</h5>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -8,11 +8,11 @@
     <div class="modal-body">
         <table class="table table-striped table-bordered">
             <thead class="thead-light">
-                <th>Activity</th>
-                <th>Time</th>
-                <th>Start date</th>
-                <th>End date</th>
-                <th>Actions</th>
+                <th>{{utils.tr('app.compo.cra.addMultiDate.activityLabel')}}</th>
+                <th>{{utils.tr('app.compo.cra.addMultiDate.timeLabel')}}</th>
+                <th>{{utils.tr('app.compo.cra.addMultiDate.startDate')}}</th>
+                <th>{{utils.tr('app.compo.cra.addMultiDate.endDate')}}</th>
+                <th>{{utils.tr('Action')}}</th>
             </thead>
             <tbody>
                 <tr *ngFor="let item of data ;let index=index">
@@ -21,41 +21,41 @@
                     <td>{{item.startDate | date :'dd-MM-yyyy'}}</td>
                     <td>{{item.endDate | date :'dd-MM-yyyy'}}</td>
                     <td>
-                        <button class="btn btn-danger" id="btn-remove-cra-multi-date-{{index}}" (click)="removeItem(index)">Remove</button>
+                        <button class="btn btn-danger" id="btn-remove-cra-multi-date-{{index}}" (click)="removeItem(index)">{{utils.tr('Delete')}}</button>
                     </td>
                 </tr>
             </tbody>
         </table>
         <form (ngSubmit)="push()">
             <div class="form-group">
-                <label>Select activity</label>
+                <label>{{utils.tr('app.compo.activity.form.input.type')}}</label>
                 <app-select #compoSelectActivity [selectId]="'select-activity'" [objectName]="'Activity'" [myList]="activities" [initObj]="myObj.activity" [objCaller]="this" onChangeCaller="onSelectActivity" [ObjectPropName]="'name'"></app-select>
-                <div [hidden]="activityForm.valid" class="badge badge-danger">Activity is required</div>
+                <div [hidden]="activityForm.valid" class="badge badge-danger">{{utils.tr('app.compo.cra.addMultiDate.activityRequired')}}</div>
             </div>
             <div *ngIf="activityForm.valid">
                 <div class="form-group">
-                    <label>Time</label>
+                    <label>{{utils.tr('app.compo.activity.multiple.hourSup.select.target.hour')}}</label>
                     <app-select #compoSelectTime [selectId]="'select-time'" [objectName]="'Time'" [myList]="times" [initObj]="myObj.time" [objCaller]="this" onChangeCaller="onSelectTime"></app-select>
-                    <div [hidden]="timesForm.valid" class="badge badge-danger">Time is required</div>
+                    <div [hidden]="timesForm.valid" class="badge badge-danger">{{utils.tr('app.compo.cra.addMultiDate.timeRequired')}}</div>
                 </div>
                 <div class="form-group">
-                    <label>Start date</label>
-                    <label>End date</label>
+                    <label>{{utils.tr('app.compo.cra.addMultiDate.startDate')}}</label>
+                    <label>{{utils.tr('app.compo.cra.addMultiDate.endDate')}}</label>
 
-                    <app-mz-date-picker-deb-fin #myDatePickerDebFin placeHolderDeb="Choix date debut" [myDatePickerDeb]="myObj.startDate" [onChangeCallerDeb]="'onStartDateInputChanged'" placeHolderFin="Choix date fin" [myDatePickerFin]="myObj.endDate" [onChangeCallerFin]="'onEndDateInputChanged'"
+                    <app-mz-date-picker-deb-fin #myDatePickerDebFin [placeHolderDeb]="utils.tr('app.compo.cra.form.startDate')" [myDatePickerDeb]="myObj.startDate" [onChangeCallerDeb]="'onStartDateInputChanged'" [placeHolderFin]="utils.tr('app.compo.cra.form.endDate')" [myDatePickerFin]="myObj.endDate" [onChangeCallerFin]="'onEndDateInputChanged'"
                         [objCaller]="this"></app-mz-date-picker-deb-fin>
 
-                    <div [hidden]="myObj.startDate" class="badge badge-danger">Start date is required</div>
-                    <div [hidden]="myObj.endDate" class="badge badge-danger">End date is required</div>
+                    <div [hidden]="myObj.startDate" class="badge badge-danger">{{utils.tr('app.compo.cra.addMultiDate.startDateRequired')}}</div>
+                    <div [hidden]="myObj.endDate" class="badge badge-danger">{{utils.tr('app.compo.cra.addMultiDate.endDateRequired')}}</div>
                 </div>
                 <button class="btn btn-primary" id="btn-cra-multi-date-add" type="submit" [disabled]="!myObj.activity || !myObj.time || !myObj.startDate || !myObj.endDate">
-          ADD
+          {{utils.tr('Add')}}
         </button>
             </div>
 
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-info" id="btn-cra-multi-date-save" type="submit" [disabled]="!(data.length>0)" (click)="update()">SUBMIT</button>
+        <button class="btn btn-info" id="btn-cra-multi-date-save" type="submit" [disabled]="!(data.length>0)" (click)="update()">{{utils.tr('Save')}}</button>
     </div>
 </ng-template>

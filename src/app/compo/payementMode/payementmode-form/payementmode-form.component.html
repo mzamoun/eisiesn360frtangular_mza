@@ -5,15 +5,15 @@
         <form (ngSubmit)="onSubmit()" #activityTypeForm="ngForm" class="form form-register">
 
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name">{{utils.tr('Name')}}</label>
                 <input type="text" placeholder="Enter payement mode" [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required #name="ngModel" #nameHtml autofocus>
             </div>
-            <div [hidden]="name.valid" class="alert alert-danger">Name is required</div>
+            <div [hidden]="name.valid" class="alert alert-danger">{{utils.tr('Name')}} {{utils.tr('app.badge.required')}}</div>
 
             <br/>
             <ul class="right">
                 <li class="list-inline-item"> <button type="submit" id="btn-payementmode-save" [disabled]="!activityTypeForm.form.valid" class="btn btn-info">{{btnSaveTitle}}</button> </li>
-                <li class="list-inline-item"><a [routerLink]="['/payementmode_list']" class="btn btn-info">List PayementMode</a></li>
+                <li class="list-inline-item"><a [routerLink]="['/payementmode_list']" class="btn btn-info">{{utils.tr('app.compo.payementMode.addBtn')}}</a></li>
             </ul>
 
         </form>

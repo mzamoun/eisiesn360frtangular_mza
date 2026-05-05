@@ -18,8 +18,8 @@ import { MereComponent } from '../../_utils/mere-component';
 })
 export class MsgHistoFormComponent extends MereComponent {
 
-  title: string = "MsgHisto Form"
-  btnSaveTitle: string = "Add"
+  title: string = ""
+  btnSaveTitle: string = ""
   isAdd: string;
 
   @Input()
@@ -49,12 +49,12 @@ export class MsgHistoFormComponent extends MereComponent {
     ////this.logger.debug(isAdd)
 
     if (this.isAdd == 'true') {
-      this.btnSaveTitle = "Add"
-      this.title = "Nouveau MsgHisto"
+      this.btnSaveTitle = this.utils.tr('Add')
+      this.title = this.utils.tr('app.msghisto.form.new')
       this.myObj = new MsgHisto();
     } else {
-      this.btnSaveTitle = "Save"
-      this.title = "Edit MsgHisto"
+      this.btnSaveTitle = this.utils.tr('Save')
+      this.title = this.utils.tr('app.msghisto.form.edit')
       let msgHistoP: MsgHisto = this.msgHistoService.getMsgHisto();
       ////this.logger.debug('msgHistoP='+msgHistoP);
 

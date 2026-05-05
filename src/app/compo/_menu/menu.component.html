@@ -12,27 +12,27 @@
                 <ul class="nav navbar-nav bgcolor_tranp00">
 
                     <li class="nav-item pcoded-menu-caption" style="background-color: cadetblue; width: 100%;">
-                        <label>General</label>
+                        <label>{{utils.tr('app.compo.menu.general')}}</label>
                     </li>
 
                     <li class="nav-item " [appAuthorization] feature="ESN_MANAGEMENT" permission="VIEW">
                         <a routerLink="/showTables" class="nav-link " id="showTables">
                             <span class="pcoded-micon"> <i class="feather icon-home"></i></span>
-                            <span class="pcoded-mtext">Show Tables</span>
+                            <span class="pcoded-mtext">{{utils.tr('app.compo.menu.showTables')}}</span>
                         </a>
                     </li>
 
                     <li class="nav-item " [appAuthorization] feature="ESN_MANAGEMENT" permission="VIEW">
                         <a routerLink="/connections" class="nav-link " id="connections">
                             <span class="pcoded-micon"> <i class="feather icon-home"></i></span>
-                            <span class="pcoded-mtext">Connections</span>
+                            <span class="pcoded-mtext">{{utils.tr('app.compo.menu.connections')}}</span>
                         </a>
                     </li>
 
                     <li class="nav-item " [appAuthorization] feature="ESN_MANAGEMENT" permission="VIEW">
                         <a href="javascript:void(0)" class="nav-link " id="addEsnDemo" (click)="addEsnDemo(); $event.preventDefault();">
                             <span class="pcoded-micon"> <i class="feather icon-home"></i></span>
-                            <span class="pcoded-mtext">Add Esn demo</span>
+                            <span class="pcoded-mtext">{{utils.tr('app.compo.menu.addEsnDemo')}}</span>
                         </a>
                     </li>
 
@@ -40,7 +40,7 @@
                         <a routerLink="#" class="nav-link " id="setDefaultPermissions"
                             (click)="setDefaultPermissions();">
                             <span class="pcoded-micon"> <i class="feather icon-home"></i></span>
-                            <span class="pcoded-mtext">Set default permissions</span>
+                            <span class="pcoded-mtext">{{utils.tr('app.compo.menu.setDefaultPermissions')}}</span>
                         </a>
                     </li>
 
@@ -119,33 +119,33 @@
                     </li>
 
                     <li class="nav-item pcoded-menu-caption" style="background-color: cadetblue; width: 100%;">
-                        <label>Document Administratif</label>
+                        <label>{{utils.tr('app.compo.menu.adminDoc')}}</label>
                     </li>
 
                     <li class="nav-item ">
                         <a routerLink="/categoryDoc_app" class="nav-link " id="addCategoryDocumentLink"><span
                                 class="pcoded-micon"><i class="feather icon-activity"></i></span><span
-                                class="pcoded-mtext">Category Document</span></a>
+                                class="pcoded-mtext">{{utils.tr('app.compo.menu.categoryDocument')}}</span></a>
                     </li>
                     <li class="nav-item ">
                         <a routerLink="/admindoc_form" class="nav-link " id="addDocumentLink"><span
                                 class="pcoded-micon"><i class="feather icon-activity"></i></span><span
-                                class="pcoded-mtext">Ajouter Document</span></a>
+                                class="pcoded-mtext">{{utils.tr('app.compo.menu.addDocument')}}</span></a>
                     </li>
                     <li class="nav-item" [appAuthorization] feature="PAY_SHEETS_MANAGEMENT" permission="CREATE">
                         <a routerLink="/admindoc_multiple" class="nav-link " id="multipleDocumentsLink"><span
                                 class="pcoded-micon"><i class="feather icon-cpu"></i></span><span
-                                class="pcoded-mtext">Documents Multiples</span></a>
+                                class="pcoded-mtext">{{utils.tr('app.compo.menu.multipleDocuments')}}</span></a>
                     </li>
                     <li class="nav-item ">
                         <a routerLink="/admindoc_list" class="nav-link " id="documentListLink"><span
                                 class="pcoded-micon"><i class="feather icon-cpu"></i></span><span
-                                class="pcoded-mtext">Document List</span></a>
+                                class="pcoded-mtext">{{utils.tr('app.compo.menu.documentList')}}</span></a>
                     </li>
                     <li class="nav-item" [appAuthorization] feature="PERMISSION_MANAGEMENT" permission="CREATE">
                         <a routerLink="/admindoc_permission" class="nav-link " id="documentPermissionLink"><span
                                 class="pcoded-micon"><i class="feather icon-cpu"></i></span><span
-                                class="pcoded-mtext">Document Permission</span></a>
+                                class="pcoded-mtext">{{utils.tr('app.compo.menu.documentPermission')}}</span></a>
                     </li>
 
                     <li class="nav-item pcoded-menu-caption" style="background-color: cadetblue; width: 100%;">
