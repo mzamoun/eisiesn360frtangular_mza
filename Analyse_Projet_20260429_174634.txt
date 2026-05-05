@@ -222,3 +222,44 @@ Semaine 2
 Conclusion
 - Le projet est proche fonctionnellement mais doit consolider securite, robustesse erreur, et maintenabilite.
 - Priorite immediate: auth/error flow + tests haute valeur + hygiene logging + scripts build reproductibles.
+-----------------------------------
+
+
+Pour stabiliser réellement le code, il reste surtout à fermer les écarts entre “ça compile” et 
+“le repo est fiable”. Aujourd’hui, le build Angular de dev passe, mais la suite globale n’est pas verte: 
+mon dernier run complet donne 85 échecs / 160 tests. Tant que ce point reste ouvert, la stabilité 
+reste partielle.
+
+Remettre toute la suite de tests au vert. Les échecs restants ressemblent surtout à des specs de 
+création/configuration devenues obsolètes après les refactors récents. Le travail utile ici est de 
+reprendre les specs par grappes, corriger les TestBed, providers manquants, imports de modules de 
+test et schemas, puis valider avec npm run test:ci.
+
+Corriger les incohérences de scripts d’exécution. Le build sort bien dans angular.json, mais les 
+scripts dev et dev2 pointent encore vers dist/esn306 dans package.json:14. Ce genre d’écart casse 
+les vérifications locales et donne une fausse impression de stabilité.
+
+Nettoyer la dérive TypeScript signalée par l’éditeur. tsconfig.json:5, tsconfig.json:6, tsconfig.json:14 
+et tsconfig.json:16 remontent déjà des warnings de dépréciation et de configuration (baseUrl, 
+downlevelIteration, moduleResolution, rootDir). Ce n’est pas cassant aujourd’hui, mais ça deviendra 
+un vrai point de fragilité au prochain upgrade de toolchain.
+
+Réduire la dette ESLint par priorité de risque. Les 990 erreurs restantes ne doivent pas être traitées 
+en bloc. Il faut d’abord séparer le “sûreté” du “cosmétique”:
+no-explicit-any, signatures de retour manquantes, branches ambiguës, nullabilité.
+prefer-const et style peuvent venir après.
+
+Durcir progressivement le typage métier. Le projet reste globalement permissif avec strict: false 
+dans tsconfig.json. Des modèles comme MyError.ts reposent encore sur des champs potentiellement 
+non initialisés. Ce n’est pas le premier chantier, mais c’est la suite logique une fois tests 
+et scripts stabilisés.
+
+Si je devais prioriser sans disperser l’effort:
+
+Suite de tests globale verte.
+Scripts dev cohérents avec le build réel.
+tsconfig propre et sans dette de migration immédiate.
+ESLint sur les règles à impact runtime.
+Typage plus strict sur les modèles et services sensibles.
+Je peux attaquer tout de suite le point 1 et te faire un premier lot de correction sur les tests 
+restants les plus faciles à stabiliser.

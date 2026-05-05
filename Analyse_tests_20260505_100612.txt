@@ -1,0 +1,300 @@
+Analyse Tests Angular - esn360
+Date: 2026-05-05 10:06:12
+Environnement: Chrome Headless 147.0.0.0 / Windows 10 / Node 14.21.3 / Angular 12.2.17
+
+============================================================
+RESULTAT GLOBAL
+============================================================
+
+TOTAL : 160 tests
+  - SUCCES  :  75 tests (47%)
+  - ECHECS  :  85 tests (53%)
+
+Build Angular dev : OK (0 erreurs TypeScript)
+Exit code runner  : 0
+
+
+============================================================
+1) TESTS EN SUCCES (75)
+============================================================
+
+Ces suites passent integralement :
+
+- AppComponent (tests de base)
+- JwtTokenInterceptor (10 tests) - securite interceptor 401/0/500
+- DataSharingService / isPublicRoute (27 tests) - exact vs prefix routing
+- DashboardComponent (9 tests) - integration composant
+- NotificationComponent (3-5 tests) - affichage notifications
+- UiFeedbackFacade (tests unitaires)
+- NotificationFacade (tests unitaires)
+- MereComponent (tests de base)
+- AppRoutingModule (tests de creation)
+- LoggerService (tests de creation)
+- TokenService (tests de creation)
+- UtilsService (tests de creation - version sans Router injecte)
+- Divers composants sans dependances complexes
+
+
+============================================================
+2) TESTS EN ECHEC (85)
+============================================================
+
+--------------------------------------------------------------
+2.1 LISTE COMPLETE DES SPECS EN ECHEC
+--------------------------------------------------------------
+
+Composants :
+  [ 1] AppComponent                         should have as title 'esn360'
+  [ 2] ActivityAppComponent                 should create
+  [ 3] ActivityFormComponent                should create
+  [ 4] ActivityListComponent                should create
+  [ 5] ActivityTypeFormComponent            should create
+  [ 6] AddMultiDateComponent                should create
+  [ 7] AddMultipleActivityComponent         should create
+  [ 8] AdminDocFormComponent                should create
+  [ 9] AdminDocListComponent                should create
+  [10] AdminDocMultipleComponent            should create
+  [11] AdminDocPermissionComponent          should create
+  [12] CategoryFormComponent                should create
+  [13] CategoryListComponent                should create
+  [14] ConsultantArboComponent              should create
+  [15] ConsultantFormComponent              should create
+  [16] ConsultantListComponent              should create
+  [17] CraConfigurationComponent            should create
+  [18] DocCategoryFormComponent             should create
+  [19] DocCategoryListComponent             should create
+  [20] EsnArboComponent                     should create
+  [21] FeeDepenseInfoDashComponent          should create
+  [22] FeeDepensePercategoryDashComponent   should create
+  [23] FeeDepensePerconsultantDashComponent should create
+  [24] FeeDepensePermonthDashComponent      should create
+  [25] FeeDepensePeryearDashComponent       should create
+  [26] HeaderComponent                      should create
+  [27] InscriptionComponent                 should create
+  [28] MsgFormComponent                     should create
+  [29] MsgHistoFormComponent                should create
+  [30] MsgNotificationsComponent            should create
+  [31] MyCalendarComponent                  should create
+  [32] MyRoutingSpecComponent               should create
+  [33] MzDatePickerComponent                should create
+  [34] MzDatePickerDebFinComponent          should create
+  [35] NotefraisDashboardComponent          should create
+  [36] NotefraisFormComponent               should create
+  [37] NotefraisListComponent               should create
+  [38] PayementmodeFormComponent            should create
+  [39] PayementmodeListComponent            should create
+  [40] SelectConsultantComponent            should create
+  [41] SignupDialogComponent                should create
+  [42] TableViewerComponent                 should create
+  [43] UploadFileComponent                  should create
+  [44] UserConnectedComponent               should create
+  [45] ValidateEmailComponent               should create
+
+Services :
+  [46] ActivityTypeService                  should be created
+  [47] AuthorizationService                 should be created
+  [48] CategoryDocService                   should be created
+  [49] ConnectionService                    should be created
+  [50] ConsultantService                    should be created
+  [51] CraConfigurationService              should be created
+  [52] EsnService                           should be created
+  [53] PayementModeService                  should be created
+  [54] PermissionService                    should be created
+  [55] UploadFileService                    should be created
+
+Guards :
+  [56] AuthGuard                            should be created
+  [57] AuthGuard                            should allow the authenticated user to access app
+  [58] AuthGuard                            should redirect an unauthenticated user to the login route
+
+  (+ 27 autres specs distribuees sur suites ci-dessus avec erreurs identiques)
+
+
+--------------------------------------------------------------
+2.2 CATEGORISATION DES CAUSES RACINES
+--------------------------------------------------------------
+
+CATEGORIE A - No provider for HttpClient (cause: HttpClientTestingModule absent)
+  Impact : ~25 specs
+  Specs concernees :
+    ActivityListComponent, ActivityTypeService, AddMultiDateComponent,
+    AddMultipleActivityComponent, AdminDocFormComponent, AdminDocListComponent,
+    AdminDocMultipleComponent, CategoryDocService, ConnectionService,
+    ConsultantArboComponent, ConsultantFormComponent, ConsultantListComponent,
+    ConsultantService, EsnService, InscriptionComponent,
+    NotefraisFormComponent, NotefraisListComponent, NotefraisDashboardComponent,
+    PayementModeService, PayementmodeListComponent, PermissionService,
+    TableViewerComponent, UploadFileComponent, UploadFileService
+  Erreur type :
+    NullInjectorError: No provider for HttpClient!
+  Correctif :
+    Ajouter HttpClientTestingModule dans imports du TestBed de chaque spec.
+
+CATEGORIE B - No provider for ActivatedRoute (cause: RouterTestingModule absent)
+  Impact : ~15 specs
+  Specs concernees :
+    ActivityFormComponent, ActivityTypeFormComponent, AddMultiDateComponent,
+    CategoryFormComponent, CraConfigurationComponent, DocCategoryFormComponent,
+    EsnArboComponent, MsgFormComponent, MsgHistoFormComponent,
+    MzDatePickerComponent, MzDatePickerDebFinComponent, PayementmodeFormComponent,
+    ValidateEmailComponent
+  Erreur type :
+    NullInjectorError: No provider for ActivatedRoute!
+  Correctif :
+    Ajouter RouterTestingModule dans imports du TestBed, OU
+    fournir { provide: ActivatedRoute, useValue: { snapshot: {}, params: of({}) } }
+
+CATEGORIE C - No provider for MatDialog (cause: UtilsIhmService injecte MatDialog)
+  Impact : ~10 specs (toutes celles qui injectent DataSharingService ou UtilsIhmService)
+  Specs concernees :
+    AuthGuard (x3), HeaderComponent, SelectConsultantComponent,
+    SignupDialogComponent, UploadFileComponent, UserConnectedComponent,
+    ConsultantArboComponent, MsgNotificationsComponent
+  Erreur type :
+    NullInjectorError: No provider for MatDialog!
+    via chaine: DataSharingService -> UtilsIhmService -> MatDialog
+  Correctif :
+    Soit ajouter MatDialogModule + BrowserAnimationsModule dans imports,
+    soit stubber UtilsIhmService : { provide: UtilsIhmService, useValue: {} }
+
+CATEGORIE D - No provider for Router (cause: UtilsService injecte Router)
+  Impact : ~5 specs
+  Specs concernees :
+    ActivityAppComponent, ConsultantFormComponent, MyRoutingSpecComponent
+  Erreur type :
+    NullInjectorError: No provider for Router!
+    via chaine: UtilsService -> Router
+  Correctif :
+    Ajouter RouterTestingModule OU stub: { provide: Router, useValue: { navigate: jasmine.createSpy() } }
+
+CATEGORIE E - No provider for NgbActiveModal
+  Impact : 1 spec
+  Specs concernees :
+    MyCalendarComponent
+  Erreur type :
+    NullInjectorError: No provider for NgbActiveModal!
+  Correctif :
+    Ajouter NgbActiveModal dans providers du TestBed.
+
+CATEGORIE F - No provider for DateAdapter
+  Impact : 2 specs
+  Specs concernees :
+    MzDatePickerComponent, MzDatePickerDebFinComponent
+  Erreur type :
+    NullInjectorError: No provider for DateAdapter!
+  Correctif :
+    Ajouter MatNativeDateModule dans imports du TestBed.
+
+CATEGORIE G - No provider for NoteFraisDashboardService
+  Impact : 3 specs
+  Specs concernees :
+    FeeDepenseInfoDashComponent, FeeDepensePerconsultantDashComponent,
+    FeeDepensePercategoryDashComponent, FeeDepensePeryearDashComponent,
+    FeeDepensePermonthDashComponent
+  Erreur type :
+    NullInjectorError: No provider for NoteFraisDashboardService!
+  Note : ce service n'est pas declare providedIn:'root', il manque dans les providers du TestBed.
+  Correctif :
+    Ajouter NoteFraisDashboardService (ou un stub) dans providers du TestBed.
+
+CATEGORIE H - NG0304 unknown element (cause: composants fils non declares)
+  Impact : erreurs console sur ~8 specs (non bloquantes pour create, mais indicateurs de dette)
+  Elements inconnus detectes :
+    app-msg-list, app-esn-list, app-project-list, app-doc-category-form,
+    app-consultant-list, app-cra-list
+  Correctif :
+    Ajouter NO_ERRORS_SCHEMA dans schemas du TestBed de chaque spec concernee.
+
+CATEGORIE I - Circular dependency in DI: DataSharingService (NG0200)
+  Impact : 1 spec (AuthGuard should be created)
+  Erreur type :
+    Error: NG0200: Circular dependency in DI detected for DataSharingService
+  Correctif :
+    Stubber DataSharingService dans le TestBed de AuthGuard plutot que l'injecter reellement.
+    { provide: DataSharingService, useValue: { isLoggedIn: () => true } }
+
+
+============================================================
+3) PLAN DE CORRECTION PAR PRIORITE
+============================================================
+
+PRIORITE 1 - Correctifs globaux (impact maximal, effort minimal)
+  Action : Creer un fichier helpers/test.helpers.ts avec les stubs standards reutilisables :
+    - httpClientTestingImports = [HttpClientTestingModule]
+    - routerTestingImports = [RouterTestingModule]
+    - matDialogStub = { provide: MatDialog, useValue: {} }
+    - utilsIhmStub = { provide: UtilsIhmService, useValue: {} }
+    - utilsServiceStub = { provide: UtilsService, useValue: { navigate: () => {} } }
+    - activatedRouteStub = { provide: ActivatedRoute, useValue: { snapshot: {}, params: of({}) } }
+  Gain estime : resoudre 60-70 specs en echec
+
+PRIORITE 2 - Specs avec dependances specifiques
+  - NoteFraisDashboardService : ajouter dans providers (ou stub) dans 5 specs
+  - NgbActiveModal : ajouter dans providers de MyCalendarComponent.spec
+  - MatNativeDateModule : ajouter dans imports de MzDatePicker*.spec
+  Gain estime : resoudre ~8 specs supplementaires
+
+PRIORITE 3 - Circular dependency AuthGuard
+  - Stubber DataSharingService dans auth.guard.spec.ts
+  - Correctif isLoggedIn(), logout() sur l'objet stub
+  Gain estime : resoudre 3 specs AuthGuard
+
+PRIORITE 4 - NO_ERRORS_SCHEMA sur composants avec fils non declares
+  - Ajouter schemas: [NO_ERRORS_SCHEMA] sur specs encore en echec
+  Gain estime : eliminer les erreurs console residuelles
+
+
+============================================================
+4) EFFORT ESTIME POUR ATTEINDRE 100% VERT
+============================================================
+
+  Categorie A (HttpClient)       : ~2h - modifier ~25 specs
+  Categorie B (ActivatedRoute)   : ~1h - modifier ~15 specs
+  Categorie C (MatDialog)        : ~1h - modifier ~10 specs (stub uniforme)
+  Categorie D (Router)           : ~30min - modifier ~5 specs
+  Categories E/F/G               : ~1h - specs unitaires specifiques
+  Categorie H (schemas)          : ~30min - ajout NO_ERRORS_SCHEMA
+  Categorie I (circular dep)     : ~30min - stub DataSharingService dans AuthGuard
+
+  Total estime : 6 a 8 heures de correction mecanique
+  Approche recommandee : automatiser via script de patch ou traiter spec par spec
+  par ordre de frequence d'utilisation des composants concernes.
+
+
+============================================================
+5) DETTE TECHNIQUE ANNEXE (hors tests)
+============================================================
+
+5.1 TypeScript (tsconfig.json)
+  - baseUrl deprecie (TS6+)
+  - downlevelIteration deprecie
+  - moduleResolution=node10 deprecie
+  - rootDir implicite : risque a l'upgrade TS
+  Action : planifier pour upgrade Angular 14+
+
+5.2 Scripts package.json
+  - scripts dev / dev2 pointent vers dist/esn306 (incorrect, build sort dans dist/esn360)
+  Action : corriger baseDir dans les scripts dev
+
+5.3 ESLint
+  - 990 violations detectees sur src/**/*.ts (run precedent)
+  - Regle no-console active et fonctionnelle
+  - Priorite : no-explicit-any > missing return types > prefer-const
+
+5.4 Build
+  - Build --configuration development : OK, 0 erreurs TypeScript
+  - Build production non valide dans cette session (non execute)
+
+
+============================================================
+6) COMMANDES UTILISEES
+============================================================
+
+  ng test --watch=false --browsers=ChromeHeadless
+  -> 160 tests executes, 85 FAILED, 75 SUCCESS
+
+  ng build --configuration development
+  -> Succes, 0 erreurs TypeScript
+
+-----------------------------------
+Fin du rapport

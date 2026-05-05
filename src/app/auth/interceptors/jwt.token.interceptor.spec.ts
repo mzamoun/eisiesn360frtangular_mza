@@ -1,3 +1,7 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ConsultantService } from 'src/app/service/consultant.service';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
 /// <reference types="jasmine" />
 
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
@@ -50,8 +54,10 @@ describe('JwtTokenInterceptor (security)', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        { provide: ConsultantService, useValue: {} },
         JwtTokenInterceptor,
         { provide: LoggerService, useValue: loggerStub },
         { provide: Router, useValue: routerStub },

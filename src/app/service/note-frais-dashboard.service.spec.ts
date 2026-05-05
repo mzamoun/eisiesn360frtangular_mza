@@ -1,3 +1,7 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { LoggerService } from './logger.service';
 
 
@@ -10,7 +14,7 @@ describe('NoteFraisDashboardService', () => {
   let service: NoteFraisDashboardService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule] });
     service = TestBed.inject(NoteFraisDashboardService);
   });
 

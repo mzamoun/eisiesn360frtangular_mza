@@ -1,3 +1,6 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
 /// <reference types="jasmine" />
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -130,6 +133,7 @@ describe('DashBoardComponent (integration)', () => {
 
     TestBed.configureTestingModule({
       declarations: [DashBoardComponent],
+      imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
       providers: [
         { provide: AuthorizationService, useValue: authzStub },
         { provide: MsgService, useValue: {} },

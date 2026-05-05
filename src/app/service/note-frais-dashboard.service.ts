@@ -13,7 +13,7 @@ import { GenericResponse } from "../model/response/genericResponse";
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})
 };
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class NoteFraisDashboardService {
   private noteFraisDashboardUrl: string;
   private fraisConsultantDashboard: FraisConsultantDashboard;

@@ -1,6 +1,9 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { EsnService } from 'src/app/service/esn.service';
@@ -8,6 +11,7 @@ import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { ActivityTypeService } from '../../../service/activityType.service';
 import { ActivityTypeListComponent } from './activityType-list.component';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 describe('ActivityTypeListComponent', () => {
   let component: ActivityTypeListComponent;
@@ -16,6 +20,7 @@ describe('ActivityTypeListComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ActivityTypeListComponent],
+      imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule, NgxPaginationModule],
       providers: [
         { provide: ActivityTypeService, useValue: {} },
         { provide: Router, useValue: {} },

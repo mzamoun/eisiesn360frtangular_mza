@@ -1,5 +1,8 @@
-import { LoggerService } from 'src/app/service/logger.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed, getTestBed, inject } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ConsultantService } from 'src/app/service/consultant.service';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
@@ -16,12 +19,38 @@ describe('AuthGuard', () => {
 
   beforeEach(() => {
   TestBed.configureTestingModule({
-    providers: [
-      AuthGuard, { provide: Router, useValue: routerMock },
-     ],
-    imports: [
-      HttpClientTestingModule
-    ]
+      imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: DataSharingService, useValue: {
+          userConnected: { esn: { id: 1 }, role: 'ADMIN' },
+          userConnected$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          infos$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          errors$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          esnCurrentReady$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          idEsnCurrent$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          listNotifications$: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          isUserLoggedInFct: { subscribe: (_: any) => ({ unsubscribe: () => {} }) },
+          logger: { debug: () => {}, error: () => {}, info: () => {} },
+          clearErrors: () => {},
+          clearInfosErrors: () => {},
+          addError: () => {},
+          addErrorTxt: () => {},
+          addInfo: () => {},
+          delInfo: () => {},
+          setAdminConsultant: () => {},
+          isLoggedIn: () => true,
+          isPublicRoute: () => false,
+          getLastUserName: () => 'test',
+          majManagerOfUserCurent: () => {},
+          gotoLogin: () => {},
+          gotoMyHome: () => {},
+          router: { url: '/test', navigate: () => {} },
+          idEsnCurrent: 1
+        } },
+        { provide: ConsultantService, useValue: {} },
+        AuthGuard, { provide: Router, useValue: routerMock },
+      ]
   });
   injector = getTestBed();
   authService = injector.get(DataSharingService);
@@ -33,6 +62,7 @@ describe('AuthGuard', () => {
   }));
 
   it('should redirect an unauthenticated user to the login route', () => {
+    spyOn(authService, 'isLoggedIn').and.returnValue(false);
     expect(guard.canActivate(routeMock, routeStateMock)).toEqual(false);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
   });

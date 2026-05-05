@@ -1,6 +1,10 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ConsultantService } from 'src/app/service/consultant.service';
+import { MatDialogModule } from '@angular/material/dialog';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject } from 'rxjs';
 import { CraService } from 'src/app/service/cra.service';
@@ -9,6 +13,7 @@ import { NoteFraisService } from 'src/app/service/note-frais.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { NotificationComponent } from './notification.component';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 describe('NotificationComponent (integration)', () => {
   let component: NotificationComponent;
@@ -41,7 +46,9 @@ describe('NotificationComponent (integration)', () => {
 
     TestBed.configureTestingModule({
       declarations: [NotificationComponent],
+      imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule, NgxPaginationModule],
       providers: [
+        { provide: ConsultantService, useValue: {} },
         { provide: UtilsService, useValue: {} },
         { provide: DataSharingService, useValue: dataSharingServiceStub },
         { provide: UtilsIhmService, useValue: { confirmYesNo: jasmine.createSpy('confirmYesNo') } },
