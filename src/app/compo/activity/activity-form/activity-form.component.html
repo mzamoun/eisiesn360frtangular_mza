@@ -27,8 +27,8 @@
           <label>{{ utils.tr('app.compo.activity.form.input.endDate') }} :
           </label>
 
-          <app-mz-date-picker-deb-fin placeHolderDeb="Choix date debut" [myDatePickerDeb]="myObj.dateDeb"
-            [onChangeCallerDeb]="'onStartDateChanged'" placeHolderFin="Choix date fin" [myDatePickerFin]="myObj.dateFin"
+          <app-mz-date-picker-deb-fin [placeHolderDeb]="utils.tr('app.compo.datePicker.startDate')" [myDatePickerDeb]="myObj.dateDeb"
+            [onChangeCallerDeb]="'onStartDateChanged'" [placeHolderFin]="utils.tr('app.compo.datePicker.endDate')" [myDatePickerFin]="myObj.dateFin"
             [onChangeCallerFin]="'onEndDateChanged'" [objCaller]="this"></app-mz-date-picker-deb-fin>
 
           <!-- <mat-form-field appearance="fill">

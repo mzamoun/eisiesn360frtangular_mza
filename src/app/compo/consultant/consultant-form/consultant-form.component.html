@@ -96,7 +96,7 @@
                 <!-- <span class="badge badge-dark">{{myObj.birthDay | date :'dd-MM-yyyy'}}</span>  -->
                 </label>
                 <!-- <app-mz-date-picker placeHolder="Choix de date" [dateInputId]="'date-naissance'" [(myDatePicker)]="myObj.birthDay"></app-mz-date-picker> -->
-                <input type="date" placeHolder="Choix de date" [(ngModel)]="myObj.birthDay" name="birthDay" >
+                <input type="date" placeholder="{{utils.tr('app.compo.profile.chooseDate')}}" [(ngModel)]="myObj.birthDay" name="birthDay" >
             </div>
             <!--  <div [hidden]="birthday.valid" class="badge badge-danger ">Birthday is required</div>-->
 

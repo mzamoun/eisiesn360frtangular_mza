@@ -108,7 +108,7 @@
                             </span>
                             <button *ngIf="filterMonth" id="btn-cra-list-delete-filter-month"
                                 (click)="deleteFilterMonth()" class="btn-sm btn-danger"> X </button>
-                            <app-mz-date-picker placeHolder="Choix de date" id="cra-list-month-filter"
+                            <app-mz-date-picker placeHolder="{{utils.tr('app.compo.profile.chooseDate')}}" id="cra-list-month-filter"
                                 [(myDatePicker)]="filterMonth"></app-mz-date-picker>
                             <!-- required -->
                         </div>

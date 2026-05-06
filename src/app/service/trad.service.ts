@@ -62,6 +62,16 @@ export class TradService {
       en: "Add",
       ar: "إضافة",
     },
+    "All": {
+      fr: "Tout",
+      en: "All",
+      ar: "الكل",
+    },
+    "OK": {
+      fr: "OK",
+      en: "OK",
+      ar: "موافق",
+    },
 
     "Save": {
       fr: "Enregistrer",
@@ -3091,6 +3101,46 @@ export class TradService {
       "fr": "Choix de date début et fin",
       "en": "Choose start and end date",
       "ar": "اختر تاريخ البداية والنهاية",
+    },
+    "app.compo.datePicker.invalidStartDate": {
+      "fr": "Date de début invalide",
+      "en": "Invalid start date",
+      "ar": "تاريخ البداية غير صالح",
+    },
+    "app.compo.datePicker.invalidEndDate": {
+      "fr": "Date de fin invalide",
+      "en": "Invalid end date",
+      "ar": "تاريخ النهاية غير صالح",
+    },
+    "app.compo.uploadFile.error.todo": {
+      "fr": "Erreur détectée",
+      "en": "Error detected",
+      "ar": "تم اكتشاف خطأ",
+    },
+    "app.compo.uploadFile.error.doneFixLob": {
+      "fr": "Correctif appliqué : type de fichier modifié en TEXT avec @Lob au lieu de LONGTEXT (classe back-end)",
+      "en": "Fix applied: file type changed to TEXT with @Lob instead of LONGTEXT (back-end class)",
+      "ar": "تم تطبيق الإصلاح: تم تغيير نوع الملف إلى TEXT مع @Lob بدلاً من LONGTEXT (فئة الواجهة الخلفية)",
+    },
+    "app.compo.uploadFile.table.sizeOctets": {
+      "fr": "Taille (octets)",
+      "en": "Size (bytes)",
+      "ar": "الحجم (بايت)",
+    },
+    "app.compo.uploadFile.table.date": {
+      "fr": "Date",
+      "en": "Date",
+      "ar": "التاريخ",
+    },
+    "app.compo.uploadFile.table.image": {
+      "fr": "Image",
+      "en": "Image",
+      "ar": "صورة",
+    },
+    "app.compo.uploadFile.imagePreviewAlt": {
+      "fr": "Aperçu de l'image",
+      "en": "Image preview",
+      "ar": "معاينة الصورة",
     },
     "app.compo.cra.config.weekLabel": {
       "fr": "SEMAINE",

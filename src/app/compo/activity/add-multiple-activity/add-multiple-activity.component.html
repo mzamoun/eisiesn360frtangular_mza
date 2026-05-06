@@ -70,16 +70,16 @@
                                 <!-- <span class="badge badge-secondary">{{myObj.dateFin | date :'dd-MM-yyyy'}}</span> -->
                             </label>
 
-                            <app-mz-date-picker-deb-fin placeHolderDeb="Choix date debut"
+                            <app-mz-date-picker-deb-fin [placeHolderDeb]="utils.tr('app.compo.datePicker.startDate')"
                                 [myDatePickerDeb]="myObj.dateDeb" [onChangeCallerDeb]="'onStartDateChanged'"
-                                placeHolderFin="Choix date fin" [myDatePickerFin]="myObj.dateFin"
+                                [placeHolderFin]="utils.tr('app.compo.datePicker.endDate')" [myDatePickerFin]="myObj.dateFin"
                                 [onChangeCallerFin]="'onEndDateChanged'"
                                 [objCaller]="this"></app-mz-date-picker-deb-fin>
 
                             <div [hidden]="myObj.dateDeb" class="badge badge-danger">
-                                {{utils.tr('app.compo.activity.multiple.input.startDate')}} is required</div>
+                                {{utils.tr('app.compo.activity.multiple.input.startDate')}} {{utils.tr('app.badge.required')}}</div>
                             <div [hidden]="myObj.dateFin" class="badge badge-danger">
-                                {{utils.tr('app.compo.activity.multiple.input.endDate')}} is required</div>
+                                {{utils.tr('app.compo.activity.multiple.input.endDate')}} {{utils.tr('app.badge.required')}}</div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                     <label for="name">{{getActivityLabel()}}</label>
                     <input type="text" [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required
                         #name="ngModel">
-                    <div [hidden]="name.valid" class="badge badge-danger">{{getActivityLabel()}} is required</div>
+                    <div [hidden]="name.valid" class="badge badge-danger">{{getActivityLabel()}} {{utils.tr('app.badge.required')}}</div>
                 </div>
 
                 <div class="form-group">

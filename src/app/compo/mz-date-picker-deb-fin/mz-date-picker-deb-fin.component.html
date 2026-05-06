@@ -10,10 +10,10 @@
         <mat-date-range-picker #myDateRangePicker></mat-date-range-picker>
 
         <mat-error *ngIf="myForm.get('myDateRange').get('startDate')?.hasError('matStartDateInvalid')">
-            Invalid start date
+          {{utils.tr('app.compo.datePicker.invalidStartDate')}}
         </mat-error>
         <mat-error *ngIf="myForm.get('myDateRange').get('endDate')?.hasError('matEndDateInvalid')">
-            Invalid end date
+          {{utils.tr('app.compo.datePicker.invalidEndDate')}}
         </mat-error>
     </mat-form-field>
 </form>

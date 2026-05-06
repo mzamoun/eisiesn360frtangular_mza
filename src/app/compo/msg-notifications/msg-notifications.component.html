@@ -4,28 +4,32 @@
 
 <div class="dropdown dropleft float-right" *ngIf="listMsg && listMsg.length>0">
     <button type="button" class="btn  dropdown-toggle" id="btn-msg-notif-open" data-toggle="dropdown">
-      Notifications <span class="badge badge-pill badge-danger">{{listMsg?.length}} </span>
+            {{utils.tr('app.dashboard.section.notifications')}} <span class="badge badge-pill badge-danger">{{listMsg?.length}} </span>
     </button>
     <div class="dropdown-menu">
         <br/>
         <table>
-            <th> Date </th>
-            <th> From </th>
-            <!--
-		 		<th> To </th>
-		 		 -->
-            <th> Message </th>
-            <th> Type, Id </th>
+                        <th> {{utils.tr('app.compo.connection.date')}} </th>
+                        <th> {{utils.tr('app.compo.msg.form.from')}} </th>
+                        <!-- <th> {{utils.tr('app.compo.msg.form.to')}} </th> -->
+                        <th> {{utils.tr('app.compo.msg.form.msg')}} </th>
+                        <th> {{utils.tr('app.compo.msg.form.type')}}, {{utils.tr('app.compo.msg.form.typeId')}} </th>
 
             <tr *ngFor="let msg of listMsg; let i = index;">
                 <td> {{msg.dateMsg | date : 'dd/MM/yyyy hh:mm:ss'}} </td>
                 <td> {{msg.from.fullName}} </td>
-                <!--
+                <!-- <td> {{msg.to.fullName}} </td> -->
+                 <!-- <td> {{msg.from.fullName}} </td>
+                 <td> {{msg.to.fullName}} </td>
+                 <td> {{msg.msg}} </td>
+                 <td> {{msg.type}}, {{msg.typeId}} </td>
+                  -->
+                 <!-- <td> {{msg.from.fullName}} </td>
 		     <td> {{msg.to.fullName}} </td>
 		      -->
                 <td> {{msg.msg}} </td>
                 <td>
-                    <button (click)="showTarget(msg)" id="btn-msg-notif-show-{{i}}">Show {{msg.type}} #{{msg.typeId}}</button>
+                    <button (click)="showTarget(msg)" id="btn-msg-notif-show-{{i}}">{{utils.tr('Show')}} {{msg.type}} #{{msg.typeId}}</button>
                 </td>
             </tr>
         </table>

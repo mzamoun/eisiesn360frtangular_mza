@@ -9,7 +9,7 @@
         <h6> {{content}}</h6>
     </div>
     <div class="modal-footer">
-        <button type="button" id="btn-modal-ok" class="btn btn-outline-dark" (click)="ok()">Ok</button>
+        <button type="button" id="btn-modal-ok" class="btn btn-outline-dark" (click)="ok()">{{utils.tr('OK')}}</button>
         <button *ngIf="showCancel" id="btn-modal-dismiss" type="button" class="btn btn-outline-dark" (click)="cancel()">{{utils.tr('app.common.cancel')}}</button>
     </div>
 </div>
