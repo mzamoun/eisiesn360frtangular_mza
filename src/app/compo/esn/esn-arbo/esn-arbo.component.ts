@@ -115,7 +115,7 @@ export class EsnArboComponent extends MereComponent {
 
   deleteEsn(esn: Esn) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer esn " + esn.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteEsnByName', { name: esn.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.esnService.deleteById(esn.id)
@@ -137,7 +137,7 @@ export class EsnArboComponent extends MereComponent {
 
   deleteClient(obj: Client, esn: Esn) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer client " + obj.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteClientByName', { name: obj.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.clientService.deleteById(obj.id)
@@ -159,7 +159,7 @@ export class EsnArboComponent extends MereComponent {
 
   deleteProject(obj: Project, cli: Client) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer project " + obj.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteProjectByName', { name: obj.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.projectService.deleteById(obj.id)
@@ -181,7 +181,7 @@ export class EsnArboComponent extends MereComponent {
 
   deleteActivity(act: Activity, proj: Project) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer activity " + act.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteActivityByName', { name: act.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.activityService.deleteById(act.id)
@@ -203,7 +203,7 @@ export class EsnArboComponent extends MereComponent {
 
   deleteActivityType(type: ActivityType, esn : Esn) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer ActivityType " + type.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteActivityTypeByName', { name: type.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.activityTypeService.deleteById(type.id)

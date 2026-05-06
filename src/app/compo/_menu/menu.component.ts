@@ -58,7 +58,7 @@ export class MenuComponent extends MereComponent {
   addEsnDemo() {
 
     let mythis = this;
-    mythis.utilsIhm.confirmYesNo("Voulez vous vraiment ajouter une Esn Demo", mythis
+    mythis.utilsIhm.confirmYesNo(mythis.utils.tr('app.compo.menu.confirmAddEsnDemo'), mythis
       , function () {
         ////////////////////
         let label = "addEsnDemo"
@@ -70,7 +70,7 @@ export class MenuComponent extends MereComponent {
     
             if (!mythis.isError()) {
               // mythis.addInfo("l'Esn Demo a bien ete ajoutee", false)
-              mythis.utilsIhm.infoDialog("L'Esn Demo a bien été ajoutée", null);
+              mythis.utilsIhm.infoDialog(mythis.utils.tr('app.compo.menu.addEsnDemoSuccess'), null);
             }
             mythis.router.navigate(["/esn_app"]);
     

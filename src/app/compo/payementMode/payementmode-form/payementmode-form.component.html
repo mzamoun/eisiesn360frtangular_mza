@@ -6,7 +6,7 @@
 
             <div class="form-group">
                 <label for="name">{{utils.tr('Name')}}</label>
-                <input type="text" placeholder="Enter payement mode" [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required #name="ngModel" #nameHtml autofocus>
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.payementMode.form.input.name') | lowercase}}" [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required #name="ngModel" #nameHtml autofocus>
             </div>
             <div [hidden]="name.valid" class="alert alert-danger">{{utils.tr('Name')}} {{utils.tr('app.badge.required')}}</div>
 

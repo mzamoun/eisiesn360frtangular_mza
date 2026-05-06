@@ -17,7 +17,7 @@
 
         <!-- Filtre par texte -->
         <div style="flex: 1; display: flex; margin-right: 20px; width: 50%;" name="searchDiv">
-            <input id="searchStr" #searchStrInput class="form-control" style="flex: 1;" type="text" placeholder="search"
+            <input id="searchStr" #searchStrInput class="form-control" style="flex: 1;" type="text" placeholder="{{utils.tr('Search')}}"
                 name="searchStr" [(ngModel)]="searchStr" (keyup)="search()" (mouseover)="enableInputSearchStr()"
                 [readonly]="dataSharingService.isDisableSearchStrInput">
             <button style="width: 40px; height: 40px; text-align: center; margin-left: 5px;"

@@ -294,7 +294,7 @@ export class NotefraisListComponent extends MereComponent {
 
   delete(myObj) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec id=" + myObj.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
       , () => {
         mythis.beforeCallServer("delete")
         mythis.noteFraisService.deleteById(myObj.id)

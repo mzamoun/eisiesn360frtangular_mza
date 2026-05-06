@@ -156,7 +156,7 @@ export class AddMultipleActivityComponent extends MereComponent {
     this.errorDates=error;
     ////////////this.logger.debug("main onChangeDateFin myDatePickerFin", date, error);
     if(this.errorDates) {
-      this.utils.showNotification("error", "The end date of project you have been above of the start date !")
+      this.utils.showNotification("error", this.utils.tr('app.compo.activity.multiple.error.endDateBeforeStart'))
     }
   }
 
@@ -226,7 +226,7 @@ export class AddMultipleActivityComponent extends MereComponent {
     if (!targetExist) {
       this.myObj.activityOverTimes.push(this.activityOverTime)
     } else {
-      this.utils.showNotification("error", this.activityOverTime.target+" deja exist")
+      this.utils.showNotification("error", this.utils.tr('app.compo.activity.multiple.error.targetAlreadyExists', { target: this.activityOverTime.target }))
     }
     this.activityOverTime = new ActivityOverTime();
   }

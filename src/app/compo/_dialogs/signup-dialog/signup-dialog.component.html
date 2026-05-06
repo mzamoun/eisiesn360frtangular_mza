@@ -1,7 +1,7 @@
 <div style="width: 100%;">
-    <h2 class="left">Inscription ESN & Responsable</h2>
+    <h2 class="left">{{utils.tr('app.compo.inscription.dialogTitle')}}</h2>
 
-    <button mat-button (click)="cancel()" class="right" title="Cancel">
+    <button mat-button (click)="cancel()" class="right" title="{{utils.tr('app.common.cancel')}}">
         <h2>X</h2>
     </button>
 
@@ -41,10 +41,10 @@
 
 <mat-dialog-content style="height: 500px;">
     <mat-tab-group #tabGroup style="width: 100%;">
-        <mat-tab label="ESN">
+        <mat-tab label="{{utils.tr('Esn')}}">
             <app-esn-form (esnSaved)="onEsnSaved()"></app-esn-form>
         </mat-tab>
-        <mat-tab label="Responsable ESN" #tabRespEsn>
+        <mat-tab label="{{utils.tr('app.compo.inscription.responsibleEsn')}}" #tabRespEsn>
             <app-consultant-form></app-consultant-form>
         </mat-tab>
     </mat-tab-group>

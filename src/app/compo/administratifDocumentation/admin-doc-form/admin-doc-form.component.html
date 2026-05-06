@@ -11,7 +11,7 @@
 
             <div *ngIf="showAddingCategoryName" class="form-group">
                 <label for="categoryName">{{utils.tr('app.compo.adminDoc.form.specifyCategory')}}</label>
-                <input type="text" [(ngModel)]="myObj.categoryName" class="form-control" id="categoryName" name="categoryName" placeholder="Titre du document" required #categoryName="ngModel">
+                <input type="text" [(ngModel)]="myObj.categoryName" class="form-control" id="categoryName" name="categoryName" placeholder="{{utils.tr('app.compo.adminDoc.form.categoryNamePlaceholder')}}" required #categoryName="ngModel">
             </div>
             <div *ngIf="showAddingCategoryName" [hidden]="myObj.categoryName" class="badge badge-danger">{{utils.tr('app.compo.adminDoc.form.enterCategoryName')}}</div>
 
@@ -30,13 +30,13 @@
 
             <div class="form-group">
                 <label for="title">{{utils.tr('app.compo.adminDoc.form.titleLabel')}}</label>
-                <input type="text" [(ngModel)]="myObj.title" class="form-control" id="title" name="title" placeholder="Titre du document" required #title="ngModel">
+                <input type="text" [(ngModel)]="myObj.title" class="form-control" id="title" name="title" placeholder="{{utils.tr('app.compo.adminDoc.form.titlePlaceholder')}}" required #title="ngModel">
             </div>
             <div [hidden]="title.valid" class="badge badge-danger">{{utils.tr('app.compo.adminDoc.form.enterTitle')}}</div>
 
             <div class="form-group">
                 <label>{{utils.tr('app.compo.adminDoc.form.expirationDate')}}</label>
-                <app-mz-date-picker placeHolder="Date d'expiration" id="expired-date" [(myDatePicker)]="myObj.expired_date">
+                <app-mz-date-picker placeHolder="{{utils.tr('app.compo.adminDoc.form.expirationDatePlaceholder')}}" id="expired-date" [(myDatePicker)]="myObj.expired_date">
                 </app-mz-date-picker>
             </div>
 

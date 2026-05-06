@@ -199,7 +199,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   deleteNotification(notification: Notification) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec date=" + notification.createdDate, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteByDate') + notification.createdDate, mythis
       , () => {
         mythis.dataSharingService.deleteNotification(notification.id, null, null);
       }
@@ -408,7 +408,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   deleteAllNotifications() {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer toutes les notifications", mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteAllNotifications'), mythis
       , () => {
         mythis.dataSharingService.deleteNotifications(
           () => {

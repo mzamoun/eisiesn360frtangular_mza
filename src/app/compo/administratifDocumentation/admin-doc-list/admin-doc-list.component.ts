@@ -261,7 +261,7 @@ export class AdminDocListComponent extends MereComponent {
 
     let mythis = this;
 
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec id=" + document.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + document.id, mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.documentService.deleteDocument(document)
@@ -352,7 +352,7 @@ export class AdminDocListComponent extends MereComponent {
         // this.myObj.
       } else {
         // alert('Oops, Format de fichier erroné, seulement fichier Pdf/png/jpg.');
-        this.utilsIhm.info("Oops, Format de fichier erroné, seulement fichier Pdf/png/jpg.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.common.error.invalidFileFormatPdfPngJpg'), null, null);
         // this.selectedFile.nativeElement.value="";
       }
     }

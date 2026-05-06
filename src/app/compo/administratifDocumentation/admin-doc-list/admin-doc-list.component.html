@@ -66,14 +66,14 @@
     
                                     <div class="col2">
                                         <button (click)="downloadFiles(document)" id="btn-download-{{i}}"
-                                            class='btn btn-primary'><i class="fas fa-download" title="Download"></i> {{utils.tr('Download')}}
+                                            class='btn btn-primary'><i class="fas fa-download" title="{{utils.tr('Download')}}"></i> {{utils.tr('Download')}}
                                         </button>
                                         <button (click)="shareDoc(category, document)" id="btn-shareDoc-{{i}}"
-                                            class='btn btn-primary'><i class="fas fa-angle-double-right" title="Share"></i> {{utils.tr('Share')}} 
+                                            class='btn btn-primary'><i class="fas fa-angle-double-right" title="{{utils.tr('Share')}}"></i> {{utils.tr('Share')}} 
                                         </button>
 
                                         <button *ngIf="isShowingMyDocuments" id="btn-delete-{{i}}"
-                                            (click)="deleteDocument(document)" class='btn btn-danger' title="Delete"> <i
+                                            (click)="deleteDocument(document)" class='btn btn-danger' title="{{utils.tr('Delete')}}"> <i
                                                 class="fas fa-trash-alt"></i>{{utils.tr('Delete')}}
                                         </button>
                                     </div>
@@ -113,7 +113,7 @@
 
                         <div>
                             <span>{{utils.tr('app.compo.adminDoc.form.consultantLabel')}} </span>
-                            <ng-multiselect-dropdown [placeholder]="'Selectionnez consultant'"
+                            <ng-multiselect-dropdown [placeholder]="utils.tr('app.compo.adminDoc.form.chooseConsultant')"
                                 [settings]="dropdownConsultantSettings" [data]="consultantsList"
                                 [(ngModel)]="selectedConsultants" (onSelect)="onSelectConsultant($event)"
                                 (onSelectAll)="onSelectAllConsultant($event)"
@@ -155,7 +155,7 @@
                         <div>
                             <span>{{utils.tr('app.compo.adminDoc.form.docCategories')}} </span><br>
                             <input type="text" [(ngModel)]="myObj.category.name" class="form-control"
-                                id="category-modal" name="category" placeholder="Nom du categorie" disabled
+                                id="category-modal" name="category" placeholder="{{utils.tr('app.compo.adminDoc.form.categoryNamePlaceholder')}}" disabled
                                 #category="ngModel">
                         </div>
                         <div [hidden]="myObj.category" class="badge badge-danger">{{utils.tr('app.compo.adminDoc.form.selectCategory')}}</div>
@@ -163,7 +163,7 @@
                         <div *ngIf="showAddingCategoryName" class="form-group">
                             <label for="categoryName">{{utils.tr('app.compo.adminDoc.form.specifyCategory')}}</label>
                             <input type="text" [(ngModel)]="myObj.categoryName" class="form-control"
-                                id="category-name-modal" name="categoryName" placeholder="Nom du categorie" required
+                                id="category-name-modal" name="categoryName" placeholder="{{utils.tr('app.compo.adminDoc.form.categoryNamePlaceholder')}}" required
                                 #categoryName="ngModel">
                         </div>
                         <div *ngIf="showAddingCategoryName" [hidden]="myObj.categoryName" class="badge badge-danger">
@@ -171,7 +171,7 @@
 
                         <div *ngIf="manager.admin">
                             <span>{{utils.tr('app.compo.adminDoc.form.consultantLabel')}} </span>
-                            <ng-multiselect-dropdown [placeholder]="'Selectionnez consultant'"
+                            <ng-multiselect-dropdown [placeholder]="utils.tr('app.compo.adminDoc.form.chooseConsultant')"
                                 [settings]="dropdownConsultantSettings" [data]="consultantsList"
                                 [(ngModel)]="selectedConsultants" (onSelect)="onSelectConsultant($event)"
                                 (onSelectAll)="onSelectAllConsultant($event)"
@@ -185,20 +185,20 @@
                         <div *ngIf="!manager.admin">
                             <label for="sharedWith">{{utils.tr('app.compo.adminDoc.form.shareWith')}}</label>
                             <input type="text" [(ngModel)]="adminConsultant.username" class="form-control"
-                                id="shared-with-modal" name="sharedWith" placeholder="Titre du document" disabled
+                                id="shared-with-modal" name="sharedWith" placeholder="{{utils.tr('app.compo.adminDoc.form.titlePlaceholder')}}" disabled
                                 #sharedWith="ngModel">
                         </div>
 
                         <div class="form-group">
                             <label for="title">{{utils.tr('app.compo.adminDoc.form.titleLabel')}}</label>
                             <input type="text" [(ngModel)]="myObj.title" class="form-control" id="title-modal"
-                                name="title" placeholder="Titre du document" required #title="ngModel">
+                                name="title" placeholder="{{utils.tr('app.compo.adminDoc.form.titlePlaceholder')}}" required #title="ngModel">
                         </div>
                         <div [hidden]="title.valid" class="badge badge-danger">{{utils.tr('app.compo.adminDoc.form.enterTitle')}}</div>
 
                         <div class="form-group">
                             <label>{{utils.tr('app.compo.adminDoc.form.expirationDate')}}</label>
-                            <app-mz-date-picker id="expired-date-modal" placeHolder="Date d'expiration"
+                            <app-mz-date-picker id="expired-date-modal" placeHolder="{{utils.tr('app.compo.adminDoc.form.expirationDatePlaceholder')}}"
                                 [(myDatePicker)]="myObj.expired_date">
                             </app-mz-date-picker>
                         </div>

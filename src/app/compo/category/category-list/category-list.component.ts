@@ -83,7 +83,7 @@ export class CategoryListComponent extends MereComponent {
 
   delete(myObj) {
     let mythis = this;
-		mythis.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec id=" + myObj.id, mythis
+             mythis.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
 			, ()=> {
         mythis.beforeCallServer("delete")
         mythis.categoryService.deleteById(myObj.id)

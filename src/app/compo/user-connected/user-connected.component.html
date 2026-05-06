@@ -27,10 +27,10 @@
     <div class="card-body" *ngIf="userConnected">
         <div class="form-group">
             <label for="password1"> <b>{{utils.tr('app.compo.userConnected.changePassword')}}</b> </label>
-            <input type="password" (ngModelChange)="validatePassword($event)" (ngModel)="null" class="form-control" id="password1" name="password1" placeholder="Enter your password" required #password1="ngModel">
+            <input type="password" (ngModelChange)="validatePassword($event)" (ngModel)="null" class="form-control" id="password1" name="password1" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.password') | lowercase}}" required #password1="ngModel">
         </div>
         <div class="form-group">
-            <input type="password" (ngModel)="null" class="form-control" id="password2" name="password2" placeholder="Enter same password" required #password2="ngModel">
+            <input type="password" (ngModel)="null" class="form-control" id="password2" name="password2" placeholder="{{utils.tr('app.compo.userConnected.enterSamePassword')}}" required #password2="ngModel">
         </div>
         
         <!-- Password validation errors -->
@@ -41,10 +41,10 @@
         </div>
 
         <div [hidden]="password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0" class="alert alert-danger">
-            password is required and must meet all criteria
+            {{utils.tr('app.compo.userConnected.passwordCriteria')}}
         </div>
 
-        <button [hidden]="!(password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0)" (click)="changePassword(password1.value)" id="btn-user-connected-changePw" class="btn btn-primary">Change
+        <button [hidden]="!(password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0)" (click)="changePassword(password1.value)" id="btn-user-connected-changePw" class="btn btn-primary">{{utils.tr('Change')}}
     </button>
 
     </div>

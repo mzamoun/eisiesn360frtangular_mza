@@ -84,7 +84,7 @@ export class ConsultantArboComponent extends MereComponent {
 
   deleteConsultant(consultant: Consultant, manager: Consultant) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer le consultant " + consultant.username, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteConsultantByUsername', { username: consultant.username }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.consultantService.deleteById(consultant.id)
@@ -136,7 +136,7 @@ export class ConsultantArboComponent extends MereComponent {
 
   deleteCra(cra: Cra, consultant: Consultant) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer le cra " + mythis.infoCra(cra), mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteCraByLabel', { label: mythis.infoCra(cra) }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.craService.deleteById(cra.id)
@@ -180,7 +180,7 @@ export class ConsultantArboComponent extends MereComponent {
 
   deleteActivity(act: Activity, consultant: Consultant) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer activity " + act.name, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteActivityByName', { name: act.name }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.activityService.deleteById(act.id)

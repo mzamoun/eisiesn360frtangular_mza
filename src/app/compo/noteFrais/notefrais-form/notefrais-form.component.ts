@@ -583,7 +583,7 @@ export class NotefraisFormComponent extends MereComponent {
         };
       } else {
         // alert('Oops, Format de fichier erroné, seulement fichier Pdf/png/jpg.');
-        this.utilsIhm.info("Oops, Format de fichier erroné, seulement fichier Pdf/png/jpg.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.common.error.invalidFileFormatPdfPngJpg'), null, null);
         // this.selectedFile.nativeElement.value="";
       }
     }

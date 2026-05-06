@@ -127,7 +127,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   craReportActivities: CraReportActivity[];
 
   isAffWeekNumber = true;
-  titleShowWeekNumber = 'Hide Week Number';
+  titleShowWeekNumber = this.utils.tr('app.compo.cra.form.hideWeekNumber');
 
   isAddMultiDate = false;
   addMultiDateStartDate!: Date;
@@ -144,8 +144,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   showWeekNumber() {
     // //////////this.logger.debug("DBG showWeekNumber")
-    if (this.isAffWeekNumber) this.titleShowWeekNumber = 'Show Week Number';
-    else this.titleShowWeekNumber = 'Hide Week Number';
+    if (this.isAffWeekNumber) this.titleShowWeekNumber = this.utils.tr('app.compo.cra.form.showWeekNumber');
+    else this.titleShowWeekNumber = this.utils.tr('app.compo.cra.form.hideWeekNumber');
 
     this.isAffWeekNumber = !this.isAffWeekNumber;
   }
@@ -763,7 +763,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.errorDates = error;
     ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if (this.errorDates) {
-      this.utils.showNotification("error", "The end date of project you have been above of the start date !")
+      this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.endDateBeforeStart'))
     }
   }
 
@@ -774,7 +774,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.errorDates = error;
     ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if (this.errorDates) {
-      this.utils.showNotification("error", "The end date of project you have been above of the start date !")
+      this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.endDateBeforeStart'))
     }
   }
 
@@ -1003,7 +1003,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         }
       }
     } else {
-      this.utilsIhm.info("CRA deja valide. On ne peut pas le modifier.", null, null);
+      this.utilsIhm.info(this.utils.tr('app.compo.cra.form.alreadyValidatedReadonly'), null, null);
     }
   }
 
@@ -1413,7 +1413,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   delete(myObj: Cra) {
     this.logger.debug("delete this.currentCra=", this.currentCra)
     let mythis = this;
-    this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec id=" + myObj.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.craService.deleteById(myObj.id)
@@ -1520,8 +1520,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           const debStr = act.dateDebFr || (act.dateDeb ? this.datePipe.transform(act.dateDeb, 'dd/MM/yyyy') : '?');
           const finStr = act.dateFinFr || (act.dateFin ? this.datePipe.transform(act.dateFin, 'dd/MM/yyyy') : '?');
           this.utilsIhm.info(
-            `Impossible d'ajouter l'activité "${act.name || ''}" à cette date.\n` +
-            `Elle est valide uniquement du ${debStr} au ${finStr}.`,
+            this.utils.tr('app.compo.cra.form.activity.invalidForDate', {
+              name: act.name || '',
+              deb: debStr,
+              fin: finStr,
+            }),
             null, null
           );
           return;
@@ -1553,9 +1556,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   getTitleButtonAddActivity() {
-    let t = "Add Activity";
+    let t = this.utils.tr('app.compo.cra.form.addActivity');
     if (this.isAddMultiDate) {
-      t = "Add Activities";
+      t = this.utils.tr('app.compo.cra.form.addActivities');
     }
     return t;
   }
@@ -1601,7 +1604,12 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       const debStr = act?.dateDebFr || (act?.dateDeb ? this.datePipe.transform(act.dateDeb, 'dd/MM/yyyy') : '?');
       const finStr = act?.dateFinFr || (act?.dateFin ? this.datePipe.transform(act.dateFin, 'dd/MM/yyyy') : '?');
       this.utilsIhm.info(
-        `${nbHorsPlage} jour(s) ignoré(s) : l'activité "${act?.name || ''}" est valide uniquement du ${debStr} au ${finStr}.`,
+        this.utils.tr('app.compo.cra.form.activity.skippedOutOfRange', {
+          count: nbHorsPlage,
+          name: act?.name || '',
+          deb: debStr,
+          fin: finStr,
+        }),
         null, null
       );
     }
@@ -1687,7 +1695,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
         for (let craDayActivity of craDayActivities) {
           if (craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
-            this.utilsIhm.info("isCraValid : Oops,verify your Conges plz. All days must be conge type.", null, null);
+            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.congeTypeOnly'), null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
             this.maj_canSubmitCra();
@@ -1698,7 +1706,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.logger.debug("+++++ dateActivity", dateActivity)
             this.logger.debug("+++++ yesterday", yesterday)
             if (dateActivity <= yesterday) {
-              this.utilsIhm.info("isCraValid : isCraValid : Oops, verify your Conges plz. We cant have a conge in the past.", null, null);
+              this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.noPastConge'), null, null);
               return false;
             }
           }
@@ -1707,7 +1715,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
 
       if (isCongesVide) {
-        this.utilsIhm.info("isCraValid : Oops, Vous devez saisir au moins un conge.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.atLeastOneConge'), null, null);
         this.currentCra.validByConsultant = null;
         this.currentCra.dateValidationConsultant = null;
         this.maj_canSubmitCra();
@@ -1715,7 +1723,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
 
       if (!isSilent) {
-        this.utilsIhm.info("isCraValid : Votre demande de conge est VALIDE.\n Vous pouvez le soumettre a votre Manager.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.congeValidSubmit'), null, null);
       }
 
     } else {
@@ -1729,7 +1737,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           })
           if (time < 1) {
             // alert("Oops,verify your cra plz.All days you have been equals a 1.");
-            this.utilsIhm.info("isCraValid : Oops,verify your cra plz.All days you have been equals a 1.", null, null);
+            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.dayMustEqualOne'), null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
             this.maj_canSubmitCra();
@@ -1740,7 +1748,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
 
       if (!isSilent) {
-        this.utilsIhm.info("isCraValid : Votre CRA est VALIDE.\n Vous pouvez le soumettre a votre Manager.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.craValidSubmit'), null, null);
       }
     }
 
@@ -1774,7 +1782,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     let name = this.getNameByType();
 
-    this.utilsIhm.confirmYesNo("Voulez-vous valider le " + name + "?", this
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.form.confirmValidate', { name }), this
       , () => {
         this.currentCra.validByManager = true;
         this.currentCra.dateValidationManager = new Date();
@@ -1839,9 +1847,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
       if (this.isCraValid(true)) {
 
-        this.utilsIhm.confirmYesNo("\n" +
-          "Voulez-vous soumettre le " + name + "?\n" +
-          "Une fois soumis, impossible de le modifier", this
+        this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.form.confirmSubmit', { name }), this
           , () => {
             this.logger.debug("sendCraToValidate go to soumettre cra : currentUser.adminConsultant ", currentUser.adminConsultant)
             this.currentCra.validByConsultant = true;
@@ -1864,7 +1870,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
 
     } else {
-      this.utilsIhm.info("currentUser is NULL", null, null);
+      this.utilsIhm.info(this.utils.tr('app.compo.cra.form.currentUserNull'), null, null);
     }
   }
 
@@ -1913,7 +1919,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.logger.debug("deleteAllEvents this.currentCra=", this.currentCra)
 
     if (this.events && this.events.length > 0) {
-      this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer tous les " + this.events.length + " evenements", this
+      this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.form.confirmDeleteAllEvents', { count: this.events.length }), this
         , () => {
           this.events = [];
           this.currentCra.craDays.forEach((v, k) => {
@@ -1925,7 +1931,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         , null
       );
     } else {
-      this.utilsIhm.info("Aucun evenement a effacer !", this, null);
+      this.utilsIhm.info(this.utils.tr('app.compo.cra.form.noEventToDelete'), this, null);
     }
 
   }
@@ -2070,14 +2076,14 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.logger.debug(label + " DEB this.currentCra=", this.currentCra)
 
     if (!this.currentCra?.id) {
-      this.utilsIhm.info("CRA introuvable. Impossible de générer le PDF client.", null, null);
+      this.utilsIhm.info(this.utils.tr('app.compo.cra.form.pdfClient.craNotFound'), null, null);
       return;
     }
 
     let userOfCra = this.currentCra?.consultant
 
     if (!userOfCra) {
-      this.utilsIhm.info("userOfCra introuvable. Impossible de générer le PDF client.", null, null);
+      this.utilsIhm.info(this.utils.tr('app.compo.cra.form.pdfClient.userNotFound'), null, null);
       return;
     }
 
@@ -2116,7 +2122,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             }
           } else {
             this.logger.debug(labelRechClients + " : NO client ")
-            this.utilsIhm.info("Aucun client trouvé pour ce CRA.", null, null);
+            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.pdfClient.noClientFound'), null, null);
           }
 
 
@@ -2284,7 +2290,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         }
       } else {
         // alert("Oops, seuls les fichiers en format [pdf,png,jpg] sont acceptés.")
-        this.utilsIhm.info("Oops, seuls les fichiers en format [pdf,png,jpg] sont acceptés.", null, null);
+        this.utilsIhm.info(this.utils.tr('app.compo.cra.form.attachment.invalidFormat'), null, null);
         this.attachment.nativeElement.value = "";
       }
 

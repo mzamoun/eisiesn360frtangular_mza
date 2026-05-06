@@ -5,14 +5,14 @@
         <form (ngSubmit)="onSubmit()" #msgForm="ngForm">
 
             <div class="form-group">
-                <label for="msg">Msg</label>
-                <input type="text" placeholder="Enter your msg" [(ngModel)]="myObj.msg" class="form-control" id="msg" name="msg" required #msg="ngModel">
+                <label for="msg">{{utils.tr('app.compo.msg.form.msg')}}</label>
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.msg.form.msg') | lowercase}}" [(ngModel)]="myObj.msg" class="form-control" id="msg" name="msg" required #msg="ngModel">
             </div>
             <div [hidden]="msg.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.msgRequired')}}</div>
 
             <div class="form-group">
                 <label for="type">{{utils.tr('app.compo.msg.form.type')}}</label>
-                <input type="text" placeholder="Enter your type" [(ngModel)]="myObj.type" class="form-control" id="type" name="type">
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.msg.form.type') | lowercase}}" [(ngModel)]="myObj.type" class="form-control" id="type" name="type">
             </div>
 
             <div class="form-group">
@@ -22,19 +22,19 @@
 
             <div class="form-group">
                 <label for="from">{{utils.tr('app.compo.msg.form.from')}}</label>
-                <input type="text" placeholder="Enter your from" [(ngModel)]="myObj.from" class="form-control" id="from" name="from" required #from="ngModel">
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.msg.form.from') | lowercase}}" [(ngModel)]="myObj.from" class="form-control" id="from" name="from" required #from="ngModel">
             </div>
             <div [hidden]="from.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.fromRequired')}}</div>
 
             <div class="form-group">
-                <label for="to">To</label>
-                <input type="text" placeholder="Enter your to" [(ngModel)]="myObj.to" class="form-control" id="to" name="to" required #to="ngModel">
+                <label for="to">{{utils.tr('app.compo.msg.form.to')}}</label>
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.msg.form.to') | lowercase}}" [(ngModel)]="myObj.to" class="form-control" id="to" name="to" required #to="ngModel">
             </div>
             <div [hidden]="to.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.toRequired')}}</div>
 
             <div class="form-group">
                 <label for="isReadByTo">{{utils.tr('app.compo.msg.form.isReadByTo')}}</label>
-                <input type="text" placeholder="Enter your isReadByTo" [(ngModel)]="myObj.isReadByTo" class="form-control" id="isReadByTo" name="isReadByTo">
+                <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.msg.form.isReadByTo') | lowercase}}" [(ngModel)]="myObj.isReadByTo" class="form-control" id="isReadByTo" name="isReadByTo">
             </div>
 
 

@@ -86,11 +86,10 @@ export class TradService {
       en: "New Fee",
       ar: "مصاريف جديدة",
     },
-
-    "Edit": {
-      fr: "Modifier",
-      en: "Edit",
-      ar: "تعديل",
+    "app.compo.msg.form.msg": {
+      "fr": "Message",
+      "en": "Message",
+      "ar": "رسالة",
     },
 
     "Download": {
@@ -1426,6 +1425,16 @@ export class TradService {
       "en": "ADD MULTI ACTIVITY",
       "ar": "إضافة أنشطة متعددة",
     },
+    "app.compo.activity.multiple.error.endDateBeforeStart": {
+      "fr": "La date de fin du projet doit être supérieure ou égale à la date de début",
+      "en": "Project end date must be greater than or equal to start date",
+      "ar": "يجب أن يكون تاريخ نهاية المشروع أكبر من أو يساوي تاريخ البداية",
+    },
+    "app.compo.activity.multiple.error.targetAlreadyExists": {
+      "fr": "La cible {{target}} existe déjà",
+      "en": "Target {{target}} already exists",
+      "ar": "الهدف {{target}} موجود بالفعل",
+    },
     "app.compo.cra.list.table.thead.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
@@ -2028,6 +2037,16 @@ export class TradService {
       "en": "Week Number",
       "ar": "رقم الأسبوع",
     },
+    "app.compo.cra.form.showWeekNumber": {
+      "fr": "Afficher numéro de semaine",
+      "en": "Show Week Number",
+      "ar": "إظهار رقم الأسبوع",
+    },
+    "app.compo.cra.form.hideWeekNumber": {
+      "fr": "Masquer numéro de semaine",
+      "en": "Hide Week Number",
+      "ar": "إخفاء رقم الأسبوع",
+    },
     "app.compo.cra.form.daysOpen": {
       "fr": "Jours ouvrables",
       "en": "Days Open",
@@ -2127,6 +2146,106 @@ export class TradService {
       "fr": "Commentaire",
       "en": "Comment",
       "ar": "تعليق",
+    },
+    "app.compo.cra.form.addActivity": {
+      "fr": "Ajouter activité",
+      "en": "Add Activity",
+      "ar": "إضافة نشاط",
+    },
+    "app.compo.cra.form.addActivities": {
+      "fr": "Ajouter activités",
+      "en": "Add Activities",
+      "ar": "إضافة أنشطة",
+    },
+    "app.compo.cra.form.alreadyValidatedReadonly": {
+      "fr": "CRA déjà validé. Modification impossible.",
+      "en": "CRA already validated. You cannot modify it.",
+      "ar": "تم اعتماد CRA بالفعل. لا يمكن تعديله.",
+    },
+    "app.compo.cra.form.activity.invalidForDate": {
+      "fr": "Impossible d'ajouter l'activité \"{{name}}\" à cette date.\nElle est valide uniquement du {{deb}} au {{fin}}.",
+      "en": "Cannot add activity \"{{name}}\" on this date.\nIt is valid only from {{deb}} to {{fin}}.",
+      "ar": "لا يمكن إضافة النشاط \"{{name}}\" في هذا التاريخ.\nهو صالح فقط من {{deb}} إلى {{fin}}.",
+    },
+    "app.compo.cra.form.activity.skippedOutOfRange": {
+      "fr": "{{count}} jour(s) ignoré(s) : l'activité \"{{name}}\" est valide uniquement du {{deb}} au {{fin}}.",
+      "en": "{{count}} day(s) skipped: activity \"{{name}}\" is valid only from {{deb}} to {{fin}}.",
+      "ar": "تم تجاهل {{count}} يوم(أيام): النشاط \"{{name}}\" صالح فقط من {{deb}} إلى {{fin}}.",
+    },
+    "app.compo.cra.form.validation.congeTypeOnly": {
+      "fr": "Veuillez vérifier vos congés. Tous les jours doivent être de type congé.",
+      "en": "Please check your leave entries. All days must be leave type.",
+      "ar": "يرجى التحقق من الإجازات. يجب أن تكون كل الأيام من نوع إجازة.",
+    },
+    "app.compo.cra.form.validation.noPastConge": {
+      "fr": "Veuillez vérifier vos congés. Impossible de saisir un congé dans le passé.",
+      "en": "Please check your leave entries. You cannot add leave in the past.",
+      "ar": "يرجى التحقق من الإجازات. لا يمكن إدخال إجازة في الماضي.",
+    },
+    "app.compo.cra.form.validation.atLeastOneConge": {
+      "fr": "Vous devez saisir au moins un congé.",
+      "en": "You must enter at least one leave day.",
+      "ar": "يجب إدخال يوم إجازة واحد على الأقل.",
+    },
+    "app.compo.cra.form.validation.congeValidSubmit": {
+      "fr": "Votre demande de congé est valide.\nVous pouvez la soumettre à votre manager.",
+      "en": "Your leave request is valid.\nYou can submit it to your manager.",
+      "ar": "طلب الإجازة صالح.\nيمكنك إرساله إلى المدير.",
+    },
+    "app.compo.cra.form.validation.dayMustEqualOne": {
+      "fr": "Veuillez vérifier votre CRA. Chaque jour travaillé doit totaliser 1.",
+      "en": "Please check your CRA. Each worked day must total 1.",
+      "ar": "يرجى التحقق من CRA. يجب أن يكون مجموع كل يوم عمل 1.",
+    },
+    "app.compo.cra.form.validation.craValidSubmit": {
+      "fr": "Votre CRA est valide.\nVous pouvez le soumettre à votre manager.",
+      "en": "Your CRA is valid.\nYou can submit it to your manager.",
+      "ar": "CRA صالح.\nيمكنك إرساله إلى المدير.",
+    },
+    "app.compo.cra.form.confirmValidate": {
+      "fr": "Voulez-vous valider le {{name}} ?",
+      "en": "Do you want to validate {{name}}?",
+      "ar": "هل تريد اعتماد {{name}}؟",
+    },
+    "app.compo.cra.form.confirmSubmit": {
+      "fr": "Voulez-vous soumettre le {{name}} ?\nUne fois soumis, impossible de le modifier.",
+      "en": "Do you want to submit {{name}}?\nOnce submitted, it cannot be modified.",
+      "ar": "هل تريد إرسال {{name}}؟\nبعد الإرسال، لا يمكن تعديله.",
+    },
+    "app.compo.cra.form.currentUserNull": {
+      "fr": "Utilisateur courant introuvable.",
+      "en": "Current user is null.",
+      "ar": "المستخدم الحالي غير موجود.",
+    },
+    "app.compo.cra.form.confirmDeleteAllEvents": {
+      "fr": "Voulez-vous vraiment supprimer tous les {{count}} événements ?",
+      "en": "Do you really want to delete all {{count}} events?",
+      "ar": "هل تريد فعلاً حذف كل الأحداث وعددها {{count}}؟",
+    },
+    "app.compo.cra.form.noEventToDelete": {
+      "fr": "Aucun événement à effacer !",
+      "en": "No event to delete!",
+      "ar": "لا توجد أحداث للحذف!",
+    },
+    "app.compo.cra.form.pdfClient.craNotFound": {
+      "fr": "CRA introuvable. Impossible de générer le PDF client.",
+      "en": "CRA not found. Cannot generate client PDF.",
+      "ar": "لم يتم العثور على CRA. تعذر إنشاء PDF للعميل.",
+    },
+    "app.compo.cra.form.pdfClient.userNotFound": {
+      "fr": "Consultant introuvable. Impossible de générer le PDF client.",
+      "en": "Consultant not found. Cannot generate client PDF.",
+      "ar": "لم يتم العثور على المستشار. تعذر إنشاء PDF للعميل.",
+    },
+    "app.compo.cra.form.pdfClient.noClientFound": {
+      "fr": "Aucun client trouvé pour ce CRA.",
+      "en": "No client found for this CRA.",
+      "ar": "لم يتم العثور على عميل لهذا CRA.",
+    },
+    "app.compo.cra.form.attachment.invalidFormat": {
+      "fr": "Seuls les fichiers [pdf,png,jpg] sont acceptés.",
+      "en": "Only [pdf,png,jpg] files are accepted.",
+      "ar": "يتم قبول ملفات [pdf,png,jpg] فقط.",
     },
     "app.compo.cra.form.listReportsPdf": {
       "fr": "LISTE RAPPORTS PDF ACTIVITÉS",
@@ -2233,6 +2352,21 @@ export class TradService {
       "en": "Choose a consultant",
       "ar": "اختر مستشاراً",
     },
+    "app.compo.adminDoc.form.categoryNamePlaceholder": {
+      "fr": "Nom de la catégorie",
+      "en": "Category name",
+      "ar": "اسم الفئة",
+    },
+    "app.compo.adminDoc.form.titlePlaceholder": {
+      "fr": "Titre du document",
+      "en": "Document title",
+      "ar": "عنوان المستند",
+    },
+    "app.compo.adminDoc.form.expirationDatePlaceholder": {
+      "fr": "Date d'expiration",
+      "en": "Expiration date",
+      "ar": "تاريخ انتهاء الصلاحية",
+    },
     "app.compo.adminDoc.form.shareWith": {
       "fr": "Partager avec :",
       "en": "Share with:",
@@ -2332,6 +2466,66 @@ export class TradService {
       "fr": "Voulez-vous vraiment supprimer la ligne avec id=",
       "en": "Do you really want to delete the row with id=",
       "ar": "هل تريد حقا حذف السطر ذي المعرف=",
+    },
+    "app.common.confirm.deleteConsultantByUsername": {
+      "fr": "Voulez-vous vraiment supprimer le consultant {{username}}",
+      "en": "Do you really want to delete consultant {{username}}",
+      "ar": "هل تريد فعلا حذف المستشار {{username}}",
+    },
+    "app.common.confirm.deleteConsultantByFullName": {
+      "fr": "Voulez-vous vraiment supprimer le consultant : {{fullName}}",
+      "en": "Do you really want to delete consultant: {{fullName}}",
+      "ar": "هل تريد فعلا حذف المستشار: {{fullName}}",
+    },
+    "app.common.confirm.deleteCraByLabel": {
+      "fr": "Voulez-vous vraiment supprimer le CRA {{label}}",
+      "en": "Do you really want to delete CRA {{label}}",
+      "ar": "هل تريد فعلا حذف CRA {{label}}",
+    },
+    "app.common.confirm.deleteActivityByName": {
+      "fr": "Voulez-vous vraiment supprimer l'activité {{name}}",
+      "en": "Do you really want to delete activity {{name}}",
+      "ar": "هل تريد فعلا حذف النشاط {{name}}",
+    },
+    "app.common.confirm.deleteActivityTypeByName": {
+      "fr": "Voulez-vous vraiment supprimer le type d'activité {{name}}",
+      "en": "Do you really want to delete activity type {{name}}",
+      "ar": "هل تريد فعلا حذف نوع النشاط {{name}}",
+    },
+    "app.common.confirm.deleteEsnByName": {
+      "fr": "Voulez-vous vraiment supprimer l'ESN {{name}}",
+      "en": "Do you really want to delete ESN {{name}}",
+      "ar": "هل تريد فعلا حذف المؤسسة {{name}}",
+    },
+    "app.common.confirm.deleteClientByName": {
+      "fr": "Voulez-vous vraiment supprimer le client {{name}}",
+      "en": "Do you really want to delete client {{name}}",
+      "ar": "هل تريد فعلا حذف العميل {{name}}",
+    },
+    "app.common.confirm.deleteProjectByName": {
+      "fr": "Voulez-vous vraiment supprimer le projet {{name}}",
+      "en": "Do you really want to delete project {{name}}",
+      "ar": "هل تريد فعلا حذف المشروع {{name}}",
+    },
+    "app.common.confirm.deleteByDate": {
+      "fr": "Voulez-vous vraiment supprimer la ligne avec date=",
+      "en": "Do you really want to delete the row with date=",
+      "ar": "هل تريد فعلا حذف السطر بالتاريخ=",
+    },
+    "app.common.confirm.deleteAllNotifications": {
+      "fr": "Voulez-vous vraiment supprimer toutes les notifications",
+      "en": "Do you really want to delete all notifications",
+      "ar": "هل تريد فعلا حذف كل الإشعارات",
+    },
+    "app.common.confirm.deleteFileByName": {
+      "fr": "Voulez-vous vraiment supprimer le fichier : {{name}}",
+      "en": "Do you really want to delete file: {{name}}",
+      "ar": "هل تريد فعلا حذف الملف: {{name}}",
+    },
+    "app.common.error.invalidFileFormatPdfPngJpg": {
+      "fr": "Format de fichier erroné, seuls les fichiers Pdf/png/jpg sont acceptés.",
+      "en": "Invalid file format, only Pdf/png/jpg files are accepted.",
+      "ar": "تنسيق ملف غير صالح، الملفات المقبولة فقط هي Pdf/png/jpg.",
     },
     "app.compo.cra.app.listCra": {
       "fr": "Liste CRA",
@@ -2433,30 +2627,70 @@ export class TradService {
       "en": "To is required",
       "ar": "المستلم مطلوب",
     },
-    "app.compo.msg.form.isReadByTo": {
-      "fr": "Lu par destinataire",
-      "en": "IsReadByTo",
-      "ar": "مقروء من المستلم",
+    "app.compo.msg.form.to": {
+      "fr": "À",
+      "en": "To",
+      "ar": "إلى",
     },
     "app.compo.msg.form.listMsgs": {
       "fr": "Liste Messages",
       "en": "List msgs",
       "ar": "قائمة الرسائل",
     },
+    "app.compo.profile.birthDay": {
+      "fr": "Date de naissance",
+      "en": "Birth date",
+      "ar": "تاريخ الميلاد",
+    },
+    "app.compo.profile.chooseDate": {
+      "fr": "Choix de date",
+      "en": "Choose date",
+      "ar": "اختر التاريخ",
+    },
     "app.compo.msg.list.addMsg": {
       "fr": "Ajouter Message",
       "en": "Add Msg",
       "ar": "إضافة رسالة",
+    },
+    "app.compo.userConnected.enterSamePassword": {
+      "fr": "Entrez le même mot de passe",
+      "en": "Enter same password",
+      "ar": "أدخل نفس كلمة المرور",
+    },
+    "app.compo.userConnected.passwordCriteria": {
+      "fr": "Le mot de passe est requis et doit respecter tous les critères",
+      "en": "Password is required and must meet all criteria",
+      "ar": "كلمة المرور مطلوبة ويجب أن تستوفي كل المعايير",
     },
     "app.compo.msgHisto.form.listMsgHistos": {
       "fr": "Liste Historique Messages",
       "en": "List msgHistos",
       "ar": "قائمة سجل الرسائل",
     },
+    "app.compo.validEmail.newPasswordPlaceholder": {
+      "fr": "Entrez votre nouveau mot de passe",
+      "en": "Enter your new password",
+      "ar": "أدخل كلمة المرور الجديدة",
+    },
+    "app.compo.validEmail.confirmPasswordPlaceholder": {
+      "fr": "Confirmez votre nouveau mot de passe",
+      "en": "Confirm your new password",
+      "ar": "أكد كلمة المرور الجديدة",
+    },
+    "app.compo.validEmail.passwordMismatch": {
+      "fr": "Les mots de passe ne correspondent pas",
+      "en": "Passwords do not match",
+      "ar": "كلمتا المرور غير متطابقتين",
+    },
     "app.compo.msgHisto.list.addMsgHisto": {
       "fr": "Ajouter Historique",
       "en": "Add MsgHisto",
       "ar": "إضافة سجل",
+    },
+    "app.compo.payementMode.form.input.name": {
+      "fr": "Mode de paiement",
+      "en": "Payment mode",
+      "ar": "طريقة الدفع",
     },
     "app.compo.notefrais.form.chooseFile": {
       "fr": "Choix du fichier (.jpg, .png, .pdf) :",
@@ -2557,6 +2791,16 @@ export class TradService {
       "fr": "Resp ESN sauvegardé :",
       "en": "Resp Esn Saved:",
       "ar": "تم حفظ المسؤول:",
+    },
+    "app.compo.inscription.responsibleEsn": {
+      "fr": "Responsable ESN",
+      "en": "ESN Manager",
+      "ar": "مسؤول المؤسسة",
+    },
+    "app.compo.inscription.dialogTitle": {
+      "fr": "Inscription ESN & Responsable",
+      "en": "ESN & Manager Registration",
+      "ar": "تسجيل المؤسسة والمسؤول",
     },
     "app.compo.signup.validate": {
       "fr": "Valider",
@@ -2688,6 +2932,16 @@ export class TradService {
       "en": "Add Esn demo",
       "ar": "إضافة مؤسسة تجريبية",
     },
+    "app.compo.menu.confirmAddEsnDemo": {
+      "fr": "Voulez-vous vraiment ajouter une ESN Demo",
+      "en": "Do you really want to add a Demo ESN",
+      "ar": "هل تريد فعلا إضافة مؤسسة تجريبية",
+    },
+    "app.compo.menu.addEsnDemoSuccess": {
+      "fr": "L'ESN Demo a bien été ajoutée",
+      "en": "Demo ESN has been added successfully",
+      "ar": "تمت إضافة المؤسسة التجريبية بنجاح",
+    },
     "app.compo.menu.setDefaultPermissions": {
       "fr": "Définir permissions par défaut",
       "en": "Set default permissions",
@@ -2742,6 +2996,11 @@ export class TradService {
       "fr": "Consultant :",
       "en": "Consultant:",
       "ar": "المستشار:",
+    },
+    "app.compo.notefrais.perConsultant.chooseConsultant": {
+      "fr": "Choisir un consultant...",
+      "en": "Choose a consultant...",
+      "ar": "اختر مستشارا...",
     },
     "app.compo.utils.relations.back": {
       "fr": "Retour",
@@ -2841,7 +3100,7 @@ export class TradService {
     "app.footer.esnName": {
       "fr": "Eisi Consulting",
       "en": "Eisi Consulting",
-      "ar": "Eisi Consulting",
+      "ar": "Eisi Consulting - إيزي كنسيلتيكنج",
     },
   }
 }

@@ -186,7 +186,7 @@ export class ActivityTypeListComponent extends MereComponent {
 
 	delete(myObj) {
     let mythis = this;
-		this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne avec id=" + myObj.id, this
+            this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, this
 			, ()=> {
         mythis.beforeCallServer("delete")
         mythis.activityTypeService.deleteById(myObj.id)

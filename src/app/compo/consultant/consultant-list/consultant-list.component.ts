@@ -134,7 +134,7 @@ export class ConsultantListComponent extends MereComponent {
 
     delete(consultant: Consultant) {
         let mythis = this;
-        this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer le consultant: " + consultant.fullName, mythis
+        this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteConsultantByFullName', { fullName: consultant.fullName }), mythis
             , () => {
                 mythis.beforeCallServer("delete")
                 mythis.consultantService.deleteById(consultant.id)

@@ -35,14 +35,14 @@
             <label for="newPassword" style="font-weight: bold;">{{utils.tr('app.compo.validEmail.newPassword')}}</label>
             <input id="newPassword" type="password" [(ngModel)]="newPassword" (ngModelChange)="validateNewPassword()" 
                 style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;"
-                placeholder="Entrez votre nouveau mot de passe" required>
+                placeholder="{{utils.tr('app.compo.validEmail.newPasswordPlaceholder')}}" required>
         </div>
 
         <div class="form-group" style="text-align: left; margin-bottom: 15px;">
             <label for="confirmPassword" style="font-weight: bold;">{{utils.tr('app.compo.validEmail.confirmPassword')}}</label>
             <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" 
                 style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;"
-                placeholder="Confirmez votre nouveau mot de passe" required>
+                placeholder="{{utils.tr('app.compo.validEmail.confirmPasswordPlaceholder')}}" required>
         </div>
 
         <!-- Validation errors -->
@@ -54,7 +54,7 @@
 
         <!-- Confirmation match -->
         <div *ngIf="newPassword && confirmPassword !== newPassword" style="color: #d32f2f; margin-bottom: 15px; font-size: 14px;">
-            ❌ Les mots de passe ne correspondent pas
+            ❌ {{utils.tr('app.compo.validEmail.passwordMismatch')}}
         </div>
 
         <div *ngIf="newPassword && confirmPassword === newPassword && (!passwordErrors || passwordErrors.length === 0)" style="color: #4caf50; margin-bottom: 15px; font-size: 14px;">

@@ -7,63 +7,63 @@
         <form (ngSubmit)="onSubmit()" #consultantForm="ngForm" *ngIf="myObj">
             <div class="form-group">
                 <label for="firstName">{{utils.tr('app.compo.profile.firstName')}}</label>
-                <input type="text" [(ngModel)]="myObj.firstName" class="form-control" id="firstName" name="firstName" placeholder="Enter your firstName" required #firstName="ngModel">
+                <input type="text" [(ngModel)]="myObj.firstName" class="form-control" id="firstName" name="firstName" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.firstName') | lowercase}}" required #firstName="ngModel">
                 <div [hidden]="firstName.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.firstNameRequired')}}</div>
             </div>
 
             <div class="form-group">
                 <label for="lastName">{{utils.tr('app.compo.profile.lastName')}}</label>
-                <input type="text" [(ngModel)]="myObj.lastName" class="form-control" id="lastName" name="lastName" placeholder="Enter your lastName" required #lastName="ngModel">
+                <input type="text" [(ngModel)]="myObj.lastName" class="form-control" id="lastName" name="lastName" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.lastName') | lowercase}}" required #lastName="ngModel">
             </div>
             <div [hidden]="lastName.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.lastNameRequired')}}</div>
 
             <div class="form-group">
-                <label for="tel">Tel</label>
-                <input type="tel" [(ngModel)]="myObj.tel" class="form-control" id="tel" name="tel" placeholder="Enter your tel" required #tel="ngModel">
+                <label for="tel">{{utils.tr('Tel')}}</label>
+                <input type="tel" [(ngModel)]="myObj.tel" class="form-control" id="tel" name="tel" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('Tel') | lowercase}}" required #tel="ngModel">
             </div>
             <div [hidden]="tel.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.telRequired')}}</div>
 
             <div class="form-group">
                 <label for="email">{{utils.tr('Email')}}</label>
-                <input type="email" [(ngModel)]="myObj.email" class="form-control" id="email" name="email" placeholder="Enter your email" required #email="ngModel">
+                <input type="email" [(ngModel)]="myObj.email" class="form-control" id="email" name="email" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('Email') | lowercase}}" required #email="ngModel">
             </div>
             <div [hidden]="email.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.emailRequired')}}</div>
 
             <div class="form-group">
-                <label>Date Birthday :
+                <label>{{utils.tr('app.compo.profile.birthDay')}} :
           <!-- <span class="badge badge-dark">{{myObj.birthDay | date :'dd-MM-yyyy'}}</span> -->
         </label>
-                <app-mz-date-picker id="date-of-birth" placeHolder="Choix de date" [(myDatePicker)]="myObj.birthDay"></app-mz-date-picker>
+                <app-mz-date-picker id="date-of-birth" placeHolder="{{utils.tr('app.compo.profile.chooseDate')}}" [(myDatePicker)]="myObj.birthDay"></app-mz-date-picker>
             </div>
 
 
             <div class="form-group">
                 <label for="street">{{utils.tr('app.compo.profile.street')}}</label>
-                <input type="text" [(ngModel)]="myObj.address.street" class="form-control" id="street" name="street" placeholder="Enter your street" required #street="ngModel">
+                <input type="text" [(ngModel)]="myObj.address.street" class="form-control" id="street" name="street" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.street') | lowercase}}" required #street="ngModel">
             </div>
             <div [hidden]="street.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.streetRequired')}}</div>
 
             <div class="form-group">
                 <label for="zipCode">{{utils.tr('app.compo.profile.zipCode')}}</label>
-                <input type="text" [(ngModel)]="myObj.address.zipCode" class="form-control" id="zipCode" name="zipCode" placeholder="Enter your zipCode" required #zipCode="ngModel">
+                <input type="text" [(ngModel)]="myObj.address.zipCode" class="form-control" id="zipCode" name="zipCode" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.zipCode') | lowercase}}" required #zipCode="ngModel">
             </div>
             <div [hidden]="zipCode.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.zipCodeRequired')}}</div>
 
             <div class="form-group">
                 <label for="city">{{utils.tr('app.compo.profile.city')}}</label>
-                <input type="text" [(ngModel)]="myObj.address.city" class="form-control" id="city" name="city" placeholder="Enter your city" required #city="ngModel">
+                <input type="text" [(ngModel)]="myObj.address.city" class="form-control" id="city" name="city" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.city') | lowercase}}" required #city="ngModel">
             </div>
             <div [hidden]="city.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.zipCodeRequired')}}</div>
 
             <div class="form-group">
                 <label for="country">{{utils.tr('app.compo.profile.country')}}</label>
-                <input type="text" [(ngModel)]="myObj.address.country" class="form-control" id="country" name="city" placeholder="Enter your country" required #country="ngModel">
+                <input type="text" [(ngModel)]="myObj.address.country" class="form-control" id="country" name="city" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.country') | lowercase}}" required #country="ngModel">
             </div>
             <div [hidden]="country.valid" class="badge badge-danger">{{utils.tr('app.compo.profile.countryRequired')}}</div>
 
             <div class="form-group">
                 <label for="username">{{utils.tr('app.compo.profile.username')}}</label>
-                <input type="text" [(ngModel)]="myObj.username" [value]="myObj.email" class="form-control" id="username" name="username" placeholder="Enter your username" disabled>
+                <input type="text" [(ngModel)]="myObj.username" [value]="myObj.email" class="form-control" id="username" name="username" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.profile.username') | lowercase}}" disabled>
             </div>
 
             <br/>

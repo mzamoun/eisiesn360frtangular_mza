@@ -89,7 +89,7 @@ export class UploadFileComponent extends MereComponent {
 	delete(i) {
 		var f = this.getFiles()[i];
 
-		this.utilsIhm.confirmYesNo("Voulez vous vraiment supprimer la ligne du fichier: " + f.name, this
+			 this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteFileByName', { name: f.name }), this
 		, ()=> {
 			this.delFile(i);
 		}
