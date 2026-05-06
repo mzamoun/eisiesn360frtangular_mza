@@ -217,7 +217,7 @@
 
                     <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
                         *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT" permission="DELETE">
-                        <i class="fas fa-trash-alt me-1"></i> Delete
+                            <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}}
                     </button>
                 </div>
 

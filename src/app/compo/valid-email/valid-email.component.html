@@ -11,12 +11,12 @@
         <p style="font-size: 20px; color: #333;">{{ message }}</p>
 
         <button *ngIf="isSuccess && validationType === 'inscription'" style="margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;" (click)="router.navigate(['/login'])">
-            Se connecter
+              {{utils.tr('app.compo.validEmail.signIn')}}
         </button>
 
         <!-- Pour resetPassword: Afficher le bouton pour ouvrir le formulaire -->
         <button *ngIf="validationType === 'resetPassword' && !isSuccess" style="margin-top: 20px; padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;" (click)="showPasswordForm = true">
-            Entrer votre nouveau mot de passe
+              {{utils.tr('app.compo.validEmail.enterNewPassword')}}
         </button>
     </div>
 
@@ -58,7 +58,7 @@
         </div>
 
         <div *ngIf="newPassword && confirmPassword === newPassword && (!passwordErrors || passwordErrors.length === 0)" style="color: #4caf50; margin-bottom: 15px; font-size: 14px;">
-            ✅ Les mots de passe correspondent et sont valides
+              {{utils.tr('app.compo.validEmail.passwordsMatch')}}
         </div>
 
         <div style="text-align: center;">

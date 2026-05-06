@@ -1295,6 +1295,11 @@ export class TradService {
       "en": "Valid",
       "ar": "صالح",
     },
+    "app.compo.activity.form.input.tjm": {
+      "fr": "TJM",
+      "en": "TJM",
+      "ar": "TJM",
+    },
     "app.compo.activity.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
@@ -1711,6 +1716,16 @@ export class TradService {
       "fr": "Tout supprimer pour moi",
       "en": "Delete All To Me",
       "ar": "حذف كل الإشعارات",
+    },
+    "app.compo.notification.every": {
+      "fr": "Toutes les",
+      "en": "Every",
+      "ar": "كل",
+    },
+    "app.compo.notification.seconds": {
+      "fr": "secondes.",
+      "en": "seconds.",
+      "ar": "ثانية.",
     },
     "app.compo.notification.showFee": {
       "fr": "Voir Note de Frais",
@@ -2922,6 +2937,21 @@ export class TradService {
       "en": "Updating...",
       "ar": "جارٍ التحديث...",
     },
+    "app.compo.validEmail.signIn": {
+      "fr": "Se connecter",
+      "en": "Sign In",
+      "ar": "تسجيل الدخول",
+    },
+    "app.compo.validEmail.enterNewPassword": {
+      "fr": "Entrer votre nouveau mot de passe",
+      "en": "Enter your new password",
+      "ar": "أدخل كلمة المرور الجديدة",
+    },
+    "app.compo.validEmail.passwordsMatch": {
+      "fr": "✅ Les mots de passe correspondent et sont valides",
+      "en": "✅ Passwords match and are valid",
+      "ar": "✅ كلمات المرور متطابقة وصالحة",
+    },
     "app.compo.menu.general": {
       "fr": "Général",
       "en": "General",
@@ -3091,6 +3121,36 @@ export class TradService {
       "fr": "Résultat :",
       "en": "Result:",
       "ar": "النتيجة:",
+    },
+    "app.compo.utils.tableViewer.tab.data": {
+      "fr": "Données",
+      "en": "Data",
+      "ar": "البيانات",
+    },
+    "app.compo.utils.tableViewer.tab.relations": {
+      "fr": "Relations",
+      "en": "Relations",
+      "ar": "العلاقات",
+    },
+    "app.compo.utils.tableViewer.tab.structure": {
+      "fr": "Structure",
+      "en": "Structure",
+      "ar": "الهيكل",
+    },
+    "app.compo.utils.tableViewer.tab.sql": {
+      "fr": "SQL",
+      "en": "SQL",
+      "ar": "SQL",
+    },
+    "app.compo.utils.relations.fit": {
+      "fr": "🔍 Ajuster",
+      "en": "🔍 Fit",
+      "ar": "🔍 ملاءمة",
+    },
+    "app.compo.utils.relations.table": {
+      "fr": "Table",
+      "en": "Table",
+      "ar": "جدول",
     },
     "app.compo.datePicker.dateRange": {
       "fr": "Plage de dates",

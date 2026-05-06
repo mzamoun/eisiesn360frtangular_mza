@@ -3,9 +3,9 @@
 <div style="text-align: center;">
     <button (click)="getNotifications(null, null)" id="btn-notif-refresh" class='btn btn-primary mr-1'>{{utils.tr('Refresh')}}</button>
     <input type="checkbox" [(ngModel)]="refreshStarted" id="refreshStarted" name="refreshStarted" (click)="refresh()" />
-    Every
+    {{utils.tr('app.compo.notification.every')}}
     <input type="text" [(ngModel)]="refreshEverySec" id="refreshEverySec" name="refreshEverySec" type="number"
-        style="width:70px" /> seconds.
+        style="width:70px" /> {{utils.tr('app.compo.notification.seconds')}}
     <button (click)="deleteAllNotifications()">{{utils.tr('app.compo.notification.deleteAll')}}</button>
 </div>
 
@@ -54,11 +54,11 @@
                                 <img src="{{getImgRead(notification)}}" width="30" height="30">
                             </span>
 
-                            <span aria-hidden="true" (click)="showForm(notification)" aria-label="Edit"
+                            <span aria-hidden="true" (click)="showForm(notification)" [attr.aria-label]="utils.tr('Edit')"
                                 class="picto-item">
                                 <button id="btn-notif-edit-{{index}}">{{utils.tr('Edit')}}</button> </span>
 
-                            <span aria-hidden="true" (click)="deleteNotification(notification)" aria-label="Delete"
+                            <span aria-hidden="true" (click)="deleteNotification(notification)" [attr.aria-label]="utils.tr('Delete')"
                                 class="picto-item"> <button id="btn-notif-delete-{{index}}">{{utils.tr('Delete')}}</button> </span>
                         </span>
 

@@ -48,10 +48,10 @@
 
 
           <div [hidden]="myObj.dateDeb" class="badge badge-danger">
-            DateDeb is required
+            {{ utils.tr('app.compo.activity.form.input.startDate') }} {{ utils.tr('app.badge.required') }}
           </div>
           <div [hidden]="myObj.dateFin" class="badge badge-danger">
-            DateFin is required
+            {{ utils.tr('app.compo.activity.form.input.endDate') }} {{ utils.tr('app.badge.required') }}
           </div>
 
         </div>
@@ -61,7 +61,7 @@
           <input type="text" [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required
             #name="ngModel" />
           <div [hidden]="name.valid" class="badge badge-danger">
-            {{ getActivityLabel() }} is required
+            {{ getActivityLabel() }} {{ utils.tr('app.badge.required') }}
           </div>
         </div>
 
@@ -75,11 +75,11 @@
         </div>
 
         <div class="form-group" *ngIf="isActivityLabelVisible && myObj.type?.name == 'MISSION'">
-          <label for="name">TJM</label>
+          <label for="name">{{ utils.tr('app.compo.activity.form.input.tjm') }}</label>
           <input type="text" [(ngModel)]="myObj.tjm" class="form-control" id="tjm" name="tjm" required
             #tjm="ngModel" />
           <div [hidden]="tjm.valid" class="badge badge-danger">
-            TJM is required
+            {{ utils.tr('app.compo.activity.form.input.tjm') }} {{ utils.tr('app.badge.required') }}
           </div>
         </div>
 

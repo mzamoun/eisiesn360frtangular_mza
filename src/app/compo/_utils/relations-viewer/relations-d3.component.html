@@ -4,7 +4,7 @@
   <div class="controls">
     <button class="btn" (click)="zoomIn()">➕</button>
     <button class="btn" (click)="zoomOut()">➖</button>
-    <button class="btn" (click)="fit()">🔍 Fit</button>
+    <button class="btn" (click)="fit()">{{utils.tr('app.compo.utils.relations.fit')}}</button>
   </div>
 </div>
 
@@ -13,7 +13,7 @@
 </div>
 
 <div class="legend">
-  <span class="legend-item"><b>●</b> Table</span>
+  <span class="legend-item"><b>●</b> {{utils.tr('app.compo.utils.relations.table')}}</span>
   <span class="legend-item fk">{{utils.tr('app.compo.utils.relations.fkPk')}}</span>
 </div>
 

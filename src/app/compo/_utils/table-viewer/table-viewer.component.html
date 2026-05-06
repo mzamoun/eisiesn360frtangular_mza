@@ -66,25 +66,25 @@
         <div class="tabs-header">
             <button class="btn" [ngClass]="{ 'btn-primary': activeTab === 'data', 'btn-light': activeTab !== 'data' }"
                 (click)="activeTab = 'data'">
-                Data
+                 {{utils.tr('app.compo.utils.tableViewer.tab.data')}}
             </button>
 
             <button class="btn"
                 [ngClass]="{ 'btn-primary': activeTab === 'relations', 'btn-light': activeTab !== 'relations' }"
                 (click)="openRelations()">
-                Relations
+                 {{utils.tr('app.compo.utils.tableViewer.tab.relations')}}
             </button>
 
             <button class="btn"
                 [ngClass]="{ 'btn-primary': activeTab === 'structure', 'btn-light': activeTab !== 'structure' }"
                 (click)="activeTab = 'structure'">
-                Structure
+                 {{utils.tr('app.compo.utils.tableViewer.tab.structure')}}
             </button>
 
             <button class="btn"
                 [ngClass]="{ 'btn-primary': activeTab === 'sql', 'btn-light': activeTab !== 'sql' }"
                 (click)="activeTab = 'sql'">
-                Sql
+                 {{utils.tr('app.compo.utils.tableViewer.tab.sql')}}
             </button>
         </div>
 

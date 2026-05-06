@@ -38,7 +38,7 @@
                             onChangeCaller="onSelectConsultant" [ObjectPropName]="'fullName'"></app-select>
 
                         <div [hidden]="myObj.consultant" class="badge badge-danger">
-                            {{utils.tr('app.compo.activity.multiple.input.consultant')}} is required</div>
+                            {{utils.tr('app.compo.activity.multiple.input.consultant')}} {{utils.tr('app.badge.required')}}</div>
                     </div>
                 </div>
                 <div class="col-6">
@@ -136,14 +136,14 @@
                                     </option>
                                 </select>
                                 <div [hidden]="activityOverTime.target" class="badge badge-danger">
-                                    {{utils.tr('app.compo.activity.multiple.hourSup.table.thead.target')}} is required
+                                    {{utils.tr('app.compo.activity.multiple.hourSup.table.thead.target')}} {{utils.tr('app.badge.required')}}
                                 </div>
                             </td>
                             <td>
                                 <input type="number" id="price" class="form-control"
                                     [(ngModel)]="activityOverTime.price" [ngModelOptions]="{standalone: true}">
                                 <div [hidden]="activityOverTime.price" class="badge badge-danger">
-                                    {{utils.tr('app.compo.activity.multiple.hourSup.table.thead.price')}} is required
+                                    {{utils.tr('app.compo.activity.multiple.hourSup.table.thead.price')}} {{utils.tr('app.badge.required')}}
                                 </div>
                             </td>
                             <td><input type="checkbox" id="activity-over-time-percent" class="form-check-input"

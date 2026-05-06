@@ -26,7 +26,7 @@
 
             <div class="form-group">
                 <label for="street">{{utils.tr('app.compo.esn.form.input.street')}}</label>
-                <input type="text" placeholder="Enter your street" [(ngModel)]="myObj.address.street"
+                     <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.esn.form.input.street') | lowercase}}" [(ngModel)]="myObj.address.street"
                     class="form-control" id="street" name="street" required #street="ngModel">
             </div>
             <div [hidden]="street.valid" class="badge badge-danger">{{utils.tr('app.compo.esn.form.input.street')}}
