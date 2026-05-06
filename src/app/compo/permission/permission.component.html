@@ -1,7 +1,7 @@
 <!-- <infors #infors></infors> -->
 <div class="card my-5">
     <div class="card-body">
-        <h3 class="card-title text-center py-3">Manage Permissions</h3>
+        <h3 class="card-title text-center py-3">{{utils.tr('app.compo.permission.title')}}</h3>
 
         <div class="right" style="width: 40%;" name="searchDiv">
             <input id="searchStr" #searchStrInput class="form-control left" style="width: 90%;" type="text" placeholder="search" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()" (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
@@ -9,18 +9,18 @@
         </div>
 
         <div class="form-group">
-            <label for="roleList">Role: </label>
+            <label for="roleList">{{utils.tr('app.compo.permission.roleLabel')}} </label>
             <app-select #compoSelectRole [selectId]="'permission-select-role'" [objectName]="'Role'" [myList]="roles" [initObj]="roleFilter" [objCaller]="this" onChangeCaller="onSelectRole"></app-select>
         </div>
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Feature</th>
+                    <th scope="col">{{utils.tr('app.compo.permission.feature')}}</th>
                     <th scope="col" class="center">ALL</th>
-                    <th scope="col" class="center">VIEW</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.permission.view')}}</th>
                     <th scope="col" class="center">ADD</th>
-                    <th scope="col" class="center">UPDATE</th>
-                    <th scope="col" class="center">DELETE</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.permission.update')}}</th>
+                    <th scope="col" class="center">{{utils.tr('app.compo.permission.delete')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,9 +49,9 @@
             <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
         </div>
         <div class="right" style="width: 50%;">
-            <li class="list-inline-item "><a (click)="checkedAll()" class="btn btn-info">CHECKED ALL</a>
+            <li class="list-inline-item "><a (click)="checkedAll()" class="btn btn-info">{{utils.tr('app.compo.permission.checkAll')}}</a>
             </li>
-            <li class="list-inline-item"><a (click)="updatePermissions()" class="btn btn-info">UPDATE</a>
+            <li class="list-inline-item"><a (click)="updatePermissions()" class="btn btn-info">{{utils.tr('app.compo.permission.update')}}</a>
             </li>
         </div>
 

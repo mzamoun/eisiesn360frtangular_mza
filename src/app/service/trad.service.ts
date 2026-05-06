@@ -11,7 +11,7 @@ const lang0 = "fr";  //default lang"
 })
 export class TradService {
 
-  constructor(private logger: LoggerService, ) {
+  constructor(private logger: LoggerService,) {
     // localStorage.setItem('locale', code);
     this.lang = localStorage.getItem('locale');
   }
@@ -55,66 +55,79 @@ export class TradService {
     "welcome": {
       fr: "Bienvenue",
       en: "Welcome",
+      ar: "أهلا بك",
     },
     "Add": {
       fr: "Ajouter",
       en: "Add",
+      ar: "إضافة",
     },
 
     "Save": {
       fr: "Enregistrer",
       en: "Save",
+      ar: "حفظ",
     },
 
     "List": {
       fr: "Liste",
       en: "List",
+      ar: "قائمة",
     },
 
     "New": {
       fr: "Nouveau",
       en: "New",
+      ar: "جديد",
     },
 
     "NewFee": {
       fr: "Nouvelle Note frais",
       en: "New Fee",
+      ar: "مصاريف جديدة",
     },
 
     "Edit": {
       fr: "Modifier",
       en: "Edit",
+      ar: "تعديل",
     },
 
     "Download": {
       fr: "T\u00e9l\u00e9charger",
       en: "Download",
+      ar: "تحميل",
     },
 
     "Accept": {
       fr: "Accepter",
       en: "Accept",
+      ar: "قبول",
     },
 
     "Reject": {
       fr: "Rejeter",
       en: "Reject",
+      ar: "رفض",
     },
 
     "Pay": {
       fr: "Payer",
       en: "Pay",
+      ar: "دفع",
     },
 
     "Delete": {
       fr: "Supprimer",
       en: "Delete",
+      ar: "حذف",
     },
 
 
     "Search": {
       fr: "Chercher",
       en: "Search",
+      ar: "بحث",
     },
 
     "User": {
@@ -150,45 +163,60 @@ export class TradService {
     "NewActivityType": {
       fr: "Nouvelle activiti\u00e9 type",
       en: "New Activity Type",
+      ar: "نوع النشاط الجديد",
     },
     "EditActivityType": {
       fr: "Modifier activiti\u00e9 type",
       en: "Edit Activity Type",
+      ar: "تعديل نوع النشاط",
     },
 
     "NewActivity": {
       fr: "Nouvelle activiti\u00e9",
       en: "New Activity",
+      ar: "نشاط جديد",
     },
 
     "EditActivity": {
       fr: "Modifier activity",
-      en: "Edit Activity"
+      en: "Edit Activity",
+      ar: "تعديل النشاط",
     },
 
     "ListActivites": {
       "fr": "Liste d'activites",
-      "en": "List Activity"
+      "en": "List Activity",
+      "ar": "قائمة الأنشطة"
     },
 
     "ListActivitesType": {
       "fr": "Liste d'activites type",
-      "en": "List Activity Type"
+      "en": "List Activity Type",
+      "ar": "قائمة أنواع الأنشطة"
     },
 
     "NewClient": {
       "fr": "Nouveau Client",
-      "en": "New Client"
+      "en": "New Client",
+      "ar": "عميل جديد"
     },
     "EditClient": {
       "fr": "Modifier Client",
-      "en": "Edit Client"
+      "en": "Edit Client",
+      "ar": "تعديل العميل"
     },
 
+    "Entitled": {
+      fr: "Intitul\u00e9",
+      en: "Entitled",
+      ar: "العنوان"
+    },
 
-
-    "Entitled": { fr: "Intitul\u00e9", en: "Entitled" },
-    "ListAbsence": { "fr": "Liste absences", "en": "List absence" },
+    "ListAbsence": {
+      "fr": "Liste absences",
+      "en": "List absence",
+      "ar": "قائمة الغياب"
+    },
 
     "Month": {
       fr: "Mois",
@@ -223,6 +251,7 @@ export class TradService {
     "Role": {
       "fr": "R\u00f4le",
       "en": "Role",
+      "ar": "الدور",
     },
 
     /////////////////////
@@ -230,62 +259,77 @@ export class TradService {
     "main.menu.navbar.navitem.caption.navigation.label": {
       "fr": "Navigation",
       "en": "Navigation",
+      "ar": "التنقل"
     },
     "main.menu.navbar.navitem.esn.title": {
       "fr": "Gestion Esn",
       "en": "Esn Management",
+      "ar": "إدارة شركة ESN"
     },
     "main.menu.navbar.navitem.client.title": {
       "fr": "Gestion Client",
       "en": "Client Management",
+      "ar": "إدارة العملاء"
     },
     "main.menu.navbar.navitem.project.title": {
       "fr": "Gestion Project",
       "en": "Project Management",
+      "ar": "إدارة المشاريع"
     },
     "main.menu.navbar.navitem.consultant.title": {
       "fr": "Gestion Consultant",
       "en": "Consultant Management",
+      "ar": "إدارة المستشارين"
     },
     "main.menu.navbar.navitem.activityType.title": {
       "fr": "Gestion Type d'Activit\u00e9",
       "en": "Activity Type Management",
+      "ar": "إدارة نوع النشاط"
     },
     "main.menu.navbar.navitem.activity.title": {
       "fr": "Gestion {{title}} ",
       "en": "{{title}} Management",
+      "ar": "إدارة {{title}}"
     },
     "main.menu.navbar.navitem.cra.title": {
       "fr": "Gestion Cra",
       "en": "Cra Management",
+      "ar": "إدارة Cra"
     },
     "main.menu.navbar.navitem.caption.fee.label": {
       "fr": "Gestion des Frais",
       "en": "Fee Management",
+      "ar": "إدارة المصاريف"
     },
     "main.menu.navbar.navitem.fee.category.title": {
       "fr": "Gestion des Cat\u00e9gories de Frais",
       "en": "Fee Category Management",
+      "ar": "إدارة فئات المصاريف"
     },
     "main.menu.navbar.navitem.fee.note.title": {
       "fr": "Gestion des Notes de Frais",
       "en": "Fee Note Management",
+      "ar": "إدارة ملاحظات المصاريف"
     },
     "main.menu.navbar.navitem.fee.dashboard.title": {
       "fr": "Tableau de board",
       "en": "Dashboard",
+      "ar": "لوحة القيادة"
     },
     "main.menu.navbar.navitem.caption.setting.label": {
       "fr": "R\u00e8glages",
       "en": "Setting",
+      "ar": "الإعدادات"
     },
     "main.menu.navbar.navitem.setting.permission.title": {
       "fr": "Gestion des Autorisations",
       "en": "Permission Management",
+      "ar": "إدارة الأذونات"
     },
     "main.menu.navbar.navitem.setting.holiday.title": {
       "fr": "Gestion de Vacances",
       "en": "Holiday Management",
+      "ar": "إدارة العطلات"
     },
     "main.menu.navbar.navitem.setting.user.my-profile": {
       "fr": "Mon Profile",
@@ -437,6 +481,61 @@ export class TradService {
       "en": "Dashboard",
       "ar": "لوحة القيادة",
     },
+    "app.dashboard.section.profile": {
+      "fr": "Mon Profil",
+      "en": "My Profile",
+      "ar": "ملفي",
+    },
+    "app.dashboard.section.notifications": {
+      "fr": "Notifications",
+      "en": "Notifications",
+      "ar": "الإشعارات",
+    },
+    "app.dashboard.section.esn": {
+      "fr": "ESN",
+      "en": "ESN",
+      "ar": "شركة ESN",
+    },
+    "app.dashboard.section.consultants": {
+      "fr": "Consultants",
+      "en": "Consultants",
+      "ar": "الاستشاريون",
+    },
+    "app.dashboard.section.clients": {
+      "fr": "Clients",
+      "en": "Clients",
+      "ar": "العملاء",
+    },
+    "app.dashboard.section.projects": {
+      "fr": "Projets",
+      "en": "Projects",
+      "ar": "المشاريع",
+    },
+    "app.dashboard.section.myConsultants": {
+      "fr": "Mes Consultants",
+      "en": "My Consultants",
+      "ar": "مستشاروني",
+    },
+    "app.dashboard.section.activities": {
+      "fr": "Activités",
+      "en": "Activities",
+      "ar": "الأنشطة",
+    },
+    "app.dashboard.section.cra": {
+      "fr": "CRA",
+      "en": "CRA",
+      "ar": "CRA",
+    },
+    "app.dashboard.section.myCra": {
+      "fr": "Mes CRA",
+      "en": "My CRA",
+      "ar": "تقاريري CRA",
+    },
+    "app.dashboard.section.documents": {
+      "fr": "Documents",
+      "en": "Documents",
+      "ar": "المستندات",
+    },
     "app.dashboard.access": {
       "fr": "Accéder",
       "en": "Open",
@@ -550,374 +649,467 @@ export class TradService {
     "main.menu.navbar.navitem.setting.payment.mode.title": {
       "fr": "Gestion Mode de Paiement",
       "en": "Payment Mode Management",
+      "ar": "إدارة طريقة الدفع",
     },
     "app.form.input.placeholder.prefix": {
       "fr": "Entrez Votre",
       "en": "Enter your",
+      "ar": "أدخل",
     },
     "app.badge.required": {
       "fr": "est obligatoire",
       "en": "is required",
+      "ar": "مطلوب",
     },
     "app.compo.esn.list.table.thead.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.esn.list.table.thead.profession": {
       "fr": "Profession",
       "en": "Profession",
+      "ar": "المهنة",
     },
     "app.compo.esn.list.table.thead.street": {
       "fr": "Rue",
       "en": "Street",
+      "ar": "الشارع",
     },
     "app.compo.esn.list.table.thead.zipCode": {
       "fr": "Code Postal",
       "en": "Zip Code",
+      "ar": "الرمز البريدي",
     },
     "app.compo.esn.list.table.thead.city": {
       "fr": "Ville",
       "en": "City",
+      "ar": "المدينة",
     },
     "app.compo.esn.list.table.thead.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.esn.list.table.thead.webSite": {
       "fr": "Site Web",
       "en": "WebSite",
+      "ar": "الموقع الإلكتروني",
     },
     "app.compo.esn.list.table.thead.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.esn.list.table.thead.email": {
       "fr": "Email",
       "en": "Email",
+      "ar": "البريد الإلكتروني",
     },
     "app.compo.esn.list.table.thead.respName": {
       "fr": "Nom Responsable",
       "en": "Responsible Name",
+      "ar": "اسم المسؤول",
     },
     "app.compo.esn.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.esn.list.table.action.delete": {
       "fr": "Supprimer",
       "en": "Delete",
+      "ar": "حذف",
     },
     "app.compo.esn.list.table.action.edit": {
       "fr": "Modifier",
       "en": "Edit",
+      "ar": "تعديل",
     },
     "app.compo.esn.list.table.action.add": {
       "fr": "Ajouter",
       "en": "Add",
+      "ar": "إضافة",
     },
     "app.compo.esn.form.input.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.esn.form.input.profession": {
       "fr": "Activites",
       "en": "Activities",
+      "ar": "الأنشطة",
     },
     "app.compo.esn.form.input.street": {
       "fr": "Rue",
       "en": "Street",
+      "ar": "الشارع",
     },
     "app.compo.esn.form.input.zipCode": {
       "fr": "Code Postal",
       "en": "Zip Code",
+      "ar": "الرمز البريدي",
     },
     "app.compo.esn.form.input.city": {
       "fr": "Ville",
       "en": "City",
+      "ar": "المدينة",
     },
     "app.compo.esn.form.input.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.esn.form.input.webSite": {
       "fr": "Site Web",
       "en": "Web Site",
+      "ar": "الموقع الإلكتروني",
     },
     "app.compo.esn.form.input.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.esn.form.input.email": {
       "fr": "Email de l'ESN",
       "en": "ESN Email",
+      "ar": "البريد الإلكتروني للمؤسسة",
     },
     "app.compo.esn.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.client.list.table.thead.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.client.list.table.thead.profession": {
       "fr": "Profession",
       "en": "Profession",
+      "ar": "المهنة",
     },
     "app.compo.client.list.table.thead.street": {
       "fr": "Rue",
       "en": "Street",
+      "ar": "الشارع",
     },
     "app.compo.client.list.table.thead.zipCode": {
       "fr": "Code Postal",
       "en": "Zip Code",
+      "ar": "الرمز البريدي",
     },
     "app.compo.client.list.table.thead.city": {
       "fr": "Ville",
       "en": "City",
+      "ar": "المدينة",
     },
     "app.compo.client.list.table.thead.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.client.list.table.thead.webSite": {
       "fr": "Site Web",
       "en": "Web Site",
+      "ar": "الموقع الإلكتروني",
     },
     "app.compo.client.list.table.thead.respName": {
       "fr": "Nom Responsable",
       "en": "Responsible Name",
+      "ar": "اسم المسؤول",
     },
     "app.compo.client.list.table.thead.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.client.list.table.thead.email": {
       "fr": "Email",
       "en": "Email",
+      "ar": "البريد الإلكتروني",
     },
     "app.compo.client.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.client.list.table.action.delete": {
       "fr": "Supprimer",
       "en": "Delete",
+      "ar": "حذف",
     },
     "app.compo.client.list.table.action.add": {
       "fr": "Ajouter",
       "en": "Add",
+      "ar": "إضافة",
     },
     "app.compo.client.form.input.name": {
       "fr": "Name",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.client.form.input.profession": {
       "fr": "Profession",
       "en": "Profession",
+      "ar": "المهنة",
     },
     "app.compo.client.form.input.street": {
       "fr": "Rue",
       "en": "Street",
+      "ar": "الشارع",
     },
     "app.compo.client.form.input.zipCode": {
       "fr": "Code Postal",
       "en": "Zip Code",
+      "ar": "الرمز البريدي",
     },
     "app.compo.client.form.input.city": {
       "fr": "Ville",
       "en": "City",
+      "ar": "المدينة",
     },
     "app.compo.client.form.input.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.client.form.input.webSite": {
       "fr": "Site Web",
       "en": "Web Site",
+      "ar": "الموقع الإلكتروني",
     },
     "app.compo.client.form.input.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.client.form.input.email": {
       "fr": "Email",
       "en": "Email",
+      "ar": "البريد الإلكتروني",
     },
     "app.compo.client.form.input.respName": {
       "fr": "Nom Responsable",
       "en": "Responsible Name",
+      "ar": "اسم المسؤول",
     },
     "app.compo.client.form.button.list": {
       "fr": "Retour \u00e0 la Liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.project.list.table.thead.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.project.list.table.thead.description": {
       "fr": "Description",
       "en": "Description",
+      "ar": "الوصف",
     },
     "app.compo.project.list.table.thead.team": {
       "fr": "Equipe",
       "en": "Team",
+      "ar": "الفريق",
     },
     "app.compo.project.list.table.thead.method": {
       "fr": "M\u00e9thode",
       "en": "Method",
+      "ar": "المنهجية",
     },
     "app.compo.project.list.table.thead.client": {
       "fr": "Client",
       "en": "Client",
+      "ar": "العميل",
     },
     "app.compo.project.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.project.list.table.action.delete": {
       "fr": "SUPPRIMER",
       "en": "DELETE",
+      "ar": "حذف",
     },
     "app.compo.project.list.table.action.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.project.form.input.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.project.form.input.description": {
       "fr": "Description",
       "en": "Description",
+      "ar": "الوصف",
     },
     "app.compo.project.form.input.teamNumber": {
       "fr": "Nombre d'\u00e9quipe",
       "en": "TeamNumber",
+      "ar": "عدد أعضاء الفريق",
     },
     "app.compo.project.form.input.teamDesc": {
       "fr": "Description de l'\u00e9quipe",
       "en": "TeamDesc",
+      "ar": "وصف الفريق",
     },
     "app.compo.project.form.input.method": {
       "fr": "M\u00e9thode",
       "en": "Method",
+      "ar": "المنهجية",
     },
     "app.compo.project.form.input.environment": {
       "fr": "Environnement",
       "en": "Environment",
+      "ar": "البيئة",
     },
     "app.compo.project.form.input.client": {
       "fr": "Client",
       "en": "Client",
+      "ar": "العميل",
     },
     "app.compo.project.form.input.comment": {
       "fr": "Commentaire",
       "en": "Comment",
+      "ar": "ملاحظة",
     },
     "app.compo.project.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.consultant.list.table.thead.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.consultant.list.table.thead.username": {
       "fr": "Nom Utilisateur",
       "en": "Username",
+      "ar": "اسم المستخدم",
     },
     "app.compo.consultant.list.table.thead.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.consultant.list.table.thead.email": {
       "fr": "Email",
       "en": "Email",
+      "ar": "البريد الإلكتروني",
     },
     "app.compo.consultant.list.table.thead.esn": {
       "fr": "Esn",
       "en": "Esn",
+      "ar": "المؤسسة",
     },
     "app.compo.consultant.list.table.thead.action": {
       "fr": "Actions",
       "en": "Actions",
+      "ar": "الإجراءات",
     },
     "app.compo.consultant.list.table.action.edit": {
       "fr": "Editer",
       "en": "edit",
+      "ar": "تعديل",
     },
     "app.compo.consultant.list.table.action.delete": {
       "fr": "supprimer",
       "en": "delete",
+      "ar": "حذف",
     },
     "app.compo.consultant.list.button.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.consultant.form.input.firstName": {
       "fr": "Pr\u00e9nom",
       "en": "First Name",
+      "ar": "الاسم الأول",
     },
     "app.compo.consultant.form.input.lastName": {
       "fr": "Nom",
       "en": "Last Name",
+      "ar": "اسم العائلة",
     },
     "app.compo.consultant.form.input.tel": {
       "fr": "Tel",
       "en": "Tel",
+      "ar": "الهاتف",
     },
     "app.compo.consultant.form.input.email": {
       "fr": "Email",
       "en": "Email",
+      "ar": "البريد الإلكتروني",
     },
     "app.compo.consultant.form.input.level": {
       "fr": "Niveau",
       "en": "Level",
+      "ar": "المستوى",
     },
     "app.compo.consultant.form.input.birthDay": {
       "fr": "Date de naissance",
       "en": "Birth Day",
+      "ar": "تاريخ الميلاد",
     },
     "app.compo.consultant.form.input.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.consultant.form.input.city": {
       "fr": "Ville",
       "en": "City",
+      "ar": "المدينة",
     },
     "app.compo.consultant.form.input.zipCode": {
       "fr": "Code Postal",
       "en": "ZipCode",
+      "ar": "الرمز البريدي",
     },
     "app.compo.consultant.form.input.street": {
       "fr": "Rue",
       "en": "Street",
+      "ar": "الشارع",
     },
     "app.compo.consultant.form.input.manager": {
       "fr": "Directeur",
       "en": "Manager",
+      "ar": "المدير",
     },
     "app.compo.consultant.form.input.username": {
       "fr": "Nom Utilisateur",
       "en": "Username",
+      "ar": "اسم المستخدم",
     },
     "app.compo.consultant.form.input.password": {
       "fr": "Mot de passe",
       "en": "Password",
+      "ar": "كلمة المرور",
     },
     "app.compo.consultant.form.input.confirmPassword": {
       "fr": "Confirm password",
       "en": "Confirm password",
+      "ar": "تأكيد كلمة المرور",
     },
     "app.compo.consultant.form.input.active": {
       "fr": "Actif",
       "en": "Active",
+      "ar": "نشط",
     },
     "app.compo.consultant.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.activityType.list.table.thead.name": {
       "fr": "Nom",
@@ -927,417 +1119,524 @@ export class TradService {
     "app.compo.activityType.list.table.thead.isWorkDay": {
       "fr": "jour ouvrable",
       "en": "isWorkDay",
+      "ar": "يوم عمل",
     },
     "app.compo.activityType.list.table.thead.isBillDay": {
       "fr": "jour facturable",
       "en": "isBillDay",
+      "ar": "يوم قابل للفوترة",
     },
     "app.compo.activityType.list.table.thead.isHolidayDay": {
       "fr": "jour de vacance",
       "en": "isHolidayDay",
+      "ar": "يوم عطلة",
     },
     "app.compo.activityType.list.table.thead.isTrainingDay": {
       "fr": "jour de formation",
       "en": "isTrainingDay",
+      "ar": "يوم تدريب",
     },
     "app.compo.activityType.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.activityType.list.table.action.delete": {
       "fr": "SUPPRIMER",
       "en": "DELETE",
+      "ar": "حذف",
     },
     "app.compo.activityType.list.button.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.activityType.form.input.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.activityType.form.input.isWorkDay": {
       "fr": "jour ouvrable",
       "en": "isWorkDay",
+      "ar": "يوم عمل",
     },
     "app.compo.activityType.form.input.isBillDay": {
       "fr": "jour facturable",
       "en": "isBillDay",
+      "ar": "يوم قابل للفوترة",
     },
     "app.compo.activityType.form.input.isHolidayDay": {
       "fr": "jour de vacance",
       "en": "isHolidayDay",
+      "ar": "يوم عطلة",
     },
     "app.compo.activityType.form.input.isTrainingDay": {
       "fr": "jour de formation",
       "en": "isTrainingDay",
+      "ar": "يوم تدريب",
     },
     "app.compo.activityType.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.activity.select.consultant.title": {
       "fr": "Les activités du consultant",
       "en": "Consultant Activities",
+      "ar": "أنشطة المستشار",
     },
     "app.compo.activity.list.table.thead.name": {
       "fr": "Nom",
       "en": "Name",
+      "ar": "الاسم",
     },
     "app.compo.activity.list.table.thead.type": {
       "fr": "Type",
       "en": "Type",
+      "ar": "النوع",
     },
     "app.compo.activity.list.table.thead.project": {
       "fr": "Project",
       "en": "Project",
+      "ar": "المشروع",
     },
     "app.compo.activity.list.table.thead.client": {
       "fr": "Client",
       "en": "Client",
+      "ar": "العميل",
     },
     "app.compo.activity.list.table.thead.startDate": {
       "fr": "Date D\u00e9but",
       "en": "StartDate",
+      "ar": "تاريخ البداية",
     },
     "app.compo.activity.list.table.thead.endDate": {
       "fr": "Date Fin",
       "en": "EndDate",
+      "ar": "تاريخ النهاية",
     },
     "app.compo.activity.list.table.thead.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
+      "ar": "المستشار",
     },
     "app.compo.activity.list.table.thead.valid": {
       "fr": "Valide",
       "en": "Valid",
+      "ar": "صالح",
     },
     "app.compo.activity.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.activity.list.table.action.delete": {
       "fr": "SUPPRIMER",
       "en": "DELETE",
+      "ar": "حذف",
     },
     "app.compo.activity.list.button.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.activity.list.button.addMultiple": {
       "fr": "AJOUTER ACTIVITE MULTIPLE",
       "en": "ADD MULTI ACTIVITY",
+      "ar": "إضافة نشاط متعدد",
     },
     "app.compo.activity.form.input.type": {
       "fr": "Type",
       "en": "Type",
+      "ar": "النوع",
     },
     "app.compo.activity.form.input.project": {
       "fr": "Project",
       "en": "Project",
+      "ar": "المشروع",
     },
     "app.compo.activity.form.input.startDate": {
       "fr": "Date D\u00e9but",
       "en": "Start date",
+      "ar": "تاريخ البداية",
     },
     "app.compo.activity.form.input.endDate": {
       "fr": "Date Fin",
       "en": "End date",
+      "ar": "تاريخ النهاية",
     },
     "app.compo.activity.form.input.description": {
       "fr": "Description",
       "en": "Description",
+      "ar": "الوصف",
     },
     "app.compo.activity.form.input.files": {
       "fr": "Fichiers",
       "en": "Files",
+      "ar": "الملفات",
     },
     "app.compo.activity.form.input.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
+      "ar": "المستشار",
     },
     "app.compo.activity.form.input.valid": {
       "fr": "Valide",
       "en": "Valid",
+      "ar": "صالح",
     },
     "app.compo.activity.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
+      "ar": "العودة إلى القائمة",
     },
     "app.compo.activity.multiple.table.thead.activity": {
       "fr": "Activité",
       "en": "Activity",
+      "ar": "النشاط",
     },
     "app.compo.activity.multiple.table.thead.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
+      "ar": "المستشار",
     },
     "app.compo.activity.multiple.table.thead.startDate": {
       "fr": "Date D\u00e9but",
       "en": "Start date",
+      "ar": "تاريخ البداية",
     },
     "app.compo.activity.multiple.table.thead.endDate": {
       "fr": "Date Fin",
       "en": "End Date",
+      "ar": "تاريخ النهاية",
     },
     "app.compo.activity.multiple.table.thead.actions": {
       "fr": "Actions",
       "en": "Actions",
+      "ar": "الإجراءات",
     },
     "app.compo.activity.multiple.table.actions.delete": {
       "fr": "Supprimer",
       "en": "Remove",
+      "ar": "حذف",
     },
     "app.compo.activity.multiple.input.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
+      "ar": "المستشار",
     },
     "app.compo.activity.multiple.input.type": {
       "fr": "Type",
       "en": "Type",
+      "ar": "النوع",
     },
     "app.compo.activity.multiple.input.project": {
       "fr": "Project",
       "en": "Project",
+      "ar": "المشروع",
     },
     "app.compo.activity.multiple.input.startDate": {
       "fr": "Date D\u00e9but",
       "en": "Start date",
+      "ar": "تاريخ البداية",
     },
     "app.compo.activity.multiple.input.endDate": {
       "fr": "Date Fin",
       "en": "End date",
+      "ar": "تاريخ النهاية",
     },
     "app.compo.activity.multiple.input.description": {
       "fr": "Description",
       "en": "Description",
+      "ar": "الوصف",
     },
     "app.compo.activity.multiple.input.files": {
       "fr": "Fichiers",
       "en": "Files",
+      "ar": "الملفات",
     },
     "app.compo.activity.multiple.input.hourSup": {
       "fr": "Hueres suppl\u00e9mentaires",
       "en": "Hour Supplementary",
+      "ar": "ساعات إضافية",
     },
     "app.compo.activity.multiple.input.valid": {
       "fr": "Valide",
       "en": "Valid",
+      "ar": "صالح",
     },
     "app.compo.activity.multiple.hourSup.select.target.hour": {
       "fr": "Heure",
       "en": "Hour",
+      "ar": "ساعة",
     },
     "app.compo.activity.multiple.hourSup.select.target.saturday": {
       "fr": "Samedi",
       "en": "Saturday",
+      "ar": "السبت",
     },
     "app.compo.activity.multiple.hourSup.select.target.sunday": {
       "fr": "Dimanche",
       "en": "Sunday",
+      "ar": "الأحد",
     },
     "app.compo.activity.multiple.hourSup.select.target.holiday": {
       "fr": "Vacance",
       "en": "Holiday",
+      "ar": "عطلة",
     },
     "app.compo.activity.multiple.hourSup.table.thead.target": {
       "fr": "But",
       "en": "Target",
+      "ar": "الهدف",
     },
     "app.compo.activity.multiple.hourSup.table.thead.price": {
       "fr": "Prix",
       "en": "Price",
+      "ar": "السعر",
     },
     "app.compo.activity.multiple.hourSup.table.thead.percent": {
       "fr": "%",
       "en": "%",
+      "ar": "%",
     },
     "app.compo.activity.multiple.hourSup.table.thead.actions": {
       "fr": "Actions",
       "en": "Actions",
+      "ar": "الإجراءات",
     },
     "app.compo.activity.multiple.hourSup.table.actions.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.activity.multiple.actions.add": {
       "fr": "AJOUTER",
       "en": "ADD",
+      "ar": "إضافة",
     },
     "app.compo.activity.multiple.actions.submit": {
       "fr": "SOUMETTRE",
       "en": "SUBMIT",
+      "ar": "إرسال",
     },
     "app.compo.activity.multiple.modal.title": {
       "fr": "AJOUTER ACTIVITES MULTIPLES",
       "en": "ADD MULTI ACTIVITY",
+      "ar": "إضافة أنشطة متعددة",
     },
     "app.compo.cra.list.table.thead.consultant": {
       "fr": "Consultant",
       "en": "Consultant",
+      "ar": "المستشار",
     },
     "app.compo.cra.list.table.thead.month": {
       "fr": "Mois",
       "en": "Month",
+      "ar": "الشهر",
     },
     "app.compo.cra.list.table.thead.createdDate": {
       "fr": "Date Cr\u00e9ation",
       "en": "CreatedDate",
+      "ar": "تاريخ الإنشاء",
     },
     "app.compo.cra.list.table.thead.lastUpdateDate": {
       "fr": "Date Modification",
       "en": "LastUpdateDate",
+      "ar": "تاريخ التعديل",
     },
     "app.compo.cra.list.table.thead.status": {
       "fr": "Statut",
       "en": "Status",
+      "ar": "الحالة",
     },
     "app.compo.cra.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
+      "ar": "الإجراء",
     },
     "app.compo.cra.list.table.action.showDetails": {
       "fr": "Voir CRA",
       "en": "Show CRA",
+      "ar": "عرض CRA",
     },
     // "showConge":{
     "showConge": {
       "fr": "Voir Cong\u00e9",
       "en": "Show Conge",
+      "ar": "عرض الإجازة",
     },
     "showCra": {
       "fr": "Voir Cra",
       "en": "Show Cra",
+      "ar": "عرض CRA",
     },
 
     "Cra": {
       "fr": "Cra",
       "en": "Cra",
+      "ar": "CRA",
     },
 
     "Conge": {
       "fr": "Cong\u00e9",
       "en": "Conge",
+      "ar": "إجازة",
     },
 
     "Show": {
       "fr": "Voir",
       "en": "Show",
+      "ar": "عرض",
     },
 
 
     "app.compo.cra.list.table.action.addConge": {
       "fr": "Ajouter Cong\u00e9",
       "en": "Add Conge",
+      "ar": "إضافة إجازة",
     },
     "app.compo.cra.list.table.action.addCra": {
       "fr": "Ajouter Cra",
       "en": "Add Cra",
+      "ar": "إضافة CRA",
+    },
+    "app.compo.cra.list.table.action.delCra": {
+      "fr": "Supprimer Cra",
+      "en": "Delete Cra",
+      "ar": "حذف CRA",
     },
     //Note de Frais Traduction
     "app.compo.frais.form.input.title": {
       "fr": "Titre",
       "en": "Title",
+      "ar": "العنوان",
     },
     "app.compo.frais.form.input.dateFee": {
       "fr": "Date Frais",
       "en": "Fee Date",
+      "ar": "تاريخ المصروف",
     },
     "app.compo.frais.form.input.country": {
       "fr": "Pays",
       "en": "Country",
+      "ar": "البلد",
     },
     "app.compo.frais.form.input.activity": {
       "fr": "Mission",
       "en": "Activity",
+      "ar": "المهمة",
     },
     "app.compo.frais.form.input.payementMode": {
       "fr": "Mode Paiement",
       "en": "Payement Mode",
+      "ar": "طريقة الدفع",
     },
     "app.compo.frais.form.input.categories": {
       "fr": "Cat\u00e9gories",
       "en": "Categories",
+      "ar": "الفئات",
     },
     "app.compo.frais.form.input.invoice": {
       "fr": "D\u00e9tails Facture",
       "en": "Invoice details",
+      "ar": "تفاصيل الفاتورة",
     },
     "app.compo.frais.form.input.invoiceNumber": {
       "fr": "Num\u00e9ro Facture",
       "en": "Invoice Number",
+      "ar": "رقم الفاتورة",
     },
     "app.compo.frais.form.input.pretaxAmount": {
       "fr": "Prix HT",
       "en": "Pretax Amount",
+      "ar": "السعر قبل الضريبة",
     },
     "app.compo.frais.form.input.vat": {
       "fr": "TVA",
       "en": "VAT",
+      "ar": "الضريبة على القيمة المضافة",
     },
     "app.compo.frais.form.input.amount": {
       "fr": "Montant Total",
       "en": "Amount",
+      "ar": "المبلغ الإجمالي",
     },
     "app.compo.frais.form.input.brand": {
       "fr": "Nom Enseigne",
       "en": "Brand Name",
+      "ar": "اسم العلامة التجارية",
     },
     "app.compo.frais.form.input.description": {
       "fr": "Description",
       "en": "Description",
+      "ar": "الوصف",
     },
     "app.compo.frais.form.input.feeList": {
       "fr": "List Note Frais",
       "en": "Fee List",
+      "ar": "قائمة المصاريف",
     },
     "app.compo.frais.list.table.thead.title": {
       "fr": "Titre",
       "en": "Title",
+      "ar": "العنوان",
     },
     "app.compo.frais.list.table.thead.date": {
       "fr": "Date",
       "en": "Date",
+      "ar": "التاريخ",
     },
     "app.compo.frais.list.table.thead.category": {
       "fr": "Cat\u00e9gorie",
       "en": "Category",
+      "ar": "الفئة",
     },
     "app.compo.frais.list.table.thead.brandName": {
       "fr": "Nom Enseigne",
       "en": "Brand Name",
+      "ar": "اسم العلامة التجارية",
     },
     "app.compo.frais.list.table.thead.vat": {
       "fr": "TVA",
       "en": "VAT",
+      "ar": "الضريبة على القيمة المضافة",
     },
     "app.compo.frais.list.table.thead.pretaxAmount": {
       "fr": "Prix HT",
       "en": "Pretax Amount",
+      "ar": "السعر قبل الضريبة",
     },
     "app.compo.frais.list.table.thead.amount": {
       "fr": "Montant",
       "en": "Amount",
+      "ar": "المبلغ",
     },
     "app.compo.frais.list.table.thead.status": {
       "fr": "Statut",
       "en": "Status",
+      "ar": "الحالة",
     },
     "app.compo.frais.list.table.thead.action": {
       "fr": "Actions",
       "en": "Actions",
+      "ar": "الإجراءات",
     },
     "app.compo.frais.list.payementDate": {
       "fr": "Date Paiement",
       "en": "Payement Date",
+      "ar": "تاريخ الدفع",
     },
     "app.compo.frais.list.button.add": {
       "fr": "Ajouter",
       "en": "Add",
+      "ar": "إضافة",
     },
     "app.compo.frais.list.table.thead.consultantName": {
       "fr": "Nom Consultant",
       "en": "Consultant Name",
+      "ar": "اسم المستشار",
     },
     "Refresh": {
       "fr": "Actualiser",
@@ -2018,6 +2317,21 @@ export class TradService {
       "fr": "La date de fin est requise",
       "en": "End date is required",
       "ar": "تاريخ النهاية مطلوب",
+    },
+    "app.compo.cra.addMultiDate.error.endDateBeforeStart": {
+      "fr": "La date de fin doit etre superieure ou egale a la date de debut",
+      "en": "End date must be greater than or equal to start date",
+      "ar": "يجب أن يكون تاريخ النهاية أكبر من أو يساوي تاريخ البداية",
+    },
+    "app.compo.cra.addMultiDate.error.outOfInterval": {
+      "fr": "Cette date est hors de l'intervalle de l'activite selectionnee",
+      "en": "This date is outside the selected activity interval",
+      "ar": "هذا التاريخ خارج نطاق النشاط المحدد",
+    },
+    "app.compo.cra.list.confirmDelete": {
+      "fr": "Voulez-vous vraiment supprimer la ligne avec id=",
+      "en": "Do you really want to delete the row with id=",
+      "ar": "هل تريد حقا حذف السطر ذي المعرف=",
     },
     "app.compo.cra.app.listCra": {
       "fr": "Liste CRA",

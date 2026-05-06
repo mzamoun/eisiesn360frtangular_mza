@@ -13,11 +13,11 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Msg</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">TypeId</th>
-                    <th scope="col">From</th>
+                    <th scope="col">{{utils.tr('app.compo.msg.form.type')}}</th>
+                    <th scope="col">{{utils.tr('app.compo.msg.form.typeId')}}</th>
+                    <th scope="col">{{utils.tr('app.compo.msg.form.from')}}</th>
                     <th scope="col">To</th>
-                    <th scope="col">IsReadByTo</th>
+                    <th scope="col">{{utils.tr('app.compo.msg.form.isReadByTo')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,7 +42,7 @@
                         {{ element.isReadByTo }}
                     </td>
                     <!-- <button (click)="edit(element)" class='btn btn-info'>Edit</button> -->
-                    <button (click)="delete(element)" id="btn-msg-list-delete{{i}}" class='btn btn-primary' [appAuthorization] feature="Msg_MANAGEMENT" permission="DELETE">Delete
+                    <button (click)="delete(element)" id="btn-msg-list-delete{{i}}" class='btn btn-primary' [appAuthorization] feature="Msg_MANAGEMENT" permission="DELETE">{{utils.tr('Delete')}}
           </button>
                 </tr>
             </tbody>
@@ -53,7 +53,7 @@
 
         <div class="right" style="width: 50%;" *ngIf="nbCallServer == 0">
 
-            <li class="list-inline-item"><a [routerLink]="['/msg_form']" id="msg-list-add-msg" [queryParams]="{isAdd:true}" class="btn btn-info" [appAuthorization] feature="Msg_MANAGEMENT" permission="CREATE">Add Msg</a></li>
+            <li class="list-inline-item"><a [routerLink]="['/msg_form']" id="msg-list-add-msg" [queryParams]="{isAdd:true}" class="btn btn-info" [appAuthorization] feature="Msg_MANAGEMENT" permission="CREATE">{{utils.tr('app.compo.msg.list.addMsg')}}</a></li>
 
         </div>
 

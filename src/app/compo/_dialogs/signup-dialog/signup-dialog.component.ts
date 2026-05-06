@@ -1,4 +1,5 @@
 import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 
 
@@ -29,6 +30,7 @@ export class SignupDialogComponent {
     , private esnService: EsnService
     , private utilsIhm: UtilsIhmService
     , private dialog: MatDialog
+    , public utils: UtilsService
   ) {
     this.dataSharingService.IsAddEsnAndResp = true;
   }

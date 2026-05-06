@@ -8,32 +8,32 @@
                 <label for="msg">Msg</label>
                 <input type="text" placeholder="Enter your msg" [(ngModel)]="myObj.msg" class="form-control" id="msg" name="msg" required #msg="ngModel">
             </div>
-            <div [hidden]="msg.valid" class="alert alert-danger">Msg is required</div>
+            <div [hidden]="msg.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.msgRequired')}}</div>
 
             <div class="form-group">
-                <label for="type">Type</label>
+                <label for="type">{{utils.tr('app.compo.msg.form.type')}}</label>
                 <input type="text" placeholder="Enter your type" [(ngModel)]="myObj.type" class="form-control" id="type" name="type">
             </div>
 
             <div class="form-group">
-                <label for="typeId">TypeId</label>
+                <label for="typeId">{{utils.tr('app.compo.msg.form.typeId')}}</label>
                 <input type="number" [(ngModel)]="myObj.typeId" class="form-control" id="typeId" name="typeId">
             </div>
 
             <div class="form-group">
-                <label for="from">From</label>
+                <label for="from">{{utils.tr('app.compo.msg.form.from')}}</label>
                 <input type="text" placeholder="Enter your from" [(ngModel)]="myObj.from" class="form-control" id="from" name="from" required #from="ngModel">
             </div>
-            <div [hidden]="from.valid" class="alert alert-danger">From is required</div>
+            <div [hidden]="from.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.fromRequired')}}</div>
 
             <div class="form-group">
                 <label for="to">To</label>
                 <input type="text" placeholder="Enter your to" [(ngModel)]="myObj.to" class="form-control" id="to" name="to" required #to="ngModel">
             </div>
-            <div [hidden]="to.valid" class="alert alert-danger">To is required</div>
+            <div [hidden]="to.valid" class="alert alert-danger">{{utils.tr('app.compo.msg.form.toRequired')}}</div>
 
             <div class="form-group">
-                <label for="isReadByTo">IsReadByTo</label>
+                <label for="isReadByTo">{{utils.tr('app.compo.msg.form.isReadByTo')}}</label>
                 <input type="text" placeholder="Enter your isReadByTo" [(ngModel)]="myObj.isReadByTo" class="form-control" id="isReadByTo" name="isReadByTo">
             </div>
 
@@ -42,7 +42,7 @@
             <li class="list-inline-item">
                 <a> </a>
             </li>
-            <li class="list-inline-item"><a [routerLink]="['/msgHisto_list']" class="btn btn-info">List msgHistos</a></li>
+            <li class="list-inline-item"><a [routerLink]="['/msgHisto_list']" class="btn btn-info">{{utils.tr('app.compo.msgHisto.form.listMsgHistos')}}</a></li>
         </form>
     </div>
 </div>

@@ -5,6 +5,7 @@ import { Consultant } from 'src/app/model/consultant';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { PasswordValidatorService } from 'src/app/service/password-validator.service';
+import { UtilsService } from 'src/app/service/utils.service';
 import { environment } from 'src/environments/environment';
 
 const API_URL = environment.divUrl;
@@ -36,7 +37,8 @@ export class ValidateEmailComponent implements OnInit {
     private http: HttpClient,
     public router: Router,
     private passwordValidator: PasswordValidatorService,
-    private consultantService: ConsultantService
+    private consultantService: ConsultantService,
+    public utils: UtilsService
   ) { }
 
   ngOnInit(): void {

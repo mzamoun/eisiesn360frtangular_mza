@@ -24,11 +24,11 @@
 
     <div style="width: 100%; display: flex;">
         <div style="display: flex; margin-right: 30px;" *ngIf="dataSharingService.esnSaved">
-            <h5>Esn Saved :</h5>
+            <h5>{{utils.tr('app.compo.inscription.esnSaved')}}</h5>
             <h5 style="color: blue;">{{dataSharingService.esnSaved?.name}}</h5>
         </div>
         <div style="display: flex; margin-right: 30px;" *ngIf="dataSharingService.respEsnSaved">
-            <h5>Resp Esn Saved :</h5>
+            <h5>{{utils.tr('app.compo.inscription.respSaved')}}</h5>
             <h5 style="color: blue;">{{dataSharingService.respEsnSaved?.fullName}}</h5>
         </div>
 

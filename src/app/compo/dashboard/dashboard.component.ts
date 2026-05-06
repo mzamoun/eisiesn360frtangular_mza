@@ -39,28 +39,28 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     targetBarHeight: number = 200; // Hauteur cible en pixels pour la barre max
     timeGrouping: 'day' | 'month' | 'year' = 'year';
     revenueData: any = null;
-    visibleSections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [];
+    visibleSections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [];
 
-        sections: Array<{ title: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
+        sections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
         // Visible par tous les roles (selon permissions)
-        { title: 'Mon Profil', route: '/my-profile', feature: null },
-        { title: 'Notifications', route: '/notification' },
+        { id: 'PROFILE', titleKey: 'app.dashboard.section.profile', route: '/my-profile', feature: null },
+        { id: 'NOTIFICATIONS', titleKey: 'app.dashboard.section.notifications', route: '/notification' },
         // ADMIN uniquement
-        { title: 'Esn', route: '/esn_app', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'] },
+        { id: 'ESN', titleKey: 'app.dashboard.section.esn', route: '/esn_app', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'] },
         // ADMIN + RESPONSIBLE_ESN
-        { title: 'Consultants', route: '/consultant_app', feature: 'CONSULTANT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
-        { title: 'Clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
-        { title: 'Projets', route: '/project_app', feature: 'PROJECT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        { id: 'CONSULTANTS', titleKey: 'app.dashboard.section.consultants', route: '/consultant_app', feature: 'CONSULTANT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        { id: 'CLIENTS', titleKey: 'app.dashboard.section.clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
+        { id: 'PROJECTS', titleKey: 'app.dashboard.section.projects', route: '/project_app', feature: 'PROJECT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
         // MANAGER : ses consultants uniquement
-        { title: 'Mes Consultants', route: '/consultant_list', feature: 'CONSULTANT_MANAGEMENT', roles: ['MANAGER'], queryParams: { myConsultants: true } },
+        { id: 'MY_CONSULTANTS', titleKey: 'app.dashboard.section.myConsultants', route: '/consultant_list', feature: 'CONSULTANT_MANAGEMENT', roles: ['MANAGER'], queryParams: { myConsultants: true } },
         // ADMIN + RESPONSIBLE_ESN + MANAGER : toutes les activites
-        { title: 'Activites', route: '/activity_app', feature: 'ACTIVITY_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        { id: 'ACTIVITIES', titleKey: 'app.dashboard.section.activities', route: '/activity_app', feature: 'ACTIVITY_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
         // ADMIN + RESPONSIBLE_ESN + MANAGER : tous les CRA
-        { title: 'CRA', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        { id: 'CRA', titleKey: 'app.dashboard.section.cra', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
         // CONSULTANT : uniquement ses CRA
-        { title: 'Mes CRA', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
+        { id: 'MY_CRA', titleKey: 'app.dashboard.section.myCra', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
         // Documents administratifs
-        { title: 'Documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
+        { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
     ];
 
     listNotifications: Notification[] = [];
@@ -218,13 +218,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 this.dataSharingService.delInfo(labelNotif);
                 const listNotifications = listNotif as Notification[];
                 this.listNotifications = this.dataSharingService.getListNotifications() || listNotifications;
-                this.updateSectionCount('Notifications', this.listNotifications.length);
+                this.updateSectionCount('NOTIFICATIONS', this.listNotifications.length);
             }, (error) => {
                 this.logger.debug('DashboardComponent: Error loading Notifications', error);
                 this.dataSharingService.delInfo(labelNotif);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des Notifications : ', JSON.stringify(error)));
                 this.listNotifications = this.dataSharingService.getListNotifications() || [];
-                this.updateSectionCount('Notifications', this.listNotifications.length);
+                this.updateSectionCount('NOTIFICATIONS', this.listNotifications.length);
             }
         );
 
@@ -237,13 +237,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 this.logger.debug('DashboardComponent: Loaded ESNs, resp = ', resp);
                 this.dataSharingService.delInfo(labelEsn);
                 this.listEsn = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('Esn', this.listEsn.length);
+                this.updateSectionCount('ESN', this.listEsn.length);
             },
             error: (err) => {
                 this.logger.debug('DashboardComponent: Error loading ESNs', err);
                 this.dataSharingService.delInfo(labelEsn);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(err)));
-                this.updateSectionCount('Esn', 0);
+                this.updateSectionCount('ESN', 0);
             }
         });
 
@@ -289,12 +289,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 this.dataSharingService.delInfo(labelDocuments);
                 this.listDocument = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('Documents', this.listDocument.length);
+                this.updateSectionCount('DOCUMENTS', this.listDocument.length);
             },
             error: (error) => {
                 this.dataSharingService.delInfo(labelDocuments);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des documents : ', JSON.stringify(error)));
-                this.updateSectionCount('Documents', 0);
+                this.updateSectionCount('DOCUMENTS', 0);
             }
         });
 
@@ -311,33 +311,33 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             clientObservable.subscribe({
                 next: (resp) => {
                     this.listClient = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('Clients', this.listClient.length);
+                    this.updateSectionCount('CLIENTS', this.listClient.length);
                 },
                 error: (error) => {
                     this.dataSharingService.addError(new MyError('Erreur lors du chargement des clients : ', JSON.stringify(error)));
-                    this.updateSectionCount('Clients', 0);
+                    this.updateSectionCount('CLIENTS', 0);
                 }
             });
 
             this.projectService.findAll(this.esnId).subscribe({
                 next: (resp) => {
                     this.listProject = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('Projets', this.listProject.length);
+                    this.updateSectionCount('PROJECTS', this.listProject.length);
                 },
                 error: (error) => {
                     this.dataSharingService.addError(new MyError('Erreur lors du chargement des projets : ', JSON.stringify(error)));
-                    this.updateSectionCount('Projets', 0);
+                    this.updateSectionCount('PROJECTS', 0);
                 }
             });
 
             this.activityService.findAll().subscribe({
                 next: (resp) => {
                     this.listActivity = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('Activités', this.listActivity.length);
+                    this.updateSectionCount('ACTIVITIES', this.listActivity.length);
                 },
                 error: (error) => {
                     this.dataSharingService.addError(new MyError('Erreur lors du chargement des activités : ', JSON.stringify(error)));
-                    this.updateSectionCount('Activités', 0);
+                    this.updateSectionCount('ACTIVITIES', 0);
                 }
             });
         }
@@ -356,7 +356,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 this.dataSharingService.delInfo(labelClient);
                 this.listClient = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('Clients', this.listClient.length);
+                this.updateSectionCount('CLIENTS', this.listClient.length);
 
                 // Test 1: Si aucun client, proposer d'en créer un
                 if (this.listClient.length === 0) {
@@ -379,7 +379,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             error: (error) => {
                 this.dataSharingService.delInfo(labelClient);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des clients : ', JSON.stringify(error)));
-                this.updateSectionCount('Clients', 0);
+                this.updateSectionCount('CLIENTS', 0);
             }
         });
     }
@@ -392,7 +392,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 this.dataSharingService.delInfo(labelProject);
                 this.listProject = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('Projets', this.listProject.length);
+                this.updateSectionCount('PROJECTS', this.listProject.length);
 
                 // Test 2: Si ya au moins un client et aucun projet, proposer d'en créer un
                 if (this.listProject.length === 0 && !this.dataSharingService.projectWarningShown) {
@@ -411,7 +411,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             error: (error) => {
                     this.dataSharingService.delInfo(labelProject);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des projets : ', JSON.stringify(error)));
-                this.updateSectionCount('Projets', 0);
+                this.updateSectionCount('PROJECTS', 0);
             }
         });
     }
@@ -424,7 +424,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 this.dataSharingService.delInfo(labelActivity);
                 this.listActivity = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('Activités', this.listActivity.length);
+                this.updateSectionCount('ACTIVITIES', this.listActivity.length);
 
                 // Test 3: Si ya au moins un projet et au moins un consultant de type CONSULTANT et aucune activité de type MISSION, proposer d'en créer une
                 const hasConsultantRole = this.listConsultant.some(c => c.role === 'CONSULTANT');
@@ -451,7 +451,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             error: (error) => {
                 this.dataSharingService.delInfo(labelActivity);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des activités : ', JSON.stringify(error)));
-                this.updateSectionCount('Activités', 0);
+                this.updateSectionCount('ACTIVITIES', 0);
             }
         });
     }
@@ -462,8 +462,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         const role = user?.role;
 
         if (!user) {
-            this.updateSectionCount('Consultants', 0);
-            this.updateSectionCount('Mes Consultants', 0);
+            this.updateSectionCount('CONSULTANTS', 0);
+            this.updateSectionCount('MY_CONSULTANTS', 0);
             return;
         }
 
@@ -472,9 +472,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             this.consultantService.findAll().subscribe({
                 next: (resp) => {
                     this.listConsultant = resp?.body?.result || [];
-                    this.updateSectionCount('Consultants', this.listConsultant.length);
+                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
                 },
-                error: () => this.updateSectionCount('Consultants', 0)
+                error: () => this.updateSectionCount('CONSULTANTS', 0)
             });
             return;
         }
@@ -486,7 +486,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             this.consultantService.findAllByEsn(this.esnId).subscribe({
                 next: (resp) => {
                     this.listConsultant = resp?.body?.result || [];
-                    this.updateSectionCount('Consultants', this.listConsultant.length);
+                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
                     this.dataSharingService.delInfo(labelConsultant);
 
                     // Test: si listConsultant ne contient pas un manager, afficher dialog
@@ -503,7 +503,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 error: (error) => {
                     this.dataSharingService.delInfo(labelConsultant);
                     this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                    this.updateSectionCount('Consultants', 0);
+                    this.updateSectionCount('CONSULTANTS', 0);
                 }
             });
             return;
@@ -522,8 +522,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                     this.listConsultant = allConsultants;
                     // Mes Consultants: filter by adminConsultantId = userConnected.id, include manager himself
                     const myConsultants = allConsultants.filter(c => c.adminConsultantId === user.id || c.id === user.id);
-                    this.updateSectionCount('Consultants', this.listConsultant.length);
-                    this.updateSectionCount('Mes Consultants', myConsultants.length);
+                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+                    this.updateSectionCount('MY_CONSULTANTS', myConsultants.length);
 
                     // Test hiérarchique dans loadClientAndCheckHierarchy: vérifier si consultant CONSULTANT existe
                     if (!this.listConsultant.some(c => c.role === 'CONSULTANT') &&
@@ -540,8 +540,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 error: (error) => {
                     this.dataSharingService.delInfo(labelConsultant);
                     this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                    this.updateSectionCount('Consultants', 0);
-                    this.updateSectionCount('Mes Consultants', 0);
+                    this.updateSectionCount('CONSULTANTS', 0);
+                    this.updateSectionCount('MY_CONSULTANTS', 0);
                 }
             });
             return;
@@ -554,21 +554,21 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             next: (resp) => {
                 this.dataSharingService.delInfo(labelConsultant);
                 this.listConsultant = resp?.body?.result || [];
-                this.updateSectionCount('Consultants', this.listConsultant.length);
-                this.updateSectionCount('Mes Consultants', 0);
+                this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+                this.updateSectionCount('MY_CONSULTANTS', 0);
             },
             error: (error) => {
                 this.dataSharingService.delInfo(labelConsultant);
                 this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                this.updateSectionCount('Consultants', 0);
-                this.updateSectionCount('Mes Consultants', 0);
+                this.updateSectionCount('CONSULTANTS', 0);
+                this.updateSectionCount('MY_CONSULTANTS', 0);
             }
         });
     }
 
-    private updateSectionCount(title: string, count: any): void {
-        this.logger.debug('DashboardComponent.updateSectionCount called', { title, count });
-        const section = this.sections.find(s => s.title === title);
+    private updateSectionCount(id: string, count: any): void {
+        this.logger.debug('DashboardComponent.updateSectionCount called', { id, count });
+        const section = this.sections.find(s => s.id === id);
         if (section) {
             section.count = count;
         }
@@ -591,7 +591,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         this.chartData = this.generateChartData(section);
         
         // Générer les données de revenus pour CRA
-        if (section.title === 'CRA') {
+        if (section.id === 'CRA') {
             this.revenueData = this.generateRevenueData();
         }
         
@@ -624,7 +624,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         this.timeGrouping = grouping;
         if (this.selectedSection) {
             this.chartData = this.generateChartData(this.selectedSection);
-            if (this.selectedSection.title === 'CRA') {
+            if (this.selectedSection.id === 'CRA') {
                 this.revenueData = this.generateRevenueData();
             }
             
@@ -691,47 +691,47 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         let dataList: any[] = [];
 
         // Récupérer les données correspondantes à la section
-        switch (section.title) {
-            case 'Notifications':
+        switch (section.id) {
+            case 'NOTIFICATIONS':
                 dataList = this.listNotifications;
                 break;
-            case 'Consultants':
-            case 'Mes Consultants':
+            case 'CONSULTANTS':
+            case 'MY_CONSULTANTS':
                 dataList = this.listConsultant;
                 break;
-            case 'Esn':
+            case 'ESN':
                 dataList = this.listEsn;
                 break;
-            case 'Clients':
+            case 'CLIENTS':
                 dataList = this.listClient;
                 break;
-            case 'Projets':
+            case 'PROJECTS':
                 dataList = this.listProject;
                 break;
-            case 'Activités':
+            case 'ACTIVITIES':
                 dataList = this.listActivity;
                 break;
             case 'CRA':
                 dataList = this.listCra;
                 break;
-            case 'Documents':
+            case 'DOCUMENTS':
                 dataList = this.listDocument;
                 break;
             default:
                 dataList = [];
         }
 
-        this.logger.debug(`DashboardComponent: Generating chart data for ${section.title}, count : `, dataList.length);
+        this.logger.debug(`DashboardComponent: Generating chart data for ${section.id}, count : `, dataList.length);
 
         // Grouper par date de création
         const dateGroups = this.groupByCreatedDate(dataList);
 
-        this.logger.debug(`DashboardComponent: Date groups for ${section.title} : `, dateGroups);
+        this.logger.debug(`DashboardComponent: Date groups for ${section.id} : `, dateGroups);
 
         // Convertir en format de graphique avec dates et counts cumulés
         const chartData = this.convertToChartFormat(dateGroups);
 
-        this.logger.debug(`DashboardComponent: Chart data for ${section.title} : `, chartData);
+        this.logger.debug(`DashboardComponent: Chart data for ${section.id} : `, chartData);
 
         return chartData;
     }

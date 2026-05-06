@@ -1,4 +1,5 @@
 import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 
 
@@ -45,7 +46,7 @@ export class TableViewerComponent implements OnInit {
   apiUrl = environment.apiUrl
 
 
-  constructor(private logger: LoggerService, private tableService: TableService) {
+  constructor(private logger: LoggerService, private tableService: TableService, public utils: UtilsService) {
   }
 
   ngOnInit(): void {

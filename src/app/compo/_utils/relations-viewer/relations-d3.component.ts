@@ -1,4 +1,5 @@
 import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 
 
@@ -54,7 +55,8 @@ export class RelationsD3Component implements OnInit, OnDestroy, OnChanges {
   constructor(private logger: LoggerService, 
     private route: ActivatedRoute,
     private router: Router,
-    private tableService: TableService
+    private tableService: TableService,
+    public utils: UtilsService
   ) { }
 
   //   private initializeOnce() {

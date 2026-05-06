@@ -1,9 +1,9 @@
 <div style="padding: 40px; text-align: center; font-size: 18px; max-width: 500px; margin: 0 auto;">
-    <h2 *ngIf="validationType === 'inscription'">Validation de votre email</h2>
-    <h2 *ngIf="validationType === 'resetPassword'">Réinitialisation de votre mot de passe</h2>
+    <h2 *ngIf="validationType === 'inscription'">{{utils.tr('app.compo.validEmail.validationTitle')}}</h2>
+    <h2 *ngIf="validationType === 'resetPassword'">{{utils.tr('app.compo.validEmail.resetTitle')}}</h2>
 
     <div *ngIf="isLoading" style="margin: 20px 0;">
-        <p>Traitement en cours...</p>
+        <p>{{utils.tr('app.compo.validEmail.processing')}}</p>
         <div style="border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #3498db; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
     </div>
 
@@ -22,24 +22,24 @@
 
     <!-- Formulaire de reset password -->
     <div *ngIf="showPasswordForm && validationType === 'resetPassword'" style="margin-top: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9;">
-        <h4>Réinitialisez votre mot de passe</h4>
+        <h4>{{utils.tr('app.compo.validEmail.resetPasswordTitle')}}</h4>
 
         <div class="form-group" style="text-align: left; margin-bottom: 15px;">
-            <label style="font-weight: bold;">Email (identifiant):</label>
+            <label style="font-weight: bold;">{{utils.tr('app.compo.validEmail.emailId')}}</label>
             <div style="padding: 8px; background-color: #e8f5e9; border: 1px solid #4caf50; border-radius: 3px; margin-top: 5px;">
                 <strong style="color: #2e7d32;">{{ email }}</strong>
             </div>
         </div>
 
         <div class="form-group" style="text-align: left; margin-bottom: 15px;">
-            <label for="newPassword" style="font-weight: bold;">Nouveau mot de passe:</label>
+            <label for="newPassword" style="font-weight: bold;">{{utils.tr('app.compo.validEmail.newPassword')}}</label>
             <input id="newPassword" type="password" [(ngModel)]="newPassword" (ngModelChange)="validateNewPassword()" 
                 style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;"
                 placeholder="Entrez votre nouveau mot de passe" required>
         </div>
 
         <div class="form-group" style="text-align: left; margin-bottom: 15px;">
-            <label for="confirmPassword" style="font-weight: bold;">Confirmer le mot de passe:</label>
+            <label for="confirmPassword" style="font-weight: bold;">{{utils.tr('app.compo.validEmail.confirmPassword')}}</label>
             <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" 
                 style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px;"
                 placeholder="Confirmez votre nouveau mot de passe" required>
@@ -65,8 +65,8 @@
             <button style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; font-size: 16px;" 
                 (click)="submitNewPassword()" 
                 [disabled]="!newPassword || newPassword !== confirmPassword || (passwordErrors && passwordErrors.length > 0) || isSubmittingPassword">
-                <span *ngIf="!isSubmittingPassword">Mettre à jour le mot de passe</span>
-                <span *ngIf="isSubmittingPassword">Mise à jour en cours...</span>
+                <span *ngIf="!isSubmittingPassword">{{utils.tr('app.compo.validEmail.updatePassword')}}</span>
+                <span *ngIf="isSubmittingPassword">{{utils.tr('app.compo.validEmail.updating')}}</span>
             </button>
         </div>
     </div>

@@ -1,6 +1,7 @@
-import { LoggerService } from 'src/app/service/logger.service';
 import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 @Component({
   selector: 'app-footer',
@@ -9,10 +10,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
   today = new Date();
-	dateCommit = "Last Commit : 2026-05-05 17:23:53"
+	dateCommit = "Last Commit : 2026-05-06 11:38:18"
   dateFooter = "";
 
-  constructor(private logger: LoggerService, ) { }
+  constructor(private logger: LoggerService, public utils: UtilsService) { }
 
   ngOnInit() {
     this.dateFooter = this.dateCommit || formatDate(this.today, 'yyyy-MM-dd HH:mm:ss', 'fr-FR');

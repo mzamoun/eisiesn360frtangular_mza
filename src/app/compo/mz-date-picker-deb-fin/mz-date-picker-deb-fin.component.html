@@ -1,7 +1,7 @@
 <!-- <h5>Choix de date debut et fin</h5> -->
 <form [formGroup]="myForm" (ngSubmit)="onFormSubmit()">
     <mat-form-field appearance="fill">
-        <mat-label>Date Range</mat-label>
+        <mat-label>{{utils.tr('app.compo.datePicker.dateRange')}}</mat-label>
         <mat-date-range-input [rangePicker]="myDateRangePicker" formGroupName="myDateRange">
             <input matStartDate formControlName="startDate" placeholder="Start date"  id="startDate" #dateRangeStart>
             <input matEndDate formControlName="endDate" placeholder="End date" id="endDate" #dateRangeEnd (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)">

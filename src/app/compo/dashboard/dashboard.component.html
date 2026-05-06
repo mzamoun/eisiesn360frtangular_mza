@@ -3,7 +3,7 @@
   <div class="cards">
     <div class="card" *ngFor="let s of visibleSections">
       <div class="card-title">
-        {{ s.title }}
+        {{ utils.tr(s.titleKey) }}
         <span class="count">{{ s.count || 0 }}</span>
       </div>
       <div class="card-actions">
@@ -21,7 +21,7 @@
   <div class="charts-section" *ngIf="selectedSection">
     <div class="chart-display">
       <div class="chart-header">
-        <h3>📊 {{ selectedSection.title }}</h3>
+        <h3>📊 {{ utils.tr(selectedSection.titleKey) }}</h3>
         <!-- Options de groupement temporel pour tous les onglets-->
         <div class="time-grouping" >
           <label class="radio-label">
@@ -66,7 +66,7 @@
         <button class="tab-btn" [class.active]="activeTab === 'evolution'" (click)="switchTab('evolution')">
           📈 {{utils.tr('app.dashboard.tab.evolution')}}
         </button>
-        <button class="tab-btn" *ngIf="selectedSection.title === 'CRA'" 
+        <button class="tab-btn" *ngIf="selectedSection.id === 'CRA'" 
                 [class.active]="activeTab === 'revenus'" 
                 (click)="switchTab('revenus')">
           💰 {{utils.tr('app.dashboard.tab.revenue')}}
@@ -76,7 +76,7 @@
 
       <div class="chart-content" *ngIf="activeTab === 'evolution'">
         <p class="chart-info">{{utils.tr('app.dashboard.evolutionFor')}}
-          <strong> {{ selectedSection.title }}. 
+          <strong> {{ utils.tr(selectedSection.titleKey) }}. 
             {{utils.tr('app.dashboard.total')}} : {{ selectedSection.count || 0 }}. 
             {{utils.tr('app.dashboard.totalDays')}} : {{ chartData.totalDays }}.
           </strong></p>
@@ -100,7 +100,7 @@
 
         <div *ngIf="!chartData || chartData.totalDays === 0" class="placeholder-chart">
           <p>📈 {{utils.tr('app.dashboard.noData')}}</p>
-          <p>{{utils.tr('app.dashboard.noDataFor')}} {{ selectedSection.title }}</p>
+          <p>{{utils.tr('app.dashboard.noDataFor')}} {{ utils.tr(selectedSection.titleKey) }}</p>
         </div>
       </div>
 

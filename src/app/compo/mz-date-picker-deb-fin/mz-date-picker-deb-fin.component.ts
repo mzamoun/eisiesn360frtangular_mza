@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { LoggerService } from 'src/app/service/logger.service';
+import { UtilsService } from 'src/app/service/utils.service';
 
 @Component({
   selector: 'app-mz-date-picker-deb-fin',
@@ -32,7 +33,7 @@ export class MzDatePickerDebFinComponent implements OnInit {
 
   myForm: FormGroup;
 
-  constructor(private logger: LoggerService, private dateAdapter: DateAdapter<Date>, private formBuilder: FormBuilder) {
+  constructor(private logger: LoggerService, private dateAdapter: DateAdapter<Date>, private formBuilder: FormBuilder, public utils: UtilsService) {
     //  this.dateAdapter.setLocale('en-GB'); // dd/MM/yyyy
     this.dateAdapter.setLocale('fr-FR'); // dd/MM/yyyy
 

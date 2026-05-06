@@ -15,11 +15,11 @@
         <tr>
 		  <th scope="col">#</th>
 			<th scope="col">Msg</th>
-			<th scope="col">Type</th>
-			<th scope="col">TypeId</th>
-			<th scope="col">From</th>
+			<th scope="col">{{utils.tr('app.compo.msg.form.type')}}</th>
+			<th scope="col">{{utils.tr('app.compo.msg.form.typeId')}}</th>
+			<th scope="col">{{utils.tr('app.compo.msg.form.from')}}</th>
 			<th scope="col">To</th>
-			<th scope="col">IsReadByTo</th>
+			<th scope="col">{{utils.tr('app.compo.msg.form.isReadByTo')}}</th>
         </tr>
       </thead>
       <tbody>
@@ -46,7 +46,7 @@
           <!-- <button (click)="edit(element)" class='btn btn-info'>Edit</button> -->
           <button (click)="delete(element)" class='btn btn-primary' [appAuthorization]
                   feature="Msghisto_MANAGEMENT"
-                  permission="DELETE">Delete
+                  permission="DELETE">{{utils.tr('Delete')}}
           </button>
         </tr>
       </tbody>
@@ -60,7 +60,7 @@
       <li class="list-inline-item"><a [routerLink]="['/msgHisto_form']" [queryParams]="{isAdd:true}" class="btn btn-info"
         [appAuthorization]
         feature="Msghisto_MANAGEMENT"
-        permission="CREATE">Add MsgHisto</a></li>
+        permission="CREATE">{{utils.tr('app.compo.msgHisto.list.addMsgHisto')}}</a></li>
     
     </div>
 

@@ -14,11 +14,11 @@
     </h3>
 
     <div style="display: flex; margin: 20px;">
-        <button class="btn btn-primary" (click)="getTables()">Get All Table Names</button>
-        <button class="btn btn-primary" (click)="exportAllTablesToJson()">Export All Tables To Json</button>
-        <button class="btn btn-primary" (click)="importFromJsonToTableSelected()">Import From Json To Selected Table</button>
-        <button class="btn btn-primary" (click)="runBatchCraExportManually()">Run Batch Cra Export Manually</button>
-        <button class="btn btn-primary" (click)="runBatchConsultantImportManually()">Run Batch Consultant Import Manually</button>
+        <button class="btn btn-primary" (click)="getTables()">{{utils.tr('app.compo.utils.tableViewer.getAllTables')}}</button>
+        <button class="btn btn-primary" (click)="exportAllTablesToJson()">{{utils.tr('app.compo.utils.tableViewer.exportAllToJson')}}</button>
+        <button class="btn btn-primary" (click)="importFromJsonToTableSelected()">{{utils.tr('app.compo.utils.tableViewer.importFromJson')}}</button>
+        <button class="btn btn-primary" (click)="runBatchCraExportManually()">{{utils.tr('app.compo.utils.tableViewer.runBatchCra')}}</button>
+        <button class="btn btn-primary" (click)="runBatchConsultantImportManually()">{{utils.tr('app.compo.utils.tableViewer.runBatchConsultant')}}</button>
     </div>
 
     <!-- Section table sélectionnée -->
@@ -27,17 +27,17 @@
     
         <div style="margin-top: 10px;">
     
-            <button class="btn btn-primary" (click)="addTableLike()">Add Table Like</button>
-            <button class="btn btn-success" (click)="startEditSelectedRow()">Update Selected Row</button>
-            <button class="btn btn-info" (click)="insertLikeSelectedRow()">Insert Like Selected</button>
-            <button class="btn btn-primary" (click)="insertRow()">Insert Empty Row</button>
+            <button class="btn btn-primary" (click)="addTableLike()">{{utils.tr('app.compo.utils.tableViewer.addTableLike')}}</button>
+            <button class="btn btn-success" (click)="startEditSelectedRow()">{{utils.tr('app.compo.utils.tableViewer.updateSelectedRow')}}</button>
+            <button class="btn btn-info" (click)="insertLikeSelectedRow()">{{utils.tr('app.compo.utils.tableViewer.insertLikeSelected')}}</button>
+            <button class="btn btn-primary" (click)="insertRow()">{{utils.tr('app.compo.utils.tableViewer.insertEmptyRow')}}</button>
     
-            <button class="btn btn-danger" (click)="confirmDeleteTable()">Delete Table</button>
-            <button class="btn btn-danger" (click)="deleteSelectedRow()">Delete Selected Row</button>
+            <button class="btn btn-danger" (click)="confirmDeleteTable()">{{utils.tr('app.compo.utils.tableViewer.deleteTable')}}</button>
+            <button class="btn btn-danger" (click)="deleteSelectedRow()">{{utils.tr('app.compo.utils.tableViewer.deleteRow')}}</button>
     
             <div *ngIf="isEditing || isInserting" style="margin-top: 10px;">
-                <button class="btn btn-primary" (click)="saveRow()">Save</button>
-                <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+                <button class="btn btn-primary" (click)="saveRow()">{{utils.tr('Save')}}</button>
+                <button class="btn btn-secondary" (click)="cancelEdit()">{{utils.tr('app.common.cancel')}}</button>
             </div>
     
         </div>
@@ -158,8 +158,8 @@
                     <table class="table table-bordered table-sm" style="width: 100px; background: white;">
                         <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
                             <tr>
-                                <th style="width: 60%;">Colonne</th>
-                                <th style="width: 40%;">Type</th>
+                                <th style="width: 60%;">{{utils.tr('app.compo.utils.tableViewer.colonne')}}</th>
+                                <th style="width: 40%;">{{utils.tr('app.compo.msg.form.type')}}</th>
                             </tr>
                         </thead>
 
@@ -179,14 +179,14 @@
                 <div style="padding: 10px;">
 
                     <button (click)="executeSql()">
-                        <h3>Execute SQL</h3>
+                        <h3>{{utils.tr('app.compo.utils.tableViewer.executeSQL')}}</h3>
                     </button>
                     <br>
 
                     <textarea [(ngModel)]="sql" rows="5" cols="100"></textarea><br>
 
                     <div *ngIf="sqlResult?.length" class="resize-all">
-                        <h4>Result:</h4>
+                        <h4>{{utils.tr('app.compo.utils.tableViewer.result')}}</h4>
 
                         <table border="1" class="custom-table">
                             <thead>

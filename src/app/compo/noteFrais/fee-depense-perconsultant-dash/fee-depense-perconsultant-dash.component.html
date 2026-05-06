@@ -11,7 +11,7 @@
         <td style="width: 45%;" >
             <!-- <div [ngClass]="getClassListConsultant()"> -->
             <div>
-                <span>Consultant: </span>
+                <span>{{utils.tr('app.compo.notefrais.perConsultant.consultantLabel')}} </span>
                 <app-select style="font-size: 11px;" [selectId]="'fee-fep-perconsultant-slect-consultant'"
                     #compoSelectConsultant [objectName]="'Consultant'" [myList]="listConsultant"
                     [initObj]="consultantSelected" [objCaller]="this" onChangeCaller="onSelectConsultant"

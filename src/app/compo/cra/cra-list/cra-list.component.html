@@ -56,7 +56,7 @@
                         </button>
                         <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(element)"
                             *ngIf="canDeleteCra(element)" [appAuthorization] feature="CRA_MANAGEMENT"
-                            permission="DELETE">DELETE
+                            permission="DELETE">{{utils.tr("app.compo.cra.list.table.action.delCra")}}
                         </button>
                     </td>
                 </tr>

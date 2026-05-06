@@ -106,7 +106,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
     this.errorDates=error;
     ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if(this.errorDates) {
-      this.utils.showNotification("error", "The end date of project you have been above of the start date !")
+      this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.endDateBeforeStart'))
     }
   }
 
@@ -115,7 +115,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
     this.errorDates=error;
     ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if(this.errorDates) {
-      this.utils.showNotification("error", "The end date of project you have been above of the start date !")
+      this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.endDateBeforeStart'))
     }
   }
 
@@ -177,7 +177,7 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
           state = true;
         }
         if (!state) {
-          this.utils.showNotification("error", "Oops,this date is out of interval activity selected [" + startDate + "," + endDate + "]")
+          this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.outOfInterval') + " [" + startDate + "," + endDate + "]")
         }
       } else {
         state = true;
