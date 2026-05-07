@@ -126,6 +126,12 @@ export class TradService {
       ar: "دفع",
     },
 
+    "Edit": {
+      fr: "Modifier",
+      en: "Edit",
+      ar: "تعديل",
+    },
+
     "Delete": {
       fr: "Supprimer",
       en: "Delete",
@@ -140,7 +146,7 @@ export class TradService {
     },
 
     "User": {
-      fr: "Utlisateur",
+      fr: "Utilisateur",
       en: "User",
       ar: "مستخدم",
     },
@@ -1485,15 +1491,9 @@ export class TradService {
       "en": "Action",
       "ar": "الإجراء",
     },
-    "app.compo.cra.list.table.action.showDetails": {
-      "fr": "Voir CRA",
-      "en": "Show CRA",
-      "ar": "عرض CRA",
-    },
-    // "showConge":{
     "showConge": {
-      "fr": "Voir Cong\u00e9",
-      "en": "Show Conge",
+      "fr": "Voir Congé",
+      "en": "Show Vacation",
       "ar": "عرض الإجازة",
     },
     "showCra": {
@@ -1509,8 +1509,8 @@ export class TradService {
     },
 
     "Conge": {
-      "fr": "Cong\u00e9",
-      "en": "Conge",
+      "fr": "Congé",
+      "en": "Vacation",
       "ar": "إجازة",
     },
 
@@ -1522,8 +1522,8 @@ export class TradService {
 
 
     "app.compo.cra.list.table.action.addConge": {
-      "fr": "Ajouter Cong\u00e9",
-      "en": "Add Conge",
+      "fr": "Ajouter Congé",
+      "en": "Add Vacation",
       "ar": "إضافة إجازة",
     },
     "app.compo.cra.list.table.action.addCra": {

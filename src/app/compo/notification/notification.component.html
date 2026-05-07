@@ -20,7 +20,7 @@
                     <span>
                         <span *ngIf="notification.craId" aria-hidden="true" (click)="showCra(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
-                                id="btn-notif-show-cra-{{index}}">{{utils.tr('app.compo.cra.list.table.action.showDetails')}}</button>
+                                id="btn-notif-show-cra-{{index}}">{{utils.tr('showCra')}}</button>
                         </span>
 
                         <span *ngIf="notification.noteFrais" aria-hidden="true" (click)="showFee(notification)"

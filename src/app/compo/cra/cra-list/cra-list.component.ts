@@ -131,7 +131,7 @@ export class CraListComponent extends MereComponent {
   }
 
   getTitleButtonShowCra(cra: Cra) {
-    let t = this.utils.tr("app.compo.cra.list.table.action.showDetails")
+    let t = this.utils.tr("showCra")
     if (cra.type == 'CONGE') t = this.utils.tr("showConge");
     return t;
   }
