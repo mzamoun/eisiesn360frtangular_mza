@@ -2,17 +2,18 @@
 <div class="card my-5">
     <div class="card-body">
 
-        <div style="display: flex; justify-content: center; align-items: center; " class=""> 
-	<h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
-	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">{{utils.tr('Refresh')}}</button>
-</div>
+        <div style="display: flex; justify-content: center; align-items: center; " class="">
+            <h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
+            <button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;"
+                (click)="findAll()">{{utils.tr('Refresh')}}</button>
+        </div>
 
         <div class="right" style="width: 40%;" name="searchDiv">
             <input id="searchStr" #searchStrInput class="form-control left" style="width: 90%;" type="text"
                 placeholder="{{utils.tr('Search')}}" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()"
                 (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
             <button class="right" style="width: 10%; height: 40px; text-align: center;"
-                (click)="clearSearch()">{{utils.tr('Clear')}}</button>
+                (click)="clearSearch()" title="{{utils.tr('Clear')}}">X</button>
         </div>
 
         <table class="table table-bordered table-striped">
@@ -68,8 +69,8 @@
         <div class="right" style="width: 50%;" *ngIf="nbCallServer == 0">
 
             <div class="dropdown" style="float: right;" [appAuthorization] feature="CRA_MANAGEMENT" permission="CREATE">
-                <button class="btn btn-info dropdown-toggle" type="button" id="addCraDropdown"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-info dropdown-toggle" type="button" id="addCraDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
                     {{utils.tr("app.compo.cra.list.table.action.addCra")}}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="addCraDropdown">
@@ -108,8 +109,8 @@
                             </span>
                             <button *ngIf="filterMonth" id="btn-cra-list-delete-filter-month"
                                 (click)="deleteFilterMonth()" class="btn-sm btn-danger"> X </button>
-                            <app-mz-date-picker placeHolder="{{utils.tr('app.compo.profile.chooseDate')}}" id="cra-list-month-filter"
-                                [(myDatePicker)]="filterMonth"></app-mz-date-picker>
+                            <app-mz-date-picker placeHolder="{{utils.tr('app.compo.profile.chooseDate')}}"
+                                id="cra-list-month-filter" [(myDatePicker)]="filterMonth"></app-mz-date-picker>
                             <!-- required -->
                         </div>
                     </div>

@@ -173,7 +173,7 @@ P3 - Mode support/admin
   - rafraichissement sans tempete de requetes
 
 4.3 Tests E2E (playwright/cypress ou selenium existant)
-- Parcours login/logout par role (ADMIN/RESP_ESN/MANAGER/CONSULTANT)
+- Parcours login/logout par role (ADMIN/RESPONSIBLE_ESN/MANAGER/CONSULTANT)
 - Flux CRA complet: creation, validation, rejection, notification
 - Reset password + validate email (liens token)
 - Non-regression navigation quand API KO (status 0/500)

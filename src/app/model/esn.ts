@@ -1,3 +1,4 @@
+import { Abonnement } from "./abonnement";
 import { ActivityType } from "./activityType";
 import { Address } from "./address";
 import { Client } from "./client";
@@ -23,4 +24,6 @@ export class Esn {
 
   listActivityType : ActivityType[]
   listActivityTypeIds : number[]
+
+  abonnement: Abonnement = new Abonnement();
 }

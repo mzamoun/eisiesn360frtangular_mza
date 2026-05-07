@@ -57,7 +57,7 @@ export class ConsultantService {
   }
 
   public findAllOfAdminUsername(adminUsername: string): Observable<GenericResponse> {
-    return this.http.post<GenericResponse>(this.consultantUrl + "findByAdminUsername", adminUsername);
+    return this.http.post<GenericResponse>(this.consultantUrl + "/findByAdminUsername", adminUsername);
   }
 
   /***
@@ -65,6 +65,10 @@ export class ConsultantService {
    */
   public findAll(): Observable<GenericResponse> {
     return this.http.get<GenericResponse>(this.consultantUrl);
+  }
+
+  public findAllSupports(): Observable<GenericResponse> {
+    return this.http.get<GenericResponse>(this.consultantUrl + "/supports");
   }
 
   public findAllByEsn(idEsn: number): Observable<GenericResponse> {

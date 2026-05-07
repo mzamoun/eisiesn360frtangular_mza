@@ -151,6 +151,7 @@ import { ProjectFormComponent } from './compo/project/project-form/project-form.
 import { ProjectListComponent } from './compo/project/project-list/project-list.component';
 import { ValidateEmailComponent } from './compo/valid-email/valid-email.component';
 import { ProjectService } from './service/project.service';
+import { HelpComponent } from './compo/help/help.component';
 // import { TabsComponent } from './tabs/tabs.component';
 
 
@@ -276,6 +277,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     CraHistoStatusComponent,
     RelationsD3Component,
     LoadingDialogComponent,
+    HelpComponent,
     
   ],
   imports: [

@@ -37,6 +37,7 @@ import { DashBoardComponent } from './compo/dashboard/dashboard.component';
 import { EsnAppComponent } from './compo/esn/esn-app/esn-app.component';
 import { EsnFormComponent } from './compo/esn/esn-form/esn-form.component';
 import { EsnListComponent } from './compo/esn/esn-list/esn-list.component';
+import { HelpComponent } from './compo/help/help.component';
 import { InscriptionComponent } from './compo/inscription/inscription.component';
 import { LoadingPageComponent } from './compo/loading-page/loading-page.component';
 import { FeeDepensePercategoryDashComponent } from './compo/noteFrais/fee-depense-percategory-dash/fee-depense-percategory-dash.component';
@@ -77,6 +78,7 @@ const routes: Routes = [
   { canActivate: [AuthGuard], path: 'notification', component: NotificationComponent },
 
   { canActivate: [AuthGuard], path: 'my-profile', component: ProfileComponent },
+  { canActivate: [AuthGuard], path: 'help', component: HelpComponent },
   { canActivate: [AuthGuard], path: 'project_list', component: ProjectListComponent },
   { canActivate: [AuthGuard], path: 'project_form', component: ProjectFormComponent },
   { canActivate: [AuthGuard], path: 'project_app', component: ProjectAppComponent },

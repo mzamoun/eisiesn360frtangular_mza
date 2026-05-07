@@ -376,7 +376,7 @@ export class TableViewerComponent implements OnInit {
 
     let msg = `Delete row with ${idKey} = ${this.selectedRow[idKey]} ?`
     if (this.selectedTable.toUpperCase() === 'ESN') {
-      msg += "\nThis will also delete all related data in other tables (RESP_ESN, ESN_PROJECT, CRA, etc.) !"
+      msg += "\nThis will also delete all related data in other tables (RESPONSIBLE_ESN, ESN_PROJECT, CRA, etc.) !"
     }
 
     if (!confirm(msg)) return;

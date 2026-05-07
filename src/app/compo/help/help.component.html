@@ -1,0 +1,64 @@
+<div class="help-support-page">
+	<h2>Support</h2>
+
+	<p>
+		En cas de probleme, merci de decrire le contexte le plus precisement possible.
+	</p>
+
+	<form (ngSubmit)="sendSupportMessage()" #supportForm="ngForm" novalidate>
+		<div class="form-row">
+			<label for="type">Type</label>
+			<select id="type" name="type" [(ngModel)]="formData.type" required>
+				<option *ngFor="let t of supportTypes" [value]="t">{{ t }}</option>
+			</select>
+		</div>
+
+		<div class="form-row">
+			<label for="sujet">Sujet</label>
+			<input id="sujet" name="sujet" type="text" [(ngModel)]="formData.sujet" required />
+		</div>
+
+		<div class="form-row">
+			<label for="message">Message</label>
+			<textarea id="message" name="message" rows="6" [(ngModel)]="formData.message" required></textarea>
+		</div>
+
+		<div *ngIf="isErreurType()" class="form-row">
+			<label for="dateHeureErreur">Date / heure erreur</label>
+			<input
+				id="dateHeureErreur"
+				name="dateHeureErreur"
+				type="datetime-local"
+				[(ngModel)]="formData.dateHeureErreur"
+			/>
+		</div>
+
+		<div *ngIf="isErreurType()" class="form-row">
+			<label for="actionRealisee">Action realisee</label>
+			<input
+				id="actionRealisee"
+				name="actionRealisee"
+				type="text"
+				[(ngModel)]="formData.actionRealisee"
+			/>
+		</div>
+
+		<div class="form-row">
+			<label>Fichiers</label>
+			<app-upload-file [files]="selectedFiles" [title]="'Upload files'" [sizeMax]="10485760"></app-upload-file>
+		</div>
+
+		<div class="consultant-readonly">
+			<h3>Infos consultant : </h3>
+			<p><strong>fullName:</strong> {{ currentUser?.fullName || '-' }}</p>
+			<p><strong>role:</strong> {{ currentUser?.role || '-' }}</p>
+			<p><strong>esnName:</strong> {{ currentUser?.esnName || currentUser?.esn?.name || '-' }}</p>
+		</div>
+
+		<div class="actions">
+			<button type="submit" [disabled]="isSending">
+				{{ isSending ? 'Envoi...' : 'Envoyer' }}
+			</button>
+		</div>
+	</form>
+</div>

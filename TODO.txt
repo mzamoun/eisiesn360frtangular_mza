@@ -116,7 +116,7 @@ A la connexion :
 - navigateTo : dashboard :
 	- si ADMIN :
 		tabs : profil, notifications, list_esn, list_consultants 
-	- si RESP_ESN :
+	- si RESPONSIBLE_ESN :
 		tabs : profil, notifications, my_esn, list_consultants, list_cra
 	- si MANAGER :
 		tabs : profil, notifications, my_esn, list_consultants, list_cra
@@ -200,7 +200,7 @@ si cra valide : hide certains btns
 
 -----------------------------
 
-- afficher en bas du fullename : type : ADMIN, RESP_ESN, MANAGER, CONSULTANT 
+- afficher en bas du fullename : type : ADMIN, RESPONSIBLE_ESN, MANAGER, CONSULTANT 
 
 
 	

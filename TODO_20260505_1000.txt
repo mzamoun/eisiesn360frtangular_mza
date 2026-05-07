@@ -68,7 +68,7 @@ DONE : 2026-05-05 11:45 : P3-01 : Navigation dashboard par rôle — vérificati
     Fichiers : src/app/compo/dashboard/dashboard.component.{html,ts}
     Description : Vérifier que les tabs dashboard respectent le plan :
                   ADMIN      → profil, notifications, list_esn, list_consultants
-                  RESP_ESN   → profil, notifications, my_esn, list_consultants, list_cra
+                  RESPONSIBLE_ESN   → profil, notifications, my_esn, list_consultants, list_cra
                   MANAGER    → profil, notifications, my_esn, list_consultants, list_cra
                   CONSULTANT → profil, notifications, my_esn, list_consultants, list_cra
                   Corriger les écarts si nécessaire.

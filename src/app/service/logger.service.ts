@@ -23,7 +23,7 @@ export class LoggerService {
     if (!this.isDebugEnabled()) {
       return;
     }
-    console.debug(this.sanitize(message), ...optionalParams.map(value => this.sanitize(value)));
+    console.log(this.sanitize(message), ...optionalParams.map(value => this.sanitize(value)));
   }
 
   info(message?: any, ...optionalParams: any[]): void {
@@ -42,6 +42,7 @@ export class LoggerService {
   }
 
   private isDebugEnabled(): boolean {
+    // que signifie !! : https://stackoverflow.com/questions/1068280/convert-a-value-to-boolean-in-javascript
     return !!(environment as any).enableDebugLogs;
   }
 

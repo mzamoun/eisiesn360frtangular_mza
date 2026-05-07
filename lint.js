@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 (async () => {
+  const isLocalMode = process.env.ESLINT_LOCAL === '1';
+
   const eslint = new ESLint({
     baseConfig: {
       extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
@@ -19,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
-        'no-console': ['error', { allow: ['warn', 'error'] }]
+        'no-console': isLocalMode ? 'off' : ['error', { allow: ['warn', 'error'] }]
       }
     },
     useEslintrc: false
@@ -35,13 +37,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   const errorCount = results.reduce((count, result) => count + result.errorCount, 0);
 
-  const i18nGuard = spawnSync(
-    process.execPath,
-    [path.join(__dirname, 'scripts', 'check-i18n-hardcoded.mjs')],
-    { stdio: 'inherit' }
-  );
+  const i18nGuard = isLocalMode
+    ? { status: 0 }
+    : spawnSync(
+      process.execPath,
+      [path.join(__dirname, 'scripts', 'check-i18n-hardcoded.mjs')],
+      { stdio: 'inherit' }
+    );
 
-  if (errorCount > 0 || i18nGuard.status !== 0) {
+  if (!isLocalMode && (errorCount > 0 || i18nGuard.status !== 0)) {
     process.exit(1);
   }
 })();

@@ -23,7 +23,7 @@ export class HeaderComponent extends MereComponent {
   timeStr = ""
 
   // Propriété pour l'affichage du nom de l'ESN (mis à jour automatiquement)
-  displayEsnName: string = '';
+  displayEsnName: string | null = null;
   private isHydratingHeaderEsn = false;
 
   // @ViewChild('infors', {static: false}) infors: MereComponent;
@@ -69,9 +69,7 @@ export class HeaderComponent extends MereComponent {
     // S'abonner aux changements de l'ESN pour mettre à jour l'affichage
     this.subscriptions.push(
       this.dataSharingService.esnCurrentReady$.subscribe(esn => {
-        if (esn?.name) {
-          this.displayEsnName = esn.name;
-        }
+        this.displayEsnName = esn?.name || null;
       }),
       this.dataSharingService.listNotifications$.subscribe(notifications => {
         const list = notifications || [];
@@ -83,11 +81,9 @@ export class HeaderComponent extends MereComponent {
         this.userConnected = user
         this.logger.debug("HeaderComponent - userConnected change : ", user)
 
+        this.displayEsnName = user?.esnName || user?.esn?.name || null;
+
         if (user) {
-          const esnName = user?.esnName || user?.esn?.name;
-          if (esnName) {
-            this.displayEsnName = esnName;
-          }
 
           if (user.role !== 'ADMIN' && !user?.esn && !!user?.esnId && !this.isHydratingHeaderEsn) {
             this.isHydratingHeaderEsn = true;
@@ -104,9 +100,7 @@ export class HeaderComponent extends MereComponent {
                 if (this.userConnected) {
                   this.dataSharingService.saveTokenUser(this.userConnected);
                 }
-                if (esn?.name) {
-                  this.displayEsnName = esn.name;
-                }
+                this.displayEsnName = esn?.name || null;
               },
               () => {
                 this.isHydratingHeaderEsn = false;

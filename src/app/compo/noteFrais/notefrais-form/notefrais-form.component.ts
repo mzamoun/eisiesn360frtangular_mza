@@ -173,6 +173,12 @@ export class NotefraisFormComponent extends MereComponent {
         if (this.isAdd != 'true') {
           this.selectCategory(this.myObj.category);
         }
+
+        // Si le texte du ticket a ete extrait avant le chargement des categories,
+        // tenter l auto-categorisation des que la liste est disponible.
+        if (!this.myObj?.category && this.myObj?.textFilePdf) {
+          this.majChamp_Category(this.myObj.textFilePdf.split('\n'));
+        }
       }, error => {
         this.isLoading = false
         this.addErrorFromErrorOfServer("getCategories", error);
@@ -384,6 +390,93 @@ export class NotefraisFormComponent extends MereComponent {
     this.majChamp_TVA(lines)
     this.majChamp_TTC(lines)
     this.majChamp_Enseigne(lines)
+    this.majChamp_Category(lines)
+  }
+
+  private normalizeText(value: string): string {
+    if (!value) {
+      return '';
+    }
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  private findCategoryByHints(hints: string[]): Category | null {
+    if (!this.categories?.length || !hints?.length) {
+      return null;
+    }
+
+    const normalizedHints = hints.map(h => this.normalizeText(h)).filter(Boolean);
+    if (!normalizedHints.length) {
+      return null;
+    }
+
+    for (const category of this.categories) {
+      const normalizedCategoryName = this.normalizeText(category?.name || '');
+      if (!normalizedCategoryName) {
+        continue;
+      }
+      if (normalizedHints.some(h => normalizedCategoryName.includes(h) || h.includes(normalizedCategoryName))) {
+        return category;
+      }
+    }
+    return null;
+  }
+
+  majChamp_Category(lines: string[]) {
+    if (!this.categories?.length || this.myObj?.category?.id) {
+      return;
+    }
+
+    const sourceText = this.normalizeText((lines || []).join(' ') + ' ' + (this.myObj?.title || ''));
+    if (!sourceText) {
+      return;
+    }
+
+    // 1) Priorite au match direct sur le nom de categorie configure en base.
+    for (const category of this.categories) {
+      const normalizedCategoryName = this.normalizeText(category?.name || '');
+      if (!normalizedCategoryName) {
+        continue;
+      }
+      if (sourceText.includes(normalizedCategoryName)) {
+        this.myObj.category = category;
+        this.myObj.categoryId = category.id;
+        this.selectCategory(category);
+        return;
+      }
+    }
+
+    // 2) Fallback par mots-cles metier courants.
+    const keywordRules: Array<{ keywords: string[]; hints: string[] }> = [
+      { keywords: ['hotel', 'hebergement', 'booking', 'airbnb'], hints: ['hotel', 'hebergement', 'logement'] },
+      { keywords: ['restaurant', 'restauration', 'repas', 'dejeuner', 'diner'], hints: ['restauration', 'repas'] },
+      { keywords: ['train', 'sncf', 'metro', 'bus', 'tram', 'taxi', 'uber', 'transport', 'deplacement'], hints: ['transport', 'deplacement', 'mobilite'] },
+      { keywords: ['avion', 'air france', 'vol'], hints: ['transport', 'voyage', 'avion'] },
+      { keywords: ['carburant', 'essence', 'diesel', 'station', 'totalenergies', 'shell'], hints: ['carburant', 'essence'] },
+      { keywords: ['peage', 'autoroute'], hints: ['peage', 'transport'] },
+      { keywords: ['parking', 'stationnement'], hints: ['parking', 'transport'] },
+      { keywords: ['telephone', 'mobile', 'telecom', 'orange', 'sfr', 'bouygues', 'free'], hints: ['telephone', 'telecom', 'communication'] },
+      { keywords: ['fourniture', 'papeterie', 'materiel'], hints: ['fourniture', 'materiel', 'bureau'] }
+    ];
+
+    for (const rule of keywordRules) {
+      const hasKeyword = rule.keywords.some(k => sourceText.includes(this.normalizeText(k)));
+      if (!hasKeyword) {
+        continue;
+      }
+      const inferredCategory = this.findCategoryByHints(rule.hints);
+      if (inferredCategory) {
+        this.myObj.category = inferredCategory;
+        this.myObj.categoryId = inferredCategory.id;
+        this.selectCategory(inferredCategory);
+        return;
+      }
+    }
   }
 
   majChamp_HT(lines: string[]) {

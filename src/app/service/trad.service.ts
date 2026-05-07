@@ -345,6 +345,11 @@ export class TradService {
       "en": "My Profile",
       "ar": "ملفي",
     },
+    "main.menu.navbar.navitem.setting.user.help": {
+      "fr": "Aide",
+      "en": "Help",
+      "ar": "مساعدة",
+    },
     "main.menu.navbar.navitem.setting.user.notification": {
       "fr": "Mes Notifications",
       "en": "My Notifications",

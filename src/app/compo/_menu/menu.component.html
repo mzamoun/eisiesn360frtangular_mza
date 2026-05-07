@@ -30,7 +30,8 @@
                     </li>
 
                     <li class="nav-item " [appAuthorization] feature="ESN_MANAGEMENT" permission="VIEW">
-                        <a href="javascript:void(0)" class="nav-link " id="addEsnDemo" (click)="addEsnDemo(); $event.preventDefault();">
+                        <a href="javascript:void(0)" class="nav-link " id="addEsnDemo"
+                            (click)="addEsnDemo(); $event.preventDefault();">
                             <span class="pcoded-micon"> <i class="feather icon-home"></i></span>
                             <span class="pcoded-mtext">{{utils.tr('app.compo.menu.addEsnDemo')}}</span>
                         </a>
@@ -171,6 +172,11 @@
                         <a routerLink="/my-profile" class="nav-link " id="my-profile"><span class="pcoded-micon"><i
                                     class="feather icon-cpu"></i></span><span
                                 class="pcoded-mtext">{{utils.tr('main.menu.navbar.navitem.setting.user.my-profile')}}</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="/help" class="nav-link " id="help"><span class="pcoded-micon"><i
+                                    class="feather icon-cpu"></i></span><span
+                                class="pcoded-mtext">{{utils.tr('main.menu.navbar.navitem.setting.user.help')}}</span></a>
                     </li>
                 </ul>
             </div>

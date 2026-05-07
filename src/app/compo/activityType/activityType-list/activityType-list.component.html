@@ -24,7 +24,7 @@
                 placeholder="{{utils.tr('Search')}}" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()"
                 (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
             <button class="right" style="width: 10%; height: 40px; text-align: center;"
-                (click)="clearSearch()">{{utils.tr('Clear')}}</button>
+                (click)="clearSearch()" title="{{utils.tr('Clear')}}">X</button>
         </div>
 
         <table class="table table-bordered table-striped">

@@ -83,7 +83,7 @@ if (activityName) {
 
 
 ///////////
-console.log("**** TEST RESP_ESN OK")
+console.log("**** TEST RESPONSIBLE_ESN OK")
 
 
 //quit chrome 
