@@ -314,7 +314,7 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   resetPassword() {
-    this.myObj.password = '$2a$10$E.LSKuP6fRizN7PZWaG0UOx7c4Md7qVXc8qNOKYlRxmc442kijNqG';  //Eisi2020
+    this.myObj.password = "To.Reset.2020"
     this.infoResetPassword = 'Password is rested.';
   }
 
