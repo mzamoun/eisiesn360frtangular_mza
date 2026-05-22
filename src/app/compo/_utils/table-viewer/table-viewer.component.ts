@@ -366,6 +366,7 @@ export class TableViewerComponent implements OnInit {
   }
 
   deleteSelectedRow() {
+    let label = "deleteSelectedRow"
     if (!this.selectedRow) {
       this.infoSelectLine()
       return;
@@ -374,9 +375,16 @@ export class TableViewerComponent implements OnInit {
     const keys = this.getKeys(this.selectedRow);
     const idKey = keys.find(k => k.toUpperCase() === 'ID') || keys[0];
 
+    this.logger.debug(label + ' idKey : ', idKey);
+
+    this.idKeySelected = this.selectedRow[idKey]
+    this.logger.debug(label + ' idKeySelected : ', this.idKeySelected);
+
     let msg = `Delete row with ${idKey} = ${this.selectedRow[idKey]} ?`
     if (this.selectedTable.toUpperCase() === 'ESN') {
       msg += "\nThis will also delete all related data in other tables (RESPONSIBLE_ESN, ESN_PROJECT, CRA, etc.) !"
+    } else if (this.selectedTable.toUpperCase() === 'SUPPORT_TICKET') {
+      msg += "\nThis will also delete all related data in other tables (SUPPORT_TICKET_FILES, SUPPORT_EXCHANGE_FILES, SUPPORT_EXCHANGE) !"
     }
 
     if (!confirm(msg)) return;
@@ -397,6 +405,11 @@ export class TableViewerComponent implements OnInit {
       sql += `\nDELETE FROM client WHERE ESN_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
       sql += `\nUPDATE consultant SET ADMIN_CONSULTANT_ID = NULL WHERE ESN_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
       sql += `\nDELETE FROM consultant WHERE ESN_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+      sql += `\nDELETE FROM ${this.selectedTable} WHERE ${idKey} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+    } else if (this.selectedTable.toUpperCase() === 'SUPPORT_TICKET') {
+      sql = `\nDELETE FROM SUPPORT_TICKET_FILES WHERE TICKET_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+      sql += `\nDELETE FROM SUPPORT_EXCHANGE_FILES WHERE EXCHANGE_ID in (select id from SUPPORT_EXCHANGE where TICKET_ID ${eqaulOrIs} ${this.selectedRow[idKey]});`;
+      sql += `\nDELETE FROM SUPPORT_EXCHANGE WHERE TICKET_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
       sql += `\nDELETE FROM ${this.selectedTable} WHERE ${idKey} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
     }
 

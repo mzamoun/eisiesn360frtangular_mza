@@ -8,7 +8,7 @@
       </div>
       <div class="card-actions">
         <a [routerLink]="s.route" [queryParams]="s.queryParams">→ {{utils.tr('app.dashboard.access')}}</a>
-        <button class="chart-btn" (click)="showChart(s); $event.stopPropagation()" title="{{utils.tr('app.dashboard.showChart')}}">
+        <button class="chart-btn" *ngIf="s.chartable !== false" (click)="showChart(s); $event.stopPropagation()" title="{{utils.tr('app.dashboard.showChart')}}">
           📈
         </button>
       </div>

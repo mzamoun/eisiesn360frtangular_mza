@@ -391,6 +391,16 @@ export class TradService {
       "en": "Cancel",
       "ar": "إلغاء",
     },
+    "app.common.yes": {
+      "fr": "Oui",
+      "en": "Yes",
+      "ar": "نعم",
+    },
+    "app.common.no": {
+      "fr": "Non",
+      "en": "No",
+      "ar": "لا",
+    },
     "app.login.title": {
       "fr": "Connexion",
       "en": "Login",
@@ -556,6 +566,11 @@ export class TradService {
       "en": "Documents",
       "ar": "المستندات",
     },
+    "app.dashboard.section.help": {
+      "fr": "Aide",
+      "en": "Help",
+      "ar": "مساعدة",
+    },
     "app.dashboard.access": {
       "fr": "Accéder",
       "en": "Open",
@@ -640,6 +655,316 @@ export class TradService {
       "fr": "Pas encore de CRA avec des activités et TJM renseignés",
       "en": "No CRA yet with activities and TJM provided",
       "ar": "لا توجد تقارير CRA بأنشطة وقيم TJM بعد",
+    },
+    "app.help.nav.ariaLabel": {
+      "fr": "Navigation support",
+      "en": "Support navigation",
+      "ar": "تنقل الدعم",
+    },
+    "app.help.hero.eyebrow": {
+      "fr": "Support",
+      "en": "Support",
+      "ar": "الدعم",
+    },
+    "app.help.hero.title": {
+      "fr": "Tickets support et echanges",
+      "en": "Support tickets and exchanges",
+      "ar": "تذاكر الدعم والمراسلات",
+    },
+    "app.help.hero.subtitle": {
+      "fr": "Suivez vos tickets, ouvrez-en un nouveau et poursuivez la discussion tant qu il reste ouvert.",
+      "en": "Track your tickets, open a new one, and keep the discussion going while it remains open.",
+      "ar": "تابع تذاكرك، وافتح تذكرة جديدة، وواصل النقاش ما دامت مفتوحة.",
+    },
+    "app.help.user.label": {
+      "fr": "Utilisateur",
+      "en": "User",
+      "ar": "المستخدم",
+    },
+    "app.help.email.label": {
+      "fr": "Email",
+      "en": "Email",
+      "ar": "البريد الإلكتروني",
+    },
+    "app.help.tab.newTicket": {
+      "fr": "Nouveau ticket",
+      "en": "New ticket",
+      "ar": "تذكرة جديدة",
+    },
+    "app.help.tab.history": {
+      "fr": "Historique",
+      "en": "History",
+      "ar": "السجل",
+    },
+    "app.help.tab.exchanges": {
+      "fr": "Echanges",
+      "en": "Exchanges",
+      "ar": "المراسلات",
+    },
+    "app.help.newTicket.title": {
+      "fr": "Nouveau ticket",
+      "en": "New ticket",
+      "ar": "تذكرة جديدة",
+    },
+    "app.help.newTicket.subtitle": {
+      "fr": "Les tickets resolus ou fermes n acceptent plus de nouvel echange.",
+      "en": "Resolved or closed tickets no longer accept new exchanges.",
+      "ar": "التذاكر المحلولة أو المغلقة لا تقبل مراسلات جديدة.",
+    },
+    "app.help.form.type": {
+      "fr": "Type",
+      "en": "Type",
+      "ar": "النوع",
+    },
+    "app.help.form.subject": {
+      "fr": "Sujet",
+      "en": "Subject",
+      "ar": "الموضوع",
+    },
+    "app.help.form.actionsBeforeError": {
+      "fr": "Actions avant erreur",
+      "en": "Actions before error",
+      "ar": "الإجراءات قبل الخطأ",
+    },
+    "app.help.form.ticketFiles": {
+      "fr": "Fichiers ticket",
+      "en": "Ticket files",
+      "ar": "ملفات التذكرة",
+    },
+    "app.help.form.createTicket": {
+      "fr": "Creer le ticket",
+      "en": "Create ticket",
+      "ar": "إنشاء التذكرة",
+    },
+    "app.help.form.creating": {
+      "fr": "Creation...",
+      "en": "Creating...",
+      "ar": "جارٍ الإنشاء...",
+    },
+    "app.help.sender.title": {
+      "fr": "Informations envoyeur",
+      "en": "Sender information",
+      "ar": "معلومات المرسل",
+    },
+    "app.help.sender.fullName": {
+      "fr": "fullName",
+      "en": "fullName",
+      "ar": "الاسم الكامل",
+    },
+    "app.help.sender.role": {
+      "fr": "role",
+      "en": "role",
+      "ar": "الدور",
+    },
+    "app.help.sender.esnName": {
+      "fr": "esnName",
+      "en": "esnName",
+      "ar": "اسم ESN",
+    },
+    "app.help.history.title": {
+      "fr": "Historique",
+      "en": "History",
+      "ar": "السجل",
+    },
+    "app.help.history.clickTicket": {
+      "fr": "Cliquez sur un ticket pour voir ses echanges.",
+      "en": "Click a ticket to view its exchanges.",
+      "ar": "انقر على تذكرة لعرض المراسلات الخاصة بها.",
+    },
+    "app.help.history.empty": {
+      "fr": "Aucun ticket support soumis pour le moment.",
+      "en": "No support tickets have been submitted yet.",
+      "ar": "لم يتم إرسال أي تذكرة دعم حتى الآن.",
+    },
+    "app.help.refresh": {
+      "fr": "Rafraichir",
+      "en": "Refresh",
+      "ar": "تحديث",
+    },
+    "app.help.table.id": {
+      "fr": "Id",
+      "en": "Id",
+      "ar": "المعرّف",
+    },
+    "app.help.table.date": {
+      "fr": "Date ticket",
+      "en": "Ticket date",
+      "ar": "تاريخ التذكرة",
+    },
+    "app.help.table.type": {
+      "fr": "Type",
+      "en": "Type",
+      "ar": "النوع",
+    },
+    "app.help.table.subject": {
+      "fr": "Sujet",
+      "en": "Subject",
+      "ar": "الموضوع",
+    },
+    "app.help.table.resolved": {
+      "fr": "Resolu",
+      "en": "Resolved",
+      "ar": "محلول",
+    },
+    "app.help.table.closed": {
+      "fr": "Ferme",
+      "en": "Closed",
+      "ar": "مغلق",
+    },
+    "app.help.table.exchanges": {
+      "fr": "Echanges",
+      "en": "Exchanges",
+      "ar": "المراسلات",
+    },
+    "app.help.ticket.title": {
+      "fr": "Ticket #{{id}}",
+      "en": "Ticket #{{id}}",
+      "ar": "التذكرة #{{id}}",
+    },
+    "app.help.summary.date": {
+      "fr": "Date ticket",
+      "en": "Ticket date",
+      "ar": "تاريخ التذكرة",
+    },
+    "app.help.summary.emailSender": {
+      "fr": "Email sender",
+      "en": "Sender email",
+      "ar": "بريد المرسل الإلكتروني",
+    },
+    "app.help.summary.actionsBeforeError": {
+      "fr": "Actions avant erreur",
+      "en": "Actions before error",
+      "ar": "الإجراءات قبل الخطأ",
+    },
+    "app.help.summary.ticketFiles": {
+      "fr": "Fichiers ticket",
+      "en": "Ticket files",
+      "ar": "ملفات التذكرة",
+    },
+    "app.help.exchanges.title": {
+      "fr": "Echanges",
+      "en": "Exchanges",
+      "ar": "المراسلات",
+    },
+    "app.help.exchanges.loadingTicket": {
+      "fr": "Chargement du ticket...",
+      "en": "Loading ticket...",
+      "ar": "جارٍ تحميل التذكرة...",
+    },
+    "app.help.exchanges.empty": {
+      "fr": "Aucun echange pour ce ticket.",
+      "en": "No exchanges for this ticket.",
+      "ar": "لا توجد مراسلات لهذه التذكرة.",
+    },
+    "app.help.exchanges.selectTicket": {
+      "fr": "Selectionnez un ticket depuis l onglet Historique pour afficher les echanges.",
+      "en": "Select a ticket from the History tab to display its exchanges.",
+      "ar": "اختر تذكرة من تبويب السجل لعرض مراسلاتها.",
+    },
+    "app.help.form.addExchange": {
+      "fr": "Ajouter un echange",
+      "en": "Add an exchange",
+      "ar": "إضافة مراسلة",
+    },
+    "app.help.form.exchangeFiles": {
+      "fr": "Fichiers echange",
+      "en": "Exchange files",
+      "ar": "ملفات المراسلة",
+    },
+    "app.help.form.addExchangeButton": {
+      "fr": "Ajouter l echange",
+      "en": "Add exchange",
+      "ar": "إضافة المراسلة",
+    },
+    "app.help.form.sendingExchange": {
+      "fr": "Envoi...",
+      "en": "Sending...",
+      "ar": "جارٍ الإرسال...",
+    },
+    "app.help.locked.closed": {
+      "fr": "Ce ticket est ferme. Aucun nouvel echange ne peut etre ajoute.",
+      "en": "This ticket is closed. No new exchange can be added.",
+      "ar": "هذه التذكرة مغلقة. لا يمكن إضافة مراسلة جديدة.",
+    },
+    "app.help.locked.resolved": {
+      "fr": "Ce ticket est resolu. Aucun nouvel echange ne peut etre ajoute.",
+      "en": "This ticket is resolved. No new exchange can be added.",
+      "ar": "هذه التذكرة محلولة. لا يمكن إضافة مراسلة جديدة.",
+    },
+    "app.help.status.open": {
+      "fr": "Ouvert",
+      "en": "Open",
+      "ar": "مفتوح",
+    },
+    "app.help.status.resolved": {
+      "fr": "Resolu",
+      "en": "Resolved",
+      "ar": "محلول",
+    },
+    "app.help.status.closed": {
+      "fr": "Ferme",
+      "en": "Closed",
+      "ar": "مغلق",
+    },
+    "app.help.status.unknown": {
+      "fr": "Inconnu",
+      "en": "Unknown",
+      "ar": "غير معروف",
+    },
+    "app.help.type.erreur": {
+      "fr": "erreur",
+      "en": "error",
+      "ar": "خطأ",
+    },
+    "app.help.type.aide": {
+      "fr": "aide",
+      "en": "help",
+      "ar": "مساعدة",
+    },
+    "app.help.type.proposition": {
+      "fr": "proposition",
+      "en": "suggestion",
+      "ar": "اقتراح",
+    },
+    "app.help.error.subjectRequired": {
+      "fr": "Le sujet est obligatoire.",
+      "en": "The subject is required.",
+      "ar": "الموضوع مطلوب.",
+    },
+    "app.help.error.actionsBeforeErrorRequired": {
+      "fr": "L action realisee est obligatoire pour une erreur.",
+      "en": "The action performed is required for an error ticket.",
+      "ar": "الإجراء الذي تم تنفيذه مطلوب في حالة الخطأ.",
+    },
+    "app.help.error.userNotConnected": {
+      "fr": "Utilisateur non connecte.",
+      "en": "User is not logged in.",
+      "ar": "المستخدم غير متصل.",
+    },
+    "app.help.error.ticketCreateFailed": {
+      "fr": "Erreur lors de la creation du ticket support. Merci de reessayer.",
+      "en": "Error while creating the support ticket. Please try again.",
+      "ar": "حدث خطأ أثناء إنشاء تذكرة الدعم. يرجى المحاولة مرة أخرى.",
+    },
+    "app.help.error.exchangeMessageRequired": {
+      "fr": "Le message de l echange est obligatoire.",
+      "en": "The exchange message is required.",
+      "ar": "رسالة المراسلة مطلوبة.",
+    },
+    "app.help.error.exchangeAddFailed": {
+      "fr": "Impossible d ajouter l echange.",
+      "en": "Unable to add the exchange.",
+      "ar": "تعذر إضافة المراسلة.",
+    },
+    "app.help.info.ticketCreated": {
+      "fr": "Votre ticket support a bien ete cree.",
+      "en": "Your support ticket has been created.",
+      "ar": "تم إنشاء تذكرة الدعم الخاصة بك بنجاح.",
+    },
+    "app.help.info.exchangeAdded": {
+      "fr": "Votre echange a bien ete ajoute.",
+      "en": "Your exchange has been added.",
+      "ar": "تمت إضافة المراسلة بنجاح.",
     },
     "app.msg.form.new": {
       "fr": "Nouveau Msg",

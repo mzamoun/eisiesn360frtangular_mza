@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { of, Subject } from 'rxjs';
+import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Consultant } from 'src/app/model/consultant';
 import { FileUpload } from 'src/app/model/FileUpload';
-import { Mail } from 'src/app/model/Mail';
-import { Msg } from 'src/app/model/msg';
-import { Notification } from 'src/app/model/notification';
-import { ConsultantService } from 'src/app/service/consultant.service';
+import { SupportExchange } from 'src/app/model/support-exchange';
+import { SupportTicket } from 'src/app/model/support-ticket';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { LoggerService } from 'src/app/service/logger.service';
-import { MsgService } from 'src/app/service/msg.service';
+import { SupportService } from 'src/app/service/support.service';
+import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 
 @Component({
@@ -17,231 +16,423 @@ import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.css']
 })
-export class HelpComponent implements OnInit {
+export class HelpComponent implements OnInit, OnDestroy {
+
+  activeTab: 'new' | 'history' | 'exchanges' = 'new';
 
   supportTypes: Array<'erreur' | 'aide' | 'proposition'> = ['erreur', 'aide', 'proposition'];
 
-  formData = {
+  ticketForm = {
     type: 'erreur' as 'erreur' | 'aide' | 'proposition',
     sujet: '',
-    message: '',
-    dateHeureErreur: '',
-    actionRealisee: ''
+    actionsBeforeError: '',
+    files: [] as FileUpload[]
   };
 
-  selectedFiles: FileUpload[] = [];
   currentUser: Consultant = null;
-  suportConsultants: Consultant[] = [];
-  suportConsultant: Consultant = null;
-  isSending = false;
+  supportTickets: SupportTicket[] = [];
+  selectedTicket: SupportTicket = null;
+  selectedTicketExchanges: SupportExchange[] = [];
+  exchangeForm = {
+    msg: '',
+    files: [] as FileUpload[]
+  };
+  isLoadingTickets = false;
+  isLoadingTicketDetails = false;
+  isSendingTicket = false;
+  isSendingExchange = false;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private logger: LoggerService,
-    private consultantService: ConsultantService,
     private dataSharingService: DataSharingService,
-    private msgService: MsgService,
+    private supportService: SupportService,
+    public utils: UtilsService,
     private utilsIhmService: UtilsIhmService,
   ) { }
 
 
   ngOnInit(): void {
-    this.currentUser = this.dataSharingService?.userConnected || null;
-    this.loadSupports();
+    this.dataSharingService.userConnected$
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged((previous, current) => this.isSameUser(previous, current))
+      )
+      .subscribe(user => {
+        this.currentUser = user || null;
+        if (this.currentUser) {
+          this.loadMyTickets();
+        } else {
+          this.supportTickets = [];
+          this.clearSelection();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   isErreurType(): boolean {
-    return this.formData.type === 'erreur';
+    return this.ticketForm.type === 'erreur';
   }
 
-  sendSupportMessage(): void {
-    if (this.isSending) {
+  isSelectedTicketLocked(): boolean {
+    return this.isTicketLocked(this.selectedTicket);
+  }
+
+  sendSupportTicket(): void {
+    if (this.isSendingTicket) {
       return;
     }
 
-    const sujet = (this.formData.sujet || '').trim();
-    const message = (this.formData.message || '').trim();
-    const actionRealisee = (this.formData.actionRealisee || '').trim();
-    const dateHeureErreur = (this.formData.dateHeureErreur || '').trim();
+    const sujet = (this.ticketForm.sujet || '').trim();
+    const actionsBeforeError = (this.ticketForm.actionsBeforeError || '').trim();
 
     if (!sujet) {
-      this.dataSharingService.addErrorTxt('Le sujet est obligatoire.');
-      return;
-    }
-
-    if (!message) {
-      this.dataSharingService.addErrorTxt('Le message est obligatoire.');
+      this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.subjectRequired'));
       return;
     }
 
     if (this.isErreurType()) {
-      if (!dateHeureErreur) {
-        this.dataSharingService.addErrorTxt('La date et l heure de l erreur sont obligatoires.');
-        return;
-      }
-      if (!actionRealisee) {
-        this.dataSharingService.addErrorTxt('L action realisee est obligatoire pour une erreur.');
+      if (!actionsBeforeError) {
+        this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.actionsBeforeErrorRequired'));
         return;
       }
     }
 
     if (!this.currentUser) {
-      this.dataSharingService.addErrorTxt('Utilisateur non connecte.');
+      this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.userNotConnected'));
       return;
     }
 
-    if (!this.suportConsultants || this.suportConsultants.length === 0) {
-      this.dataSharingService.addErrorTxt('Aucun administrateur destinataire n a ete trouve.');
-      return;
-    }
-
-    this.isSending = true;
+    this.isSendingTicket = true;
     this.dataSharingService.clearErrors();
 
-    const details = this.buildSupportDetailsText();
-    const htmlMessage = this.toHtml(details);
-    const supportEmails = this.suportConsultants
-      .map(a => (a?.email || '').trim())
-      .filter(e => !!e);
+    const ticketPayload = this.buildTicketPayload();
 
-    const mail = new Mail();
-    mail.subject = `[Support ${this.formData.type}] ${sujet}`;
-    mail.to = supportEmails[0] || '';
-    mail.cc = supportEmails.slice(1).join(',');
-    mail.msg = htmlMessage;
-    mail.attachments = this.buildAttachments();
-
-    const msg = new Msg();
-    msg.dateMsg = new Date();
-    msg.msg = details;
-    msg.type = 'SUPPORT';
-    msg.typeId = 0;
-    msg.from = this.currentUser;
-    msg.to = this.suportConsultant;
-    msg.isReadByTo = false;
-
-    const notificationRequests = this.suportConsultants.map(admin => {
-      const n = new Notification();
-      n.createdDate = new Date();
-      n.viewed = false;
-      n.title = `Support - ${this.formData.type}`;
-      n.message = `[${sujet}] ${message}`;
-      n.fromUser = this.currentUser;
-      n.fromUsername = this.currentUser.username;
-      n.toUser = admin;
-      n.toUsername = admin.username;
-      return this.dataSharingService.addNotificationServer(n).pipe(
-        catchError((error) => {
-          this.logger.error('Erreur envoi notification support', error);
-          return of(null);
-        })
-      );
-    });
-
-    const mailRequest = this.msgService.sendMailSimple(mail).pipe(
+    this.supportService.addTicket(ticketPayload).pipe(
       catchError((error) => {
-        this.logger.error('Erreur envoi mail support', error);
+        this.logger.error('Erreur creation ticket support', error);
         return of(null);
       })
-    );
+    ).subscribe((response: any) => {
+      this.isSendingTicket = false;
 
-    const msgRequest = this.msgService.save(msg).pipe(
-      catchError((error) => {
-        this.logger.error('Erreur sauvegarde msg support', error);
-        return of(null);
-      })
-    );
-
-    forkJoin([...notificationRequests, mailRequest, msgRequest]).subscribe((results: any[]) => {
-      this.isSending = false;
-
-      const notifResults = results.slice(0, notificationRequests.length);
-      const mailResult = results[notificationRequests.length];
-      const notifSent = notifResults.some(r => !!r);
-      const mailSent = !!mailResult;
-
-      if (notifSent) {
-        this.dataSharingService.getNotifications(null, null);
-      }
-
-      if (notifSent && mailSent) {
-        this.utilsIhmService.infoDialog('Votre message a bien ete envoye.');
-        this.resetForm();
+      if (!this.isSuccessfulResponse(response)) {
+        this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.ticketCreateFailed'));
         return;
       }
 
-      this.dataSharingService.addErrorTxt('Erreur lors de l envoi au support. Merci de reessayer.');
+      this.utilsIhmService.infoDialog(this.utils.tr('app.help.info.ticketCreated'));
+      this.resetTicketForm();
+      this.loadMyTickets();
     });
   }
 
-  private loadSupports(): void {
-    this.consultantService.findAllSupports().subscribe(
-      (data) => {
-        // je suis en local, pourquoi je ne vois rien dans la console ?
-        // eslint-disable-next-line no-console
-        this.logger.debug('Chargement supports', data);
-        this.suportConsultants = (data?.body?.result || []) as Consultant[];
-        this.logger.debug('Supports chargés', this.suportConsultants);
-        this.suportConsultant = this.suportConsultants.length > 0 ? this.suportConsultants[0] : null;
-      },
-      (error) => {
-        this.logger.error('Erreur chargement supports', error);
-        this.suportConsultants = [];
-        this.suportConsultant = null;
-      }
-    );
-  }
-
-  private buildAttachments(): { [key: string]: any } {
-    const attachments: { [key: string]: any } = {};
-    for (const f of this.selectedFiles || []) {
-      if (f?.name && f?.content) {
-        attachments[f.name] = f.content;
-      }
-    }
-    return attachments;
-  }
-
-  private buildSupportDetailsText(): string {
-    const lines: string[] = [];
-    lines.push(`Type: ${this.formData.type}`);
-    lines.push(`Sujet: ${this.formData.sujet}`);
-    lines.push(`Message: ${this.formData.message}`);
-
-    if (this.isErreurType()) {
-      lines.push(`Date/heure erreur: ${this.formData.dateHeureErreur}`);
-      lines.push(`Action realisee: ${this.formData.actionRealisee}`);
+  loadMyTickets(selectTicketId: number = null): void {
+    if (!this.currentUser) {
+      return;
     }
 
-    lines.push('');
-    lines.push('Infos consultant:');
-    lines.push(`- fullName: ${this.currentUser?.fullName || ''}`);
-    lines.push(`- role: ${this.currentUser?.role || ''}`);
-    lines.push(`- esnName: ${this.currentUser?.esnName || this.currentUser?.esn?.name || ''}`);
+    this.isLoadingTickets = true;
+    this.supportService.findMyTickets()
+      .pipe(
+        catchError((error) => {
+          this.logger.error('Erreur chargement tickets support', error);
+          this.isLoadingTickets = false;
+          return of(null);
+        })
+      )
+      .subscribe((response: any) => {
+        this.isLoadingTickets = false;
+        this.supportTickets = this.extractTicketList(response);
 
-    if (this.selectedFiles?.length) {
-      lines.push('');
-      lines.push('Fichiers joints:');
-      for (const f of this.selectedFiles) {
-        lines.push(`- ${f?.name || 'fichier'}`);
-      }
+        if (!this.supportTickets.length) {
+          this.clearSelection();
+          this.activeTab = 'new';
+          return;
+        }
+
+        this.activeTab = 'history';
+
+        const targetId = selectTicketId || this.selectedTicket?.id || this.supportTickets[0].id;
+        const selected = this.supportTickets.find(ticket => ticket.id === targetId) || this.supportTickets[0];
+        this.selectTicket(selected, false);
+      });
+  }
+
+  selectTicket(ticket: SupportTicket, switchToExchangesTab: boolean = true): void {
+    if (!ticket) {
+      this.clearSelection();
+      return;
     }
 
-    return lines.join('\n');
+    this.selectedTicket = ticket;
+    if (switchToExchangesTab) {
+      this.activeTab = 'exchanges';
+    }
+    this.loadSelectedTicket(ticket.id);
   }
 
-  private toHtml(text: string): string {
-    return (text || '').replace(/\n/g, '<br>');
+  setActiveTab(tab: 'new' | 'history' | 'exchanges'): void {
+    if (tab === 'exchanges' && !this.selectedTicket) {
+      return;
+    }
+
+    this.activeTab = tab;
   }
 
-  private resetForm(): void {
-    this.formData = {
+  addExchange(): void {
+    if (this.isSendingExchange || !this.selectedTicket || this.isSelectedTicketLocked()) {
+      return;
+    }
+
+    const message = (this.exchangeForm.msg || '').trim();
+    if (!message) {
+      this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.exchangeMessageRequired'));
+      return;
+    }
+
+    if (!this.currentUser) {
+      this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.userNotConnected'));
+      return;
+    }
+
+    this.isSendingExchange = true;
+    this.dataSharingService.clearErrors();
+
+    const payload = this.buildExchangePayload();
+    this.supportService.addExchange(this.selectedTicket.id, payload)
+      .pipe(
+        catchError((error) => {
+          this.logger.error('Erreur ajout echange support', error);
+          this.isSendingExchange = false;
+          return of(null);
+        })
+      )
+      .subscribe((response: any) => {
+        this.isSendingExchange = false;
+
+        if (!this.isSuccessfulResponse(response)) {
+          this.dataSharingService.addErrorTxt(this.utils.tr('app.help.error.exchangeAddFailed'));
+          return;
+        }
+
+        this.resetExchangeForm();
+        this.loadSelectedTicket(this.selectedTicket.id);
+        this.utilsIhmService.infoDialog(this.utils.tr('app.help.info.exchangeAdded'));
+      });
+  }
+
+  private loadSelectedTicket(ticketId: number): void {
+    if (!ticketId) {
+      this.selectedTicketExchanges = [];
+      return;
+    }
+
+    this.isLoadingTicketDetails = true;
+    this.supportService.findById(ticketId)
+      .pipe(
+        catchError((error) => {
+          this.logger.error('Erreur chargement ticket support', error);
+          this.isLoadingTicketDetails = false;
+          return of(null);
+        })
+      )
+      .subscribe((response: any) => {
+        this.isLoadingTicketDetails = false;
+        const ticket = this.extractTicket(response);
+        if (!ticket) {
+          this.selectedTicketExchanges = [];
+          return;
+        }
+
+        this.selectedTicket = ticket;
+        this.selectedTicketExchanges = this.sortExchangesDesc(ticket.echanges || []);
+        this.syncTicketInList(ticket);
+      });
+  }
+
+  isTicketLocked(ticket: SupportTicket): boolean {
+    return !!ticket && (ticket.is_resolu === true || ticket.is_closed === true);
+  }
+
+  ticketStatusLabel(ticket: SupportTicket): string {
+    if (!ticket) {
+      return this.utils.tr('app.help.status.unknown');
+    }
+
+    if (ticket.is_closed) {
+      return this.utils.tr('app.help.status.closed');
+    }
+
+    if (ticket.is_resolu) {
+      return this.utils.tr('app.help.status.resolved');
+    }
+
+    return this.utils.tr('app.help.status.open');
+  }
+
+  ticketLockMessage(ticket: SupportTicket): string {
+    if (!ticket) {
+      return '';
+    }
+
+    if (ticket.is_closed) {
+      return this.utils.tr('app.help.locked.closed');
+    }
+
+    if (ticket.is_resolu) {
+      return this.utils.tr('app.help.locked.resolved');
+    }
+
+    return '';
+  }
+
+  ticketRowClass(ticket: SupportTicket): string {
+    return this.selectedTicket && ticket && this.selectedTicket.id === ticket.id ? 'selected' : '';
+  }
+
+  exchangeCount(ticket: SupportTicket): number {
+    return ticket && ticket.echanges ? ticket.echanges.length : 0;
+  }
+
+  trackByTicketId(_: number, ticket: SupportTicket): number {
+    return ticket?.id;
+  }
+
+  trackByExchangeId(_: number, exchange: SupportExchange): number {
+    return exchange?.id;
+  }
+
+  private buildTicketPayload(): any {
+    return {
+      date_ticket: new Date(),
+      email_sender: this.currentUser?.email || '',
+      type: this.ticketForm.type,
+      sujet: (this.ticketForm.sujet || '').trim(),
+      actions_before_error: this.isErreurType() ? (this.ticketForm.actionsBeforeError || '').trim() : '',
+      fichiers_ticket: this.extractFileNames(this.ticketForm.files),
+      is_resolu: false,
+      is_closed: false
+    };
+  }
+
+  private buildExchangePayload(): any {
+    return {
+      date: new Date(),
+      auteur: this.currentUser?.fullName || this.currentUser?.username || '',
+      msg: (this.exchangeForm.msg || '').trim(),
+      fichiers_echange: this.extractFileNames(this.exchangeForm.files),
+      authorConsultantId: this.currentUser?.id || null
+    };
+  }
+
+  private extractFileNames(files: FileUpload[]): string[] {
+    return (files || [])
+      .map(file => (file?.name || '').trim())
+      .filter(name => !!name);
+  }
+
+  private extractTicketList(response: any): SupportTicket[] {
+    const rawList = response?.body?.result || [];
+    if (!Array.isArray(rawList)) {
+      return [];
+    }
+
+    return rawList
+      .map(ticket => this.normalizeTicket(ticket))
+      .sort((left, right) => this.toTime(right?.date_ticket || right?.createdDate) - this.toTime(left?.date_ticket || left?.createdDate));
+  }
+
+  private extractTicket(response: any): SupportTicket {
+    const ticket = response?.body?.result || response?.body || response?.result || null;
+    return this.normalizeTicket(ticket);
+  }
+
+  private normalizeTicket(rawTicket: any): SupportTicket {
+    if (!rawTicket) {
+      return null;
+    }
+
+    const ticket = rawTicket as SupportTicket;
+    ticket.fichiers_ticket = Array.isArray(ticket.fichiers_ticket) ? ticket.fichiers_ticket : [];
+    ticket.echanges = this.sortExchangesDesc(Array.isArray(ticket.echanges) ? ticket.echanges : []);
+    ticket.is_resolu = ticket.is_resolu === true;
+    ticket.is_closed = ticket.is_closed === true;
+    return ticket;
+  }
+
+  private sortExchangesDesc(exchanges: SupportExchange[]): SupportExchange[] {
+    return [...(exchanges || [])]
+      .sort((left, right) => this.toTime(right?.date || right?.createdDate) - this.toTime(left?.date || left?.createdDate));
+  }
+
+  private syncTicketInList(ticket: SupportTicket): void {
+    if (!ticket || !ticket.id) {
+      return;
+    }
+
+    const index = this.supportTickets.findIndex(item => item.id === ticket.id);
+    if (index >= 0) {
+      this.supportTickets[index] = {
+        ...this.supportTickets[index],
+        ...ticket
+      };
+    }
+  }
+
+  private clearSelection(): void {
+    this.selectedTicket = null;
+    this.selectedTicketExchanges = [];
+    this.resetExchangeForm();
+  }
+
+  private resetTicketForm(): void {
+    this.ticketForm = {
       type: 'erreur',
       sujet: '',
-      message: '',
-      dateHeureErreur: '',
-      actionRealisee: ''
+      actionsBeforeError: '',
+      files: []
     };
-    this.selectedFiles = [];
+  }
+
+  private resetExchangeForm(): void {
+    this.exchangeForm = {
+      msg: '',
+      files: []
+    };
+  }
+
+  private isSuccessfulResponse(response: any): boolean {
+    return response?.body?.result === true || response?.success === true;
+  }
+
+  private isSameUser(previous: Consultant, current: Consultant): boolean {
+    return this.userKey(previous) === this.userKey(current);
+  }
+
+  private userKey(user: Consultant): string {
+    if (!user) {
+      return '';
+    }
+
+    if (user.id != null) {
+      return 'id:' + user.id;
+    }
+
+    return 'username:' + (user.username || '');
+  }
+
+  private toTime(value: any): number {
+    if (!value) {
+      return 0;
+    }
+
+    const time = new Date(value).getTime();
+    return isNaN(time) ? 0 : time;
   }
 
 }

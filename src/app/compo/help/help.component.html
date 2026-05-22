@@ -1,64 +1,192 @@
 <div class="help-support-page">
-	<h2>Support</h2>
+	<header class="support-hero">
+		<div>
+			<p class="eyebrow">{{ utils.tr('app.help.hero.eyebrow') }}</p>
+			<h2>{{ utils.tr('app.help.hero.title') }}</h2>
+			<p class="lead">{{ utils.tr('app.help.hero.subtitle') }}</p>
+		</div>
+		<div class="support-user" *ngIf="currentUser">
+			<div><span>{{ utils.tr('app.help.user.label') }}</span><strong>{{ currentUser?.fullName || currentUser?.username || '-' }}</strong></div>
+			<div><span>{{ utils.tr('app.help.email.label') }}</span><strong>{{ currentUser?.email || '-' }}</strong></div>
+		</div>
+	</header>
 
-	<p>
-		En cas de probleme, merci de decrire le contexte le plus precisement possible.
-	</p>
+	<nav class="support-tabs" [attr.aria-label]="utils.tr('app.help.nav.ariaLabel')">
+		<button type="button" class="tab-btn" [class.active]="activeTab === 'new'" (click)="setActiveTab('new')">{{ utils.tr('app.help.tab.newTicket') }}</button>
+		<button type="button" class="tab-btn" [class.active]="activeTab === 'history'" (click)="setActiveTab('history')">{{ utils.tr('app.help.tab.history') }}</button>
+		<button type="button" class="tab-btn" [class.active]="activeTab === 'exchanges'" [disabled]="!selectedTicket" (click)="setActiveTab('exchanges')">{{ utils.tr('app.help.tab.exchanges') }}</button>
+	</nav>
 
-	<form (ngSubmit)="sendSupportMessage()" #supportForm="ngForm" novalidate>
-		<div class="form-row">
-			<label for="type">Type</label>
-			<select id="type" name="type" [(ngModel)]="formData.type" required>
-				<option *ngFor="let t of supportTypes" [value]="t">{{ t }}</option>
-			</select>
+	<section *ngIf="activeTab === 'new'" class="single-panel">
+		<article class="panel">
+			<div class="panel-header">
+				<div>
+					<h3>{{ utils.tr('app.help.newTicket.title') }}</h3>
+					<p>{{ utils.tr('app.help.newTicket.subtitle') }}</p>
+				</div>
+			</div>
+
+			<form (ngSubmit)="sendSupportTicket()" #supportForm="ngForm" novalidate>
+				<div class="form-row">
+					<label for="type">{{ utils.tr('app.help.form.type') }}</label>
+					<select id="type" name="type" [(ngModel)]="ticketForm.type" required>
+						<option *ngFor="let t of supportTypes" [value]="t">{{ utils.tr('app.help.type.' + t) }}</option>
+					</select>
+				</div>
+
+				<div class="form-row">
+					<label for="sujet">{{ utils.tr('app.help.form.subject') }}</label>
+					<input id="sujet" name="sujet" type="text" [(ngModel)]="ticketForm.sujet" required />
+				</div>
+
+				<div class="form-row" *ngIf="isErreurType()">
+					<label for="actionsBeforeError">{{ utils.tr('app.help.form.actionsBeforeError') }}</label>
+					<textarea id="actionsBeforeError" name="actionsBeforeError" rows="5" [(ngModel)]="ticketForm.actionsBeforeError"></textarea>
+				</div>
+
+				<div class="form-row">
+					<label>{{ utils.tr('app.help.form.ticketFiles') }}</label>
+					<app-upload-file [files]="ticketForm.files" [title]="utils.tr('app.help.form.ticketFiles')" [sizeMax]="10485760"></app-upload-file>
+				</div>
+
+				<div class="consultant-readonly">
+					<h4>{{ utils.tr('app.help.sender.title') }}</h4>
+					<p><strong>{{ utils.tr('app.help.sender.fullName') }}:</strong> {{ currentUser?.fullName || '-' }}</p>
+					<p><strong>{{ utils.tr('app.help.sender.role') }}:</strong> {{ currentUser?.role || '-' }}</p>
+					<p><strong>{{ utils.tr('app.help.sender.esnName') }}:</strong> {{ currentUser?.esnName || currentUser?.esn?.name || '-' }}</p>
+				</div>
+
+				<div class="actions">
+					<button type="submit" [disabled]="isSendingTicket">{{ isSendingTicket ? utils.tr('app.help.form.creating') : utils.tr('app.help.form.createTicket') }}</button>
+				</div>
+			</form>
+		</article>
+	</section>
+
+	<section *ngIf="activeTab === 'history'" class="single-panel">
+		<article class="panel">
+			<div class="panel-header panel-header-between">
+				<div>
+					<h3>{{ utils.tr('app.help.history.title') }}</h3>
+					<p *ngIf="supportTickets.length">{{ utils.tr('app.help.history.clickTicket') }}</p>
+					<p *ngIf="!supportTickets.length && !isLoadingTickets">{{ utils.tr('app.help.history.empty') }}</p>
+				</div>
+				<button type="button" class="secondary-button" (click)="loadMyTickets()" [disabled]="isLoadingTickets">
+					{{ isLoadingTickets ? utils.tr('app.common.loading') : utils.tr('app.help.refresh') }}
+				</button>
+			</div>
+
+			<div class="table-wrap" *ngIf="supportTickets.length">
+				<table class="ticket-table">
+					<thead>
+						<tr>
+							<th>{{ utils.tr('app.help.table.id') }}</th>
+							<th>{{ utils.tr('app.help.table.date') }}</th>
+							<th>{{ utils.tr('app.help.table.type') }}</th>
+							<th>{{ utils.tr('app.help.table.subject') }}</th>
+							<th>{{ utils.tr('app.help.table.resolved') }}</th>
+							<th>{{ utils.tr('app.help.table.closed') }}</th>
+							<th>{{ utils.tr('app.help.table.exchanges') }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let ticket of supportTickets; trackBy: trackByTicketId" (click)="selectTicket(ticket)" [class.selected]="ticketRowClass(ticket) === 'selected'">
+							<td>#{{ ticket.id }}</td>
+							<td>{{ ticket.date_ticket | date:'dd/MM/yyyy HH:mm' }}</td>
+							<td><span class="status-pill type">{{ utils.tr('app.help.type.' + ticket.type) }}</span></td>
+							<td>{{ ticket.sujet }}</td>
+							<td><span class="status-pill" [class.ok]="ticket.is_resolu" [class.warn]="!ticket.is_resolu">{{ ticket.is_resolu ? utils.tr('app.common.yes') : utils.tr('app.common.no') }}</span></td>
+							<td><span class="status-pill" [class.ok]="ticket.is_closed" [class.warn]="!ticket.is_closed">{{ ticket.is_closed ? utils.tr('app.common.yes') : utils.tr('app.common.no') }}</span></td>
+							<td>{{ exchangeCount(ticket) }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</article>
+	</section>
+
+	<section class="panel details-panel" *ngIf="activeTab === 'exchanges' && selectedTicket">
+		<div class="panel-header panel-header-between">
+			<div>
+				<h3>{{ utils.tr('app.help.ticket.title', { id: selectedTicket.id }) }}</h3>
+				<p>{{ selectedTicket.sujet }}</p>
+			</div>
+			<div class="ticket-statuses">
+				<span class="status-pill type">{{ utils.tr('app.help.type.' + selectedTicket.type) }}</span>
+				<span class="status-pill" [class.ok]="selectedTicket.is_resolu" [class.warn]="!selectedTicket.is_resolu">{{ ticketStatusLabel(selectedTicket) }}</span>
+			</div>
 		</div>
 
-		<div class="form-row">
-			<label for="sujet">Sujet</label>
-			<input id="sujet" name="sujet" type="text" [(ngModel)]="formData.sujet" required />
+		<div class="ticket-summary">
+			<div>
+				<span>{{ utils.tr('app.help.summary.date') }}</span>
+				<strong>{{ selectedTicket.date_ticket | date:'dd/MM/yyyy HH:mm' }}</strong>
+			</div>
+			<div>
+				<span>{{ utils.tr('app.help.summary.emailSender') }}</span>
+				<strong>{{ selectedTicket.email_sender || '-' }}</strong>
+			</div>
+			<div>
+				<span>{{ utils.tr('app.help.summary.actionsBeforeError') }}</span>
+				<strong>{{ selectedTicket.actions_before_error || '-' }}</strong>
+			</div>
 		</div>
 
-		<div class="form-row">
-			<label for="message">Message</label>
-			<textarea id="message" name="message" rows="6" [(ngModel)]="formData.message" required></textarea>
+		<div class="files-block" *ngIf="selectedTicket.fichiers_ticket?.length">
+			<h4>{{ utils.tr('app.help.summary.ticketFiles') }}</h4>
+			<ul>
+				<li *ngFor="let fileName of selectedTicket.fichiers_ticket">{{ fileName }}</li>
+			</ul>
 		</div>
 
-		<div *ngIf="isErreurType()" class="form-row">
-			<label for="dateHeureErreur">Date / heure erreur</label>
-			<input
-				id="dateHeureErreur"
-				name="dateHeureErreur"
-				type="datetime-local"
-				[(ngModel)]="formData.dateHeureErreur"
-			/>
+		<div class="exchange-list">
+			<div class="panel-header panel-header-between compact">
+				<div>
+					<h4>{{ utils.tr('app.help.exchanges.title') }}</h4>
+					<p *ngIf="isLoadingTicketDetails">{{ utils.tr('app.help.exchanges.loadingTicket') }}</p>
+					<p *ngIf="!selectedTicketExchanges.length && !isLoadingTicketDetails">{{ utils.tr('app.help.exchanges.empty') }}</p>
+				</div>
+			</div>
+
+			<div class="exchange-card" *ngFor="let exchange of selectedTicketExchanges; trackBy: trackByExchangeId">
+				<div class="exchange-card-header">
+					<strong>{{ exchange.auteur || '-' }}</strong>
+					<span>{{ exchange.date | date:'dd/MM/yyyy HH:mm' }}</span>
+				</div>
+				<p>{{ exchange.msg }}</p>
+				<div class="files-block" *ngIf="exchange.fichiers_echange?.length">
+					<ul>
+						<li *ngFor="let fileName of exchange.fichiers_echange">{{ fileName }}</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 
-		<div *ngIf="isErreurType()" class="form-row">
-			<label for="actionRealisee">Action realisee</label>
-			<input
-				id="actionRealisee"
-				name="actionRealisee"
-				type="text"
-				[(ngModel)]="formData.actionRealisee"
-			/>
+		<div class="locked-banner" *ngIf="isSelectedTicketLocked()">
+			{{ ticketLockMessage(selectedTicket) }}
 		</div>
 
-		<div class="form-row">
-			<label>Fichiers</label>
-			<app-upload-file [files]="selectedFiles" [title]="'Upload files'" [sizeMax]="10485760"></app-upload-file>
-		</div>
+		<form class="exchange-form" *ngIf="selectedTicket && !isSelectedTicketLocked()" (ngSubmit)="addExchange()" #exchangeFormRef="ngForm" novalidate>
+			<div class="form-row">
+				<label for="exchangeMsg">{{ utils.tr('app.help.form.addExchange') }}</label>
+				<textarea id="exchangeMsg" name="exchangeMsg" rows="5" [(ngModel)]="exchangeForm.msg" required></textarea>
+			</div>
 
-		<div class="consultant-readonly">
-			<h3>Infos consultant : </h3>
-			<p><strong>fullName:</strong> {{ currentUser?.fullName || '-' }}</p>
-			<p><strong>role:</strong> {{ currentUser?.role || '-' }}</p>
-			<p><strong>esnName:</strong> {{ currentUser?.esnName || currentUser?.esn?.name || '-' }}</p>
-		</div>
+			<div class="form-row">
+				<label>{{ utils.tr('app.help.form.exchangeFiles') }}</label>
+				<app-upload-file [files]="exchangeForm.files" [title]="utils.tr('app.help.form.exchangeFiles')" [sizeMax]="10485760"></app-upload-file>
+			</div>
 
-		<div class="actions">
-			<button type="submit" [disabled]="isSending">
-				{{ isSending ? 'Envoi...' : 'Envoyer' }}
-			</button>
+			<div class="actions">
+				<button type="submit" [disabled]="isSendingExchange">{{ isSendingExchange ? utils.tr('app.help.form.sendingExchange') : utils.tr('app.help.form.addExchangeButton') }}</button>
+			</div>
+		</form>
+	</section>
+
+	<section class="panel details-panel" *ngIf="activeTab === 'exchanges' && !selectedTicket">
+		<div class="panel-header">
+			<h3>{{ utils.tr('app.help.exchanges.title') }}</h3>
+			<p>{{ utils.tr('app.help.exchanges.selectTicket') }}</p>
 		</div>
-	</form>
+	</section>
 </div>

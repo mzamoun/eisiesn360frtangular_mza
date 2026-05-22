@@ -22,6 +22,7 @@ import { EsnService } from 'src/app/service/esn.service';
 import { LoggerService } from 'src/app/service/logger.service';
 import { MsgService } from 'src/app/service/msg.service';
 import { ProjectService } from 'src/app/service/project.service';
+import { SupportService } from 'src/app/service/support.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 
@@ -39,9 +40,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     targetBarHeight: number = 200; // Hauteur cible en pixels pour la barre max
     timeGrouping: 'day' | 'month' | 'year' = 'year';
     revenueData: any = null;
-    visibleSections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [];
+    visibleSections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any; chartable?: boolean }> = [];
 
-        sections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any }> = [
+        sections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any; chartable?: boolean }> = [
         // Visible par tous les roles (selon permissions)
         { id: 'PROFILE', titleKey: 'app.dashboard.section.profile', route: '/my-profile', feature: null },
         { id: 'NOTIFICATIONS', titleKey: 'app.dashboard.section.notifications', route: '/notification' },
@@ -61,6 +62,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         { id: 'MY_CRA', titleKey: 'app.dashboard.section.myCra', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
         // Documents administratifs
         { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
+        // Section Aide (visible par tous les rôles, pas de feature spécifique)
+        { id: 'SUPPORT', titleKey: 'app.dashboard.section.help', route: '/help', feature: null, chartable: false },
     ];
 
     listNotifications: Notification[] = [];
@@ -71,6 +74,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     listConsultant: Consultant[] = [];
     listCra: Cra[] = [];
     listDocument: Document[] = [];
+    listSupportTickets: any[] = [];
     esn: Esn = null;
     esnId: number = 0;
     private destroy$ = new Subject<void>();
@@ -91,6 +95,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         private craService: CraService,
         private esnService: EsnService,
         private documentService: DocumentService,
+        private supportService: SupportService,
         private dataSharingService: DataSharingService,
         private logger: LoggerService,
         private utilsIhm: UtilsIhmService,
@@ -298,6 +303,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             }
         });
 
+        this.loadSupportTicketCount(role);
+
         // Consultants
         this.loadAllConsultantsAndUpdateCounts();
 
@@ -346,6 +353,22 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         if (role === 'MANAGER') {
             this.loadClientAndCheckHierarchy();
         }
+    }
+
+    private loadSupportTicketCount(role: string): void {
+        const supportObservable = role === 'ADMIN'
+            ? this.supportService.findAll()
+            : this.supportService.findMyTickets();
+
+        supportObservable.subscribe({
+            next: (resp) => {
+                this.listSupportTickets = resp?.body?.result || [];
+                this.updateSectionCount('SUPPORT', this.listSupportTickets.length);
+            },
+            error: () => {
+                this.updateSectionCount('SUPPORT', 0);
+            }
+        });
     }
 
     private loadClientAndCheckHierarchy(): void {
@@ -586,6 +609,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
     showChart(section: any): void {
         this.logger.debug('DashboardComponent.showChart called', section);
+        if (section?.chartable === false) {
+            return;
+        }
         this.selectedSection = section;
         this.activeTab = 'evolution';
         this.chartData = this.generateChartData(section);
