@@ -6,6 +6,8 @@ import { environment } from '../../environments/environment';
 })
 export class LoggerService {
 
+  private readonly maxSanitizeDepth = 6;
+
   private readonly redactedKeys = [
     'password',
     'passwd',
@@ -46,7 +48,7 @@ export class LoggerService {
     return !!(environment as any).enableDebugLogs;
   }
 
-  private sanitize(value: any): any {
+  private sanitize(value: any, seen: WeakSet<object> = new WeakSet<object>(), depth: number = 0): any {
     if (value === null || value === undefined) {
       return value;
     }
@@ -55,20 +57,35 @@ export class LoggerService {
       return this.sanitizeString(value);
     }
 
+    if (depth >= this.maxSanitizeDepth) {
+      return '[MaxDepthReached]';
+    }
+
     if (Array.isArray(value)) {
-      return value.map(item => this.sanitize(item));
+      return value.map(item => this.sanitize(item, seen, depth + 1));
     }
 
     if (typeof value === 'object') {
+      if (value instanceof Date) {
+        return value;
+      }
+
+      if (seen.has(value)) {
+        return '[Circular]';
+      }
+
+      seen.add(value);
       const sanitizedObj: any = {};
       Object.keys(value).forEach(key => {
         const lowerKey = key.toLowerCase();
         if (this.redactedKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
           sanitizedObj[key] = '[REDACTED]';
         } else {
-          sanitizedObj[key] = this.sanitize(value[key]);
+          sanitizedObj[key] = this.sanitize(value[key], seen, depth + 1);
         }
       });
+
+      seen.delete(value);
       return sanitizedObj;
     }
 

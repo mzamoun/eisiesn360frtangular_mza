@@ -514,11 +514,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.adminConsultant[consultant.id] = manager;
     consultant.adminConsultant = manager;
     consultant.adminConsultantId = manager?.id;
-
-    if (consultant.role == "RESPONSIBLE_ESN") {
-      consultant.adminConsultant = null;
-      consultant.adminConsultantId = null;
-    }
   }
 
   isCurrenUserRespOrAdmin() {

@@ -9,7 +9,7 @@
                     <span *ngIf="dataSharingService.IsAddEsnAndResp">{{myObj.role}}</span>
                 </label>
                 <app-select *ngIf="! dataSharingService.IsAddEsnAndResp" [disbaleit]="esnIdStr" [selectId]="'role'" #compoSelectRole [objectName]="'Role'" [myList]="roles" [initObj]="myObj.role" [objCaller]="this" onChangeCaller="onSelectRole"></app-select>
-                <div [hidden]="myObj.role" class="badge badge-danger">{{utils.tr('Role')}} {{utils.tr('app.badge.required')}}</div>
+                <div [hidden]="myObj.role || compoSelectRole?.selectedObjId" class="badge badge-danger">{{utils.tr('Role')}} {{utils.tr('app.badge.required')}}</div>
             </div>
 
             <div class="form-group" *ngIf="myObj.role == 'RESPONSIBLE_ESN'">
@@ -18,8 +18,8 @@
                     <!-- <span *ngIf="dataSharingService.IsAddEsnAndResp"> {{esnSavedName}}</span> -->
                     <span *ngIf="dataSharingService.IsAddEsnAndResp"> {{dataSharingService.esnSaved?.name}}</span>
                 </label>
-                <app-select *ngIf="! dataSharingService.IsAddEsnAndResp" [disbaleit]="esnIdStr" [selectId]="'responsableEsn'" #compoSelectEsn [objectName]="'Esn'" [ObjectPropName]="'name'" [myList]="esns" [initObj]="myObj.esn" [objCaller]="this" onChangeCaller="onSelectEsn"></app-select>
-                <div [hidden]="myObj.esn || dataSharingService.esnSaved" class="badge badge-danger">
+                <app-select *ngIf="! dataSharingService.IsAddEsnAndResp" [disbaleit]="esnIdStr" [selectId]="'responsableEsn'" #compoSelectEsn [objectName]="'Esn'" [ObjectPropName]="'name'" [myList]="esns" [initObj]="myObj.esn || myObj.esnId" [objCaller]="this" onChangeCaller="onSelectEsn"></app-select>
+                <div [hidden]="myObj.esn || myObj.esnId || dataSharingService.esnSaved" class="badge badge-danger">
                     {{utils.tr('Esn')}} {{utils.tr('app.badge.required')}}
                 </div>
             </div>
@@ -100,23 +100,23 @@
             </div>
             <!--  <div [hidden]="birthday.valid" class="badge badge-danger ">Birthday is required</div>-->
 
-<div class="form-group" *ngIf="myObj.adminConsultant">
-    <label for="manager">{{utils.tr('app.compo.consultant.form.input.manager')}}</label>
-    <input type="text" [(ngModel)]="myObj.adminConsultant.username" [value]="myObj.adminConsultant.username" class="form-control" id="manager" name="manager" [disabled]="manager.role != 'ADMIN'">
+<div class="form-group" *ngIf="canEditManagerField()">
+    <label for="consultantList">{{utils.tr('app.compo.consultant.form.input.manager')}}</label>
+
+    <app-select #compoSelectConsultant [selectId]="'adminConsultant'" [objectName]="'AdminConsultant'" [myList]="consultants" [initObj]="myObj.adminConsultant || myObj.adminConsultantId" [objCaller]="this" onChangeCaller="onSelectConsultant" [ObjectPropName]="'fullName'"></app-select>
+
+    <div [hidden]="myObj.adminConsultant || myObj.adminConsultantId || compoSelectConsultant?.selectedObjId" class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.manager')}} {{utils.tr('app.badge.required')}}</div>
 </div>
 
-<div class="form-group" *ngIf="!myObj.adminConsultant">
+<div class="form-group" *ngIf="!canEditManagerField() && myObj.adminConsultant">
+    <label for="manager">{{utils.tr('app.compo.consultant.form.input.manager')}}</label>
+    <input type="text" [value]="myObj.adminConsultant.username" class="form-control" id="manager" name="manager" disabled>
+</div>
+
+<div class="form-group" *ngIf="!canEditManagerField() && !myObj.adminConsultant">
     <label for="manager">{{utils.tr('app.compo.consultant.form.input.manager')}}</label>
     <h5>{{utils.tr('app.compo.consultant.form.notExist')}}</h5>
 </div>
-
-<!-- <div class="form-group">
-    <label for="consultantList">{{utils.tr('app.compo.consultant.form.input.manager')}}</label>
-
-    <app-select #compoSelectConsultant [selectId]="'adminConsultant'" [objectName]="'AdminConsultant'" [myList]="consultants" [initObj]="myObj.adminConsultant" [objCaller]="this" onChangeCaller="onSelectConsultant" [ObjectPropName]="'fullName'"></app-select>
-
-    <div [hidden]="myObj.adminConsultant" class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.manager')}} is required</div>
-</div> -->
 
             <div class="form-group">
                 <label for="username">{{utils.tr('app.compo.consultant.form.input.username')}}</label>

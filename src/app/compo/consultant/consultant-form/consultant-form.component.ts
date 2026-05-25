@@ -80,6 +80,9 @@ export class ConsultantFormComponent extends MereComponent {
     }
 
     this.initByConsultant();
+    if (this.canEditManagerField()) {
+      this.getConsultants();
+    }
     //this.logger.debug('myObj', this.myObj)
   }
 
@@ -157,6 +160,8 @@ export class ConsultantFormComponent extends MereComponent {
       this.myObj.address = new Address();
     }
 
+    this.ensureCurrentRoleAvailable();
+
     this.majAdminConsultant();
 
   }
@@ -170,6 +175,22 @@ export class ConsultantFormComponent extends MereComponent {
     else return this.utils.tr("User")
   }
 
+  private ensureCurrentRoleAvailable(): void {
+    const currentRole = this.myObj?.role;
+    if (!currentRole) {
+      return;
+    }
+
+    if (!this.roles) {
+      this.roles = [currentRole];
+      return;
+    }
+
+    if (this.roles.indexOf(currentRole) < 0) {
+      this.roles = [currentRole, ...this.roles];
+    }
+  }
+
   ////////////////////////////////////////
   getConsultants() {
 
@@ -180,7 +201,32 @@ export class ConsultantFormComponent extends MereComponent {
         if (data == undefined) {
           this.consultants = new Array();
         } else {
-          this.consultants = data.body.result;
+          const currentEsnId = this.myObj?.esn?.id || this.myObj?.esnId || this.userConnected?.esn?.id || this.userConnected?.esnId;
+          this.consultants = (data.body.result || [])
+            .filter((c: Consultant) => {
+              if (!c) return false;
+              const isManagerCandidate = c.role === Constants.MANAGER || c.role === Constants.RESPONSIBLE_ESN;
+              if (!isManagerCandidate) return false;
+
+              const candidateEsnId = c.esn?.id || c.esnId;
+              if (!currentEsnId || !candidateEsnId) return true;
+              return currentEsnId === candidateEsnId;
+            })
+            .map((c: Consultant) => {
+              const fullName = (c?.firstName && c?.lastName)
+                ? (c.firstName + ' ' + c.lastName)
+                : (c?.firstName || c?.lastName || c?.username || '');
+              return { ...c, fullName } as Consultant;
+            });
+
+          // Le manager courant peut être hydraté async (adminConsultantId -> adminConsultant).
+          // On s'assure qu'il est bien présent dans la liste et sélectionné.
+          this.consultantService.majAdminConsultant(this.myObj, () => {
+            this.ensureSelectedManagerInList();
+            this.syncSelectedManagerInSelect();
+          });
+          this.ensureSelectedManagerInList();
+          this.syncSelectedManagerInSelect();
           // this.dataSharingService.addEsnInConsultantList(this.consultants)
         }
 
@@ -191,11 +237,53 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   onSelectConsultant(consultant: Consultant) {
+    this.myObj.adminConsultant = consultant;
+    this.myObj.adminConsultantId = consultant?.id;
     this.dataSharingService.adminConsultant[this.myObj.id] = consultant;
   }
   @ViewChild('compoSelectConsultant', { static: false }) compoSelectConsultant: SelectComponent;
   selectConsultant(consultant: Consultant) {
     this.compoSelectConsultant.selectedObj = consultant;
+  }
+
+  private ensureSelectedManagerInList(): void {
+    const selectedManager = this.myObj?.adminConsultant;
+    if (!selectedManager?.id) {
+      return;
+    }
+
+    const fullName = (selectedManager?.firstName && selectedManager?.lastName)
+      ? (selectedManager.firstName + ' ' + selectedManager.lastName)
+      : (selectedManager?.firstName || selectedManager?.lastName || selectedManager?.username || '');
+
+    const normalizedManager = { ...selectedManager, fullName } as Consultant;
+    if (!this.consultants) {
+      this.consultants = [];
+    }
+
+    const index = this.consultants.findIndex(c => c?.id === normalizedManager.id);
+    if (index >= 0) {
+      this.consultants[index] = { ...this.consultants[index], ...normalizedManager } as Consultant;
+    } else {
+      this.consultants = [normalizedManager as Consultant, ...this.consultants];
+    }
+  }
+
+  private syncSelectedManagerInSelect(): void {
+    const selectedId = this.myObj?.adminConsultant?.id || this.myObj?.adminConsultantId;
+    if (!selectedId || !this.compoSelectConsultant) {
+      return;
+    }
+
+    if (!this.myObj.adminConsultant && this.consultants?.length) {
+      const selectedManager = this.consultants.find(c => c?.id === selectedId);
+      if (selectedManager) {
+        this.onSelectConsultant(selectedManager);
+      }
+    }
+
+    this.compoSelectConsultant.selectedObjId = selectedId;
+    this.compoSelectConsultant.selectedObj = this.myObj.adminConsultant;
   }
   /////////////////////////////////////////
 
@@ -249,11 +337,13 @@ export class ConsultantFormComponent extends MereComponent {
 
     if (esn) {
       this.myObj.esn = esn;
+      this.myObj.esnId = esn?.id;
       this.emailChange()
       this.selectEsn(esn)
     } else {
       if (this.dataSharingService.IsAddEsnAndResp) {
         this.myObj.esn = this.dataSharingService.esnSaved;
+        this.myObj.esnId = this.myObj.esn?.id;
         this.emailChange()
       }
     }
@@ -323,6 +413,18 @@ export class ConsultantFormComponent extends MereComponent {
     this.logger.debug("this.myObj.email ", this.myObj.email)
     this.logger.debug("this.myObj.username ", this.myObj.username)
 
+    // Fallback: resynchroniser les valeurs choisies dans les composants select vers le modèle.
+    if (!this.myObj.role && this.compoSelectRole?.selectedObj) {
+      this.onSelectRole(this.compoSelectRole.selectedObj);
+    }
+
+    if (!this.myObj.adminConsultantId && this.compoSelectConsultant?.selectedObjId && this.consultants?.length) {
+      const selectedManager = this.consultants.find(c => c?.id == this.compoSelectConsultant.selectedObjId);
+      if (selectedManager) {
+        this.onSelectConsultant(selectedManager);
+      }
+    }
+
     if (!this.myObj.username || !this.myObj.email) {
       this.utilsIhmService.infoDialog('email or username is null !!')
       return
@@ -342,7 +444,11 @@ export class ConsultantFormComponent extends MereComponent {
     this.logger.debug("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
     if (this.userConnected && this.userConnected.role + '' != 'ADMIN') {
       this.logger.debug('NOT ADMIN')
-      this.dataSharingService.majAdminConsultantId(this.myObj, this.manager);
+      const managerToUse =
+        this.userConnected.role === Constants.RESPONSIBLE_ESN
+          ? (this.myObj.adminConsultant || this.manager)
+          : this.manager;
+      this.dataSharingService.majAdminConsultantId(this.myObj, managerToUse);
 
     }
     this.setEsn();
@@ -445,6 +551,8 @@ export class ConsultantFormComponent extends MereComponent {
         else {
           this.roles = data.body.result;
         }
+
+        this.ensureCurrentRoleAvailable();
 
         this.logger.debug("*** roles : ", this.roles)
 
@@ -560,6 +668,11 @@ export class ConsultantFormComponent extends MereComponent {
       this.loadingDialogRef.close();
       this.loadingDialogRef = null;
     }
+  }
+
+  canEditManagerField(): boolean {
+    const role = this.userConnected?.role;
+    return role === 'ADMIN' || role === Constants.RESPONSIBLE_ESN;
   }
 
   // Validation du password

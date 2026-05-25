@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-select',
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.css']
 })
-export class SelectComponent implements OnInit {
+export class SelectComponent implements OnInit, OnChanges {
 
   @Input() objectName : string = "Element" ;   //name of objects class
   @Input() ObjectPropName! : string ; //name of the property visible in list select
@@ -15,25 +15,35 @@ export class SelectComponent implements OnInit {
   @Input() onChangeCaller!: string; 
   @Input() disbaleit: any;  //on create select 
   @Input() selectId: string;
-  selectedObjId: number = 0;       //when change selection
+  selectedObjId: any = null;       //when change selection
   selectedObj: any = null;       //when change selection
 
   constructor() { }
 
   ngOnInit(): void {
-    // console.log("ngOnInit ObjectPropName, initObj", this.ObjectPropName, this.initObj)
-    if(this.ObjectPropName) {
-      this.selectedObjId = this.initObj ? this.initObj.id : 0;
-      // this.onChange(this.selectedObjId);
-      // this.selectedObj = this.getObjFromId(this.selectedObjId);
-      // this.setObjInCaller(this.selectedObj);
-      // //////////console.log("****ngOnInit ", this.initObj, this.selectedObjId, this.selectedObj);
-      // this.selectedObj = this.initObj;
+    this.syncFromInitObj();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initObj'] || changes['myList']) {
+      this.syncFromInitObj();
     }
-    else {
-      this.selectedObjId = this.initObj;
+  }
+
+  private syncFromInitObj(): void {
+    if (this.ObjectPropName) {
+      if (this.initObj && typeof this.initObj === 'object') {
+        this.selectedObjId = this.initObj.id ?? null;
+        this.selectedObj = this.initObj;
+      } else {
+        this.selectedObjId = this.initObj ?? null;
+        this.selectedObj = this.getObjFromId(this.selectedObjId);
+      }
+      return;
     }
-    // console.log("ngOnInit selectedObjId", this.selectedObjId)
+
+    this.selectedObjId = this.initObj ?? null;
+    this.selectedObj = this.selectedObjId;
   }
 
   getObjDisplay(obj:any){

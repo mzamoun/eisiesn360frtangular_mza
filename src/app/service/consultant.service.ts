@@ -240,12 +240,6 @@ export class ConsultantService {
       return;
     }
 
-    if (consultant.role == "RESPONSIBLE_ESN") {
-      consultant.adminConsultant = null
-      consultant.adminConsultantId = null
-      return;
-    }
-
     let id = consultant.adminConsultantId
     let label = "find admin consultant by id=" + id;
     let obj = consultant.adminConsultant
