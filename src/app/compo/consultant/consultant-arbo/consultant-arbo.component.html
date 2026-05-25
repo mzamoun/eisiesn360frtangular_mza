@@ -1,44 +1,24 @@
-<div>
-    <h5>{{consultant.username}} : {{consultant.role}} 
-        <button [hidden]="!isListEmpty(consultant.listConsultant) || !isListEmpty(consultant.listCra)  || !isListEmpty(consultant.listActivity)  "
-        (click)="deleteConsultant(consultant, manager)" class="btn btn-danger">{{utils.tr('Delete')}}</button>
-    </h5>
-    <mat-tab-group>
-        <mat-tab label="{{getTitleListConsultants(consultant)}}" [hidden]="isConsultantFct(consultant)" (click)="getListConsultants(consultant)">
-            <ng-template matTabContent>
-                <ol>
-                    <li *ngFor="let child of consultant.listConsultant">
-                        <app-consultant-arbo [consultant]="child" [manager]="consultant"></app-consultant-arbo>
-                    </li>
-                </ol>
-            </ng-template>
-        </mat-tab>
-        <mat-tab label="{{utils.tr('app.compo.consultant.arbo.listCra')}}" (click)="getListCra(consultant)">
-            <ng-template matTabContent>
-                <ol>
-                    <li *ngFor="let cra of consultant.listCra">
-                        <div>
-                            <h6> {{infoCra(cra)}}
-                                <button (click)="deleteCra(cra, consultant)" class="btn btn-danger">{{utils.tr('Delete')}}</button>
-                            </h6>
-                        </div>
-                    </li>
-                </ol>
-            </ng-template>
-        </mat-tab>
-        <mat-tab label="{{utils.tr('app.compo.esn.arbo.listActivity')}}" (click)="getListActivity(consultant)">
-            <ng-template matTabContent>
-                <ol>
-                    <li *ngFor="let act of consultant.listActivity">
-                        <div>
-                            <h6> {{act.name}}
-                                <button (click)="deleteActivity(act, consultant)" class="btn btn-danger">{{utils.tr('Delete')}}</button>
-                            </h6>
-                        </div>
-                    </li>
-                </ol>
-            </ng-template>
-        </mat-tab>
-    </mat-tab-group>
+<div class="consultant-tree" *ngIf="consultant">
+  <div class="consultant-node">
+    <button type="button" class="consultant-card" (click)="selectConsultant(consultant)">
+      <span class="consultant-avatar">{{ (consultant.fullName || consultant.username || '?') | slice:0:1 | uppercase }}</span>
+      <span class="consultant-body">
+        <span class="consultant-name">{{ getLabel(consultant) }}</span>
+        <span class="consultant-meta">{{ consultant.role }}<span *ngIf="consultant.username"> · {{ consultant.username }}</span></span>
+      </span>
+      <span class="consultant-count" *ngIf="hasChildren(consultant)">{{ consultant.listConsultant.length }}</span>
+    </button>
 
+    <div class="consultant-children" *ngIf="consultant.listConsultant?.length">
+      <div class="consultant-children-line"></div>
+      <div class="consultant-children-list">
+        <app-consultant-arbo
+          *ngFor="let child of consultant.listConsultant"
+          [consultant]="child"
+          [manager]="consultant"
+          (consultantSelected)="consultantSelected.emit($event)">
+        </app-consultant-arbo>
+      </div>
+    </div>
+  </div>
 </div>

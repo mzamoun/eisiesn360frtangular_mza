@@ -1,14 +1,29 @@
 <!-- <infors #infors></infors> -->
 <div class="card my-5 ">
     <div class="card-body">
-        <div style="display: flex; justify-content: center; align-items: center; " class=""> 
-	<h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
-	<button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;" (click)="findAll()">{{utils.tr('Refresh')}}</button>
-</div>
+        <div style="display: flex; justify-content: center; align-items: center; " class="">
+            <h3 id="title_list" class="card-title text-center py-3">{{getTitle()}}</h3>
+            <button class='btn btn-primary' style="height: 40px; text-align: center; margin-left: 10px;"
+                (click)="findAll()">{{utils.tr('Refresh')}}
+            </button>
+            <!--
+                Ajouter ici un btn qui permet d'aficher tous les consultants (selon le role de l'utilisateur, sous sa responsabilité) 
+                en mode arborescence (ex: en cliquant sur un consultant qui est manager, on affiche les consultants sous sa responsabilité, et ainsi de suite)
+            -->
+                <button class='btn btn-secondary' style="height: 40px; text-align: center; margin-left: 10px;"
+                    (click)="displayAllConsultants()">{{utils.tr('consultant.all.abo')}}
+                </button>
+        </div>
+        <div class="card-text" id="arbo_consultants" *ngIf="showArbo && userConnected">
+            <app-consultant-arbo [consultant]="userConnected" (consultantSelected)="displayConsultantsOfManager($event)"></app-consultant-arbo>
+        </div>
 
         <div class="right" style="width: 40%;" name="searchDiv">
-            <input id="searchStr" #searchStrInput class="form-control left" style="width: 90%;" type="text" placeholder="{{utils.tr('Search')}}" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()" (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
-            <button class="right" style="width: 10%; height: 40px; text-align: center;" (click)="clearSearch()" title="{{utils.tr('Clear')}}">X</button>
+            <input id="searchStr" #searchStrInput class="form-control left" style="width: 90%;" type="text"
+                placeholder="{{utils.tr('Search')}}" name="searchStr" [(ngModel)]="searchStr" (keyup)="search()"
+                (mouseover)="enableInputSearchStr()" [readonly]="dataSharingService.isDisableSearchStrInput">
+            <button class="right" style="width: 10%; height: 40px; text-align: center;" (click)="clearSearch()"
+                title="{{utils.tr('Clear')}}">X</button>
         </div>
 
         <table class="table table-bordered table-striped">
@@ -25,7 +40,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let element of myList | paginate: {itemsPerPage, currentPage}; let i = index" id="consultant-list-tr-{{i}}" (click)="displayConsultantsOfManager($event, element)" [className]="element.id == getIdOfCurentObj() ? 'active' : 'inactive'">
+                <tr *ngFor="let element of myList | paginate: {itemsPerPage, currentPage}; let i = index"
+                    id="consultant-list-tr-{{i}}" (click)="displayConsultantsOfManager($event, element)"
+                    [className]="element.id == getIdOfCurentObj() ? 'active' : 'inactive'">
                     <td>{{ element.id }}</td>
                     <td><b>{{ element.fullName }}</b></td>
                     <td>{{ element.username }}</td>
@@ -34,10 +51,13 @@
                     <td>{{ element.role}}</td>
                     <td>{{ element.level}}</td>
                     <td>
-                        <button (click)="showForm(element)" id="btn-consultant-edit-{{i}}" class='btn btn-primary mr-1' [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="UPDATE">{{utils.tr('Edit')}}
-          </button>
-                        <button (click)="delete(element)" id="btn-delete-consultant-list-{{i}}" class='btn btn-danger mr-1' [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="DELETE">{{utils.tr('Delete')}}
-          </button>
+                        <button (click)="showForm(element)" id="btn-consultant-edit-{{i}}" class='btn btn-primary mr-1'
+                            [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="UPDATE">{{utils.tr('Edit')}}
+                        </button>
+                        <button (click)="delete(element)" id="btn-delete-consultant-list-{{i}}"
+                            class='btn btn-danger mr-1' [appAuthorization] feature="CONSULTANT_MANAGEMENT"
+                            permission="DELETE">{{utils.tr('Delete')}}
+                        </button>
                         <!-- <button *ngIf="element.admin" (click)="displayConsultantsOfManager(element)" class='btn btn-outline-dark mr-1'>
             View</button> -->
                     </td>
@@ -49,10 +69,13 @@
             <pagination-controls (pageChange)="currentPage = $event"></pagination-controls>
 
         </div>
-        <a href="#" [routerLink]="['/consultant_form']" id="btn-add-consultant-form" [queryParams]="{isAdd:true}" class='btn btn-outline-primary right' [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="CREATE">
-      {{utils.tr('app.compo.consultant.list.button.add')}} </a>
+        <a href="#" [routerLink]="['/consultant_form']" id="btn-add-consultant-form" [queryParams]="{isAdd:true}"
+            class='btn btn-outline-primary right' [appAuthorization] feature="CONSULTANT_MANAGEMENT"
+            permission="CREATE">
+            {{utils.tr('app.compo.consultant.list.button.add')}} </a>
     </div>
 
 </div>
 
-<app-consultant-form #myObjEditView [myObj]="myObj" *ngIf="myObj != null" [appAuthorization] feature="CONSULTANT_MANAGEMENT" permission="UPDATE"> </app-consultant-form>
+<app-consultant-form #myObjEditView [myObj]="myObj" *ngIf="myObj != null" [appAuthorization]
+    feature="CONSULTANT_MANAGEMENT" permission="UPDATE"> </app-consultant-form>

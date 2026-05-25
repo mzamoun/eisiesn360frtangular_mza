@@ -33,6 +33,7 @@ export class ConsultantListComponent extends MereComponent {
     roles: string[];
     roleFilter: string = "";
     isMyConsultantsView: boolean = false;
+    showArbo: boolean = false;
 
     constructor(private consultantService: ConsultantService
         , private esnService: EsnService
@@ -195,13 +196,14 @@ export class ConsultantListComponent extends MereComponent {
      * used to load all consultant for the select admin
      * @param element
      */
-    displayConsultantsOfManager(event: any, element: Consultant) {
-        this.managerSelected = element;
+    displayConsultantsOfManager(eventOrElement: any, element?: Consultant) {
+        const selectedConsultant = element || eventOrElement;
+        this.managerSelected = selectedConsultant;
 
         if (this.managerSelected.role != "CONSULTANT") {
             this.consultantService.setManagerSelected(this.managerSelected);
             if (this.myConsultants != null) {
-                this.myConsultants.managerFilter = element;
+                this.myConsultants.managerFilter = selectedConsultant;
                 this.myConsultants.findAll();
             }
         } else {
@@ -229,6 +231,15 @@ export class ConsultantListComponent extends MereComponent {
             }, error => {
                 this.addErrorFromErrorOfServer("loadRoles", error);
             })
+    }
+
+    displayAllConsultants() {
+        this.showArbo = !this.showArbo;
+        this.managerSelected = null;
+        if (this.myConsultants != null) {
+            this.myConsultants.managerFilter = null;
+            this.myConsultants.findAll();
+        }
     }
 
 

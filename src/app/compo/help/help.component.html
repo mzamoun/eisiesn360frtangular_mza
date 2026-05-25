@@ -82,6 +82,7 @@
 						<tr>
 							<th>{{ utils.tr('app.help.table.id') }}</th>
 							<th>{{ utils.tr('app.help.table.date') }}</th>
+							<th>{{ utils.tr('app.help.table.emailSender') }}</th>
 							<th>{{ utils.tr('app.help.table.type') }}</th>
 							<th>{{ utils.tr('app.help.table.subject') }}</th>
 							<th>{{ utils.tr('app.help.table.resolved') }}</th>
@@ -93,6 +94,7 @@
 						<tr *ngFor="let ticket of supportTickets; trackBy: trackByTicketId" (click)="selectTicket(ticket)" [class.selected]="ticketRowClass(ticket) === 'selected'">
 							<td>#{{ ticket.id }}</td>
 							<td>{{ ticket.date_ticket | date:'dd/MM/yyyy HH:mm' }}</td>
+							<td>{{ ticket.email_sender || '-' }}</td>
 							<td><span class="status-pill type">{{ utils.tr('app.help.type.' + ticket.type) }}</span></td>
 							<td>{{ ticket.sujet }}</td>
 							<td><span class="status-pill" [class.ok]="ticket.is_resolu" [class.warn]="!ticket.is_resolu">{{ ticket.is_resolu ? utils.tr('app.common.yes') : utils.tr('app.common.no') }}</span></td>

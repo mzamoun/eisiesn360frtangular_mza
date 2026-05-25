@@ -791,6 +791,11 @@ export class TradService {
       "en": "Ticket date",
       "ar": "تاريخ التذكرة",
     },
+    "app.help.table.emailSender": {
+      "fr": "Email sender",
+      "en": "Sender email",
+      "ar": "بريد المرسل الإلكتروني",
+    },
     "app.help.table.type": {
       "fr": "Type",
       "en": "Type",
@@ -1375,6 +1380,11 @@ export class TradService {
       "fr": "AJOUTER",
       "en": "ADD",
       "ar": "إضافة",
+    },
+    "consultant.all.abo": {
+      "fr": "Afficher l'arborescence",
+      "en": "Display hierarchy",
+      "ar": "عرض الشجرة",
     },
     "app.compo.consultant.form.input.firstName": {
       "fr": "Pr\u00e9nom",
