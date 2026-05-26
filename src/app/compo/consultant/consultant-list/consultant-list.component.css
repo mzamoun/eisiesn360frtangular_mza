@@ -10,3 +10,28 @@ caption {
  .inactive {
     border:0px solid black;
  }
+
+.consultant-name-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.consultant-thumb {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #d7e2f0;
+    flex: 0 0 auto;
+}
+
+.consultant-thumb-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+}

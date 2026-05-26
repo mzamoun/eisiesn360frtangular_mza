@@ -23,6 +23,7 @@ export class Consultant {
     username: string;
     password: string;
     active: boolean;
+    photo: string;
 
     esnId: number
     esnName: string

@@ -161,6 +161,40 @@ export class ConsultantListComponent extends MereComponent {
         return this.myObj != null ? this.myObj.id : -1;
     }
 
+    getPhotoUrl(consultant: Consultant): string | null {
+        const photo = (consultant?.photo || '').trim();
+        if (!photo) {
+            return null;
+        }
+
+        if (photo.startsWith('data:image')) {
+            return photo;
+        }
+
+        if (photo.startsWith('iVBOR')) {
+            return 'data:image/png;base64,' + photo;
+        }
+
+        if (photo.startsWith('/9j/')) {
+            return 'data:image/jpeg;base64,' + photo;
+        }
+
+        if (photo.startsWith('R0lGOD')) {
+            return 'data:image/gif;base64,' + photo;
+        }
+
+        if (photo.startsWith('UklGR')) {
+            return 'data:image/webp;base64,' + photo;
+        }
+
+        return 'data:image/jpeg;base64,' + photo;
+    }
+
+    getInitial(consultant: Consultant): string {
+        const seed = consultant?.fullName || consultant?.username || '?';
+        return seed.trim().charAt(0).toUpperCase() || '?';
+    }
+
     @ViewChild('myObjEditView', { static: false }) myObjEditView: ConsultantFormComponent;
     showFormPure(myObj: Consultant) {
         this.consultantService.setConsultant(myObj)

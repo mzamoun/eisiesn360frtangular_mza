@@ -2,6 +2,22 @@
 <div class="card my-5">
     <div class="card-body">
         <h3 class="card-title text-center py-3"> {{ title }} {{myObj?.id}} : <span *ngIf="myObj && myObj.firstName">{{ myObj.fullName }}</span> </h3>
+        <div class="consultant-photo-preview">
+            <img *ngIf="getPhotoUrl(myObj); else formInitial" class="consultant-photo consultant-photo-clickable" [src]="getPhotoUrl(myObj)" alt="consultant photo" title="Cliquer pour changer la photo" (click)="photoInput.click()" />
+            <ng-template #formInitial>
+                <span class="consultant-photo consultant-photo-fallback consultant-photo-clickable" title="Cliquer pour ajouter une photo" (click)="photoInput.click()">{{ getInitial(myObj) }}</span>
+            </ng-template>
+        </div>
+        <div class="form-group consultant-photo-editor">
+            <label for="photo">Photo (cliquer sur l'avatar)</label>
+            <div class="consultant-photo-actions">
+                <input #photoInput id="photo" type="file" accept="image/*" class="form-control-file consultant-photo-input-hidden" (change)="onPhotoSelected($event)">
+                <button type="button" class="btn btn-outline-secondary btn-sm" *ngIf="myObj?.photo" (click)="removePhoto()">
+                    {{utils.tr('Delete')}}
+                </button>
+            </div>
+            <small class="text-muted">PNG/JPEG/GIF/WebP - max 2 Mo</small>
+        </div>
         <form (ngSubmit)="onSubmit()" #consultantForm="ngForm">
 
             <div class="form-group">

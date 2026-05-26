@@ -44,7 +44,15 @@
                     id="consultant-list-tr-{{i}}" (click)="displayConsultantsOfManager($event, element)"
                     [className]="element.id == getIdOfCurentObj() ? 'active' : 'inactive'">
                     <td>{{ element.id }}</td>
-                    <td><b>{{ element.fullName }}</b></td>
+                    <td>
+                        <div class="consultant-name-cell">
+                            <img *ngIf="getPhotoUrl(element); else listInitial" class="consultant-thumb" [src]="getPhotoUrl(element)" alt="consultant photo" />
+                            <ng-template #listInitial>
+                                <span class="consultant-thumb consultant-thumb-fallback">{{ getInitial(element) }}</span>
+                            </ng-template>
+                            <b>{{ element.fullName }}</b>
+                        </div>
+                    </td>
                     <td>{{ element.username }}</td>
                     <td>{{ element.tel }}</td>
                     <td>{{ element.esnName }}</td>

@@ -55,6 +55,7 @@ export class ConsultantFormComponent extends MereComponent {
   esnSavedName = ""
   loadingDialogRef: MatDialogRef<any> | null = null;
   passwordErrors: string[] = [];
+  photoMaxSize = 2 * 1024 * 1024;
 
   constructor(private route: ActivatedRoute, private router: Router
     , private consultantService: ConsultantService
@@ -173,6 +174,90 @@ export class ConsultantFormComponent extends MereComponent {
   typeUser() {
     if (this.myObj && this.myObj.role) return this.myObj.role;
     else return this.utils.tr("User")
+  }
+
+  getPhotoUrl(consultant: Consultant): string | null {
+    const photo = (consultant?.photo || '').trim();
+    if (!photo) {
+      return null;
+    }
+
+    if (photo.startsWith('data:image')) {
+      return photo;
+    }
+
+    if (photo.startsWith('iVBOR')) {
+      return 'data:image/png;base64,' + photo;
+    }
+
+    if (photo.startsWith('/9j/')) {
+      return 'data:image/jpeg;base64,' + photo;
+    }
+
+    if (photo.startsWith('R0lGOD')) {
+      return 'data:image/gif;base64,' + photo;
+    }
+
+    if (photo.startsWith('UklGR')) {
+      return 'data:image/webp;base64,' + photo;
+    }
+
+    return 'data:image/jpeg;base64,' + photo;
+  }
+
+  getInitial(consultant: Consultant): string {
+    const seed = consultant?.fullName || consultant?.username || '?';
+    return seed.trim().charAt(0).toUpperCase() || '?';
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event?.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file || !this.myObj) {
+      return;
+    }
+
+    if (!file.type?.startsWith('image/')) {
+      this.addErrorTitleMsg('Photo invalide', 'Veuillez choisir un fichier image.');
+      input.value = '';
+      return;
+    }
+
+    if (file.size > this.photoMaxSize) {
+      this.addErrorTitleMsg('Photo trop grande', 'Taille maximale: 2 Mo.');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = (reader.result || '') as string;
+      if (!result) {
+        return;
+      }
+
+      // On conserve uniquement la base64 pour rester compatible avec le modèle backend existant.
+      this.myObj.photo = this.extractBase64(result);
+    };
+    reader.onerror = () => {
+      this.addErrorTitleMsg('Erreur photo', 'Impossible de lire le fichier sélectionné.');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removePhoto(): void {
+    if (!this.myObj) {
+      return;
+    }
+    this.myObj.photo = '';
+  }
+
+  private extractBase64(dataUrl: string): string {
+    const idx = dataUrl.indexOf(',');
+    if (idx < 0) {
+      return dataUrl;
+    }
+    return dataUrl.substring(idx + 1);
   }
 
   private ensureCurrentRoleAvailable(): void {

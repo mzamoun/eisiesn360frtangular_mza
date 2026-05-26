@@ -86,6 +86,15 @@
   flex: 0 0 auto;
 }
 
+.consultant-avatar-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d7e2f0;
+  flex: 0 0 auto;
+}
+
 .consultant-body {
   display: flex;
   flex-direction: column;
