@@ -1,6 +1,25 @@
 <div class="consultant-tree" *ngIf="consultant">
+  <div class="tree-actions" *ngIf="canShowActionBar() && hasPendingChanges()">
+    <button type="button" class="btn-cancel" (click)="cancelPendingChanges()" [disabled]="dragDropState?.saving">Annuler</button>
+    <button type="button" class="btn-save" (click)="savePendingChanges()" [disabled]="dragDropState?.saving">
+      {{ dragDropState?.saving ? utils.tr('app.common.loading') : 'Enregistrer' }}
+    </button>
+  </div>
+
   <div class="consultant-node">
-    <button type="button" class="consultant-card" (click)="selectConsultant(consultant)">
+    <button
+      type="button"
+      class="consultant-card"
+      [class.drag-source]="dragDropState?.draggedConsultantId === consultant.id"
+      [class.drop-target]="isDropTarget(consultant)"
+      [class.drag-over]="isDragOver(consultant)"
+      [attr.draggable]="isDraggable(consultant)"
+      (dragstart)="onDragStart($event, consultant)"
+      (dragend)="onDragEnd()"
+      (dragover)="onDragOver($event, consultant)"
+      (dragleave)="onDragLeave(consultant)"
+      (drop)="onDrop($event, consultant)"
+      (click)="selectConsultant(consultant)">
       <span class="consultant-avatar">{{ (consultant.fullName || consultant.username || '?') | slice:0:1 | uppercase }}</span>
       <span class="consultant-body">
         <span class="consultant-name">{{ getLabel(consultant) }}</span>
@@ -16,6 +35,7 @@
           *ngFor="let child of consultant.listConsultant"
           [consultant]="child"
           [manager]="consultant"
+          [dragDropState]="dragDropState"
           (consultantSelected)="consultantSelected.emit($event)">
         </app-consultant-arbo>
       </div>

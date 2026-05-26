@@ -2,6 +2,39 @@
   margin: 0.5rem 0;
 }
 
+.tree-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.btn-cancel,
+.btn-save {
+  border: 1px solid #c9d8ea;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #fff;
+  color: #35516d;
+}
+
+.btn-save {
+  background: #1e88e5;
+  border-color: #1e88e5;
+  color: #fff;
+}
+
+.btn-cancel:disabled,
+.btn-save:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
 .consultant-node {
   position: relative;
 }
@@ -24,6 +57,20 @@
   border-color: #7fb0ff;
   box-shadow: 0 12px 28px rgba(30, 96, 182, 0.12);
   transform: translateY(-1px);
+}
+
+.consultant-card.drag-source {
+  opacity: 0.6;
+}
+
+.consultant-card.drop-target {
+  border-style: dashed;
+}
+
+.consultant-card.drag-over {
+  border-color: #1d7ddd;
+  background: linear-gradient(180deg, #f6fbff 0%, #e8f3ff 100%);
+  box-shadow: 0 12px 28px rgba(29, 125, 221, 0.22);
 }
 
 .consultant-avatar {
