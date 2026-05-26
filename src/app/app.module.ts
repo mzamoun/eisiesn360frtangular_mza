@@ -141,6 +141,7 @@ import { TableViewerComponent } from './compo/_utils/table-viewer/table-viewer.c
 import { DocCategoryAppComponent } from './compo/administratifDocumentation/docCategory/doc-category-app/doc-category-app.component'; // Assurez-vous d'importer MatTabsModule
 import { DocCategoryFormComponent } from './compo/administratifDocumentation/docCategory/doc-category-form/doc-category-form.component';
 import { DocCategoryListComponent } from './compo/administratifDocumentation/docCategory/doc-category-list/doc-category-list.component';
+import { AdminLogViewerComponent } from './compo/admin-log-viewer/admin-log-viewer.component';
 import { ConnectionComponent } from './compo/connection/connection.component';
 import { DashBoardComponent } from './compo/dashboard/dashboard.component';
 import { EsnArboComponent } from './compo/esn/esn-arbo/esn-arbo.component';
@@ -265,6 +266,7 @@ export function initApp(http: HttpClient, translate: TranslateService) {
     DocCategoryFormComponent,
     DocCategoryListComponent,
     DocCategoryAppComponent,
+    AdminLogViewerComponent,
     TableViewerComponent,
     ConnectionComponent,
     ClientsDialogComponent,

@@ -10,7 +10,7 @@ import { UtilsService } from 'src/app/service/utils.service';
 })
 export class FooterComponent implements OnInit {
   today = new Date();
-	dateCommit = "Last Commit : 2026-05-26 15:39:19"
+	dateCommit = "Last Commit : 2026-05-26 17:49:48"
   dateFooter = "";
 
   constructor(private logger: LoggerService, public utils: UtilsService) { }

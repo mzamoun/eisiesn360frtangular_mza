@@ -25,6 +25,7 @@ import { CategoryListComponent } from "./compo/category/category-list/category-l
 import { ClientAppComponent } from './compo/client/client-app/client-app.component';
 import { ClientFormComponent } from './compo/client/client-form/client-form.component';
 import { ClientListComponent } from './compo/client/client-list/client-list.component';
+import { AdminLogViewerComponent } from './compo/admin-log-viewer/admin-log-viewer.component';
 import { CraConfigurationComponent } from "./compo/configuration/cra-configuration/cra-configuration.component";
 import { ConnectionComponent } from './compo/connection/connection.component';
 import { ConsultantAppComponent } from './compo/consultant/consultant-app/consultant-app.component';
@@ -79,6 +80,7 @@ const routes: Routes = [
 
   { canActivate: [AuthGuard], path: 'my-profile', component: ProfileComponent },
   { canActivate: [AuthGuard], path: 'help', component: HelpComponent },
+  { canActivate: [AuthGuard], path: 'admin_logs', component: AdminLogViewerComponent },
   { canActivate: [AuthGuard], path: 'project_list', component: ProjectListComponent },
   { canActivate: [AuthGuard], path: 'project_form', component: ProjectFormComponent },
   { canActivate: [AuthGuard], path: 'project_app', component: ProjectAppComponent },

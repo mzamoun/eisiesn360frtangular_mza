@@ -29,6 +29,13 @@
                         </a>
                     </li>
 
+                    <li class="nav-item" *ngIf="userConnected?.role === 'ADMIN'">
+                        <a routerLink="/admin_logs" class="nav-link" id="adminLogs">
+                            <span class="pcoded-micon"> <i class="feather icon-file-text"></i></span>
+                            <span class="pcoded-mtext">{{utils.tr('app.compo.menu.adminLogs')}}</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item " [appAuthorization] feature="ESN_MANAGEMENT" permission="VIEW">
                         <a href="javascript:void(0)" class="nav-link " id="addEsnDemo"
                             (click)="addEsnDemo(); $event.preventDefault();">

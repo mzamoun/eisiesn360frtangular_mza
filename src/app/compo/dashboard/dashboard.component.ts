@@ -62,6 +62,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         { id: 'MY_CRA', titleKey: 'app.dashboard.section.myCra', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
         // Documents administratifs
         { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
+        { id: 'ADMIN_LOGS', titleKey: 'app.dashboard.section.adminLogs', route: '/admin_logs', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'], chartable: false },
         // Section Aide (visible par tous les rôles, pas de feature spécifique)
         { id: 'SUPPORT', titleKey: 'app.dashboard.section.help', route: '/help', feature: null, chartable: false },
     ];

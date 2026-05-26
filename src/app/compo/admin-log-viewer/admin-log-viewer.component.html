@@ -1,0 +1,30 @@
+<div class="card my-4 admin-log-viewer" *ngIf="!isForbidden">
+  <div class="card-body">
+    <h3 class="card-title text-center py-2">{{ utils.tr('app.admin.logs.title') }}</h3>
+
+    <div class="toolbar">
+      <label for="lineCount">{{ utils.tr('app.admin.logs.lastLines') }}</label>
+      <select id="lineCount" class="form-control line-select" [(ngModel)]="selectedLines">
+        <option *ngFor="let n of lineOptions" [ngValue]="n">{{ n }}</option>
+      </select>
+      <button class="btn btn-primary" (click)="refreshLogs()" [disabled]="loadingLogs">
+        {{ utils.tr('Refresh') }}
+      </button>
+    </div>
+
+    <div class="meta" *ngIf="lastRefresh">
+      {{ utils.tr('app.admin.logs.lastRefresh') }} : {{ lastRefresh | date:'dd/MM/yyyy HH:mm:ss' }}
+    </div>
+
+    <div class="log-wrapper" *ngIf="logLines?.length > 0; else emptyLogs">
+      <pre class="log-pre"><code *ngFor="let line of logLines">{{ line }}
+</code></pre>
+    </div>
+
+    <ng-template #emptyLogs>
+      <div class="alert alert-info mt-3">
+        {{ utils.tr('app.admin.logs.empty') }}
+      </div>
+    </ng-template>
+  </div>
+</div>

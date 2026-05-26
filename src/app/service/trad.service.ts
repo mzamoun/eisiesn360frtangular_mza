@@ -566,10 +566,35 @@ export class TradService {
       "en": "Documents",
       "ar": "المستندات",
     },
+    "app.dashboard.section.adminLogs": {
+      "fr": "Logs Backend",
+      "en": "Backend Logs",
+      "ar": "سجلات الخلفية",
+    },
     "app.dashboard.section.help": {
       "fr": "Aide",
       "en": "Help",
       "ar": "مساعدة",
+    },
+    "app.admin.logs.title": {
+      "fr": "Dernieres lignes du log backend",
+      "en": "Latest backend log lines",
+      "ar": "آخر سطور سجل الخلفية",
+    },
+    "app.admin.logs.lastLines": {
+      "fr": "Nombre de lignes",
+      "en": "Line count",
+      "ar": "عدد السطور",
+    },
+    "app.admin.logs.lastRefresh": {
+      "fr": "Dernier rafraichissement",
+      "en": "Last refresh",
+      "ar": "آخر تحديث",
+    },
+    "app.admin.logs.empty": {
+      "fr": "Aucune ligne de log a afficher.",
+      "en": "No log lines to display.",
+      "ar": "لا توجد سطور سجلات للعرض.",
     },
     "app.dashboard.access": {
       "fr": "Accéder",
@@ -3306,6 +3331,11 @@ export class TradService {
       "fr": "Connexions",
       "en": "Connections",
       "ar": "الاتصالات",
+    },
+    "app.compo.menu.adminLogs": {
+      "fr": "Logs Backend",
+      "en": "Backend Logs",
+      "ar": "سجلات الخلفية",
     },
     "app.compo.menu.addEsnDemo": {
       "fr": "Ajouter ESN démo",
