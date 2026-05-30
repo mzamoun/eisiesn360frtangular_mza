@@ -78,6 +78,48 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
     );
   }
 
+  copyText(): void {
+    const textToCopy = this.logLines.join('\n');
+    if (!textToCopy) {
+      return;
+    }
+
+    const onSuccess = () => {
+      this.logger.debug('AdminLogViewerComponent.copyText copied to clipboard');
+    };
+
+    const onFailure = () => {
+      this.logger.debug('AdminLogViewerComponent.copyText clipboard copy failed');
+    };
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(onSuccess).catch(() => {
+        this.copyTextFallback(textToCopy);
+        onFailure();
+      });
+      return;
+    }
+
+    this.copyTextFallback(textToCopy);
+    onSuccess();
+  }
+
+  private copyTextFallback(textToCopy: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = textToCopy;
+    textarea.setAttribute('readonly', 'true');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+      document.execCommand('copy');
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
   private isAdminUser(): boolean {
     return this.dataSharingService.userConnected?.role === 'ADMIN';
   }

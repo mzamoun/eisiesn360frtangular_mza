@@ -596,6 +596,11 @@ export class TradService {
       "en": "Refresh",
       "ar": "تحديث",
     },
+    "app.admin.logs.copy": {
+      "fr": "Copier",
+      "en": "Copy",
+      "ar": "نسخ",
+    },
     "app.admin.logs.empty": {
       "fr": "Aucune ligne de log a afficher.",
       "en": "No log lines to display.",

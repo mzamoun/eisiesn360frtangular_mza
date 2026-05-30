@@ -14,11 +14,18 @@
 
     <div class="meta" *ngIf="lastRefresh">
       {{ utils.tr('app.admin.logs.lastRefresh') }} : {{ lastRefresh | date:'dd/MM/yyyy HH:mm:ss' }}
+      <button class="btn btn-primary" (click)="copyText()" [disabled]="loadingLogs">
+        {{ utils.tr('app.admin.logs.copy') }}
+      </button>
     </div>
 
     <div class="log-wrapper" *ngIf="logLines?.length > 0; else emptyLogs">
-      <pre class="log-pre"><code *ngFor="let line of logLines">{{ line }}
-</code></pre>
+      <div class="log-pre">
+        <div class="log-line" *ngFor="let line of logLines; let i = index">
+          <span class="line-number">{{ i + 1 }}. </span>
+          <span class="line-text">{{ line }}</span>
+        </div>
+      </div>
     </div>
 
     <ng-template #emptyLogs>

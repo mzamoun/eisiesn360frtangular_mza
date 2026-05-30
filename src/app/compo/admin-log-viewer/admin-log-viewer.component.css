@@ -20,21 +20,51 @@
 }
 
 .log-wrapper {
-  margin-top: 0.75rem;
-  border: 1px solid #dde5ef;
+  margin: 10px;
+  border: 1px solid black;
+  padding: 5px;
   border-radius: 8px;
-  background: #0f172a;
-  max-height: 65vh;
+  background: rgb(136, 241, 255);
+  max-height: 50vh;
   overflow: auto;
 }
 
 .log-pre {
-  margin: 0;
-  padding: 0.85rem;
-  color: #e5e7eb;
+  margin: 0px;
+  padding:0;
+  color: black;
   font-family: Consolas, 'Courier New', monospace;
-  font-size: 0.84rem;
-  line-height: 1.35;
+  font-size: 1.2rem;
+  line-height: 2;
+}
+
+.log-line {
+  display: block;
+  padding: 0.05rem 0.2rem;
+}
+
+.log-line:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.30);
+}
+
+.log-line:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.log-line:last-child {
+  margin-bottom: 0;
+}
+
+.line-number {
+  display: inline-block;
+  min-width: 2.2rem;
+  color: #334155;
+  user-select: text;
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+.line-text {
   white-space: pre-wrap;
   word-break: break-word;
 }
