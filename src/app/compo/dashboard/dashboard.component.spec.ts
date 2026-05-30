@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { AuthorizationService } from 'src/app/authorization/service/authorization.service';
 import { ActivityService } from 'src/app/service/activity.service';
+import { AdminLogService } from 'src/app/service/admin-log.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { CraService } from 'src/app/service/cra.service';
@@ -39,6 +40,7 @@ describe('DashBoardComponent (integration)', () => {
   let utilsIhmStub: any;
 
   let clientServiceStub: any;
+  let adminLogServiceStub: any;
   let projectServiceStub: any;
   let activityServiceStub: any;
   let consultantServiceStub: any;
@@ -72,6 +74,10 @@ describe('DashBoardComponent (integration)', () => {
     clientServiceStub = {
       findAll: jasmine.createSpy('findAll').and.returnValue(okResponse([{ id: 1 }])),
       findAllAll: jasmine.createSpy('findAllAll').and.returnValue(okResponse([{ id: 1 }, { id: 2 }]))
+    };
+
+    adminLogServiceStub = {
+      getLineCount: jasmine.createSpy('getLineCount').and.returnValue(of(0))
     };
 
     projectServiceStub = {
@@ -137,6 +143,7 @@ describe('DashBoardComponent (integration)', () => {
       providers: [
         { provide: AuthorizationService, useValue: authzStub },
         { provide: MsgService, useValue: {} },
+        { provide: AdminLogService, useValue: adminLogServiceStub },
         { provide: ClientService, useValue: clientServiceStub },
         { provide: ProjectService, useValue: projectServiceStub },
         { provide: ActivityService, useValue: activityServiceStub },

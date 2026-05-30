@@ -13,6 +13,7 @@ import { Notification } from 'src/app/model/notification';
 import { Project } from 'src/app/model/project';
 import { MyError } from 'src/app/resource/MyError';
 import { ActivityService } from 'src/app/service/activity.service';
+import { AdminLogService } from 'src/app/service/admin-log.service';
 import { ClientService } from 'src/app/service/client.service';
 import { ConsultantService } from 'src/app/service/consultant.service';
 import { CraService } from 'src/app/service/cra.service';
@@ -40,9 +41,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     targetBarHeight: number = 200; // Hauteur cible en pixels pour la barre max
     timeGrouping: 'day' | 'month' | 'year' = 'year';
     revenueData: any = null;
-    visibleSections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any; chartable?: boolean }> = [];
+    visibleSections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number | string; roles?: string[]; queryParams?: any; chartable?: boolean }> = [];
 
-        sections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number; roles?: string[]; queryParams?: any; chartable?: boolean }> = [
+        sections: Array<{ id: string; titleKey: string; route: string; feature?: Feature | null; count?: number | string; roles?: string[]; queryParams?: any; chartable?: boolean }> = [
         // Visible par tous les roles (selon permissions)
         { id: 'PROFILE', titleKey: 'app.dashboard.section.profile', route: '/my-profile', feature: null },
         { id: 'NOTIFICATIONS', titleKey: 'app.dashboard.section.notifications', route: '/notification' },
@@ -89,6 +90,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     constructor(
         private authz: AuthorizationService,
         private msgService: MsgService,
+        private adminLogService: AdminLogService,
         private clientService: ClientService,
         private projectService: ProjectService,
         private activityService: ActivityService,
@@ -305,6 +307,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         });
 
         this.loadSupportTicketCount(role);
+        this.loadAdminLogCount(role);
 
         // Consultants
         this.loadAllConsultantsAndUpdateCounts();
@@ -354,6 +357,26 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         if (role === 'MANAGER') {
             this.loadClientAndCheckHierarchy();
         }
+    }
+
+    private loadAdminLogCount(role: string): void {
+        if (role !== 'ADMIN') {
+            this.updateSectionCount('ADMIN_LOGS', 0);
+            return;
+        }
+
+        this.adminLogService.getLineCount().subscribe({
+            next: (count) => {
+                if (count >= 0) {
+                    this.updateSectionCount('ADMIN_LOGS', count);
+                    return;
+                }
+                this.updateSectionCount('ADMIN_LOGS', 'N/A');
+            },
+            error: () => {
+                this.updateSectionCount('ADMIN_LOGS', 'N/A');
+            }
+        });
     }
 
     private loadSupportTicketCount(role: string): void {
@@ -915,5 +938,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
         this.logger.debug('DashboardComponent: Revenue data generated:', result);
         return result;
+    }
+
+    hasRole(role: string): boolean {
+        const userRole = this.dataSharingService.userConnected?.role;
+        return userRole === role;
     }
 }

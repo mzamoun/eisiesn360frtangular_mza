@@ -139,3 +139,8 @@
     </div>
   </div>
 </div>
+
+<div class="admin-log-section" *ngIf="hasRole('ADMIN')">
+  <h2>📜 {{utils.tr('app.dashboard.adminLogs')}}</h2>
+  <app-admin-log-viewer></app-admin-log-viewer>
+</div>

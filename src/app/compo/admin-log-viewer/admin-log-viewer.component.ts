@@ -12,7 +12,7 @@ import { MereComponent } from '../_utils/mere-component';
 })
 export class AdminLogViewerComponent extends MereComponent implements OnInit {
 
-  lineOptions: number[] = [50, 100, 200, 500, 1000];
+  lineOptions: number[] = [20, 50, 100, 200, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
   selectedLines = 200;
   logLines: string[] = [];
   lastRefresh: Date | null = null;

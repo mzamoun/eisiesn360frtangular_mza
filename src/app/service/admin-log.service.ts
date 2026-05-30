@@ -20,6 +20,14 @@ export class AdminLogService {
       .pipe(map((raw: string) => this.normalizeToLines(raw)));
   }
 
+  getLineCount(): Observable<number> {
+    return this.http
+      .get(this.logUrl + '/count', { responseType: 'text' })
+      .pipe(
+        map((raw: string) => this.normalizeToCount(raw))
+      );
+  }
+
   private normalizeToLines(raw: string): string[] {
     if (!raw) {
       return [];
@@ -61,5 +69,41 @@ export class AdminLogService {
       .replace(/\r/g, '')
       .split('\n')
       .filter((line: string) => line !== undefined && line !== null);
+  }
+
+  private normalizeToCount(raw: string): number {
+    if (!raw) {
+      return -1;
+    }
+
+    const directCount = Number(raw);
+    if (!Number.isNaN(directCount)) {
+      return Math.max(0, Math.trunc(directCount));
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      const result =
+        parsed?.body?.result ??
+        parsed?.body?.object ??
+        parsed?.result ??
+        parsed?.object ??
+        parsed?.count ??
+        parsed;
+
+      const count = Number(
+        result?.count ??
+        result?.value ??
+        result
+      );
+
+      if (!Number.isNaN(count)) {
+        return Math.max(0, Math.trunc(count));
+      }
+    } catch {
+      return -1;
+    }
+
+    return -1;
   }
 }
