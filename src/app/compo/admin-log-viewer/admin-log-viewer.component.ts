@@ -14,6 +14,7 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
 
   lineOptions: number[] = [20, 50, 100, 200, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
   selectedLines = 200;
+  nbLinesTotal: number | string = 'N/A';
   logLines: string[] = [];
   lastRefresh: Date | null = null;
   loadingLogs = false;
@@ -50,6 +51,7 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
     this.loadingLogs = true;
     const label = 'loadAdminLogs';
     this.beforeCallServer(label);
+    this.loadNbLinesTotal();
 
     this.adminLogService.tail(this.selectedLines).subscribe(
       (lines: string[]) => {
@@ -61,6 +63,17 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
       (error) => {
         this.addErrorFromErrorOfServer(label, error);
         this.loadingLogs = false;
+      }
+    );
+  }
+
+  private loadNbLinesTotal(): void {
+    this.adminLogService.refreshLineCount().subscribe(
+      (count: number) => {
+        this.nbLinesTotal = count >= 0 ? count : 'N/A';
+      },
+      () => {
+        this.nbLinesTotal = 'N/A';
       }
     );
   }

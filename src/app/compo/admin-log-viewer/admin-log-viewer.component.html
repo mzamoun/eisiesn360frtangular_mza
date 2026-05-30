@@ -1,6 +1,6 @@
 <div class="card my-4 admin-log-viewer" *ngIf="!isForbidden">
   <div class="card-body">
-    <h3 class="card-title text-center py-2">{{ utils.tr('app.admin.logs.title') }}</h3>
+    <h3 class="card-title text-center py-2">{{ utils.tr('app.admin.logs.title') }} ({{nbLinesTotal}}) </h3>
 
     <div class="toolbar">
       <label for="lineCount">{{ utils.tr('app.admin.logs.lastLines') }}</label>
@@ -8,7 +8,7 @@
         <option *ngFor="let n of lineOptions" [ngValue]="n">{{ n }}</option>
       </select>
       <button class="btn btn-primary" (click)="refreshLogs()" [disabled]="loadingLogs">
-        {{ utils.tr('Refresh') }}
+        {{ utils.tr('app.admin.logs.refresh') }}
       </button>
     </div>
 

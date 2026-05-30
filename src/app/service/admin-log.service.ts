@@ -1,13 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminLogService {
 
   private readonly logUrl = environment.apiUrl + '/admin/logs';
+  private readonly lineCountSubject = new BehaviorSubject<number>(-1);
+  private lineCountRequest$: Observable<number> | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -20,12 +22,30 @@ export class AdminLogService {
       .pipe(map((raw: string) => this.normalizeToLines(raw)));
   }
 
-  getLineCount(): Observable<number> {
-    return this.http
+  getLineCount(forceRefresh = false): Observable<number> {
+    if (!this.lineCountRequest$ || forceRefresh) {
+      this.lineCountRequest$ = this.http
       .get(this.logUrl + '/count', { responseType: 'text' })
       .pipe(
-        map((raw: string) => this.normalizeToCount(raw))
+        map((raw: string) => this.normalizeToCount(raw)),
+        tap((count: number) => this.lineCountSubject.next(count)),
+        shareReplay(1)
       );
+    }
+
+    return this.lineCountRequest$;
+  }
+
+  refreshLineCount(): Observable<number> {
+    return this.getLineCount(true);
+  }
+
+  lineCount$(): Observable<number> {
+    return this.lineCountSubject.asObservable();
+  }
+
+  getLineCountSnapshot(): number {
+    return this.lineCountSubject.value;
   }
 
   private normalizeToLines(raw: string): string[] {

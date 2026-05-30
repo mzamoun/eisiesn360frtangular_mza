@@ -132,6 +132,16 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         });
 
         this.tryLoadCountsFromUserContext(this.dataSharingService.userConnected);
+
+        this.adminLogService.lineCount$()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((count: number) => {
+                const role = this.dataSharingService.userConnected?.role;
+                if (role !== 'ADMIN' || count < 0) {
+                    return;
+                }
+                this.updateSectionCount('ADMIN_LOGS', count);
+            });
     }
 
     private tryLoadCountsFromUserContext(user: Consultant): void {
@@ -362,6 +372,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     private loadAdminLogCount(role: string): void {
         if (role !== 'ADMIN') {
             this.updateSectionCount('ADMIN_LOGS', 0);
+            return;
+        }
+
+        const cachedCount = this.adminLogService.getLineCountSnapshot();
+        if (cachedCount >= 0) {
+            this.updateSectionCount('ADMIN_LOGS', cachedCount);
             return;
         }
 

@@ -591,6 +591,11 @@ export class TradService {
       "en": "Last refresh",
       "ar": "آخر تحديث",
     },
+    "app.admin.logs.refresh": {
+      "fr": "Rafraichir",
+      "en": "Refresh",
+      "ar": "تحديث",
+    },
     "app.admin.logs.empty": {
       "fr": "Aucune ligne de log a afficher.",
       "en": "No log lines to display.",
