@@ -205,6 +205,11 @@
                         <i class="fas fa-file-pdf me-1"></i> {{utils.tr('app.compo.cra.form.pdfForEsn')}}
                     </button>
 
+                    <button class="btn btn-outline-warning me-2" id="btn-cra-form-generate-fiche-paie-pdf"
+                        (click)="generateFichePaieFromCra()" *ngIf="currentCra.id!=null">
+                        <i class="fas fa-file-invoice-dollar me-1"></i> {{utils.tr('app.compo.cra.form.generateFichePaieFromCra')}}
+                    </button>
+
                     <button class="btn btn-primary me-2" id="btn-cra-form-save" (click)="saveCra(true, false, '', '')"
                         *ngIf="!currentCra?.validByConsultant">
                         <i class="fas fa-save me-1"></i> {{btnActionTitle}}
@@ -455,6 +460,7 @@
         <button (click)="rejectCra()" id="btn-cra-form-reject-cra" class="btn btn-info" type="submit"
             [disabled]="!comment.valid">{{utils.tr('Save')}}</button>
     </div>
+    
 </ng-template>
 
 <ng-template #showCraReportPdfView let-modal>

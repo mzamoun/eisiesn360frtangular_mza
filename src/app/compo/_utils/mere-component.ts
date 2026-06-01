@@ -194,11 +194,15 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
 
   getCurentUserName() {
     let s = "";
-    let user = this.userConnected ? this.userConnected.fullName : "";
-    if (user) {
-      s = user
+    if (this.userConnected) {
+      const fromFullName = (this.userConnected as any).fullName || "";
+      const fromParts = [this.userConnected.firstName, this.userConnected.lastName]
+        .filter(part => !!part)
+        .join(' ')
+        .trim();
+      s = fromFullName || fromParts || this.userConnected.username || "";
     }
-    this.userConnectedName = s
+    this.userConnectedName = s;
 
     if(this.userConnected) this.isUserLoggedIn = true ;
 

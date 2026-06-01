@@ -48,8 +48,7 @@ export class Consultant {
 
     // adminConsultant: Consultant;
     get adminConsultantUsernameFct(): string {
-        // return adminConsultant?.usarname ;
-        return this.adminConsultant.username
+        return this.adminConsultant?.username || null;
     }
 
     //call : obj.toString

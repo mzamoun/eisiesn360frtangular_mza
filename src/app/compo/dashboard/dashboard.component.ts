@@ -246,27 +246,54 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             }
         );
 
-        // ESN (pour tous les rôles)
-        let labelEsn = 'Chargement des ESN...';
-        this.dataSharingService.addInfo(labelEsn);
+        if (role !== 'CONSULTANT') {
+            // ESN (hors CONSULTANT)
+            let labelEsn = 'Chargement des ESN...';
+            this.dataSharingService.addInfo(labelEsn);
 
-        this.esnService.findAll().subscribe({
-            next: (resp) => {
-                this.logger.debug('DashboardComponent: Loaded ESNs, resp = ', resp);
-                this.dataSharingService.delInfo(labelEsn);
-                this.listEsn = resp && resp.body && resp.body.result ? resp.body.result : [];
-                this.updateSectionCount('ESN', this.listEsn.length);
-            },
-            error: (err) => {
-                this.logger.debug('DashboardComponent: Error loading ESNs', err);
-                this.dataSharingService.delInfo(labelEsn);
-                this.dataSharingService.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(err)));
-                this.updateSectionCount('ESN', 0);
+            this.esnService.findAll().subscribe({
+                next: (resp) => {
+                    this.logger.debug('DashboardComponent: Loaded ESNs, resp = ', resp);
+                    this.dataSharingService.delInfo(labelEsn);
+                    this.listEsn = resp && resp.body && resp.body.result ? resp.body.result : [];
+                    this.updateSectionCount('ESN', this.listEsn.length);
+                },
+                error: (err) => {
+                    this.logger.debug('DashboardComponent: Error loading ESNs', err);
+                    this.dataSharingService.delInfo(labelEsn);
+                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(err)));
+                    this.updateSectionCount('ESN', 0);
+                }
+            });
+        } else {
+            this.updateSectionCount('ESN', 0);
+        }
+
+        // CRA
+        if (role === 'CONSULTANT') {
+            const username = this.dataSharingService.userConnected?.username;
+            if (username) {
+                let labelMyCra = 'Chargement de mes CRA...';
+                this.dataSharingService.addInfo(labelMyCra);
+                this.craService.getListCraOfUser(username).subscribe({
+                    next: (resp) => {
+                        this.dataSharingService.delInfo(labelMyCra);
+                        this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
+                        this.updateSectionCount('MY_CRA', this.listCra.length);
+                        this.updateSectionCount('CRA', this.listCra.length);
+                    },
+                    error: (error) => {
+                        this.dataSharingService.delInfo(labelMyCra);
+                        this.dataSharingService.addError(new MyError('Erreur lors du chargement de mes CRA : ', JSON.stringify(error)));
+                        this.updateSectionCount('MY_CRA', 0);
+                        this.updateSectionCount('CRA', 0);
+                    }
+                });
+            } else {
+                this.updateSectionCount('MY_CRA', 0);
+                this.updateSectionCount('CRA', 0);
             }
-        });
-
-        // CRA (pour tous les rôles)
-        if (this.isCraLoaded) {
+        } else if (this.isCraLoaded) {
             this.updateSectionCount('CRA', this.listCra.length);
         } else if (!this.isCraLoading) {
             this.isCraLoading = true;
@@ -320,14 +347,16 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         this.loadAdminLogCount(role);
 
         // Consultants
-        this.loadAllConsultantsAndUpdateCounts();
+        if (role !== 'CONSULTANT') {
+            this.loadAllConsultantsAndUpdateCounts();
+        } else {
+            this.updateSectionCount('CONSULTANTS', 0);
+            this.updateSectionCount('MY_CONSULTANTS', 0);
+        }
 
-        // Pour ADMIN et CONSULTANT: juste les listes de base
-        if (role === 'ADMIN' || role === 'CONSULTANT') {
-            // Pour ADMIN, utiliser findAllAll() pour récupérer TOUS les clients sans restriction d'ESN
-            const clientObservable = role === 'ADMIN'
-                ? this.clientService.findAllAll()
-                : this.clientService.findAll(this.esnId);
+        // Pour ADMIN: listes globales
+        if (role === 'ADMIN') {
+            const clientObservable = this.clientService.findAllAll();
 
             clientObservable.subscribe({
                 next: (resp) => {

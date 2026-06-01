@@ -252,22 +252,24 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   getCurrentUserFromLocaleStorage(): Consultant {
-    let value = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED);
-    if (value != null && value != undefined) {
-      if (value == 'true') {
-        this.isUserLoggedInFct.next(true);
-      } else {
-        this.isUserLoggedInFct.next(false);
-      }
-    } else {
-      this.isUserLoggedInFct.next(false);
-    }
-    let userStr = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER);
-    if (userStr) {
-      this.setUserConnected(JSON.parse(userStr))
+    const userStr = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER);
+    if (!userStr) {
+      this.setUserConnected(null);
+      return this.userConnected;
     }
 
-    return this.userConnected
+    try {
+      const user = JSON.parse(userStr);
+      this.setUserConnected(user);
+      localStorage.setItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED, user ? 'true' : 'false');
+    } catch (error) {
+      this.logger.error('getCurrentUserFromLocaleStorage: invalid stored user JSON', error);
+      localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER);
+      localStorage.setItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED, 'false');
+      this.setUserConnected(null);
+    }
+
+    return this.userConnected;
   }
 
   private hydrateStoredUserEsnIfNeeded(): void {
@@ -630,6 +632,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       data => {
         if (data) {
           this.setUserConnected(data.body.result)
+          if (this.userConnected) {
+            // Persist base identity immediately; ESN can be enriched asynchronously.
+            this.saveTokenUser(this.userConnected);
+          }
 
           this.majEsnOnConsultant(() => {
             if (this.userConnected) {
@@ -639,6 +645,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             this.navigateToHomeWhenReady();
           }, (error) => {
             this.addErrorTxt(JSON.stringify(error))
+            if (this.userConnected) {
+              this.saveTokenUser(this.userConnected);
+            }
             this.navigateToHomeWhenReady();
           })
           if (caller) {
@@ -709,9 +718,38 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     //////////this.logger.debug("saveTokenUser:", JSON.stringify(user));
   }
 
+  private hasStoredUser(): boolean {
+    const userStr = localStorage.getItem(UtilsService.TOKEN_STORAGE_USER);
+    if (!userStr) {
+      return false;
+    }
+    try {
+      const parsed = JSON.parse(userStr);
+      return !!parsed;
+    } catch {
+      localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER);
+      return false;
+    }
+  }
+
   public isLoggedIn(): boolean {
-    // this.logger.debug("isLoggin this.getToken() = ", this.getToken())
-    return this.getToken() != null;
+    const hasToken = this.getToken() != null;
+    if (!hasToken) {
+      return false;
+    }
+
+    if (this.userConnected) {
+      return true;
+    }
+
+    if (this.hasStoredUser()) {
+      // Hydrate in-memory user lazily when session token exists.
+      this.getCurrentUserFromLocaleStorage();
+      return !!this.userConnected;
+    }
+
+    // Token without user object => inconsistent session; consider as logged out.
+    return false;
   }
 
   get UserConnected(): Consultant {

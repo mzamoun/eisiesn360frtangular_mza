@@ -79,6 +79,7 @@ export class HeaderComponent extends MereComponent {
         // Mettre à jour displayEsnName quand userConnected change
 
         this.userConnected = user
+        this.getCurentUserName();
         this.logger.debug("HeaderComponent - userConnected change : ", user)
 
         this.displayEsnName = user?.esnName || user?.esn?.name || null;
@@ -112,6 +113,8 @@ export class HeaderComponent extends MereComponent {
           // Ici on se contente de mettre à jour l'UI locale.
           this.consultantService.majAdminConsultant(this.userConnected)
         }
+
+        this.cdr.detectChanges();
 
       })
     );

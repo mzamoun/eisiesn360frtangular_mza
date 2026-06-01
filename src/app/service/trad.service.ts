@@ -2497,6 +2497,11 @@ export class TradService {
       "en": "Pdf for ESN",
       "ar": "PDF لـ ESN",
     },
+    "app.compo.cra.form.generateFichePaieFromCra": {
+      "fr": "Fiche de paie",
+      "en": "Payroll slip",
+      "ar": "قسيمة الراتب",
+    },
     "app.compo.cra.form.deleteAll": {
       "fr": "Tout supprimer",
       "en": "Delete All",

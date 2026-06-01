@@ -2267,6 +2267,47 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   }
 
+  generateFichePaieFromCra(): void {
+    const label = 'generateFichePaieFromCra';
+    if (!this.currentCra?.id) {
+      return;
+    }
+
+    this.beforeCallServer(label);
+    this.craService.generateFichePaieFromCra(this.currentCra.id).subscribe(
+      (response) => {
+        this.afterCallServer(label, response);
+        const blob = new Blob([response.body], { type: 'application/pdf' });
+        const fileName = this.extractFileNameFromHeader(response?.headers?.get('content-disposition'))
+          || ('fiche_paie_cra_' + this.currentCra.id + '.pdf');
+
+        const url = window.URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = fileName;
+        downloadLink.click();
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        this.addErrorFromErrorOfServer(label, error);
+      }
+    );
+  }
+
+  private extractFileNameFromHeader(contentDisposition: string | null): string | null {
+    if (!contentDisposition) {
+      return null;
+    }
+
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match && utf8Match[1]) {
+      return decodeURIComponent(utf8Match[1]);
+    }
+
+    const match = contentDisposition.match(/filename=\"?([^\";]+)\"?/i);
+    return match && match[1] ? match[1] : null;
+  }
+
 
   downloadPDF(craReportActivity: CraReportActivity) {
     const linkSource = `data:application/pdf;base64,${craReportActivity.pdfData}`;

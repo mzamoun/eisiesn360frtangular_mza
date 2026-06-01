@@ -150,6 +150,11 @@ export class CraService {
     return this.http.get<GenericResponse>(this.craUrl + "generate-cra-pdf/cli/" + idCra + "/" + clientName)
   }
 
+  public generateFichePaieFromCra(idCra: number): Observable<any> {
+    const url = this.craUrl + 'generate-fiche-paie-from-cra/' + idCra;
+    return this.http.post(url, null, { responseType: 'blob', observe: 'response' });
+  }
+
   generateCliPDFGenLinks(idCra: number): Observable<GenericResponse> {
     return this.http.get<GenericResponse>(this.craUrl + "generate-cra-pdf/cli/" + idCra + "/-")
   }
