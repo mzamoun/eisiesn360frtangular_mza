@@ -45,7 +45,6 @@ export class ProfileComponent extends MereComponent {
 
   onSubmit() {
     this.logger.debug("profile onSubmit deb")
-    this.myObj.username = this.myObj.email;
     //////////this.logger.debug("*************" + JSON.stringify(this.myObj))
     this.beforeCallServer("onSubmit");
     this.consultantService.save(this.myObj).subscribe(

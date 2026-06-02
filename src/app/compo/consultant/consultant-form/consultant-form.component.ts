@@ -45,6 +45,7 @@ export class ConsultantFormComponent extends MereComponent {
   // filter by manager
   manager: Consultant = null;
   emailPattern: string = UtilsService.EMAIL_PATTERN;
+  usernamePattern: string = '^[A-Za-z0-9._-]{3,64}$';
   telPattern: string = UtilsService.TEL_PATTERN;
   confirmPassword: string;
   infoResetPassword: string;
@@ -515,7 +516,9 @@ export class ConsultantFormComponent extends MereComponent {
       return
     }
 
-    this.emailChange()
+    if (!this.validateUsernameRules()) {
+      return;
+    }
 
     // Sauvegarder le password saisie (en plain text) pour l'email
     // Le serveur va le hasher et le sauvegarder en BDD
@@ -525,6 +528,77 @@ export class ConsultantFormComponent extends MereComponent {
     //todo check if email exist : a la saisie . invalider le form si exist via une variable isEmailExist.
     // todo : confirmer avec le user son email en lui rappelant : prenom, nom, soc 
 
+    this.verifyUsernameUniqueAndSave();
+  }
+
+  private normalizeIdentityValue(v: string): string {
+    return (v || '').trim();
+  }
+
+  private isEmailLike(v: string): boolean {
+    const value = this.normalizeIdentityValue(v);
+    if (!value) {
+      return false;
+    }
+    const emailRegex = new RegExp(UtilsService.EMAIL_PATTERN, 'i');
+    return emailRegex.test(value) || value.indexOf('@') >= 0;
+  }
+
+  private validateUsernameRules(): boolean {
+    const username = this.normalizeIdentityValue(this.myObj?.username);
+    const email = this.normalizeIdentityValue(this.myObj?.email).toLowerCase();
+
+    this.myObj.username = username;
+    this.myObj.email = email;
+
+    if (!username || !email) {
+      this.utilsIhmService.infoDialog('email or username is null !!');
+      return false;
+    }
+
+    if (username.toLowerCase() === email) {
+      this.utilsIhmService.infoDialog('Le username doit être différent de l\'email.');
+      return false;
+    }
+
+    if (this.isEmailLike(username)) {
+      this.utilsIhmService.infoDialog('Le username ne doit pas avoir la forme d\'un email.');
+      return false;
+    }
+
+    return true;
+  }
+
+  private verifyUsernameUniqueAndSave(): void {
+    const username = this.normalizeIdentityValue(this.myObj?.username);
+    const label = 'verifyUsernameUnique';
+    this.beforeCallServer(label);
+
+    this.consultantService.findConsultantByUsername(username).subscribe(
+      data => {
+        this.afterCallServer(label, data);
+        const existing: Consultant = data?.body?.result;
+        const isUsedByAnother = !!existing && !!existing.id && existing.id !== this.myObj?.id;
+
+        if (isUsedByAnother) {
+          this.utilsIhmService.infoDialog('Username déjà utilisé. Choisissez un autre username.');
+          return;
+        }
+
+        this.proceedSaveConsultant();
+      },
+      error => {
+        // En cas de 404 (username non trouvé), on peut sauvegarder.
+        if (error?.status === 404) {
+          this.proceedSaveConsultant();
+          return;
+        }
+        this.addErrorFromErrorOfServer(label, error);
+      }
+    );
+  }
+
+  private proceedSaveConsultant(): void {
     this.logger.debug("this.manager.role:", '.' + this.manager?.role + '.')
     this.logger.debug("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
     if (this.userConnected && this.userConnected.role + '' != 'ADMIN') {
@@ -731,13 +805,7 @@ export class ConsultantFormComponent extends MereComponent {
 
   emailChange() {
     this.logger.debug("emailChange this.myObj.email ", this.myObj.email)
-    if (this.utils.isEmpty(this.myObj.username)) {
-      this.myObj.username = this.myObj.email
-    }
-
-    // if (!this.myObj.username || this.myObj.username == "") {
-    //   this.myObj.username = this.myObj.email
-    // }
+    this.myObj.email = (this.myObj.email || '').trim().toLowerCase();
   }
 
   showLoadingDialog(message: string): void {

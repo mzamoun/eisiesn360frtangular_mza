@@ -112,3 +112,18 @@
     padding: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
+
+#btn-cra-form-generate-fiche-paie-pdf {
+	background-color: #b45309;
+	border-color: #b45309;
+	color: #ffffff;
+	font-weight: 600;
+}
+
+#btn-cra-form-generate-fiche-paie-pdf:hover,
+#btn-cra-form-generate-fiche-paie-pdf:focus,
+#btn-cra-form-generate-fiche-paie-pdf:active {
+	background-color: #92400e;
+	border-color: #92400e;
+	color: #ffffff;
+}

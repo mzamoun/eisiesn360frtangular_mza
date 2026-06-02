@@ -128,7 +128,6 @@ export class ConsultantListComponent extends MereComponent {
 
     edit(consultant: Consultant) {
         this.clearInfos();
-        consultant.username = consultant.email;
         this.consultantService.setConsultant(consultant);
         this.router.navigate(['/consultant_form']);
     }
