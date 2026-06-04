@@ -1161,6 +1161,31 @@ export class TradService {
       "en": "ESN Email",
       "ar": "البريد الإلكتروني للمؤسسة",
     },
+    "app.compo.esn.form.payroll.sectionTitle": {
+      "fr": "Informations Paie (Societe)",
+      "en": "Payroll Information (Company)",
+      "ar": "معلومات الرواتب (الشركة)",
+    },
+    "app.compo.esn.form.input.payrollSiret": {
+      "fr": "SIRET",
+      "en": "SIRET",
+      "ar": "رقم SIRET",
+    },
+    "app.compo.esn.form.input.payrollCodeNaf": {
+      "fr": "Code NAF",
+      "en": "NAF Code",
+      "ar": "رمز NAF",
+    },
+    "app.compo.esn.form.input.payrollUrssaf": {
+      "fr": "URSSAF",
+      "en": "URSSAF",
+      "ar": "URSSAF",
+    },
+    "app.compo.esn.form.input.payrollConventionCollective": {
+      "fr": "Convention collective",
+      "en": "Collective agreement",
+      "ar": "الاتفاقية الجماعية",
+    },
     "app.compo.esn.form.button.list": {
       "fr": "Retour \u00e0 la liste",
       "en": "Back to list",
@@ -1480,6 +1505,61 @@ export class TradService {
       "fr": "Nom Utilisateur",
       "en": "Username",
       "ar": "اسم المستخدم",
+    },
+    "app.compo.consultant.form.validation.usernameInvalid": {
+      "fr": "Username invalide (3-64 chars: lettres, chiffres, '.', '_' ou '-')",
+      "en": "Invalid username (3-64 chars: letters, numbers, '.', '_' or '-')",
+      "ar": "اسم مستخدم غير صالح (3-64 حرفًا: أحرف، أرقام، '.'، '_' أو '-')",
+    },
+    "app.compo.consultant.form.input.photo": {
+      "fr": "Photo (cliquer sur l'avatar)",
+      "en": "Photo (click on the avatar)",
+      "ar": "الصورة (انقر على الصورة الرمزية)",
+    },
+    "app.compo.consultant.form.input.photoHelp": {
+      "fr": "PNG/JPEG/GIF/WebP - max 2 Mo",
+      "en": "PNG/JPEG/GIF/WebP - max 2 MB",
+      "ar": "PNG/JPEG/GIF/WebP - الحد الأقصى 2 ميغابايت",
+    },
+    "app.compo.consultant.form.payroll.sectionTitle": {
+      "fr": "Informations Paie (Referentiel)",
+      "en": "Payroll Information (Reference)",
+      "ar": "معلومات الرواتب (المرجعية)",
+    },
+    "app.compo.consultant.form.input.socialSecurityNumber": {
+      "fr": "Numero securite sociale",
+      "en": "Social security number",
+      "ar": "رقم الضمان الاجتماعي",
+    },
+    "app.compo.consultant.form.input.jobTitle": {
+      "fr": "Emploi",
+      "en": "Job title",
+      "ar": "المسمى الوظيفي",
+    },
+    "app.compo.consultant.form.input.professionalStatus": {
+      "fr": "Statut professionnel",
+      "en": "Professional status",
+      "ar": "الوضع المهني",
+    },
+    "app.compo.consultant.form.input.positionCode": {
+      "fr": "Position",
+      "en": "Position",
+      "ar": "المنصب",
+    },
+    "app.compo.consultant.form.input.payrollCoefficient": {
+      "fr": "Coefficient",
+      "en": "Coefficient",
+      "ar": "المعامل",
+    },
+    "app.compo.consultant.form.input.defaultPaymentMode": {
+      "fr": "Mode de paiement",
+      "en": "Payment method",
+      "ar": "طريقة الدفع",
+    },
+    "app.compo.consultant.form.input.entryDate": {
+      "fr": "Date d'entree",
+      "en": "Entry date",
+      "ar": "تاريخ الالتحاق",
     },
     "app.compo.consultant.form.input.password": {
       "fr": "Mot de passe",

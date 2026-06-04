@@ -13,6 +13,10 @@ export class Esn {
   tel: string;
   webSite: string;
   email: string;
+  payrollSiret: string;
+  payrollCodeNaf: string;
+  payrollUrssaf: string;
+  payrollConventionCollective: string;
 
   listResp : Consultant[];
   

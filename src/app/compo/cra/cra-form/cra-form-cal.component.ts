@@ -1956,16 +1956,32 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
         }
         craDay.craDayActivities.forEach((cda, k) => {
-          let activity: Activity = cda.activity;
+          const activity: Activity = cda?.activity;
+          if (!activity) {
+            return;
+          }
           // ////////this.logger.debug("******* process activity:", activity)
 
           let type: ActivityType = activity.type;
           if (type == null) {
+            if (!activity.typeId) {
+              // Pas de type exploitable: on applique un type neutre pour éviter les boucles et crashs.
+              activity.type = new ActivityType();
+              return;
+            }
             // Type manquant : charger puis relancer process() depuis zéro pour éviter
             // le double-comptage dû aux callbacks multiples en attente.
             this.activityTypeService.findById(activity.typeId).subscribe(
               data => {
-                activity.type = data.body.result;
+                const resolvedType: ActivityType = data?.body?.result;
+                if (!resolvedType) {
+                  this.logger.debug("WARN activityTypeService.findById returned empty result, typeId", activity.typeId, data);
+                  // Type neutre pour ne plus retenter indéfiniment sur la même activité.
+                  activity.type = new ActivityType();
+                  return;
+                }
+
+                activity.type = resolvedType;
                 // Recompte complet depuis 0 : pas de calcul_recap direct ici
                 this.process();
                 this.refreshMe();

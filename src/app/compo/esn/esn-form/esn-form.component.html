@@ -91,6 +91,29 @@
             <div [hidden]="email.valid" class="badge badge-danger">{{utils.tr('app.compo.esn.form.input.email')}}
                 {{utils.tr('app.badge.required')}}</div>
 
+            <hr>
+            <h5>{{utils.tr('app.compo.esn.form.payroll.sectionTitle')}}</h5>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="payrollSiret">{{utils.tr('app.compo.esn.form.input.payrollSiret')}}</label>
+                    <input type="text" [(ngModel)]="myObj.payrollSiret" class="form-control" id="payrollSiret" name="payrollSiret" placeholder="14 chiffres">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="payrollCodeNaf">{{utils.tr('app.compo.esn.form.input.payrollCodeNaf')}}</label>
+                    <input type="text" [(ngModel)]="myObj.payrollCodeNaf" class="form-control" id="payrollCodeNaf" name="payrollCodeNaf" placeholder="6202A">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="payrollUrssaf">{{utils.tr('app.compo.esn.form.input.payrollUrssaf')}}</label>
+                    <input type="text" [(ngModel)]="myObj.payrollUrssaf" class="form-control" id="payrollUrssaf" name="payrollUrssaf" placeholder="Numero compte">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="payrollConventionCollective">{{utils.tr('app.compo.esn.form.input.payrollConventionCollective')}}</label>
+                <input type="text" [(ngModel)]="myObj.payrollConventionCollective" class="form-control" id="payrollConventionCollective" name="payrollConventionCollective" placeholder="Bureaux d'etudes techniques">
+            </div>
+
             <br />
             <ul class="right" >
                 <li class="list-inline-item" *ngIf="myObj && dataSharingService.IsAddEsnAndResp">

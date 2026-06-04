@@ -20,9 +20,9 @@
       (dragleave)="onDragLeave(consultant)"
       (drop)="onDrop($event, consultant)"
       (click)="selectConsultant(consultant)">
-      <img *ngIf="getPhotoUrl(consultant); else consultantInitial" class="consultant-avatar-img" [src]="getPhotoUrl(consultant)" alt="consultant photo" />
+      <img *ngIf="consultantService.getPhotoUrl(consultant); else consultantInitial" class="consultant-avatar-img" [src]="consultantService.getPhotoUrl(consultant)" alt="consultant photo" />
       <ng-template #consultantInitial>
-        <span class="consultant-avatar">{{ getInitial(consultant) }}</span>
+        <span class="consultant-avatar">{{ consultantService.getInitial(consultant) }}</span>
       </ng-template>
       <span class="consultant-body">
         <span class="consultant-name">{{ getLabel(consultant) }}</span>

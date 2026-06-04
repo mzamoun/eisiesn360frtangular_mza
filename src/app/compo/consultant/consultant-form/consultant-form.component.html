@@ -9,14 +9,14 @@
             </ng-template>
         </div>
         <div class="form-group consultant-photo-editor">
-            <label for="photo">Photo (cliquer sur l'avatar)</label>
+            <label for="photo">{{utils.tr('app.compo.consultant.form.input.photo')}}</label>
             <div class="consultant-photo-actions">
                 <input #photoInput id="photo" type="file" accept="image/*" class="form-control-file consultant-photo-input-hidden" (change)="onPhotoSelected($event)">
                 <button type="button" class="btn btn-outline-secondary btn-sm" *ngIf="myObj?.photo" (click)="removePhoto()">
                     {{utils.tr('Delete')}}
                 </button>
             </div>
-            <small class="text-muted">PNG/JPEG/GIF/WebP - max 2 Mo</small>
+            <small class="text-muted">{{utils.tr('app.compo.consultant.form.input.photoHelp')}}</small>
         </div>
         <form (ngSubmit)="onSubmit()" #consultantForm="ngForm">
 
@@ -107,6 +107,45 @@
             </div>
             <div [hidden]="level.valid" class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.level')}} {{utils.tr('app.badge.required')}}</div>
 
+            <hr>
+            <h5>{{utils.tr('app.compo.consultant.form.payroll.sectionTitle')}}</h5>
+
+            <div class="form-group">
+                <label for="socialSecurityNumber">{{utils.tr('app.compo.consultant.form.input.socialSecurityNumber')}}</label>
+                <input type="text" [(ngModel)]="myObj.socialSecurityNumber" class="form-control" id="socialSecurityNumber" name="socialSecurityNumber" placeholder="1xxxxxxxxxxxxxx">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="jobTitle">{{utils.tr('app.compo.consultant.form.input.jobTitle')}}</label>
+                    <input type="text" [(ngModel)]="myObj.jobTitle" class="form-control" id="jobTitle" name="jobTitle" placeholder="Ingenieur d etudes">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="professionalStatus">{{utils.tr('app.compo.consultant.form.input.professionalStatus')}}</label>
+                    <input type="text" [(ngModel)]="myObj.professionalStatus" class="form-control" id="professionalStatus" name="professionalStatus" placeholder="Cadre">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="positionCode">{{utils.tr('app.compo.consultant.form.input.positionCode')}}</label>
+                    <input type="text" [(ngModel)]="myObj.positionCode" class="form-control" id="positionCode" name="positionCode" placeholder="1.1">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="payrollCoefficient">{{utils.tr('app.compo.consultant.form.input.payrollCoefficient')}}</label>
+                    <input type="text" [(ngModel)]="myObj.payrollCoefficient" class="form-control" id="payrollCoefficient" name="payrollCoefficient" placeholder="95">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="defaultPaymentMode">{{utils.tr('app.compo.consultant.form.input.defaultPaymentMode')}}</label>
+                    <input type="text" [(ngModel)]="myObj.defaultPaymentMode" class="form-control" id="defaultPaymentMode" name="defaultPaymentMode" placeholder="Virement">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="entryDate">{{utils.tr('app.compo.consultant.form.input.entryDate')}}</label>
+                <input type="date" [(ngModel)]="myObj.entryDate" class="form-control" id="entryDate" name="entryDate">
+            </div>
+
             <div class="form-group">
                 <label>{{utils.tr('app.compo.consultant.form.input.birthDay')}} : 
                 <!-- <span class="badge badge-dark">{{myObj.birthDay | date :'dd-MM-yyyy'}}</span>  -->
@@ -137,7 +176,7 @@
             <div class="form-group">
                 <label for="username">{{utils.tr('app.compo.consultant.form.input.username')}}</label>
                 <input type="text" [(ngModel)]="myObj.username" [value]="myObj.username" class="form-control" id="username" name="username" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.username') | lowercase}}" required #username="ngModel" [pattern]="usernamePattern" >
-                <div [hidden]="!username?.errors?.pattern" class="badge badge-danger">Username invalide (3-64 chars: lettres, chiffres, '.', '_' ou '-')</div>
+                <div [hidden]="!username?.errors?.pattern" class="badge badge-danger">{{utils.tr('app.compo.consultant.form.validation.usernameInvalid')}}</div>
             </div>
             <div class="form-group" *ngIf="isAdd == 'true'">
                 <label for="password1">{{utils.tr('app.compo.consultant.form.input.password')}}</label>

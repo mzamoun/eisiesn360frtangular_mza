@@ -16,56 +16,68 @@
         <nav class="navbar navbar-expand-md navbar-dark navbar-right  ">
             <!-- <div *ngIf="isUserLoggedIn? UserConnected : UserNotConnected"></div> -->
 
-            <div *ngIf="isUserLoggedIn">
-                <div class="left">
+            <div style="display: flex; align-items: center;">
+                <!--langues -->
+                <div style="display: inline-block;">
                     <a class="nav-link dropdown-toggle btn" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="true">{{language | uppercase}}</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" id="header-language-en" (click)="changeLanguage('en')"><span
-                            class="flag-icon flag-icon-us"> </span> {{utils.tr('app.header.language.en')}}</a>
+                                class="flag-icon flag-icon-us"> </span> {{utils.tr('app.header.language.en')}}</a>
                         <a class="dropdown-item" id="header-language-fr" (click)="changeLanguage('fr')"><span
-                            class="flag-icon flag-icon-fr"> </span> {{utils.tr('app.header.language.fr')}}</a>
+                                class="flag-icon flag-icon-fr"> </span> {{utils.tr('app.header.language.fr')}}</a>
                         <a class="dropdown-item" id="header-language-ar" (click)="changeLanguage('ar')"><span
-                            class="flag-icon flag-icon-sa"> </span> {{utils.tr('app.header.language.ar')}}</a>
+                                class="flag-icon flag-icon-sa"> </span> {{utils.tr('app.header.language.ar')}}</a>
                     </div>
                 </div>
 
-                <div class="bgcolor_tranp00" class="left">
-                    <button type="button" class="btn btn-light" id="dropdown02" data-toggle="dropdown"
-                        aria-haspopup="true">
-                        {{utils.tr('main.menu.navbar.navitem.setting.user.notification')}} <span class="badge badge-pill badge-danger">{{nbNotificationNotViewed}}</span>
-                    </button>
+                <div *ngIf="isUserLoggedIn" class="bgcolor_tranp00" style="display: flex; align-items: center;">
 
-                    <div class="dropdown-menu h_scroll bgcolor_tranp00 notifications-dropdown-menu" aria-labelledby="dropdown02">
-                        <app-notification [isOnlyNotViewed]="true" [isShowBtns]="false"
-                            idPagination="idPaginationNotViewed" #notificationCompo></app-notification>
-                        <a class="btn btn-primary title100pct" (click)="showNotificationsAll()">
-                            <h5>{{utils.tr('app.header.notifications.showAll')}}</h5>
-                        </a>
+                    <!-- Notifications -->
+                    <div>
+                        <button type="button" class="btn btn-light" id="dropdown02" data-toggle="dropdown"
+                            aria-haspopup="true">
+                            {{utils.tr('main.menu.navbar.navitem.setting.user.notification')}} <span
+                                class="badge badge-pill badge-danger">{{nbNotificationNotViewed}}</span>
+                        </button>
+
+                        <div class="dropdown-menu h_scroll bgcolor_tranp00 notifications-dropdown-menu"
+                            aria-labelledby="dropdown02">
+                            <app-notification [isOnlyNotViewed]="true" [isShowBtns]="false"
+                                idPagination="idPaginationNotViewed" #notificationCompo></app-notification>
+                            <a class="btn btn-primary title100pct" (click)="showNotificationsAll()">
+                                <h5>{{utils.tr('app.header.notifications.showAll')}}</h5>
+                            </a>
+                        </div>
                     </div>
 
+                    <!-- Btn Login Connected -->
+                    <div style="text-align: center; margin-right: 20px; margin-bottom: 22px;" class="pcoded-micon "
+                        id="header-menu-user" (click)="menuUserConnected()"><i class="feather icon-settings"></i>
+                        <!-- {{dataSharingService?.userConnected?.esn?.name | uppercase }} -->
+                        {{displayEsnName | uppercase }}
+
+                        <br> <span id="loginName">{{userConnectedName}}</span>
+                        <br> <span id="role">{{userConnected?.role }}</span>
+                        <br>
+
+                    </div>
+
+                    <!-- Photo -->
+                    <div (click)="menuUserConnected()" class="pcoded-micon " style="text-align: center; margin-right: 20px; margin-bottom: 22px;">
+                        <img *ngIf="userConnected?.photo" class="consultant-avatar-img"
+                            [src]="consultantService.getPhotoUrl(userConnected)" alt="consultant photo" />
+                    </div>
+
+
                 </div>
 
-                <!-- Btn Login Connected -->
-                <div style="text-align: center; margin-right: 20px; margin-bottom: 22px;" class="pcoded-micon left"
-                    id="header-menu-user" (click)="menuUserConnected()"><i class="feather icon-settings"></i>
-                    <!-- {{dataSharingService?.userConnected?.esn?.name | uppercase }} -->
-                    {{displayEsnName | uppercase }}
-
-                    <br> <span id="loginName">{{userConnectedName}}</span>
-                    <br> <span id="role">{{userConnected?.role }}</span>
-                    <br>
-                    <!-- <button (click)="logout()" class="btn">
-                        logout
-                    </button> -->
+                <div *ngIf="!isUserLoggedIn">
+                    <a routerLink="/login" id="header-login"
+                        class="btn btn-auth-gen">{{utils.tr('app.header.login')}}</a>
                 </div>
+
             </div>
-
-            <div *ngIf="!isUserLoggedIn">
-                <a routerLink="/login" id="header-login" class="btn btn-auth-gen">{{utils.tr('app.header.login')}}</a>
-            </div>
-
-
 
         </nav>
 

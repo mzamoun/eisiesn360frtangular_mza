@@ -24,6 +24,13 @@ export class Consultant {
     password: string;
     active: boolean;
     photo: string;
+    socialSecurityNumber: string;
+    jobTitle: string;
+    professionalStatus: string;
+    positionCode: string;
+    payrollCoefficient: string;
+    entryDate: Date;
+    defaultPaymentMode: string;
 
     esnId: number
     esnName: string

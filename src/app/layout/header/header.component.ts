@@ -34,7 +34,7 @@ export class HeaderComponent extends MereComponent {
     , public utils: UtilsService
     , public dataSharingService: DataSharingService
     , private esnService: EsnService
-    , private consultantService: ConsultantService
+    , public consultantService: ConsultantService
     , private utilsIhm: UtilsIhmService
     , public dialog: MatDialog
     , private cdr: ChangeDetectorRef

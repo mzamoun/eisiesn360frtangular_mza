@@ -14,3 +14,41 @@
 		max-width: 92vw;
 	}
 }
+
+.photo-profile {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	object-fit: cover;
+	text-align: right;
+}
+
+.consultant-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+  color: #fff;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.consultant-avatar-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d7e2f0;
+  flex: 0 0 auto;
+}
+
+// Ajouter à la fin du fichier
+#dropdown01 + .dropdown-menu {
+  position: absolute !important;
+  top: 80% !important;
+  margin-top: 0 !important;
+  transform: none !important;
+}

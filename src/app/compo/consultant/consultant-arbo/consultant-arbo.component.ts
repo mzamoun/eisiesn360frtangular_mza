@@ -48,7 +48,7 @@ export class ConsultantArboComponent extends MereComponent {
   @Output()
   consultantSelected = new EventEmitter<Consultant>();
 
-  constructor(private consultantService: ConsultantService
+  constructor(public consultantService: ConsultantService
     , public utils: UtilsService, protected utilsIhm: UtilsIhmService
     , public dataSharingService: DataSharingService) {
     super(utils, dataSharingService);
@@ -85,40 +85,6 @@ export class ConsultantArboComponent extends MereComponent {
     const fullName = consultant.fullName || [consultant.firstName, consultant.lastName].filter(part => !!part).join(' ');
     const username = consultant.username ? `@${consultant.username}` : '';
     return `${fullName || username || this.utils.tr('User')} ${username && fullName ? username : ''}`.trim();
-  }
-
-  getPhotoUrl(consultant: Consultant): string | null {
-    const photo = (consultant?.photo || '').trim();
-    if (!photo) {
-      return null;
-    }
-
-    if (photo.startsWith('data:image')) {
-      return photo;
-    }
-
-    if (photo.startsWith('iVBOR')) {
-      return 'data:image/png;base64,' + photo;
-    }
-
-    if (photo.startsWith('/9j/')) {
-      return 'data:image/jpeg;base64,' + photo;
-    }
-
-    if (photo.startsWith('R0lGOD')) {
-      return 'data:image/gif;base64,' + photo;
-    }
-
-    if (photo.startsWith('UklGR')) {
-      return 'data:image/webp;base64,' + photo;
-    }
-
-    return 'data:image/jpeg;base64,' + photo;
-  }
-
-  getInitial(consultant: Consultant): string {
-    const seed = consultant?.fullName || consultant?.username || '?';
-    return seed.trim().charAt(0).toUpperCase() || '?';
   }
 
   hasChildren(consultant: Consultant): boolean {
