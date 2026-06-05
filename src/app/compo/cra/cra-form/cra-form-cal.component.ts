@@ -2002,7 +2002,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   private calcul_recap(activity: Activity, cda: CraDayActivity, craDay: CraDay) {
-    if (activity && activity.type.workDay) this.numberDayWorked += cda.nbDay;
+    if (this.craService.isCraDayOpen(craDay) && activity && activity.type.workDay) this.numberDayWorked += cda.nbDay;
     if (activity && activity.type.billDay) {
       this.numberDayBilled += cda.nbDay;
       this.totalBilled += cda.nbDay * activity.tjm;
