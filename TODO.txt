@@ -1,4 +1,9 @@
 
+
+
+-----------------------
+la recherche dans la liste des consultants ne fonctionne pas bien : elle doit chercher que sur les colonnes affiches 
+
 btn suppr tte mes notifications  : OK 
 
 cra pdf client : OK 

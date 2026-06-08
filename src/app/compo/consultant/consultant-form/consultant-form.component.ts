@@ -20,6 +20,8 @@ import { DataSharingService } from "../../../service/data-sharing.service";
 import { SelectComponent } from '../../_reuse/select-consultant/select/select.component';
 import { MereComponent } from '../../_utils/mere-component';
 import { LoadingDialogComponent } from '../../loading-dialog/loading-dialog.component';
+import { get } from 'http';
+import { set } from 'date-fns';
 
 @Component({
   selector: 'app-consultant-form',
@@ -148,6 +150,19 @@ export class ConsultantFormComponent extends MereComponent {
 
       this.setEsn();
 
+      this.myObj.positionCode = "1.1";
+      this.myObj.payrollCoefficient = "95";
+      this.myObj.defaultPaymentMode = "Virement";
+      //
+      // Tes données restent des objets Date complexes
+      this.myObj.entryDate = new Date();
+      this.myObj.birthDay = this.utils.getDateLastMonthFirstDay(); // Objet Date
+
+      this.myObj.jobTitle = "Ingenieur d etudes";
+      this.myObj.professionalStatus = "Cadre";
+      this.myObj.tjmInterne = 206.5;
+      this.myObj.matricule = "MAT-" + this.toDayStr();
+
     } else {
       let consultantP: Consultant = this.consultantService.getConsultant();
 
@@ -167,6 +182,48 @@ export class ConsultantFormComponent extends MereComponent {
     this.majAdminConsultant();
 
   }
+
+  //////////////////////////////////////////////////////////
+  // Getter pour Entry Date
+  get entryDateString(): string {
+    const date = this.myObj?.entryDate;
+    this.logger.info('entryDateString', date);
+    if (!date) return '';
+
+    // Si c'est un vrai objet Date
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    this.logger.info('entryDateString is string', date);
+    // Si c'est une String (ex: reçue du serveur "2026-03-03T...")
+    // return date.split('T')[0];
+    return date;
+  }
+
+  set entryDateString(value: string) {
+    this.myObj.entryDate = value ? new Date(value) : null;
+  }
+
+  // Getter pour Birth Day
+  get birthDayString(): string {
+    const date = this.myObj?.birthDay;
+    this.logger.info('birthDayString', date);
+    if (!date) return '';
+
+    // Si c'est un vrai objet Date
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    this.logger.info('birthDayString is string', date);
+    // Si c'est une String (ex: reçue du serveur)
+    // return date.split('T')[0];
+    return date;
+  }
+
+  set birthDayString(value: string) {
+    this.myObj.birthDay = value ? new Date(value) : null;
+  }
+  //////////////////////////////////////////////////////////
 
   majAdminConsultant() {
     this.consultantService.majAdminConsultant(this.myObj)
@@ -686,6 +743,12 @@ export class ConsultantFormComponent extends MereComponent {
 
       }
     );
+
+    // si on sauvegarde le userConnected, on doit rafraichir le header
+    if (this.dataSharingService.userConnected.id == this.myObj.id && this.myObj.id != null) {
+      this.dataSharingService.setUserConnected(this.myObj);
+    }
+
   }
 
 
@@ -800,7 +863,7 @@ export class ConsultantFormComponent extends MereComponent {
     }
 
     this.emailChange()
-    
+
   }
 
   emailChange() {
@@ -832,6 +895,14 @@ export class ConsultantFormComponent extends MereComponent {
   validatePassword(): void {
     const result = this.passwordValidator.validate(this.myObj.password);
     this.passwordErrors = result.errors;
+  }
+
+  toDayStr(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   //////////////end meths

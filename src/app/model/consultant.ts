@@ -29,8 +29,10 @@ export class Consultant {
     professionalStatus: string;
     positionCode: string;
     payrollCoefficient: string;
+    matricule : string;
     entryDate: Date;
     defaultPaymentMode: string;
+    tjmInterne : number;
 
     esnId: number
     esnName: string

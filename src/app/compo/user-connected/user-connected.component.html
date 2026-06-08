@@ -1,38 +1,50 @@
 <button id="close" mat-button type="button" mat-dialog-close class="right">X</button>
 <p></p>
-<br/>
+<br />
 <!-- <infors #infors></infors> -->
 <div class="card">
     <div class="card-header">
 
-        <div style="text-align: center;" class="pcoded-micon bold"><i class="feather icon-settings"></i> {{getEsnCurrentName() | uppercase }}
-            <br> {{userConnected?.fullName  | titlecase}}
-            <br> {{userConnected?.email  }}
-            <br> {{userConnected?.role  }}
+        <div class="photo-container">
+            <img *ngIf="userConnected?.photo" class="photo"
+                [src]="consultantService.getPhotoUrl(userConnected)" alt="consultant photo" />
+        </div>
+
+        <div style="text-align: center;" class="pcoded-micon bold"><i class="feather icon-settings"></i>
+            {{getEsnCurrentName() | uppercase }}
+            <br> {{userConnected?.fullName | titlecase}}
+            <br> {{userConnected?.email }}
+            <br> {{userConnected?.role }}
             <br> <br>
             <div *ngIf="userConnected?.adminConsultant">
                 <h4>{{utils.tr('app.compo.userConnected.managerLabel')}} <br>
-                {{userConnected?.adminConsultant?.email}} </h4>
+                    {{userConnected?.adminConsultant?.email}} </h4>
                 <br><br>
             </div>
         </div>
 
-        <a routerLink="" *ngIf="isLoggedIn()" id="btn-user-connected-logout" class="btn btn-outline-primary" (click)="logout()" mat-dialog-close>
+        <a routerLink="" *ngIf="isLoggedIn()" id="btn-user-connected-logout" class="btn btn-outline-primary"
+            (click)="logout()" mat-dialog-close>
             <span class="ml-1">{{utils.tr('app.compo.userConnected.logOut')}}</span>
         </a>
-        <a routerLink="/login" *ngIf="!isLoggedIn()" id="btn-user-connected-login" class="btn btn-outline-dark" routerLinkActive="active" mat-dialog-close>
+        <a routerLink="/login" *ngIf="!isLoggedIn()" id="btn-user-connected-login" class="btn btn-outline-dark"
+            routerLinkActive="active" mat-dialog-close>
             <span class="ml-1">{{utils.tr('app.compo.userConnected.logIn')}}</span>
         </a>
     </div>
     <div class="card-body" *ngIf="userConnected">
         <div class="form-group">
             <label for="password1"> <b>{{utils.tr('app.compo.userConnected.changePassword')}}</b> </label>
-            <input type="password" (ngModelChange)="validatePassword($event)" (ngModel)="null" class="form-control" id="password1" name="password1" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.password') | lowercase}}" required #password1="ngModel">
+            <input type="password" (ngModelChange)="validatePassword($event)" (ngModel)="null" class="form-control"
+                id="password1" name="password1"
+                placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.password') | lowercase}}"
+                required #password1="ngModel">
         </div>
         <div class="form-group">
-            <input type="password" (ngModel)="null" class="form-control" id="password2" name="password2" placeholder="{{utils.tr('app.compo.userConnected.enterSamePassword')}}" required #password2="ngModel">
+            <input type="password" (ngModel)="null" class="form-control" id="password2" name="password2"
+                placeholder="{{utils.tr('app.compo.userConnected.enterSamePassword')}}" required #password2="ngModel">
         </div>
-        
+
         <!-- Password validation errors -->
         <div *ngIf="passwordErrors && passwordErrors.length > 0" class="alert alert-danger">
             <div *ngFor="let error of passwordErrors" class="badge badge-danger mr-2">
@@ -40,16 +52,21 @@
             </div>
         </div>
 
-        <div [hidden]="password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0" class="alert alert-danger">
+        <div [hidden]="password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0"
+            class="alert alert-danger">
             {{utils.tr('app.compo.userConnected.passwordCriteria')}}
         </div>
 
-        <button [hidden]="!(password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0)" (click)="changePassword(password1.value)" id="btn-user-connected-changePw" class="btn btn-primary">{{utils.tr('Change')}}
-    </button>
+        <button
+            [hidden]="!(password1.valid && password2.valid && password1.value==password2.value && passwordErrors.length === 0)"
+            (click)="changePassword(password1.value)" id="btn-user-connected-changePw"
+            class="btn btn-primary">{{utils.tr('Change')}}
+        </button>
 
     </div>
     <div class="card-footer center" *ngIf="userConnected">
-        <a routerLink="my-profile" *ngIf="isLoggedIn()" id="btn-user-connected-manageAccount" class="btn btn-outline-dark" mat-dialog-close>
+        <a routerLink="my-profile" *ngIf="isLoggedIn()" id="btn-user-connected-manageAccount"
+            class="btn btn-outline-dark" mat-dialog-close>
             <span class="ml-1">{{utils.tr('app.compo.userConnected.manageAccount')}}</span>
         </a>
     </div>

@@ -1511,6 +1511,16 @@ export class TradService {
       "en": "Invalid username (3-64 chars: letters, numbers, '.', '_' or '-')",
       "ar": "اسم مستخدم غير صالح (3-64 حرفًا: أحرف، أرقام، '.'، '_' أو '-')",
     },
+    "app.compo.consultant.form.input.tjmInterne": {
+      "fr": "TJM Interne",
+      "en": "Internal TJM",
+      "ar": "السعر الداخلي",
+    },
+    "app.compo.consultant.form.input.matricule": {
+      "fr": "Matricule",
+      "en": "Matricule",
+      "ar": "الرقم التعريفي",
+    },
     "app.compo.consultant.form.input.photo": {
       "fr": "Photo (cliquer sur l'avatar)",
       "en": "Photo (click on the avatar)",

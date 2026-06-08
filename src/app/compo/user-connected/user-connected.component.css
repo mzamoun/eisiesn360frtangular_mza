@@ -9,3 +9,15 @@
 li {
   margin:0 0 30px 0;   
 }
+
+.photo-container {
+  text-align: center;
+  margin-right: 20px;
+  margin-bottom: 22px;
+}
+
+.photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}

@@ -21,7 +21,7 @@ export class UserConnectedComponent extends MereComponent {
   constructor(
     public dialogRef: MatDialogRef<UserConnectedComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-    , private consultantService: ConsultantService
+    , public consultantService: ConsultantService
 
     , public utils: UtilsService
     , public dataSharingService: DataSharingService,
@@ -57,12 +57,12 @@ export class UserConnectedComponent extends MereComponent {
   }
 
   changePassword(password) {
-    this.userConnected.password = password;
+    this.dataSharingService.userConnected.password = password;
 
-    this.setUserConnected(this.userConnected)
+    this.setUserConnected(this.dataSharingService.userConnected)
 
     this.beforeCallServer("changePassword")
-    this.consultantService.savePost(this.userConnected).subscribe(
+    this.consultantService.savePost(this.dataSharingService.userConnected).subscribe(
       data => {
         this.afterCallServer("changePassword", data)
         this.logger.debug("changePassword this.isError() : ", this.isError())
