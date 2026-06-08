@@ -425,10 +425,22 @@ export class ConsultantService {
     return 'data:image/jpeg;base64,' + photo;
   }
 
+  // getInitial(consultant: Consultant): string {
+  //   const seed = consultant?.fullName || consultant?.username || '?';
+  //   return seed.trim().charAt(0).toUpperCase() || '?';
+  // }
+
   getInitial(consultant: Consultant): string {
     const seed = consultant?.fullName || consultant?.username || '?';
-    return seed.trim().charAt(0).toUpperCase() || '?';
-  }
+    // concatener 1ere lettre de chaque mot de seed 
+    let tab = seed.split(' ')
+    let s = tab[0].charAt(0).toUpperCase()
+    for (let i = 1; i < tab.length; i++) {
+      s += tab[i].charAt(0).toUpperCase()
+    }
+    return s;
 
+    // return seed.trim().charAt(0).toUpperCase() || '?';
+  }
 
 }

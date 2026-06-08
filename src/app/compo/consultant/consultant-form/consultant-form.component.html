@@ -9,7 +9,7 @@
                 (click)="photoInput.click()" />
             <ng-template #formInitial>
                 <span class="consultant-photo consultant-photo-fallback consultant-photo-clickable"
-                    title="Cliquer pour ajouter une photo" (click)="photoInput.click()">{{ getInitial(myObj) }}</span>
+                    title="Cliquer pour ajouter une photo" (click)="photoInput.click()">{{ consultantService.getInitial(myObj) }}</span>
             </ng-template>
         </div>
         <div class="form-group consultant-photo-editor">

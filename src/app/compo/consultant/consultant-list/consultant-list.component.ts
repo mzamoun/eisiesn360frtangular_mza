@@ -35,7 +35,7 @@ export class ConsultantListComponent extends MereComponent {
     isMyConsultantsView: boolean = false;
     showArbo: boolean = false;
 
-    constructor(private consultantService: ConsultantService
+    constructor(public consultantService: ConsultantService
         , private esnService: EsnService
         , private router: Router
         , private route: ActivatedRoute
@@ -187,11 +187,6 @@ export class ConsultantListComponent extends MereComponent {
         }
 
         return 'data:image/jpeg;base64,' + photo;
-    }
-
-    getInitial(consultant: Consultant): string {
-        const seed = consultant?.fullName || consultant?.username || '?';
-        return seed.trim().charAt(0).toUpperCase() || '?';
     }
 
     @ViewChild('myObjEditView', { static: false }) myObjEditView: ConsultantFormComponent;

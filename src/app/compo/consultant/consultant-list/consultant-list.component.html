@@ -48,7 +48,7 @@
                         <div class="consultant-name-cell">
                             <img *ngIf="getPhotoUrl(element); else listInitial" class="consultant-thumb" [src]="getPhotoUrl(element)" alt="consultant photo" />
                             <ng-template #listInitial>
-                                <span class="consultant-thumb consultant-thumb-fallback">{{ getInitial(element) }}</span>
+                                <span class="consultant-thumb consultant-thumb-fallback">{{ consultantService.getInitial(element) }}</span>
                             </ng-template>
                             <b>{{ element.fullName }}</b>
                         </div>

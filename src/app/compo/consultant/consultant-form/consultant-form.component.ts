@@ -61,7 +61,7 @@ export class ConsultantFormComponent extends MereComponent {
   photoMaxSize = 2 * 1024 * 1024;
 
   constructor(private route: ActivatedRoute, private router: Router
-    , private consultantService: ConsultantService
+    , public consultantService: ConsultantService
     , private esnService: EsnService
     , public utils: UtilsService
     , public utilsIhmService: UtilsIhmService
@@ -261,11 +261,6 @@ export class ConsultantFormComponent extends MereComponent {
     }
 
     return 'data:image/jpeg;base64,' + photo;
-  }
-
-  getInitial(consultant: Consultant): string {
-    const seed = consultant?.fullName || consultant?.username || '?';
-    return seed.trim().charAt(0).toUpperCase() || '?';
   }
 
   onPhotoSelected(event: Event): void {
