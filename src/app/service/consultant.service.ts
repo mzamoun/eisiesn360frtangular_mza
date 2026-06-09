@@ -425,11 +425,6 @@ export class ConsultantService {
     return 'data:image/jpeg;base64,' + photo;
   }
 
-  // getInitial(consultant: Consultant): string {
-  //   const seed = consultant?.fullName || consultant?.username || '?';
-  //   return seed.trim().charAt(0).toUpperCase() || '?';
-  // }
-
   getInitial(consultant: Consultant): string {
     const seed = consultant?.fullName || consultant?.username || '?';
     // concatener 1ere lettre de chaque mot de seed 

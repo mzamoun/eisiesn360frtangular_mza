@@ -580,7 +580,7 @@ export class ConsultantFormComponent extends MereComponent {
     //todo check if email exist : a la saisie . invalider le form si exist via une variable isEmailExist.
     // todo : confirmer avec le user son email en lui rappelant : prenom, nom, soc 
 
-    this.verifyUsernameUniqueAndSave();
+    this.verifyUsernameUniqueAndSave(this.dataSharingService.IsAddEsnAndResp);
   }
 
   private normalizeIdentityValue(v: string): string {
@@ -621,12 +621,12 @@ export class ConsultantFormComponent extends MereComponent {
     return true;
   }
 
-  private verifyUsernameUniqueAndSave(): void {
+  private verifyUsernameUniqueAndSave(isPub : boolean): void {
     const username = this.normalizeIdentityValue(this.myObj?.username);
     const label = 'verifyUsernameUnique';
     this.beforeCallServer(label);
 
-    this.consultantService.findConsultantByUsername(username).subscribe(
+    this.consultantService.findConsultantByUsername(username, isPub).subscribe(
       data => {
         this.afterCallServer(label, data);
         const existing: Consultant = data?.body?.result;

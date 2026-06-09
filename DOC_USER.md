@@ -33,7 +33,7 @@ Selon le profil, certains ecrans et actions ne sont pas visibles.
 Page de connexion: `/#/login`
 
 Fonctions disponibles:
-- Saisie identifiant (email/login)
+- Saisie identifiant (login)
 - Saisie mot de passe
 - Affichage/masquage du mot de passe
 - Acces inscription
@@ -149,5 +149,4 @@ En cas de probleme:
 - Fournir ces infos a l equipe support
 - Menu Aide qui permet d'envoyer un message au support 
 
----
-Document cree a la racine projet: `DOC_USER.md`
+
