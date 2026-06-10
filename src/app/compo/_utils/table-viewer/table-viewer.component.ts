@@ -7,6 +7,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Relation } from 'src/app/model/relation';
 import { TableService } from 'src/app/service/table.service';
 import { environment } from 'src/environments/environment';
+import { DataSharingService } from 'src/app/service/data-sharing.service';
 
 @Component({
   selector: 'app-table-viewer',
@@ -46,12 +47,17 @@ export class TableViewerComponent implements OnInit {
   apiUrl = environment.apiUrl
 
 
-  constructor(private logger: LoggerService, private tableService: TableService, public utils: UtilsService) {
+  constructor(private logger: LoggerService, private tableService: TableService, public utils: UtilsService
+    , public dataSharingService: DataSharingService
+  ) {
   }
 
   ngOnInit(): void {
+    let label = "get tables ..."
+    this.dataSharingService.addInfo(label)
     this.getTables(
       () => {
+        this.dataSharingService.delInfo(label)
         if (this.tables && this.tables.length) {
           let t0 = 100
           let t = t0
