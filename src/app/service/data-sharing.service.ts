@@ -1179,7 +1179,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   /**
    * Envoie un email de réinitialisation du password
    */
-  sendResetPasswordEmail(email: string, callbacks: any): void {
+  sendResetPasswordEmail(username: string, email: string, callbacks: any): void {
     const label = "sendResetPasswordEmail";
 
     this.logger.debug(label + ": START - Email: " + email);
@@ -1214,7 +1214,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         this.logger.debug(label + ": Response: ", data);
 
         // Sauvegarder le code de reset en base de données lié à l'email
-        this.consultantService.saveCodeResetPassword(email, codeResetPassword,
+        this.consultantService.saveCodeResetPassword(username, email, codeResetPassword,
           (data, mesg) => {
             if (callbacks && callbacks.next) {
               callbacks.next(data);

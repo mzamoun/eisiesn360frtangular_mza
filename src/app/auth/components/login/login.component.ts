@@ -88,7 +88,7 @@ export class LoginComponent implements OnInit {
    */
   resetPassword(): void {
     const label = 'resetPassword';
-    
+
     if (!this.forgotPasswordEmail) {
       this.error = this.utils.tr('app.login.error.emailRequired');
       this.logger.error(label + ': Email manquant');
@@ -99,14 +99,27 @@ export class LoginComponent implements OnInit {
     this.isLoadingResetEmail = true;
     this.error = '';
     this.info = '';
+    let username = "";
+    if (this.dataSharingService.IsAddEsnAndResp) {
+      username = this.dataSharingService.respEsnSaved?.username || "";
+      if (!username) {
+        username = this.dataSharingService.userConnected?.username || "";
+      }
+    }
 
-    this.dataSharingService.sendResetPasswordEmail(this.forgotPasswordEmail, {
+    if (!username) {
+      username = this.dataSharingService.userConnected?.username || "";
+    }
+
+    this.logger.debug(label + ': Username: ' + username);
+
+    this.dataSharingService.sendResetPasswordEmail(username, this.forgotPasswordEmail, {
       next: (response) => {
         this.logger.debug(label + ': ✅ Email de reset envoyé avec succès');
         this.isLoadingResetEmail = false;
         this.info = this.utils.tr('app.login.info.resetLinkSent', { email: this.forgotPasswordEmail });
         this.forgotPasswordEmail = '';
-        
+
         // Fermer le formulaire après 3 secondes
         setTimeout(() => {
           this.showForgotPasswordForm = false;
@@ -117,7 +130,7 @@ export class LoginComponent implements OnInit {
         this.logger.error(label + ': ❌ Erreur lors de l\'envoi du mail');
         this.logger.error(label + ': Error: ', error);
         this.isLoadingResetEmail = false;
-        
+
         if (error.status === 404) {
           this.error = this.utils.tr('app.login.error.userNotFound');
         } else {

@@ -1,3 +1,4 @@
+import { ar } from 'date-fns/locale';
 import { LoggerService } from './logger.service';
 
 
@@ -124,6 +125,24 @@ export class TradService {
       fr: "Payer",
       en: "Pay",
       ar: "دفع",
+    },
+
+    "Virement": {
+      fr: "Virement bancaire",
+      en:  "Bank transfer",
+      ar: "تحويل بنكي"
+    },
+
+    "ING_ETUDES" : {
+      fr : "Ingénieur d'Etudes",
+      en : "Engineer of Studies",
+      ar : "مهندس الدراسات"
+    },
+
+    "CADRE" : {
+      fr : "Cadre",
+      en : "Executive",
+      ar : "إطار"
     },
 
     "Edit": {

@@ -9,7 +9,8 @@
                 (click)="photoInput.click()" />
             <ng-template #formInitial>
                 <span class="consultant-photo consultant-photo-fallback consultant-photo-clickable"
-                    title="Cliquer pour ajouter une photo" (click)="photoInput.click()">{{ consultantService.getInitial(myObj) }}</span>
+                    title="Cliquer pour ajouter une photo" (click)="photoInput.click()">{{
+                    consultantService.getInitial(myObj) }}</span>
             </ng-template>
         </div>
         <div class="form-group consultant-photo-editor">
@@ -71,6 +72,28 @@
                 {{utils.tr('app.compo.consultant.form.input.lastName')}} {{utils.tr('app.badge.required')}}</div>
 
             <div class="form-group">
+                <label for="username">{{utils.tr('app.compo.consultant.form.input.username')}}</label>
+                <input type="text" [(ngModel)]="myObj.username" [value]="myObj.username" class="form-control"
+                    id="username" name="username"
+                    placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.username') | lowercase}}"
+                    required #username="ngModel" [pattern]="usernamePattern">
+                <div [hidden]="!username?.errors?.pattern" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.validation.usernameInvalid')}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">{{utils.tr('app.compo.consultant.form.input.email')}}</label>
+                <input type="email" [(ngModel)]="myObj.email" class="form-control" id="email" name="email"
+                    placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.email') | lowercase}}"
+                    required #email="ngModel" [pattern]="emailPattern" (click)="emailFocus()">
+            </div>
+            <div [hidden]="email.valid || (myObj.role == 'RESPONSIBLE_ESN' && myObj.email != '' && email.valid )"
+                class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.email')}}
+                {{utils.tr('app.badge.required')}}
+            </div>
+
+            <div class="form-group">
                 <label for="adresse">{{utils.tr('Address')}}</label>
                 <div class="form-group" style="padding-left: 20px;" *ngIf="myObj && myObj.address">
                     <div class="form-row">
@@ -124,16 +147,6 @@
             </div>
 
             <div class="form-group">
-                <label for="email">{{utils.tr('app.compo.consultant.form.input.email')}}</label>
-                <input type="email" [(ngModel)]="myObj.email" class="form-control" id="email" name="email"
-                    placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.email') | lowercase}}"
-                    required #email="ngModel" [pattern]="emailPattern" (click)="emailFocus()">
-            </div>
-            <div [hidden]="email.valid || (myObj.role == 'RESPONSIBLE_ESN' && myObj.email != '' && email.valid )"
-                class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.email')}}
-                {{utils.tr('app.badge.required')}}</div>
-
-            <div class="form-group">
                 <label for="tel">{{utils.tr('app.compo.consultant.form.input.tel')}}</label>
                 <input type="tel" [(ngModel)]="myObj.tel" class="form-control" id="tel" name="tel"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.tel') | lowercase}}"
@@ -144,7 +157,7 @@
 
             <div class="form-group">
                 <label for="level">{{utils.tr('app.compo.consultant.form.input.level')}}</label>
-                <input type="level" [(ngModel)]="myObj.level" class="form-control" id="level" name="level"
+                <input type="number" [(ngModel)]="myObj.level" class="form-control" id="level" name="level"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.level') | lowercase}}"
                     required #level="ngModel">
             </div>
@@ -213,14 +226,12 @@
 
             <div class="form-group">
                 <label for="matricule">{{utils.tr('app.compo.consultant.form.input.matricule')}}</label>
-                <input type="text" [value]="myObj.matricule" class="form-control" id="matricule" name="matricule"
-                    >
+                <input type="text" [value]="myObj.matricule" class="form-control" id="matricule" name="matricule">
             </div>
 
             <div class="form-group">
                 <label for="tjmInterne">{{utils.tr('app.compo.consultant.form.input.tjmInterne')}}</label>
-                <input type="text" [value]="myObj.tjmInterne" class="form-control" id="tjmInterne" name="tjmInterne"
-                    >
+                <input type="text" [value]="myObj.tjmInterne" class="form-control" id="tjmInterne" name="tjmInterne">
             </div>
 
             <div class="form-group" *ngIf="canEditManagerField()">
@@ -246,15 +257,6 @@
                 <h5>{{utils.tr('app.compo.consultant.form.notExist')}}</h5>
             </div>
 
-            <div class="form-group">
-                <label for="username">{{utils.tr('app.compo.consultant.form.input.username')}}</label>
-                <input type="text" [(ngModel)]="myObj.username" [value]="myObj.username" class="form-control"
-                    id="username" name="username"
-                    placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.username') | lowercase}}"
-                    required #username="ngModel" [pattern]="usernamePattern">
-                <div [hidden]="!username?.errors?.pattern" class="badge badge-danger">
-                    {{utils.tr('app.compo.consultant.form.validation.usernameInvalid')}}</div>
-            </div>
             <div class="form-group" *ngIf="isAdd == 'true'">
                 <label for="password1">{{utils.tr('app.compo.consultant.form.input.password')}}</label>
                 <input type="password" [(ngModel)]="myObj.password" (ngModelChange)="validatePassword()"

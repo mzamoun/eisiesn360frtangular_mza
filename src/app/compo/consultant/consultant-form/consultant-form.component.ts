@@ -150,16 +150,20 @@ export class ConsultantFormComponent extends MereComponent {
 
       this.setEsn();
 
+      this.myObj.level = 1
       this.myObj.positionCode = "1.1";
       this.myObj.payrollCoefficient = "95";
-      this.myObj.defaultPaymentMode = "Virement";
+      this.myObj.defaultPaymentMode = this.utils.tr("Virement");
       //
       // Tes données restent des objets Date complexes
       this.myObj.entryDate = new Date();
-      this.myObj.birthDay = this.utils.getDateLastMonthFirstDay(); // Objet Date
+      this.myObj.birthDay = this.utils.getDateNowMoinsYears(18);
 
-      this.myObj.jobTitle = "Ingenieur d etudes";
-      this.myObj.professionalStatus = "Cadre";
+      this.myObj.jobTitle = this.utils.tr("ING_ETUDES");
+      if (this.myObj.role == Constants.RESPONSIBLE_ESN) {
+        this.myObj.jobTitle = this.utils.tr("app.compo.inscription.responsibleEsn");
+      }
+      this.myObj.professionalStatus = this.utils.tr("CADRE");;
       this.myObj.tjmInterne = 206.5;
       this.myObj.matricule = "MAT-" + this.toDayStr();
 
@@ -621,9 +625,9 @@ export class ConsultantFormComponent extends MereComponent {
     return true;
   }
 
-  private verifyUsernameUniqueAndSave(isPub : boolean): void {
-    const username = this.normalizeIdentityValue(this.myObj?.username);
+  private verifyUsernameUniqueAndSave(isPub: boolean): void {
     const label = 'verifyUsernameUnique';
+    const username = this.normalizeIdentityValue(this.myObj?.username);
     this.beforeCallServer(label);
 
     this.consultantService.findConsultantByUsername(username, isPub).subscribe(
@@ -858,6 +862,13 @@ export class ConsultantFormComponent extends MereComponent {
     }
 
     this.emailChange()
+
+    if (this.utils.isEmpty(this.myObj.username)) {
+      this.logger.debug("username NULL")
+      if (!this.utils.isEmpty(this.myObj.firstName) && !this.utils.isEmpty(this.myObj.lastName)) {
+        this.myObj.username = (this.myObj.firstName.charAt(0) + this.myObj.lastName).toLowerCase();
+      }
+    }
 
   }
 

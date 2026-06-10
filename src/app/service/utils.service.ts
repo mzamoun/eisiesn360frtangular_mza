@@ -46,7 +46,7 @@ export class UtilsService {
   constructor(private logger: LoggerService,
     private tradService: TradService
     , private router: Router
-  ) {}
+  ) { }
 
   public tr(cle: string, paramJson: Object = null): string {
     return this.tradService.get(cle, paramJson);
@@ -187,6 +187,20 @@ export class UtilsService {
     return this.setTime0ToDate(lastMonthFirstDay);
   }
 
+  /**
+   * 
+   * @param nbYear nombre d'années à soustraire
+   * @returns date actuelle moins nbYear années
+   */
+  getDateNowMoinsYears(nbYear: number): Date {
+    return this.addDays(new Date(), -18 * 365);
+  }
+
+  /**
+   * 
+   * @param date 
+   * @returns première journée du mois de la date passée en paramètre
+   */
   getDateFirstDay(date: any) {
     const d: Date = this.getDate(date);
     if (!d) return null;
@@ -195,6 +209,12 @@ export class UtilsService {
     return this.setTime0ToDate(firstDay);
   }
 
+  /**
+   * 
+   * @param date 
+   * @param days 
+   * @returns date + days
+   */
   addDays(date: Date, days: number): Date {
 
     const result = new Date(date);
@@ -202,6 +222,11 @@ export class UtilsService {
     return result;
   }
 
+  /**
+   * 
+   * @param date 
+   * @returns date au format jj/mm/aaaa hh:mm:ss
+   */
   formatDateToDateHeure(date: Date): string {
     if (!date) return "";
 
@@ -226,6 +251,10 @@ export class UtilsService {
     return res;
   }
 
+  /**
+   * 
+   * @returns date actuelle au format jj/mm/aaaa hh:mm:ss
+   */
   getDateNow() {
     let d: Date = new Date();
 
@@ -248,6 +277,11 @@ export class UtilsService {
     return res;
   }
 
+  /**
+   * 
+   * @param iso 
+   * @returns date au format datetime-local (yyyy-MM-ddTHH:mm)
+   */
   toDateTimeLocal(iso: string): string {
     if (!iso) return null;
 
@@ -820,7 +854,7 @@ export class UtilsService {
   }
 
   public getDateToFormat(d: any, format: string): string {
-    
+
     let date = this.getDate(d);
     if (!date) return "";
     return this.formatDateByFormat(date, format);

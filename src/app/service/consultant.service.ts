@@ -158,13 +158,15 @@ export class ConsultantService {
   /**
    * Sauvegarde le code de réinitialisation du password pour un email
    */
-  saveCodeResetPassword(email: string, codeResetPassword: string, fctOnSuccess: Function, fctOnError: Function): void {
+  saveCodeResetPassword(username : string,  email: string, codeResetPassword: string, fctOnSuccess: Function, fctOnError: Function): void {
     const label = "saveCodeResetPassword";
     const url = `${this.consultantUrlPub}/resetPassword`;
 
     this.logger.debug(label + ": Sauvegarde du code pour email: " + email);
 
-    this.findConsultantByUsername(email, true).subscribe(
+    // BUG : on peut avoir plusieurs consultants ayant le même email (cas où un consultant change d'email)
+    // en plus ici on cherche par username et non par email !!
+    this.findConsultantByUsername(username, true).subscribe(
       data => {
         this.logger.debug(label + ": Consultant trouvé: ", data);
         const consultant: Consultant = data.body.result;
@@ -183,13 +185,13 @@ export class ConsultantService {
             }
           );
         } else {
-          let msg = "Aucun consultant trouvé pour l'email: " + email;
+          let msg = "Aucun consultant trouvé pour username: " + username;
           this.logger.debug(label + ": " + msg);
           if (fctOnError) fctOnError(null, msg);
         }
       },
       error => {
-        let msg = "Erreur lors de la recherche du consultant: " + email;
+        let msg = "Erreur lors de la recherche du consultant: " + username;
         this.logger.debug(label + ": " + msg, error);
         if (fctOnError) fctOnError(error, msg);
       }

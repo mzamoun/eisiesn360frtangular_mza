@@ -1,5 +1,20 @@
 
+insc esn : quel mail est utilisé pour envoyer : je pense resp_esn 
 
+
+
+
+check saisi pour esn :
+siret
+code naf
+urssaf
+
+consultant
+check : 
+Numero securite sociale
+date de naissance : >= 18 ans 
+
+username : prenom[0]nom
 
 -----------------------
 la recherche dans la liste des consultants ne fonctionne pas bien : elle doit chercher que sur les colonnes affiches 
