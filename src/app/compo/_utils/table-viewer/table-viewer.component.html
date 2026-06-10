@@ -14,7 +14,7 @@
     </h3>
 
     <div style="display: flex; margin: 20px;">
-        <button class="btn btn-primary" (click)="getTables()">{{utils.tr('app.compo.utils.tableViewer.getAllTables')}}</button>
+        <button class="btn btn-primary" (click)="getTables(null, null)">{{utils.tr('app.compo.utils.tableViewer.getAllTables')}}</button>
         <button class="btn btn-primary" (click)="exportAllTablesToJson()">{{utils.tr('app.compo.utils.tableViewer.exportAllToJson')}}</button>
         <button class="btn btn-primary" (click)="importFromJsonToTableSelected()">{{utils.tr('app.compo.utils.tableViewer.importFromJson')}}</button>
         <button class="btn btn-primary" (click)="runBatchCraExportManually()">{{utils.tr('app.compo.utils.tableViewer.runBatchCra')}}</button>

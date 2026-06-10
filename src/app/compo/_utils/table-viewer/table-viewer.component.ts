@@ -56,7 +56,7 @@ export class TableViewerComponent implements OnInit {
     let label = "get tables ..."
     this.dataSharingService.addInfo(label)
     this.getTables(
-      () => {
+      (listTables) => {
         this.dataSharingService.delInfo(label)
         if (this.tables && this.tables.length) {
           let t0 = 100
@@ -65,17 +65,28 @@ export class TableViewerComponent implements OnInit {
             this.openTabData()
           }, t += t0);
         }
+      }, 
+      (err) => {
+        this.dataSharingService.delInfo(label)
+        this.logger.error(label, "err", err)
+        this.infos = JSON.stringify(err)
       }
     )
   }
 
-  getTables(fOk: Function = null) {
+  getTables(fOk: Function, fKo : Function ) {
+    let label = "get tables ..."
+    this.dataSharingService.addInfo(label)
     this.tableService.getTables(
       (data) => {
+        this.dataSharingService.delInfo(label)
         this.tables = data.map(t => t);
-        if (fOk) fOk()
+        if (fOk) fOk(this.tables)
       }, (err) => {
+        this.dataSharingService.delInfo(label)
         this.infos = JSON.stringify(err)
+        this.logger.error(label, "err", err)
+        if (fKo) fKo(err)
       }
     )
   }
@@ -90,25 +101,32 @@ export class TableViewerComponent implements OnInit {
     this.columnMetadata = []; // Videz les métadonnées
 
     // 1. Récupérer les lignes de la table
+    let label = "get lines of table " + this.selectedTable
+    this.dataSharingService.addInfo(label)
     this.tableService.getLinesOfTable(this.selectedTable,
       data => {
+        this.dataSharingService.delInfo(label)
         this.lines = data;
         this.logger.debug(fct + " getLinesOfTable data : ", data)
       }, (err) => {
+        this.dataSharingService.delInfo(label)
         this.logger.debug(fct + " getLinesOfTable err : ", err)
       }
     );
 
     // 2. Récupérer les détails des colonnes
-
+    let label2 = "get cols of table " + this.selectedTable
+    this.dataSharingService.addInfo(label2)
     this.tableService.getColsOfTable(this.selectedTable,
       (columnMetadata, mapColType, mapColTypeInput) => {
+        this.dataSharingService.delInfo(label2)
         this.logger.debug(fct + " getColsOfTable columnMetadata : ", columnMetadata)
         this.columnMetadata = columnMetadata;
         this.mapColType = mapColType;
         this.mapColTypeInput = mapColTypeInput;
         this.logger.debug(fct + " getColsOfTable mapColType : ", mapColType)
       }, err => {
+        this.dataSharingService.delInfo(label2)
         this.logger.debug(fct + " getColsOfTable err : ", err)
       }
     );
@@ -263,7 +281,7 @@ export class TableViewerComponent implements OnInit {
         if (!sqlResult.body && sqlResult.header && sqlResult.header.description) {
           this.infos = sqlResult.header.description
         } else {
-          this.getTables(null)
+          this.getTables(null, null)
           if (this.selectedTable) {
             this.selectTable(this.selectedTable)
           }
