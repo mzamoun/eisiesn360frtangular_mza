@@ -127,34 +127,39 @@ export class EsnFormComponent extends MereComponent {
   }
 
   esnNameFocus(name: any) {
-    name.control.setErrors(null);
-    name.control.updateValueAndValidity();
+    if (this.isAdd) {
+      name.control.setErrors(null);
+      name.control.updateValueAndValidity();
+    }
   }
 
   esnNameLostFocus(name: any) {
     let label = "esnNameChange"
     this.myObj.name = this.utils.uniformName(this.myObj.name);
-    this.beforeCallServer(label)
-    this.esnService.findByName(this.myObj.name, this.dataSharingService.IsAddEsnAndResp).subscribe(
-      (data) => {
-        this.afterCallServer(label, data)
-        let esn: Esn = data?.body?.result;
-        if (esn != null) {
-          name.control.setErrors({ alreadyExists: true });
-          this.logger.warn("esnNameChange: esn name already exists");
-          this.addError(new MyError("esnNameChange", "esn name already exists"));
-        } else {
-          name.control.setErrors(null);
-          name.control.updateValueAndValidity();
+    
+    if (this.isAdd) {
+      this.beforeCallServer(label)
+      this.esnService.findByName(this.myObj.name, this.dataSharingService.IsAddEsnAndResp).subscribe(
+        (data) => {
+          this.afterCallServer(label, data)
+          let esn: Esn = data?.body?.result;
+          if (esn != null) {
+            name.control.setErrors({ alreadyExists: true });
+            this.logger.warn("esnNameChange: esn name already exists");
+            this.addError(new MyError("esnNameChange", "esn name already exists"));
+          } else {
+            name.control.setErrors(null);
+            name.control.updateValueAndValidity();
+          }
+        }, (error) => {
+          this.afterCallServer(label, error)
+          this.logger.error("esnNameChange: error:", error);
+          this.addErrorFromErrorOfServer("esnNameChange", error);
+          // set focus on name field
+          this.gotoName();
         }
-      }, (error) => {
-        this.afterCallServer(label, error)
-        this.logger.error("esnNameChange: error:", error);
-        this.addErrorFromErrorOfServer("esnNameChange", error);
-        // set focus on name field
-        this.gotoName();
-      }
-    )
+      )
+    }
   }
 
   getListConsultants(resp: Consultant) {
