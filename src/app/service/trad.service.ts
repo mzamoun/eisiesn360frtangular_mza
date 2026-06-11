@@ -129,20 +129,20 @@ export class TradService {
 
     "Virement": {
       fr: "Virement bancaire",
-      en:  "Bank transfer",
+      en: "Bank transfer",
       ar: "تحويل بنكي"
     },
 
-    "ING_ETUDES" : {
-      fr : "Ingénieur d'Etudes",
-      en : "Engineer of Studies",
-      ar : "مهندس الدراسات"
+    "ING_ETUDES": {
+      fr: "Ingénieur d'Etudes",
+      en: "Engineer of Studies",
+      ar: "مهندس الدراسات"
     },
 
-    "CADRE" : {
-      fr : "Cadre",
-      en : "Executive",
-      ar : "إطار"
+    "CADRE": {
+      fr: "Cadre",
+      en: "Executive",
+      ar: "إطار"
     },
 
     "Edit": {
@@ -1064,6 +1064,11 @@ export class TradService {
       "fr": "est obligatoire",
       "en": "is required",
       "ar": "مطلوب",
+    },
+    "app.badge.NonDisponible": {
+      "fr": "n'est pas disponible",
+      "en": "is not available",
+      "ar": "غير متوفر",
     },
     "app.compo.esn.list.table.thead.name": {
       "fr": "Nom",

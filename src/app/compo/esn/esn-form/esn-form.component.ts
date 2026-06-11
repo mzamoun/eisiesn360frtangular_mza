@@ -13,6 +13,7 @@ import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
 import { Esn } from '../../../model/esn';
 import { EsnService } from '../../../service/esn.service';
 import { MereComponent } from '../../_utils/mere-component';
+import { MyError } from 'src/app/resource/MyError';
 
 @Component({
   selector: 'app-esn-form',
@@ -93,6 +94,7 @@ export class EsnFormComponent extends MereComponent {
     this.beforeCallServer("onSubmit");
     // this.esnService.setEsn(this.myObj);
     this.dataSharingService.esnSaved = null
+    this.myObj.name = this.utils.uniformName(this.myObj.name);
     this.esnService.save(this.myObj, this.dataSharingService.IsAddEsnAndResp).subscribe(
       data => {
         this.afterCallServer("onSubmit", data)
@@ -116,11 +118,43 @@ export class EsnFormComponent extends MereComponent {
         }
       },
       error => {
+        this.afterCallServer("onSubmit", error)
         this.logger.debug("onSubmit: error:", error);
         this.addErrorFromErrorOfServer("onSubmit", error);
         ;
       }
     );
+  }
+
+  esnNameFocus(name: any) {
+    name.control.setErrors(null);
+    name.control.updateValueAndValidity();
+  }
+
+  esnNameLostFocus(name: any) {
+    let label = "esnNameChange"
+    this.myObj.name = this.utils.uniformName(this.myObj.name);
+    this.beforeCallServer(label)
+    this.esnService.findByName(this.myObj.name, this.dataSharingService.IsAddEsnAndResp).subscribe(
+      (data) => {
+        this.afterCallServer(label, data)
+        let esn: Esn = data?.body?.result;
+        if (esn != null) {
+          name.control.setErrors({ alreadyExists: true });
+          this.logger.warn("esnNameChange: esn name already exists");
+          this.addError(new MyError("esnNameChange", "esn name already exists"));
+        } else {
+          name.control.setErrors(null);
+          name.control.updateValueAndValidity();
+        }
+      }, (error) => {
+        this.afterCallServer(label, error)
+        this.logger.error("esnNameChange: error:", error);
+        this.addErrorFromErrorOfServer("esnNameChange", error);
+        // set focus on name field
+        this.gotoName();
+      }
+    )
   }
 
   getListConsultants(resp: Consultant) {
@@ -167,7 +201,7 @@ export class EsnFormComponent extends MereComponent {
   onFocusSiteWeb() {
     if (this.myObj.webSite == null || this.myObj.webSite.trim().length == 0) {
       let dom = this.myObj.name ? this.myObj.name.toLowerCase().replace(/\s+/g, '-') : '';
-      if(dom) {
+      if (dom) {
         this.myObj.webSite = "http://www." + dom + ".com";
       }
     }
@@ -175,10 +209,10 @@ export class EsnFormComponent extends MereComponent {
 
   onFocusEmail() {
     if (this.myObj.email == null || this.myObj.email.trim().length == 0) {
-      if(this.myObj.webSite) {
+      if (this.myObj.webSite) {
         let tab = this.myObj.webSite.split(/\./)
         let dom = tab.length >= 2 ? tab[1] + "." + tab[2] : '';
-        if(dom) {
+        if (dom) {
           this.myObj.email = "contact@" + dom;
         }
       }

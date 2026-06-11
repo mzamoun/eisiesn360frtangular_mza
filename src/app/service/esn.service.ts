@@ -47,7 +47,12 @@ export class EsnService {
     return this.http.get<GenericResponse>(this.esnUrl + id);
   }
 
-  public save(esn: Esn, isPub : boolean = false): Observable<GenericResponse> {
+  public findByName(name: string, isPub: boolean = false): Observable<GenericResponse> {
+    let url = isPub ? this.esnUrlPub : this.esnUrl
+    return this.http.post<GenericResponse>(url + "findByName/", name);
+  }
+
+  public save(esn: Esn, isPub: boolean = false): Observable<GenericResponse> {
     ////////////this.logger.debug("save id=" + esn.id + ".");
     let url = isPub ? this.esnUrlPub : this.esnUrl
     if (esn.id > 0) {
@@ -59,7 +64,7 @@ export class EsnService {
     }
   }
 
-  public deleteById(id: number,  isPub : boolean = false ): Observable<GenericResponse> {
+  public deleteById(id: number, isPub: boolean = false): Observable<GenericResponse> {
     let url = isPub ? this.esnUrlPub : this.esnUrl
     return this.http.delete<GenericResponse>(url + id);
   }
@@ -74,15 +79,15 @@ export class EsnService {
 
   ///////////////////
 
-  majEsnOnConsultants(list: Consultant[], fct : Function = null, fctErr : Function ) {
-    if(list && list.length>0) {
-      for(let c of list) {
+  majEsnOnConsultants(list: Consultant[], fct: Function = null, fctErr: Function) {
+    if (list && list.length > 0) {
+      for (let c of list) {
         this.majEsnOnConsultant(c, fct, fctErr)
       }
     }
   }
 
-  majEsnOnConsultant(myObj: Consultant, fct : Function = null, fctErr : Function ) {
+  majEsnOnConsultant(myObj: Consultant, fct: Function = null, fctErr: Function) {
     this.logger.debug("majEsnOnConsultant myObj, esnId, myObj.esn : ", myObj, myObj?.esnId, myObj?.esn)
     if (myObj && myObj.esnId && !myObj.esn) {
       this.logger.debug("majEsnOnConsultant DEB find esn by id=" + myObj.esnId);
@@ -95,7 +100,7 @@ export class EsnService {
           myObj.esn = data.body != null ? data.body.result : null;
           this.logger.debug("majEsnOnConsultant setEsnOnConsultant : myObj.esn :", myObj.esn)
           myObj.esnName = myObj.esn?.name
-          if(fct) fct(myObj.esn)
+          if (fct) fct(myObj.esn)
         },
         error => {
           this.logger.debug("majEsnOnConsultant ERROR setEsnOnConsultant consultant, err", myObj, error)

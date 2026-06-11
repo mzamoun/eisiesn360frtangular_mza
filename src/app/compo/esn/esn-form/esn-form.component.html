@@ -9,10 +9,14 @@
                 <input type="text"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.esn.form.input.name') | lowercase}}"
                     [(ngModel)]="myObj.name" class="form-control" id="name" name="name" required #name="ngModel"
-                    #nameInput>
+                    (focus)="esnNameFocus(name)" (blur)="esnNameLostFocus(name)" #nameInput>
             </div>
-            <div [hidden]="name.valid" class="badge badge-danger">{{utils.tr('app.compo.esn.form.input.name')}}
-                {{utils.tr('app.badge.required')}}</div>
+            <div *ngIf="name.errors?.['required']" class="badge badge-danger">
+                {{utils.tr('app.compo.esn.form.input.name')}} {{utils.tr('app.badge.required')}}
+            </div>
+            <div *ngIf="name.errors?.['alreadyExists']" class="badge badge-danger">
+                {{utils.tr('app.compo.esn.form.input.name')}} {{utils.tr('app.badge.NonDisponible')}}
+            </div>
 
             <div class="form-group">
                 <label for="metier">{{utils.tr('app.compo.esn.form.input.profession')}}</label>
@@ -26,8 +30,10 @@
 
             <div class="form-group">
                 <label for="street">{{utils.tr('app.compo.esn.form.input.street')}}</label>
-                     <input type="text" placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.esn.form.input.street') | lowercase}}" [(ngModel)]="myObj.address.street"
-                    class="form-control" id="street" name="street" required #street="ngModel">
+                <input type="text"
+                    placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.esn.form.input.street') | lowercase}}"
+                    [(ngModel)]="myObj.address.street" class="form-control" id="street" name="street" required
+                    #street="ngModel">
             </div>
             <div [hidden]="street.valid" class="badge badge-danger">{{utils.tr('app.compo.esn.form.input.street')}}
                 {{utils.tr('app.badge.required')}}</div>
@@ -97,38 +103,45 @@
             <div class="form-row">
                 <div class="form-group col-md-4">
                     <label for="payrollSiret">{{utils.tr('app.compo.esn.form.input.payrollSiret')}}</label>
-                    <input type="text" [(ngModel)]="myObj.payrollSiret" class="form-control" id="payrollSiret" name="payrollSiret" placeholder="14 chiffres">
+                    <input type="text" [(ngModel)]="myObj.payrollSiret" class="form-control" id="payrollSiret"
+                        name="payrollSiret" placeholder="14 chiffres">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="payrollCodeNaf">{{utils.tr('app.compo.esn.form.input.payrollCodeNaf')}}</label>
-                    <input type="text" [(ngModel)]="myObj.payrollCodeNaf" class="form-control" id="payrollCodeNaf" name="payrollCodeNaf" placeholder="6202A">
+                    <input type="text" [(ngModel)]="myObj.payrollCodeNaf" class="form-control" id="payrollCodeNaf"
+                        name="payrollCodeNaf" placeholder="6202A">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="payrollUrssaf">{{utils.tr('app.compo.esn.form.input.payrollUrssaf')}}</label>
-                    <input type="text" [(ngModel)]="myObj.payrollUrssaf" class="form-control" id="payrollUrssaf" name="payrollUrssaf" placeholder="Numero compte">
+                    <input type="text" [(ngModel)]="myObj.payrollUrssaf" class="form-control" id="payrollUrssaf"
+                        name="payrollUrssaf" placeholder="Numero compte">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="payrollConventionCollective">{{utils.tr('app.compo.esn.form.input.payrollConventionCollective')}}</label>
-                <input type="text" [(ngModel)]="myObj.payrollConventionCollective" class="form-control" id="payrollConventionCollective" name="payrollConventionCollective" placeholder="Bureaux d'etudes techniques">
+                <label
+                    for="payrollConventionCollective">{{utils.tr('app.compo.esn.form.input.payrollConventionCollective')}}</label>
+                <input type="text" [(ngModel)]="myObj.payrollConventionCollective" class="form-control"
+                    id="payrollConventionCollective" name="payrollConventionCollective"
+                    placeholder="Bureaux d'etudes techniques">
             </div>
 
             <br />
-            <ul class="right" >
+            <ul class="right">
                 <li class="list-inline-item" *ngIf="myObj && dataSharingService.IsAddEsnAndResp">
                     <button type="submit" id="btn-esn-form-save" [disabled]="!esnForm.form.valid"
                         class="btn btn-info">{{btnSaveTitle}}</button>
                 </li>
-                <li class="list-inline-item" *ngIf="userConnected && userConnected.role == 'ADMIN'"><a [routerLink]="['/esn_list']"
+                <li class="list-inline-item" *ngIf="userConnected && userConnected.role == 'ADMIN'"><a
+                        [routerLink]="['/esn_list']"
                         class="btn btn-info">{{utils.tr('app.compo.esn.form.button.list')}}</a></li>
             </ul>
 
         </form>
     </div>
 
-    <div style="margin-left: 20px;" *ngIf="myObj && myObj.id && userConnected && userConnected.role == 'ADMIN'" >
-        <app-esn-arbo [esn]="myObj" ></app-esn-arbo>
+    <div style="margin-left: 20px;" *ngIf="myObj && myObj.id && userConnected && userConnected.role == 'ADMIN'">
+        <app-esn-arbo [esn]="myObj"></app-esn-arbo>
     </div>
 
 

@@ -1042,6 +1042,11 @@ export class UtilsService {
     return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
   }
 
+  uniformName(name: string): string {
+    if (!name) return '';
+    return name.toUpperCase().replace(/\s+/g, ' ').trim();
+  }
+
   // end methodes ////////////
 
 

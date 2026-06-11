@@ -18,3 +18,27 @@ describe('UtilsService', () => {
     expect(service).toBeTruthy();
   });
 });
+
+// faire plusieurs tests à uniformName
+describe('uniformName', () => {
+  it('should return empty string when name is empty', () => {
+    const service: UtilsService = TestBed.get(UtilsService);
+    expect(service.uniformName('')).toBe('');
+  });
+
+  it('should return uppercase string when name is not empty', () => {
+    const service: UtilsService = TestBed.get(UtilsService);
+    expect(service.uniformName('test')).toBe('TEST');
+  });
+
+  it('should return uppercase string when name has spaces', () => {
+    const service: UtilsService = TestBed.get(UtilsService);
+    expect(service.uniformName('test test')).toBe('TEST TEST');
+  });
+
+  it('should return trim uppercase string when name has spaces', () => {
+    const service: UtilsService = TestBed.get(UtilsService);
+    expect(service.uniformName('test test   aaa  ')).toBe('TEST TEST AAA');
+  });
+
+});
