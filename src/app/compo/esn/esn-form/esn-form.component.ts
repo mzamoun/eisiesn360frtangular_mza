@@ -72,7 +72,7 @@ export class EsnFormComponent extends MereComponent {
   }
 
   @ViewChild('nameInput') nameInput!: ElementRef;
-  gotoName() {
+  focusName() {
     setTimeout(() => {
       this.nameInput.nativeElement.focus();
     }, 300);
@@ -106,7 +106,7 @@ export class EsnFormComponent extends MereComponent {
             if (this.dataSharingService.IsAddEsnAndResp) {
               this.dataSharingService.esnSaved = this.myObj
               // this.utilsIhm.scrollToTop()
-              this.gotoName()
+              this.focusName()
               // this.gotoTabRespEsn()
               // ton traitement (appel service, etc.)
               this.esnSaved.emit(); // informer le parent
@@ -136,7 +136,7 @@ export class EsnFormComponent extends MereComponent {
   esnNameLostFocus(name: any) {
     let label = "esnNameChange"
     this.myObj.name = this.utils.uniformName(this.myObj.name);
-    
+
     if (this.isAdd) {
       this.beforeCallServer(label)
       this.esnService.findByName(this.myObj.name, this.dataSharingService.IsAddEsnAndResp).subscribe(
@@ -156,7 +156,7 @@ export class EsnFormComponent extends MereComponent {
           this.logger.error("esnNameChange: error:", error);
           this.addErrorFromErrorOfServer("esnNameChange", error);
           // set focus on name field
-          this.gotoName();
+          this.focusName();
         }
       )
     }

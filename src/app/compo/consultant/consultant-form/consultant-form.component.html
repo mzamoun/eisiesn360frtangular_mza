@@ -64,9 +64,10 @@
             <div class="form-group">
                 <label for="lastName">{{utils.tr('app.compo.consultant.form.input.lastName')}}</label>
                 <input type="text" [(ngModel)]="myObj.lastName" class="form-control" id="lastName" name="lastName"
-                    (blur)="emailFocus()"
+                    (blur)="emailModelize()"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.lastName') | lowercase}}"
-                    required #lastName="ngModel">
+                    required #lastName="ngModel"
+                    >
             </div>
             <div [hidden]="lastName.valid" class="badge badge-danger">
                 {{utils.tr('app.compo.consultant.form.input.lastName')}} {{utils.tr('app.badge.required')}}</div>
@@ -76,22 +77,38 @@
                 <input type="text" [(ngModel)]="myObj.username" [value]="myObj.username" class="form-control"
                     id="username" name="username"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}} {{utils.tr('app.compo.consultant.form.input.username') | lowercase}}"
-                    required #username="ngModel" [pattern]="usernamePattern">
+                    required #username="ngModel" [pattern]="usernamePattern"
+                    (focus)="usernameFocus(username)" (blur)="usernameLostFocus(username)"
+                    >
                 <div [hidden]="!username?.errors?.pattern" class="badge badge-danger">
                     {{utils.tr('app.compo.consultant.form.validation.usernameInvalid')}}
                 </div>
+                <div *ngIf="username?.errors?.['required']" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.input.username')}} {{utils.tr('app.badge.required')}}
+                </div>
+                <div *ngIf="username?.errors?.['alreadyExists']" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.input.username')}} {{utils.tr('app.badge.NonDisponible')}}
+                </div>
+
             </div>
 
             <div class="form-group">
                 <label for="email">{{utils.tr('app.compo.consultant.form.input.email')}}</label>
                 <input type="email" [(ngModel)]="myObj.email" class="form-control" id="email" name="email"
                     placeholder="{{utils.tr('app.form.input.placeholder.prefix')}}  {{utils.tr('app.compo.consultant.form.input.email') | lowercase}}"
-                    required #email="ngModel" [pattern]="emailPattern" (click)="emailFocus()">
+                    required #email="ngModel" [pattern]="emailPattern"
+                    (focus)="emailFocus(email)" (blur)="emailLostFocus(email)"
+                    >
             </div>
-            <div [hidden]="email.valid || (myObj.role == 'RESPONSIBLE_ESN' && myObj.email != '' && email.valid )"
-                class="badge badge-danger">{{utils.tr('app.compo.consultant.form.input.email')}}
-                {{utils.tr('app.badge.required')}}
-            </div>
+                <div [hidden]="!email?.errors?.pattern" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.validation.emailInvalid')}}
+                </div>
+                <div *ngIf="email?.errors?.['required']" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.input.email')}} {{utils.tr('app.badge.required')}}
+                </div>
+                <div *ngIf="email?.errors?.['alreadyExists']" class="badge badge-danger">
+                    {{utils.tr('app.compo.consultant.form.input.email')}} {{utils.tr('app.badge.NonDisponible')}}
+                </div>
 
             <div class="form-group">
                 <label for="adresse">{{utils.tr('Address')}}</label>

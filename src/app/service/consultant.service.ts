@@ -125,6 +125,12 @@ export class ConsultantService {
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
     return this.http.post<GenericResponse>(url + "/findByUsername", username);
   }
+  
+  findConsultantByEmail(email: string, isPub: boolean = false): Observable<GenericResponse> {
+    this.logger.debug("findConsultantByEmail email:", email)
+    let url = isPub ? this.consultantUrlPub : this.consultantUrl
+    return this.http.post<GenericResponse>(url + "/findByEmail", email);
+  }
 
   getConsultantAndHisInfos(username: string): Observable<GenericResponse> {
     this.logger.debug("getConsultantAndHisInfos username:", username)

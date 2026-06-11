@@ -1535,6 +1535,11 @@ export class TradService {
       "en": "Invalid username (3-64 chars: letters, numbers, '.', '_' or '-')",
       "ar": "اسم مستخدم غير صالح (3-64 حرفًا: أحرف، أرقام، '.'، '_' أو '-')",
     },
+    "app.compo.consultant.form.validation.emailInvalid": {
+      "fr": "Email invalide",
+      "en": "Invalid email",
+      "ar": "بريد إلكتروني غير صالح",
+    },
     "app.compo.consultant.form.input.tjmInterne": {
       "fr": "TJM Interne",
       "en": "Internal TJM",

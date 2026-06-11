@@ -191,14 +191,14 @@ export class ConsultantFormComponent extends MereComponent {
   // Getter pour Entry Date
   get entryDateString(): string {
     const date = this.myObj?.entryDate;
-    this.logger.info('entryDateString', date);
+    // this.logger.info('entryDateString', date);
     if (!date) return '';
 
     // Si c'est un vrai objet Date
     if (date instanceof Date) {
       return date.toISOString().split('T')[0];
     }
-    this.logger.info('entryDateString is string', date);
+    // this.logger.info('entryDateString is string', date);
     // Si c'est une String (ex: reçue du serveur "2026-03-03T...")
     // return date.split('T')[0];
     return date;
@@ -211,14 +211,14 @@ export class ConsultantFormComponent extends MereComponent {
   // Getter pour Birth Day
   get birthDayString(): string {
     const date = this.myObj?.birthDay;
-    this.logger.info('birthDayString', date);
+    // this.logger.info('birthDayString', date);
     if (!date) return '';
 
     // Si c'est un vrai objet Date
     if (date instanceof Date) {
       return date.toISOString().split('T')[0];
     }
-    this.logger.info('birthDayString is string', date);
+    // this.logger.info('birthDayString is string', date);
     // Si c'est une String (ex: reçue du serveur)
     // return date.split('T')[0];
     return date;
@@ -552,6 +552,10 @@ export class ConsultantFormComponent extends MereComponent {
 
   onSubmit() {
     this.logger.debug("onSubmit : deb ")
+
+    this.myObj.username = this.utils.uniformUsername(this.myObj.username);
+    this.myObj.email = this.utils.uniformUsername(this.myObj.email);
+
     this.logger.debug("this.myObj.email ", this.myObj.email)
     this.logger.debug("this.myObj.username ", this.myObj.username)
 
@@ -601,16 +605,16 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   private validateUsernameRules(): boolean {
-    const username = this.normalizeIdentityValue(this.myObj?.username);
-    const email = this.normalizeIdentityValue(this.myObj?.email).toLowerCase();
-
-    this.myObj.username = username;
-    this.myObj.email = email;
+    let username = this.normalizeIdentityValue(this.myObj?.username);
+    let email = this.normalizeIdentityValue(this.myObj?.email).toLowerCase();
 
     if (!username || !email) {
       this.utilsIhmService.infoDialog('email or username is null !!');
       return false;
     }
+
+    username = this.utils.uniformUsername(username);
+    email = this.utils.uniformUsername(email);
 
     if (username.toLowerCase() === email) {
       this.utilsIhmService.infoDialog('Le username doit être différent de l\'email.');
@@ -622,11 +626,15 @@ export class ConsultantFormComponent extends MereComponent {
       return false;
     }
 
+    this.myObj.username = username;
+    this.myObj.email = email;
+
     return true;
   }
 
   private verifyUsernameUniqueAndSave(isPub: boolean): void {
     const label = 'verifyUsernameUnique';
+    this.myObj.username = this.utils.uniformUsername(this.myObj.username);
     const username = this.normalizeIdentityValue(this.myObj?.username);
     this.beforeCallServer(label);
 
@@ -657,6 +665,8 @@ export class ConsultantFormComponent extends MereComponent {
   private proceedSaveConsultant(): void {
     this.logger.debug("this.manager.role:", '.' + this.manager?.role + '.')
     this.logger.debug("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
+    this.myObj.username = this.utils.uniformUsername(this.myObj.username);
+    this.myObj.email = this.utils.uniformUsername(this.myObj.email);
     if (this.userConnected && this.userConnected.role + '' != 'ADMIN') {
       this.logger.debug('NOT ADMIN')
       const managerToUse =
@@ -750,6 +760,94 @@ export class ConsultantFormComponent extends MereComponent {
 
   }
 
+  usernameFocus(myModel: any) {
+    if (this.isAdd) {
+      myModel.control.setErrors(null);
+      myModel.control.updateValueAndValidity();
+    }
+  }
+
+  usernameLostFocus(myModel: any) {
+    let label = "usernameChange"
+    this.myObj.username = this.utils.uniformUsername(this.myObj.username);
+    this.logger.info(label + " username: " + this.myObj.username);
+    this.logger.info(label + " IsAddEsnAndResp: " + this.dataSharingService.IsAddEsnAndResp);
+    this.logger.info(label + " isAdd: " + this.isAdd);
+
+    if (this.isAdd) {
+      this.beforeCallServer(label)
+      this.consultantService.findConsultantByUsername(this.myObj.username, this.dataSharingService.IsAddEsnAndResp).subscribe(
+        (data) => {
+          this.logger.info(label + " data: ", data);
+          this.afterCallServer(label, data)
+          let res: Consultant = data?.body?.result;
+          this.logger.info(label + " res: ", res);
+          if (res != null) {
+            myModel.control.setErrors({ alreadyExists: true });
+            this.logger.warn(label + ": username already exists");
+            this.addError(new MyError(label, "username already exists"));
+          } else {
+            myModel.control.setErrors(null);
+            myModel.control.updateValueAndValidity();
+          }
+        }, (error) => {
+          this.afterCallServer(label, error)
+          this.logger.error(label + ": error:", error);
+          this.addErrorFromErrorOfServer(label, error);
+          // set focus on name field
+          this.focusUsername();
+        }
+      )
+    }
+  }
+
+  emailLostFocus(myModel: any) {
+    let label = "emailChange"
+    this.myObj.email = this.utils.uniformUsername(this.myObj.email);
+    this.logger.info(label + " email: " + this.myObj.email);
+    this.logger.info(label + " IsAddEsnAndResp: " + this.dataSharingService.IsAddEsnAndResp);
+    this.logger.info(label + " isAdd: " + this.isAdd);
+
+    if (this.isAdd) {
+      this.beforeCallServer(label)
+      this.consultantService.findConsultantByEmail(this.myObj.email, this.dataSharingService.IsAddEsnAndResp).subscribe(
+        (data) => {
+          this.logger.info(label + " data: ", data);
+          this.afterCallServer(label, data)
+          let res: Consultant[] = data?.body?.result;
+          this.logger.info(label + " res: ", res);
+          if (res != null && res.length > 0) {
+            myModel.control.setErrors({ alreadyExists: true });
+            this.logger.warn(label + ": email already exists");
+            this.addError(new MyError(label, "email already exists"));
+          } else {
+            myModel.control.setErrors(null);
+            myModel.control.updateValueAndValidity();
+          }
+        }, (error) => {
+          this.afterCallServer(label, error)
+          this.logger.error(label + ": error:", error);
+          this.addErrorFromErrorOfServer(label, error);
+          // set focus on name field
+          this.focusEmail();
+        }
+      )
+    }
+  }
+
+  @ViewChild('username') username!: ElementRef;
+  focusUsername() {
+    setTimeout(() => {
+      this.username.nativeElement.focus();
+    }, 300);
+  }
+
+  @ViewChild('email') email!: ElementRef;
+  focusEmail() {
+    setTimeout(() => {
+      this.email.nativeElement.focus();
+    }, 300);
+  }
 
   gotoConsultantList() {
     this.logger.debug("gotoConsultantList")
@@ -830,10 +928,12 @@ export class ConsultantFormComponent extends MereComponent {
     return 0;
   }
 
-  emailFocus() {
+  emailModelize() {
+    let label = "emailModelize";
     this.setEsn();
-    this.logger.debug("emailFocus", this.myObj)
-    this.logger.debug("emailFocus Email : ", this.myObj.email)
+    this.logger.debug(label + " : ", this.myObj)
+    this.logger.debug(label + " Email : ", this.myObj.email)
+
     if (!this.myObj.esn) {
       this.myObj.esn = this.esnCurrent
     }
@@ -852,29 +952,45 @@ export class ConsultantFormComponent extends MereComponent {
     } else {
       domaine = (this.myObj.esn?.name + ".com").toLowerCase().replace(/\s+/g, '-');
     }
-    this.logger.debug("emailFocus Esn : ", this.myObj.esn)
+    this.logger.debug(label + " Esn : ", this.myObj.esn)
     if (this.utils.isEmpty(this.myObj.email)) {
-      this.logger.debug("email NULL")
+      this.logger.debug(label + " NULL")
       if (!this.utils.isEmpty(this.myObj.firstName) && !this.utils.isEmpty(this.myObj.lastName) && !this.utils.isEmpty(this.myObj.esn?.name)) {
         this.myObj.email = (this.myObj.firstName + "." + this.myObj.lastName + "@" + domaine).toLowerCase();
-        this.myObj.email = this.myObj.email.toLowerCase().replace(/\s+/g, '-');
       }
     }
 
     this.emailChange()
 
+  }
+
+  emailFocus(myModel: any) {
+
+    let label = "emailFocus";
+
+    this.emailModelize()
+
     if (this.utils.isEmpty(this.myObj.username)) {
-      this.logger.debug("username NULL")
+      this.logger.debug(label + " username NULL")
       if (!this.utils.isEmpty(this.myObj.firstName) && !this.utils.isEmpty(this.myObj.lastName)) {
         this.myObj.username = (this.myObj.firstName.charAt(0) + this.myObj.lastName).toLowerCase();
+        this.myObj.username = this.utils.uniformUsername(this.myObj.username);
       }
+    }
+
+    if (this.isAdd) {
+      myModel.control.setErrors(null);
+      myModel.control.updateValueAndValidity();
     }
 
   }
 
   emailChange() {
-    this.logger.debug("emailChange this.myObj.email ", this.myObj.email)
+    let label = "emailChange";
+
+    this.logger.debug(label + " this.myObj.email ", this.myObj.email)
     this.myObj.email = (this.myObj.email || '').trim().toLowerCase();
+    this.myObj.email = this.utils.uniformUsername(this.myObj.email);
   }
 
   showLoadingDialog(message: string): void {

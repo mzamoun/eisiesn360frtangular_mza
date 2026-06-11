@@ -1047,6 +1047,11 @@ export class UtilsService {
     return name.toUpperCase().replace(/\s+/g, ' ').trim();
   }
 
+  uniformUsername(username: string): string {
+    if (!username) return '';
+    return username.toLowerCase().replace(/\s+/g, ' ').trim().replace(/\s/g, '-');
+  }
+
   // end methodes ////////////
 
 
