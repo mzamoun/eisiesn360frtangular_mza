@@ -128,11 +128,11 @@
 
             <br />
             <ul class="right">
-                <li class="list-inline-item" *ngIf="myObj && dataSharingService.IsAddEsnAndResp">
+                <li class="list-inline-item" *ngIf="(myObj && dataSharingService.IsAddEsnAndResp) || (userConnected && (userConnected.role == 'ADMIN' || userConnected.role == 'RESPONSIBLE_ESN'))">
                     <button type="submit" id="btn-esn-form-save" [disabled]="!esnForm.form.valid"
                         class="btn btn-info">{{btnSaveTitle}}</button>
                 </li>
-                <li class="list-inline-item" *ngIf="userConnected && userConnected.role == 'ADMIN'"><a
+                <li class="list-inline-item" *ngIf="(userConnected && (userConnected.role == 'ADMIN' || userConnected.role == 'RESPONSIBLE_ESN'))"><a
                         [routerLink]="['/esn_list']"
                         class="btn btn-info">{{utils.tr('app.compo.esn.form.button.list')}}</a></li>
             </ul>
@@ -140,7 +140,7 @@
         </form>
     </div>
 
-    <div style="margin-left: 20px;" *ngIf="myObj && myObj.id && userConnected && userConnected.role == 'ADMIN'">
+    <div style="margin-left: 20px;" *ngIf="myObj && myObj.id && userConnected && (userConnected.role == 'ADMIN' || userConnected.role == 'RESPONSIBLE_ESN') ">
         <app-esn-arbo [esn]="myObj"></app-esn-arbo>
     </div>
 

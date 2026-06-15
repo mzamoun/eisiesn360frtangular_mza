@@ -1,4 +1,10 @@
 
+
+Activity : ajouter autant de cols "name" que de langues traitees.
+
+
+
+
 insc esn : quel mail est utilisé pour envoyer : je pense resp_esn 
 
 

@@ -63,6 +63,16 @@ export class TradService {
       en: "Add",
       ar: "إضافة",
     },
+    "ADD_NEW": {
+      fr: "Ajouter Nouveau",
+      en: "Add New",
+      ar: "إضافة جديد",
+    },
+    "DAY_ACTIVITY_OF": {
+      fr: "Activité du jour de",
+      en: "Day Activity of",
+      ar: "نشاط اليوم من",
+    },
     "All": {
       fr: "Tout",
       en: "All",

@@ -258,23 +258,33 @@ export class UtilsService {
   getDateNow() {
     let d: Date = new Date();
 
-    let month = this.getNumberInMin2Digits((d.getMonth() + 1) + ""),
-      day = this.getNumberInMin2Digits(d.getDate() + ""),
-      year = d.getFullYear(),
-      hour = this.getNumberInMin2Digits(d.getHours() + ""),
-      min = this.getNumberInMin2Digits(d.getMinutes() + ""),
-      sec = this.getNumberInMin2Digits(d.getSeconds() + "")
-      ;
+    // let month = this.getNumberInMin2Digits((d.getMonth() + 1) + ""),
+    //   day = this.getNumberInMin2Digits(d.getDate() + ""),
+    //   year = d.getFullYear(),
+    //   hour = this.getNumberInMin2Digits(d.getHours() + ""),
+    //   min = this.getNumberInMin2Digits(d.getMinutes() + ""),
+    //   sec = this.getNumberInMin2Digits(d.getSeconds() + "")
+    //   ;
 
-    if (month.length < 2)
-      month = '0' + month;
-    if (day.length < 2)
-      day = '0' + day;
+    // if (month.length < 2)
+    //   month = '0' + month;
+    // if (day.length < 2)
+    //   day = '0' + day;
 
-    let res = [year, month, day].join('_') + '_' + [hour, min, sec].join('_');
-    ////////////this.logger.debug("res:")
-    ////this.logger.debug(res)
-    return res;
+    // let res = [year, month, day].join('_') + '_' + [hour, min, sec].join('_');
+    // ////////////this.logger.debug("res:")
+    // ////this.logger.debug(res)
+    // return res;
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const yyyy = d.getFullYear();
+    const MM = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+
+    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
   }
 
   /**

@@ -160,6 +160,7 @@ export class CraService {
   }
 
   public craDayNotFull(craDay: CraDay, craDayActivity: CraDayActivity): boolean {
+    this.logger.debug("craDayNotFull : craDay, craDayActivity : ", craDay, craDayActivity)
     let t = craDayActivity.nbDay;
 
     if (craDay) {
@@ -176,6 +177,7 @@ export class CraService {
       this.logger.debug("canAddActivity: can add KO : craDay is null, craDayActivity : ", craDay, craDayActivity)
     }
 
+    this.logger.debug("craDayNotFull : t : ", t)
     return t <= 1;
 
   }
@@ -196,11 +198,13 @@ export class CraService {
       for (let i = 0; i < cra.craDays.length; i++) {
         if (this.utils.formatDate(date) == this.utils.formatDate(cra.craDays[i].day)) {
           craDay = cra.craDays[i];
+          this.logger.debug("getCraDayByDate : craDay found : ", craDay)
           return craDay;
         }
       }
     }
 
+    this.logger.debug("getCraDayByDate : craDay not found")
     return craDay;
   }
 
@@ -393,6 +397,7 @@ export class CraService {
 
   ////////////
   isCraDayOpen(craDay: CraDay): boolean {
+    this.logger.debug("isCraDayOpen : craDay : ", craDay)
     let ok = false;
 
     if (craDay) {
@@ -406,6 +411,7 @@ export class CraService {
       }
     }
 
+    this.logger.debug("isCraDayOpen : ok : ", ok)
     return ok;
   }
 
@@ -415,25 +421,29 @@ export class CraService {
    craDay.dayAbs =   // true ssi isDayWorked=false and day open
    */
   setDayProps(craDay: CraDay) {
-    //////this.logger.debug("***setDayProps: craDay", craDay)
+    this.logger.debug("***setDayProps: craDay", craDay)
     if (craDay != null) {
       craDay.isDayWorked = false;
       craDay.dayBill = false;
       craDay.dayAbs = false;
 
       craDay.craDayActivities.forEach((cda, k) => {
-        //////this.logger.debug("***setDayProps: cda", cda)
+        this.logger.debug("***setDayProps: cda", cda)
         let activity: Activity = cda.activity;
         let type: ActivityType = activity.type;
         if (type == null) {
+          const labelActivites = "Chargement du type d'activité..."
+          this.dataSharingService.addInfo(labelActivites);
           this.activityTypeService.findById(activity.typeId).subscribe(
             data => {
+              this.dataSharingService.delInfo(labelActivites);
               activity.type = data.body.result;
               type = activity.type;
 
               this.majCraDayByType(craDay, type);
             },
             error => {
+              this.dataSharingService.delInfo(labelActivites);
               this.logger.debug("ERROR activityTypeService.findById, activity.typeId, err", activity.typeId, error)
             }
           );

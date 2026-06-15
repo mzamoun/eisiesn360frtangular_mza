@@ -12,5 +12,6 @@ export class Constants {
   public static CONSULTANT = "CONSULTANT";
   public static MANAGER = "MANAGER";
   public static RESPONSIBLE_ESN = "RESPONSIBLE_ESN";
+  public static ADMIN = "ADMIN";
 
 }

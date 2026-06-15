@@ -1,14 +1,57 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "../node_modules/angular-calendar/css/angular-calendar.css";
-@import '~bootstrap/dist/css/bootstrap.min.css';   
+@import '~bootstrap/dist/css/bootstrap.min.css';
 
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+	height: 100%;
+}
 
-.cadre{
-    border: 1px solid black;
+body {
+	margin: 0;
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.sans-bord {
+	/* Supprime la bordure par défaut */
+	border: none;
+
+	/* Supprime le fond gris par défaut (rend le fond transparent) */
+	background: transparent;
+
+	/* Style du texte (modifiable selon vos besoins) */
+	color: #007bff;
+	/* Couleur du texte (ex: bleu lien) */
+	font-size: 16px;
+	font-weight: 600;
+
+	/* Amélioration du confort visuel et utilisateur */
+	padding: 10px 20px;
+	/* Espace interne autour du texte */
+	cursor: pointer;
+	/* Transforme le curseur en main au survol */
+	transition: all 0.3s ease;
+	/* Transition douce pour les effets */
+}
+
+/* Effet au survol (Optionnel mais recommandé) */
+.sans-bord:hover {
+	background-color: rgba(0, 123, 255, 0.1);
+	/* Léger fond coloré au survol */
+	border-radius: 4px;
+	/* Arrondit légèrement les angles du fond */
+}
+
+/* Gestion de l'accessibilité au clavier (Optionnel) */
+.sans-bord:focus-visible {
+	outline: 2px solid #007bff;
+	/* Garde un indicateur visuel pour la navigation au clavier */
+}
+
+.cadre {
+	border: 1px solid black;
 }
 
 .left {
@@ -33,10 +76,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .head {
-    font-size: 20px;
-    color: white;
-    background: #343a40; /* #343a40; */
-    width:100%;
+	font-size: 20px;
+	color: white;
+	background: #343a40;
+	/* #343a40; */
+	width: 100%;
 }
 
 .title100pct {
@@ -45,36 +89,36 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 	font-weight: bold;
 	font-size: larger;
 	width: 100%;
-  }
+}
 
 .bgcolor_tranp {
 	color: black;
 	font-weight: bolder;
-    background-color: #cccccc;
-    border-radius: 5px 0px 0px 5px;
+	background-color: #cccccc;
+	border-radius: 5px 0px 0px 5px;
 	background: linear-gradient(to bottom right, transparent, white 10%, rgb(0, 162, 255, 0.5) 90%);
 }
 
 .bgcolor_tranp_blue {
-	background:hsla(200, 100%, 50%, 0.2);   
+	background: hsla(200, 100%, 50%, 0.2);
 	/* 50% opaque blue */
 }
 
 .bgcolor_tranp_grad_blue {
 	color: black;
 	font-weight: bolder;
-    background-color: #cccccc;
-    border-radius: 5px 0px 0px 5px;
+	background-color: #cccccc;
+	border-radius: 5px 0px 0px 5px;
 	background: linear-gradient(to bottom right, transparent, white 10%, rgb(0, 162, 255, 0.5) 90%);
 }
 
 .h_scroll {
-    overflow-y: auto;
-    max-height: 600px;
+	overflow-y: auto;
+	max-height: 600px;
 }
 
 .hidden {
-    display: none;
+	display: none;
 }
 
 .badge_bg {
@@ -91,7 +135,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 	float: right;
 }
 
-.cdk-global-overlay-wrapper, .cdk-overlay-container { z-index: 9999!important; } 
+.cdk-global-overlay-wrapper,
+.cdk-overlay-container {
+	z-index: 9999 !important;
+}
 
 .bg_gradient {
 	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);

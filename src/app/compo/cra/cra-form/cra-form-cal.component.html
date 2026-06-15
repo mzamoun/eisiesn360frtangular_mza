@@ -6,7 +6,8 @@
             <div class="d-flex align-items-center">
                 <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                 <div>
-                    <h4 class="alert-heading">{{utils.tr('app.compo.cra.form.alertValidation')}} {{getNameByType()}}</h4>
+                    <h4 class="alert-heading">{{utils.tr('app.compo.cra.form.alertValidation')}} {{getNameByType()}}
+                    </h4>
                     <p>{{getNameByType()}} {{utils.tr('app.compo.cra.form.rejectedByManager')}}</p>
                     <hr>
                     <p class="mb-0">{{currentCra?.comment}}</p>
@@ -18,11 +19,15 @@
     <div class="card-body">
         <!-- Header Section -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="text-left" style="width: 30%;">
+            <!-- <div class="text-left" style="width: 30%;">
                 <button class="btn btn-outline-primary" id="cra-form-show-week-number" (click)="showWeekNumber()"
                     #showWeekNumberBtn>
                     <i class="far fa-calendar-alt me-2"></i>{{titleShowWeekNumber}}
                 </button>
+            </div> -->
+
+            <div class="text-left" style="width: 30%;">
+
             </div>
 
             <div class="text-center">
@@ -48,14 +53,12 @@
 
             <div class="text-left " style="width: 40%;">
 
-                <button type="button" class="btn btn-outline-success me-2"
-                    *ngIf="!currentCra?.validByConsultant"
+                <button type="button" class="btn btn-outline-success me-2" *ngIf="!currentCra?.validByConsultant"
                     id="btn-cra-form-add-multi-date" (click)="addMultiActivity()">
                     <i class="fas fa-calendar-plus me-1"></i> {{utils.tr('app.compo.cra.form.addMultiDate')}}
                 </button>
 
-                <button type="button" class="btn btn-outline-primary"
-                    *ngIf="currentCra?.type == 'CONGE'"
+                <button type="button" class="btn btn-outline-primary" *ngIf="currentCra?.type == 'CONGE'"
                     id="btn-cra-form-change-type-to-cra" (click)="changeTypeToCra()">
                     {{utils.tr('app.compo.cra.form.changeTypeToCra')}}
                 </button>
@@ -95,6 +98,9 @@
         <div class="row">
             <!-- Main Calendar Area -->
             <div class="col-lg-10 col-md-9">
+                <button class="left sans-bord" (click)="showWeekNumber()" title="{{titleShowWeekNumber}} ">
+                    {{isAffWeekNumber ? 'X' : '*'}}
+                </button>
                 <div class="mb-3 left" *ngIf="isAffWeekNumber">
                     <table class="table table-bordered table-sm">
                         <thead class="table-light">
@@ -133,7 +139,7 @@
                             *ngIf="is_canSubmitCra" />
                         <button type="button" class="btn btn-outline-info" *ngIf="currentCra.attachment" #attachment
                             id="btn-cra-form-download-attachement" (click)="downloadAttachment()">
-                        <i class="fas fa-download me-1"></i> {{utils.tr('app.compo.cra.form.downloadAttachment')}}
+                            <i class="fas fa-download me-1"></i> {{utils.tr('app.compo.cra.form.downloadAttachment')}}
                         </button>
                     </div>
 
@@ -144,7 +150,8 @@
             <div class="col-lg-2 col-md-3">
                 <div class="card mb-3">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>{{utils.tr('app.compo.cra.form.summary')}}</h5>
+                        <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>{{utils.tr('app.compo.cra.form.summary')}}
+                        </h5>
                     </div>
                     <div class="card-body p-2">
                         <div class="d-grid gap-2">
@@ -164,12 +171,14 @@
                             </button>
                             <button type="button" class="btn btn-outline-primary text-start"
                                 id="btn-cra-form-days-billed">
-                                <i class="fas fa-file-invoice-dollar me-2"></i> {{utils.tr('app.compo.cra.form.daysBilled')}}
+                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                {{utils.tr('app.compo.cra.form.daysBilled')}}
                                 <span class="badge bg-primary float-end">{{numberDayBilled}}</span>
                             </button>
                             <button type="button" class="btn btn-outline-info text-start" id="btn-cra-form-total-billed"
                                 *ngIf="hasRoleManagerValidate()">
-                                <i class="fas fa-money-bill-wave me-2"></i> {{utils.tr('app.compo.cra.form.totalBilled')}}
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                {{utils.tr('app.compo.cra.form.totalBilled')}}
                                 <span class="badge bg-info float-end">{{totalBilled}}</span>
                             </button>
                         </div>
@@ -184,12 +193,13 @@
                 <div>
                     <button class="btn btn-success me-2" (click)="isCraValid(false)" id="btn-cra-form-check-validation"
                         *ngIf="!currentCra?.validByConsultant">
-                        <i class="fas fa-check-circle me-1"></i> {{utils.tr('app.compo.cra.form.checkValidation')}} {{getNameByType()}}
+                        <i class="fas fa-check-circle me-1"></i> {{utils.tr('app.compo.cra.form.checkValidation')}}
+                        {{getNameByType()}}
                     </button>
                     <button class="btn btn-outline-dark me-2" id="btn-cra-form-send-cra-validation"
-                        (click)="sendCraToValidate()"
-                        *ngIf="is_canSubmitCra">
-                        <i class="fas fa-paper-plane me-1"></i> {{utils.tr('app.compo.cra.form.submit')}} {{getNameByType()}}
+                        (click)="sendCraToValidate()" *ngIf="is_canSubmitCra">
+                        <i class="fas fa-paper-plane me-1"></i> {{utils.tr('app.compo.cra.form.submit')}}
+                        {{getNameByType()}}
                     </button>
 
                 </div>
@@ -207,7 +217,8 @@
 
                     <button class="btn btn-outline-warning me-2" id="btn-cra-form-generate-fiche-paie-pdf"
                         (click)="generateFichePaieFromCra()" *ngIf="currentCra.id!=null">
-                        <i class="fas fa-file-invoice-dollar me-1"></i> {{utils.tr('app.compo.cra.form.generateFichePaieFromCra')}}
+                        <i class="fas fa-file-invoice-dollar me-1"></i>
+                        {{utils.tr('app.compo.cra.form.generateFichePaieFromCra')}}
                     </button>
 
                     <button class="btn btn-primary me-2" id="btn-cra-form-save" (click)="saveCra(true, false, '', '')"
@@ -222,13 +233,14 @@
 
                     <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
                         *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT" permission="DELETE">
-                            <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}}
+                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}}
                     </button>
                 </div>
 
             </div>
 
-            <div id="panel_download_send_email_CRA" class="mt-3" *ngIf="showDownloadSendEmailCraPanel && downloadSendEmailCraData">
+            <div id="panel_download_send_email_CRA" class="mt-3"
+                *ngIf="showDownloadSendEmailCraPanel && downloadSendEmailCraData">
                 <app-download-client-cra-dialog [data]="downloadSendEmailCraData"
                     (closeRequested)="closeDownloadSendEmailPanel()">
                 </app-download-client-cra-dialog>
@@ -274,7 +286,8 @@
                     id="craDayActivityStartHour" name="craDayActivityStartHour" required
                     #craDayActivityStartHour="ngModel" min="18" max="00">
             </div>
-            <div [hidden]="craDayActivityStartHour.valid" class="alert alert-danger">{{utils.tr('app.compo.cra.form.startHour')}} {{utils.tr('app.badge.required')}}
+            <div [hidden]="craDayActivityStartHour.valid" class="alert alert-danger">
+                {{utils.tr('app.compo.cra.form.startHour')}} {{utils.tr('app.badge.required')}}
             </div>
             <div class="form-group">
                 <label for="craDayActivityEndHour">{{utils.tr('app.compo.cra.form.endHour')}}</label>
@@ -282,7 +295,8 @@
                     id="craDayActivityEndHour" name="craDayActivityEndHour" required #craDayActivityEndHour="ngModel"
                     required>
             </div>
-            <div [hidden]="craDayActivityEndHour.valid" class="alert alert-danger">{{utils.tr('app.compo.cra.form.endHour')}} {{utils.tr('app.badge.required')}}</div>
+            <div [hidden]="craDayActivityEndHour.valid" class="alert alert-danger">
+                {{utils.tr('app.compo.cra.form.endHour')}} {{utils.tr('app.badge.required')}}</div>
         </ng-template>
         <ng-template #BlockDay>
             <label for="craDayActivityEndHour">{{utils.tr('app.compo.cra.form.time')}}</label>
@@ -297,14 +311,16 @@
             <input class="form-check-input" type="radio" id="cra-form-normal-day" name="inlineRadioOptions"
                 id="form-check-normal-day" value="option1" (click)="onCheckTime(false)"
                 [checked]="!craDayActivity.isOverTime">
-            <label class="form-check-label" for="form-check-normal-day">{{utils.tr('app.compo.cra.form.normalDay')}}</label>
+            <label class="form-check-label"
+                for="form-check-normal-day">{{utils.tr('app.compo.cra.form.normalDay')}}</label>
         </div>
         <div class="form-check form-check-inline"
             *ngIf="craDayActivity.activity !=null && craDayActivity.activity.overTime">
             <input class="form-check-input" type="radio" id="cra-form-over-time" name="inlineRadioOptions"
                 id="form-check-overtime" value="option2" (click)="onCheckTime(true)"
                 [checked]="craDayActivity.isOverTime">
-            <label class="form-check-label" for="form-check-overtime">{{utils.tr('app.compo.cra.form.overtime')}}</label>
+            <label class="form-check-label"
+                for="form-check-overtime">{{utils.tr('app.compo.cra.form.overtime')}}</label>
         </div>
     </div>
 
@@ -317,8 +333,10 @@
                 [placeHolderFin]="utils.tr('app.compo.cra.form.endDate')" [myDatePickerFin]="addMultiDateEndDate"
                 [onChangeCallerFin]="'onEndDateInputChanged'" [objCaller]="this"></app-mz-date-picker-deb-fin>
 
-            <div [hidden]="addMultiDateStartDate" class="badge badge-danger">{{utils.tr('app.compo.cra.form.startDate')}} {{utils.tr('app.badge.required')}}</div>
-            <div [hidden]="addMultiDateEndDate" class="badge badge-danger">{{utils.tr('app.compo.cra.form.endDate')}} {{utils.tr('app.badge.required')}}</div>
+            <div [hidden]="addMultiDateStartDate" class="badge badge-danger">
+                {{utils.tr('app.compo.cra.form.startDate')}} {{utils.tr('app.badge.required')}}</div>
+            <div [hidden]="addMultiDateEndDate" class="badge badge-danger">{{utils.tr('app.compo.cra.form.endDate')}}
+                {{utils.tr('app.badge.required')}}</div>
         </div>
     </div>
 
@@ -399,8 +417,10 @@
     <div [className]="getClassOfDay(day)" *ngIf="day">
         <div *ngIf="day.inMonth; else notInMonth">
             <div>
-                <span class="cal-day-badge bg-warning text-dark" *ngIf="utils.getNationalHolidayLabel(day?.date, 'fr') as nationalLabel">{{ nationalLabel }}</span>
-                <span class="cal-day-badge holiday-perso-badge" *ngIf="getHolidayPersoLabel(day) as label">{{ label }}</span>
+                <span class="cal-day-badge bg-warning text-dark"
+                    *ngIf="utils.getNationalHolidayLabel(day?.date, 'fr') as nationalLabel">{{ nationalLabel }}</span>
+                <span class="cal-day-badge holiday-perso-badge" *ngIf="getHolidayPersoLabel(day) as label">{{ label
+                    }}</span>
                 <div *ngFor="let e of day.events">
                     <span class="cal-day-badge bg-{{day.isWeekend ? 'danger' : 'primary'}}"
                         *ngIf="e.title!=null && !e.meta.isOverTime">{{ e.title }} </span>
@@ -453,14 +473,15 @@
             <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" [(ngModel)]="currentCra.comment"
                 required #comment="ngModel"></textarea>
         </div>
-        <div [hidden]="comment.valid" class="badge badge-danger">{{utils.tr('app.compo.cra.form.comment')}} {{utils.tr('app.badge.required')}}</div>
+        <div [hidden]="comment.valid" class="badge badge-danger">{{utils.tr('app.compo.cra.form.comment')}}
+            {{utils.tr('app.badge.required')}}</div>
     </div>
 
     <div class="modal-footer">
         <button (click)="rejectCra()" id="btn-cra-form-reject-cra" class="btn btn-info" type="submit"
             [disabled]="!comment.valid">{{utils.tr('Save')}}</button>
     </div>
-    
+
 </ng-template>
 
 <ng-template #showCraReportPdfView let-modal>
@@ -483,7 +504,8 @@
                     <td>{{report.nbDayWorked}}</td>
                     <td>
                         <button class='btn btn-outline-danger' id="btn-cra-form-download-pdf-{{index}}"
-                            (click)="downloadPDF(report)"><i class="fa fa-file-pdf-o"></i>{{utils.tr('app.compo.cra.form.download')}}
+                            (click)="downloadPDF(report)"><i
+                                class="fa fa-file-pdf-o"></i>{{utils.tr('app.compo.cra.form.download')}}
                         </button>
                     </td>
                 </tr>

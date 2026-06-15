@@ -20,8 +20,6 @@ import { DataSharingService } from "../../../service/data-sharing.service";
 import { SelectComponent } from '../../_reuse/select-consultant/select/select.component';
 import { MereComponent } from '../../_utils/mere-component';
 import { LoadingDialogComponent } from '../../loading-dialog/loading-dialog.component';
-import { get } from 'http';
-import { set } from 'date-fns';
 
 @Component({
   selector: 'app-consultant-form',
@@ -1010,7 +1008,14 @@ export class ConsultantFormComponent extends MereComponent {
 
   canEditManagerField(): boolean {
     const role = this.userConnected?.role;
-    return role === 'ADMIN' || role === Constants.RESPONSIBLE_ESN;
+    return (role === 'ADMIN' || role === Constants.RESPONSIBLE_ESN) && !this.isMyObjAdmin();
+  }
+
+
+  isMyObjAdmin() {
+    let res = false;
+    if (this.myObj && this.myObj.role === Constants.ADMIN) res = true;
+    return res;
   }
 
   // Validation du password
