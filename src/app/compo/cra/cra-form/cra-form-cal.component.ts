@@ -429,43 +429,47 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    * used to retrieve cra activity
    */
   private findAllActivities() {
+    let label = "+++ findAllActivities"
     if (!this.currentCraUser) this.currentCraUser = this.currentCra?.consultant
     if (!this.currentCraUser) this.currentCraUser = this.userConnected
 
-    this.logger.debug("*************** findAllActivities deb currentCraUser : ", this.currentCraUser);
-    let info_id = "findAllActivities currentCraUser : " + this.currentCraUser?.fullName
+    this.logger.debug(label + " deb currentCraUser : ", this.currentCraUser);
+    let info_id = label + " currentCraUser : " + this.currentCraUser?.fullName
     this.beforeCallServer(info_id);
     this.activityService.findAllByConsultant(this.currentCraUser.id).subscribe(
       data => {
         this.afterCallServer(info_id, data)
-        this.logger.debug("*************** findAllActivities data : ", data);
+        this.logger.debug(label + " data : ", data);
         if (data == null) {
           this.activities = new Array();
         } else {
           this.activities = data.body.result;
-          this.logger.debug("*************** findAllActivities activities 1 : ", this.activities);
+          this.logger.debug(label + " activities 1 : ", this.activities);
           let list = []
           for (let ac of this.activities) {
-            this.logger.debug("*************** findAllActivities ac : ", ac);
-            this.logger.debug("*************** findAllActivities ac.valid : ", ac.valid);
+            this.logger.debug(label + " ac : ", ac);
+            this.logger.debug(label + " ac.valid : ", ac.valid);
             if (ac.valid == true) {
               if (this.typeCra == "CONGE") {
-                // if (ac.type && ac.type.congeDay) {
-                //   list.push(ac)
-                // }
-                list.push(ac)
+                let type = ac.type
+                let typeName = ac.typeName ? ac.typeName : type?.name;
+                if (!typeName) typeName = "";
+                this.logger.debug(label + " : typeName, ac : ", typeName, ac.name)
+                if (typeName.includes("CONG") || ac.name.includes("CONG")) {
+                  list.push(ac)
+                }
               } else {
                 list.push(ac)
               }
             }
           }
           this.activities = list;
-          this.logger.debug("*************** findAllActivities activities 2 : ", this.activities);
+          this.logger.debug(label + " activities 2 : ", this.activities);
         }
         //////////this.logger.debug("*************** findAllActivities activities:", this.activities);
         ////////this.logger.debug("*************** findAllActivities isAdd:", this.isAdd);
         //
-        this.logger.debug("*************** findAllActivities isAdd : ", this.isAdd);
+        this.logger.debug(label + " isAdd : ", this.isAdd);
         if (this.isAdd == 'true') {
 
           if (this.typeCra == 'CONGE') {
@@ -480,11 +484,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
           // this.getCurrentCraFromContext();
           this.currentCra = this.dataSharingService.getCurrentCra();
-          this.logger.debug("*************** findAllActivities get cra from dataSharingService : ", this.currentCra);
+          this.logger.debug(label + " get cra from dataSharingService : ", this.currentCra);
 
           if (!this.currentCra) {
             this.currentCra = this.craService.getCra();
-            this.logger.debug("*************** findAllActivities get cra from craService : ", this.currentCra);
+            this.logger.debug(label + " get cra from craService : ", this.currentCra);
           }
           this.initCra(this.currentCra);
           this.btnActionTitle = "UPDATE " + this.getNameByType();
@@ -493,9 +497,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.process();
         this.refreshMe();
 
-        //////////this.logger.debug("************ findAllActivities fin");
+        this.logger.debug(label + " fin");
       }, error => {
-        //////////this.logger.debug("+++ findAllActivities error", error)
+        this.logger.debug(label + " error", error)
         this.addErrorFromErrorOfServer(info_id, error);
       }
     );
@@ -1620,7 +1624,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             this.logger.debug("********* " + label + " : addActivity OK")
           }
         } else {
-          this.logger.debug("********* " + label + " : can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity )
+          this.logger.debug("********* " + label + " : can add KO : Cra Day Not Open : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
         }
       } else {
         this.logger.debug("********* " + label + " : can add KO : this.craDay, craDayActivity : ", this.craDay, craDayActivity)
@@ -2206,7 +2210,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     });
   }
 
-  private affPanelCraClient(clientName: any, clientEmail: any, fileName : string) {
+  private affPanelCraClient(clientName: any, clientEmail: any, fileName: string) {
     let labelGenPDF = "Génération du PDF client pour le client : " + clientName;
     this.beforeCallServer(labelGenPDF);
     this.craService.generateCliPDFClientName(this.currentCra.id, clientName).subscribe(
