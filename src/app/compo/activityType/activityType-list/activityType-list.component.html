@@ -36,7 +36,7 @@
                     <th scope="col">{{utils.tr('app.compo.activityType.list.table.thead.isBillDay')}}</th>
                     <th scope="col">{{utils.tr('app.compo.activityType.list.table.thead.isHolidayDay')}}</th>
                     <th scope="col">{{utils.tr('app.compo.activityType.list.table.thead.isTrainingDay')}}</th>
-                    <th scope="col">{{utils.tr('Esn')}}</th>
+                    <th scope="col" *ngIf="isAdmin">{{utils.tr('Esn')}}</th>
                     <th scope="col">{{utils.tr('app.compo.activityType.list.table.thead.action')}}</th>
                 </tr>
             </thead>
@@ -49,7 +49,7 @@
                     <td> {{ element.billDay }} </td>
                     <td> {{ element.congeDay }} </td>
                     <td> {{ element.formaDay }} </td>
-                    <td> {{ element.esnName }} </td>
+                    <td *ngIf="isAdmin"> {{ element.esnName }} </td>
 
                     <td>
                         <!-- <button (click)="edit(element)" class='btn btn-info' >Edit</button>  -->

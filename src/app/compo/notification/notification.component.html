@@ -33,7 +33,7 @@
                                 id="btn-notif-show-doc-{{index}}">{{utils.tr('app.compo.notification.showDoc')}}</button> </span>
                     </span>
 
-                    <label *ngIf="isUserAdmin && (notification?.cra?.consultant?.username || notification?.fromUsername)">
+                    <label *ngIf="isAdmin && (notification?.cra?.consultant?.username || notification?.fromUsername)">
                         {{notification?.cra?.consultant?.username || notification?.fromUsername}}
                     </label>
 

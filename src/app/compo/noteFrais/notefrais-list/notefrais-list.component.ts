@@ -93,10 +93,6 @@ export class NotefraisListComponent extends MereComponent {
     );
   }
 
-  isAdmin(): boolean {
-    return this.userConnected.admin;
-  }
-
   isConsultant(): boolean {
     if (this.userConnected.admin) {
       return false;

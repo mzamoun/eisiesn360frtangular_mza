@@ -48,7 +48,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
   public esnName = ""
   // esnCurrentName = null;
   public isUserLoggedIn: boolean;
-  public isUserAdmin: boolean;
+  public isAdmin: boolean;
 
   constructor(public utils: UtilsService, public dataSharingService: DataSharingService
   ) {
@@ -87,7 +87,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
         this.esnCurrent = user?.esn || this.esnCurrent;
         this.idEsnCurrent = this.esnCurrent?.id ?? this.idEsnCurrent;
         this.esnName = user?.esnName || user?.esn?.name || this.esnName;
-        this.isUserAdmin = user?.admin;
+        this.isAdmin = user?.admin;
         if (user) this.isUserLoggedIn = true;
       }),
       // S'abonner aux mises à jour de esnCurrent pour mettre à jour esnName
@@ -110,14 +110,14 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
         if (this.isUserLoggedIn) {
           this.userConnected = this.dataSharingService.userConnected;
           this.getCurentUserName();
-          this.isUserAdmin = this.userConnected?.admin;
+          this.isAdmin = this.userConnected?.admin;
           if (this.userConnected) this.isUserLoggedIn = true;
 
           this.esnCurrent = this.dataSharingService.esnCurrent || this.userConnected?.esn || this.esnCurrent;
           this.idEsnCurrent = this.dataSharingService.idEsnCurrent ?? this.esnCurrent?.id ?? this.idEsnCurrent;
           this.esnName = this.userConnected?.esnName || this.esnCurrent?.name || this.esnName;
         } else {
-          this.isUserAdmin = false;
+          this.isAdmin = false;
         }
 
         // Vérifier si on est sur une route publique, sinon rediriger vers login
@@ -137,7 +137,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     let userConnected = this.dataSharingService.userConnected
     let res = "LOGIN";
     if (userConnected != null && userConnected.firstName) {
-      if(this.userConnected) this.isUserLoggedIn = true ;
+      if (this.userConnected) this.isUserLoggedIn = true;
       res = userConnected.fullName;
     }
     // //////////this.logger.debug("**** getUserFullName : res=", res, userConnected);
@@ -167,8 +167,12 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     return res;
   }
 
-  isADMIN(): boolean {
+  isADMINRole(): boolean {
     return this.dataSharingService.isCurrentUserAdmin();
+  }
+
+  isAdminProp(): boolean {
+    return this.userConnected?.admin ?? false;
   }
 
   setUserConnected(user: Consultant) {
@@ -204,7 +208,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     }
     this.userConnectedName = s;
 
-    if(this.userConnected) this.isUserLoggedIn = true ;
+    if (this.userConnected) this.isUserLoggedIn = true;
 
     return s;
   }
@@ -227,17 +231,12 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     return this.userConnected ? this.userConnected.esnId : -1
   }
 
-  isAdmin(): boolean {
-    return this.userConnected?.admin ?? false;
-  }
-
-
   clearInfos() {
     //////////this.logger.debug("DBG MereComponent clearInfos")
     this.dataSharingService.clearInfosErrors()
     this.nbCallServer = 0
 
-    if(this.userConnected) this.isUserLoggedIn = true ;
+    if (this.userConnected) this.isUserLoggedIn = true;
 
   }
 
@@ -253,7 +252,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
       //////this.logger.debug("!!!!!!!!!!!!!!!!!!!!!!! setInfosMere infors NOT EXIST !!!!!!!!!!!!!!!!!!!!!!!!", this)
     }
 
-    if(this.userConnected) this.isUserLoggedIn = true ;
+    if (this.userConnected) this.isUserLoggedIn = true;
   }
 
   addInfo(info: string, isShowLoading = true) {
@@ -368,12 +367,12 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     this.addErrorFromResultOfServer(id, data);
     this.endLoading(id);
   }
-  
+
   endLoading(id: string) {
     this.nbCallServer--;
     this.logger.debug("endLoading id=" + id + " nbCallServer=" + this.nbCallServer);
     this.delInfo(id);
-    
+
     // Correction: ne mettre isLoading à false que si plus aucun appel en cours
     if (this.nbCallServer <= 0) {
       this.nbCallServer = 0;
@@ -387,7 +386,7 @@ export class MereComponent implements OnInit, AfterViewInit, AfterContentInit {
     this.logger.debug("CallServer endLoading id=" + id + " listErrors=" + this.listErrors);
   }
 
-  setMyList(list: any[]): void { 
+  setMyList(list: any[]): void {
     this.logger.debug("MereComponent.setMyList list :", list)
     // this.myList = list 
   }

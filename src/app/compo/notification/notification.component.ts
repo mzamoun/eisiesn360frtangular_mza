@@ -70,7 +70,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
     // Charger les notifications initiales
     this.getNotifications(null, null);
 
-    this.isUserAdmin = this.dataSharingService.isCurrentUserAdmin();
+    this.isAdmin = this.dataSharingService.isCurrentUserAdmin();
   }
 
   ngAfterViewInit(): void {

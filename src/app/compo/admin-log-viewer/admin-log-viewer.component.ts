@@ -32,7 +32,7 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
   ngOnInit(): void {
     super.ngOnInit();
 
-    if (!this.isAdminUser()) {
+    if (!this.isAdmin) {
       this.isForbidden = true;
       this.addErrorTitleMsg('Acces refuse', 'Cette page est reservee aux administrateurs.');
       this.router.navigate(['/home']);
@@ -43,7 +43,7 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
   }
 
   refreshLogs(): void {
-    if (!this.isAdminUser()) {
+    if (!this.isAdmin) {
       this.isForbidden = true;
       return;
     }
@@ -120,7 +120,4 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
     }
   }
 
-  private isAdminUser(): boolean {
-    return this.dataSharingService.userConnected?.role === 'ADMIN';
-  }
 }

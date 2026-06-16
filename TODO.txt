@@ -1,11 +1,14 @@
 
 
-Activity : ajouter autant de cols "name" que de langues traitees.
+Activity : ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
+type activites : 
+- suppr col esn si pas admin : DONE 
+- ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
+del consultant : resp esn peut le faire : on doit lister ttes les tables en desous : 
 
-
-insc esn : quel mail est utilisé pour envoyer : je pense resp_esn 
+insc esn : un resp esn peut ajouter une esn 
 
 
 
@@ -20,7 +23,7 @@ check :
 Numero securite sociale
 date de naissance : >= 18 ans 
 
-username : prenom[0]nom
+username : prenom[0]nom : DONE  
 
 -----------------------
 la recherche dans la liste des consultants ne fonctionne pas bien : elle doit chercher que sur les colonnes affiches 

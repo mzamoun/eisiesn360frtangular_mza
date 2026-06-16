@@ -31,18 +31,6 @@ export class MenuComponent extends MereComponent {
 
   ngOnInit() {
 
-    // this.userConnected = this.dataSharingService.userConnected
-
-    // this.dataSharingService.isUserLoggedInFct.subscribe(value => {
-    //   this.isUserLoggedIn = value;
-    //   if(this.isUserLoggedIn) {
-    //     this.isUserAdmin = this.userConnected?.admin;
-    //     this.userConnected = this.dataSharingService.userConnected
-    //   }else {
-    //     this.isUserAdmin = false;
-    //   }
-    // });
-
     super.ngOnInit()
 
     this.logger.debug("**** menu isUserLoggedIn=", this.isUserLoggedIn)
