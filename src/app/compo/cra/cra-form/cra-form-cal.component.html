@@ -32,7 +32,7 @@
 
             <div class="text-center">
                 <h3 class="mb-0" *ngIf="viewDate">{{getNameByType()}} {{ viewDate | calendarDate:(view +
-                    'ViewTitle'):'en' }}
+                    'ViewTitle'):'en' }} ({{currentCra?.id}})
                     <button class="btn " [ngClass]="getClassForStatus()" id="cra-form-status"
                         (click)="showHistoryStatus()"> {{currentCra?.status}} </button>
                 </h3>
