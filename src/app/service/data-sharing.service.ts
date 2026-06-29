@@ -382,12 +382,12 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   showCra(cra: Cra) {
-    let label = "navigate to cra_form with cra id=" + cra.id
-    this.logger.debug(label + " START - cra: ", cra)
+    let label = "navigate to cra_form with cra id=" + cra?.id
     if (!cra) {
       this.logger.debug(label + " ERROR - cra NULL !", cra)
       return
     }
+    this.logger.debug(label + " START - cra: ", cra)
 
     this.currentCraSource.next(cra);
     this.isAdd = "";
@@ -395,7 +395,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
     this.logger.debug(label + " avant navigate to cra_form", cra)
     this.addInfo(label)
-    this.router.navigate(["/cra_form"]).then(
+    this.router.navigate(["/cra_form"], { state: { cra } }).then(
       success => {
         this.delInfo(label)
         this.logger.debug(label + " navigate to cra_form success", cra)
