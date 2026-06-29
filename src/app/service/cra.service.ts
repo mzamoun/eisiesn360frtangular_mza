@@ -397,7 +397,7 @@ export class CraService {
 
   ////////////
   isCraDayOpen(craDay: CraDay): boolean {
-    this.logger.debug("isCraDayOpen : craDay : ", craDay)
+    // this.logger.debug("isCraDayOpen : craDay : ", craDay)
     let ok = false;
 
     if (craDay) {
@@ -411,7 +411,7 @@ export class CraService {
       }
     }
 
-    this.logger.debug("isCraDayOpen : ok : ", ok)
+    // this.logger.debug("isCraDayOpen : ok : ", ok)
     return ok;
   }
 
