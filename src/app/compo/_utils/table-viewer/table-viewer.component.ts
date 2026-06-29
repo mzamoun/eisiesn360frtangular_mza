@@ -65,7 +65,7 @@ export class TableViewerComponent implements OnInit {
             this.openTabData()
           }, t += t0);
         }
-      }, 
+      },
       (err) => {
         this.dataSharingService.delInfo(label)
         this.logger.error(label, "err", err)
@@ -74,7 +74,7 @@ export class TableViewerComponent implements OnInit {
     )
   }
 
-  getTables(fOk: Function, fKo : Function ) {
+  getTables(fOk: Function, fKo: Function) {
     let label = "get tables ..."
     this.dataSharingService.addInfo(label)
     this.tableService.getTables(
@@ -131,23 +131,6 @@ export class TableViewerComponent implements OnInit {
       }
     );
 
-    // setTimeout(() => {
-
-    //   this.logger.debug(fct + " go to call getColsOfTable")
-
-    //   this.tableService.getColsOfTable(this.selectedTable,
-    //     (columnMetadata, mapColType, mapColTypeInput) => {
-    //       this.columnMetadata = columnMetadata;
-    //       this.mapColType = mapColType;
-    //       this.mapColTypeInput = mapColTypeInput;
-    //       this.logger.debug(fct + " getColsOfTable mapColType : ", mapColType)
-    //     }, (err) => {
-    //       this.logger.debug(fct + " getColsOfTable err : ", err)
-    //     }
-    //   );
-    // }, 1000);
-
-    // 3. TODO : on retravaille lines afin les valeurs des colonnes de type date / timestamp en Date 
   }
 
   getTypeInput(col: string) {
@@ -409,6 +392,8 @@ export class TableViewerComponent implements OnInit {
       msg += "\nThis will also delete all related data in other tables (RESPONSIBLE_ESN, ESN_PROJECT, CRA, etc.) !"
     } else if (this.selectedTable.toUpperCase() === 'SUPPORT_TICKET') {
       msg += "\nThis will also delete all related data in other tables (SUPPORT_TICKET_FILES, SUPPORT_EXCHANGE_FILES, SUPPORT_EXCHANGE) !"
+    } else if (this.selectedTable.toUpperCase() === 'CONSULTANT') {
+      msg += "\nThis will also delete all related data in other tables (Activity, support_ticket, support_exchange, document, msg, cra, note_frais, CONSULTANT_DOCUMENT, fiche_paie) !"
     }
 
     if (!confirm(msg)) return;
@@ -435,6 +420,26 @@ export class TableViewerComponent implements OnInit {
       sql += `\nDELETE FROM SUPPORT_EXCHANGE_FILES WHERE EXCHANGE_ID in (select id from SUPPORT_EXCHANGE where TICKET_ID ${eqaulOrIs} ${this.selectedRow[idKey]});`;
       sql += `\nDELETE FROM SUPPORT_EXCHANGE WHERE TICKET_ID ${eqaulOrIs} ${this.selectedRow[idKey]};`;
       sql += `\nDELETE FROM ${this.selectedTable} WHERE ${idKey} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+    } else if (this.selectedTable.toUpperCase() === 'CONSULTANT') {
+      let i = 0
+      const tbls = "Activity support_ticket support_exchange document CONSULTANT_DOCUMENT msg cra note_frais fiche_paie"
+      for(let t of tbls.split(" ")) {
+        if(t) {
+          this.logger.debug('Deleting from table: ' + t);
+          let colFk = "CONSULTANT_ID"
+          if(t.toLowerCase() == "support_ticket") {
+            colFk = "SENDER_ID"
+          }
+          if(i==0) {
+            sql = `\nDELETE FROM ${t} WHERE ${colFk} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+          } else {
+            sql += `\nDELETE FROM ${t} WHERE ${colFk} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
+          }
+        }
+        i++;
+      }
+
+      sql += `\nDELETE FROM ${this.selectedTable} WHERE ${idKey} ${eqaulOrIs} ${this.selectedRow[idKey]};`;
     }
 
     this.sql = sql;
@@ -444,6 +449,40 @@ export class TableViewerComponent implements OnInit {
         this.cancelEdit()
       }
     )
+  }
+
+  deleteAllRelatedData(tableName : string , idKey : string, idValue : any) {
+    // TODO: Implement deletion of all related data for the given table and ID (recursive) 
+    // TODO: Use the SQL builder to generate the DELETE statements
+    // TODO : afficher dans une popup toutes les lignes qu'on va supprimer afin de confirmer 
+    // TODO : si l'utilisateur confirme, alors exécuter la suppression via this.executeSql()
+    console.log('Deleting all related data for table:', tableName, 'with ID:', idKey, '=', idValue);
+    // demander a la bdd server quels sont les tables qui ont une foreign key vers cette table
+    // puis pour chaque table, demander les lignes qui ont une foreign key vers cette table
+    // puis pour chaque ligne, demander les lignes qui ont une foreign key vers cette ligne
+    // et ainsi de suite jusqu'a ce qu'il n'y ait plus de foreign key
+    // puis afficher dans une popup toutes les lignes qu'on va supprimer afin de confirmer
+    // si l'utilisateur confirme, alors exécuter la suppression via this.executeSql()
+    // go 
+
+
+  }
+
+  /**
+   * 
+   * @param tableName 
+   */
+  getRelatedTables(tableName : string) : [{table: string, colFk: string}] {
+    // TODO: Implement getting related tables for the given table
+    console.log('Getting related tables for table:', tableName);
+    let res = [null] as [{table: string, colFk: string}]; 
+
+    // utiliser relationsData pour avoir res :
+    this.relationsData.filter(r => r.table === tableName).forEach(r => {
+      res.push({table: r.target_table, colFk: r.column});
+    });
+
+    return res;
   }
 
   saveRow() {

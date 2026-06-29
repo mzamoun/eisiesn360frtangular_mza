@@ -7,6 +7,15 @@ type activites :
 - ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
 del consultant : resp esn peut le faire : on doit lister ttes les tables en desous : 
+Activity
+support_ticket
+support_exchange
+document 
+msg 
+cra 
+note_frais 
+CONSULTANT_DOCUMENT
+fiche_paie 
 
 insc esn : un resp esn peut ajouter une esn 
 

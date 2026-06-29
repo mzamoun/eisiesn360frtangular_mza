@@ -18,8 +18,25 @@
             <br> {{userConnected?.role }}
             <br> <br>
             <div *ngIf="userConnected?.adminConsultant">
-                <h4>{{utils.tr('app.compo.userConnected.managerLabel')}} <br>
-                    {{userConnected?.adminConsultant?.email}} </h4>
+                <h4>
+                    {{utils.tr('app.compo.userConnected.managerLabel')}} <br>
+
+                    <!-- sa photo si elle existe -->
+                    <div *ngIf="userConnected?.adminConsultant?.photo">
+                        <img *ngIf="userConnected?.adminConsultant?.photo" class="photo"
+                            [src]="consultantService.getPhotoUrl(userConnected?.adminConsultant)" alt="manager photo" />
+                    </div>
+
+                    <div *ngIf="userConnected?.adminConsultant?.fullName">
+                        {{userConnected?.adminConsultant?.fullName | titlecase}} <br>
+                    </div>
+                    <div *ngIf="userConnected?.adminConsultant?.username">
+                        {{userConnected?.adminConsultant?.username}} <br>
+                    </div>
+                    <div *ngIf="userConnected?.adminConsultant?.email">
+                        {{userConnected?.adminConsultant?.email}} <br>
+                    </div>
+                </h4>
                 <br><br>
             </div>
         </div>
