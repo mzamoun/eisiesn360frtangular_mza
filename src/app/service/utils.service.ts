@@ -183,7 +183,7 @@ export class UtilsService {
     const now = new Date();
     // Create date for first day of last month
     // JavaScript automatically handles year rollover when month is -1
-    const lastMonthFirstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthFirstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1, now.getHours());
     return this.setTime0ToDate(lastMonthFirstDay);
   }
 
@@ -205,7 +205,7 @@ export class UtilsService {
     const d: Date = this.getDate(date);
     if (!d) return null;
 
-    const firstDay = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
+    const firstDay = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes(), 0, 0);
     return firstDay;
     
     // return this.setTime0ToDate(firstDay);
@@ -984,8 +984,8 @@ export class UtilsService {
 
     date = this.getDate(date)
 
-    var date1 = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0);
-    var dateLast = new Date(date.getFullYear(), date.getMonth(), this.getLastDayOfMonth(date), 0, 0, 0, 0);
+    var date1 = new Date(date.getFullYear(), date.getMonth(), 1, date.getHours(), 0, 0, 0);
+    var dateLast = new Date(date.getFullYear(), date.getMonth(), this.getLastDayOfMonth(date), date.getHours(), 0, 0, 0);
 
     var w1 = this.getWeekNumber(date1);
     var wLast = this.getWeekNumber(dateLast);
