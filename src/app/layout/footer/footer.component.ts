@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class FooterComponent implements OnInit {
   // today = new Date();
-  dateCommitFront = "2026-07-03 10:53:02"
+	dateCommitFront = "2026-07-03 16:26:02"
   dateCommitServer = ""
 
   // dateFooter = "";
@@ -23,14 +23,21 @@ export class FooterComponent implements OnInit {
   }
 
   fetchDateCimmitServer() {
+    let label = "fetchDateCimmitServer"
     let url = environment.divUrl + "/LastCommitServer"
+    this.logger.debug(label + " url ", url )
 
     this.http.get(
       url,
       { responseType: 'text' }
-    ).subscribe(html => {
+    ).subscribe(
+      (html) => {
+      this.logger.debug(label + " html ", html )
       this.dateCommitServer = html;
-    });
+    }, (error) => {
+      this.logger.debug(label + " error ", error )
+    }
+  );
 
   }
 
