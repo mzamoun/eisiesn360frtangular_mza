@@ -1240,6 +1240,17 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       return;
     }
 
+    // Force month to noon (12:00:00) to avoid backend timezone issues
+    // if (this.currentCra.month) {
+    //   const date = new Date(this.currentCra.month);
+    //   date.setDate(15);
+    //   date.setHours(12, 0, 0, 0);
+    //   this.currentCra.month = date;
+    //   this.logger.debug(label + " month forced to noon: ", this.currentCra.month);
+    // }
+
+    this.currentCra.month = this.utils.getDate15DayMidi(this.currentCra.month)
+
     this.logger.debug(label + " before save currentCra : ", this.currentCra)
 
     this.beforeCallServer(label)

@@ -207,7 +207,17 @@ export class UtilsService {
 
     const firstDay = new Date(d.getFullYear(), d.getMonth(), 1, d.getHours(), d.getMinutes(), 0, 0);
     return firstDay;
-    
+
+    // return this.setTime0ToDate(firstDay);
+  }
+
+  getDate15DayMidi(date: any) {
+    const d: Date = this.getDate(date);
+    if (!d) return null;
+
+    const firstDay = new Date(d.getFullYear(), d.getMonth(), 15, 12, 0, 0, 0);
+    return firstDay;
+
     // return this.setTime0ToDate(firstDay);
   }
 

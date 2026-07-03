@@ -27,6 +27,10 @@
 	/* border: 1px solid black; */
 }
 
+.bg-cra {
+	background: rgb(0, 225, 255);
+}
+
 .bg-conge {
 	background: yellow;
 }

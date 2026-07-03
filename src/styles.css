@@ -14,6 +14,10 @@ body {
 	font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+.click {
+	cursor: pointer;
+}
+
 .sans-bord {
 	/* Supprime la bordure par défaut */
 	border: none;
