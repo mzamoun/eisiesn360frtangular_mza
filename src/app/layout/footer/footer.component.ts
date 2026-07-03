@@ -1,7 +1,8 @@
-import { formatDate } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { LoggerService } from 'src/app/service/logger.service';
 import { UtilsService } from 'src/app/service/utils.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-footer',
@@ -9,14 +10,28 @@ import { UtilsService } from 'src/app/service/utils.service';
   styleUrls: ['./footer.component.css']
 })
 export class FooterComponent implements OnInit {
-  today = new Date();
-	dateCommit = "Last Commit : 2026-07-03 10:53:02"
-  dateFooter = "";
+  // today = new Date();
+  dateCommitFront = "2026-07-03 10:53:02"
+  dateCommitServer = ""
 
-  constructor(private logger: LoggerService, public utils: UtilsService) { }
+  // dateFooter = "";
+
+  constructor(private logger: LoggerService, public utils: UtilsService, private http: HttpClient) { }
 
   ngOnInit() {
-    this.dateFooter = this.dateCommit || formatDate(this.today, 'yyyy-MM-dd HH:mm:ss', 'fr-FR');
+    // this.dateFooter = this.dateCommit || formatDate(this.today, 'yyyy-MM-dd HH:mm:ss', 'fr-FR');
+  }
+
+  fetchDateCimmitServer() {
+    let url = environment.divUrl + "/LastCommitServer"
+
+    this.http.get(
+      url,
+      { responseType: 'text' }
+    ).subscribe(html => {
+      this.dateCommitServer = html;
+    });
+
   }
 
 }
