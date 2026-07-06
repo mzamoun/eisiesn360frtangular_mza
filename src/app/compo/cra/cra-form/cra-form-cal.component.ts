@@ -268,6 +268,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.currentCra.validByConsultant = false
       this.currentCra.validByManager = false
       this.maj_canSubmitCra();
+      this.findAllActivities();
     }
   }
 
@@ -998,7 +999,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.isDaySelectedInCurentMonth = this.isDayInViewMonth(this.dateOfDaySelected);
     this.logger.debug("dayClicked isDaySelectedInCurentMonth=", this.isDaySelectedInCurentMonth);
 
-    if (!this.currentCra.validByConsultant) {
+    if (!this.currentCra.validByConsultant || this.currentCra.type != 'CRA') {
       this.craDay = this.craService.getCraDayByDate(this.currentCra, this.daySelected);
       this.logger.debug("dayClicked craDay=", this.craDay);
       if (this.craDay) {
