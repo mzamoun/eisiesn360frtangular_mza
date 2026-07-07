@@ -20,6 +20,7 @@ export class Activity {
   type: ActivityType;
   typeId: number
   typeName: string
+  isWorkInWE : boolean
 
   consultant: Consultant;
   consultantId:number

@@ -947,6 +947,16 @@ export class UtilsService {
     return date;
   }
 
+  public isDayInWE(day: any) {
+    if (!day) return false;
+
+    const date: Date = this.getDate(day);
+    if (!date || isNaN(date.getTime())) return false;
+
+    const dayOfWeek = date.getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  }
+
   public getWeekNumber(date: any): number {
     // //////////this.logger.debug("getWeekNumber: date: ", date)
     var n = 0;

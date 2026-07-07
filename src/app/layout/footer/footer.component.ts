@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class FooterComponent implements OnInit {
   // today = new Date();
-	dateCommitFront = "2026-07-06 17:31:22"
+	dateCommitFront = "2026-07-07 17:31:14"
   dateCommitServer = ""
 
   // dateFooter = "";
@@ -20,10 +20,12 @@ export class FooterComponent implements OnInit {
 
   ngOnInit() {
     // this.dateFooter = this.dateCommit || formatDate(this.today, 'yyyy-MM-dd HH:mm:ss', 'fr-FR');
+
+    this.fetchDateCommitServer()
   }
 
-  fetchDateCimmitServer() {
-    let label = "fetchDateCimmitServer"
+  fetchDateCommitServer() {
+    let label = "fetchDateCommitServer"
     let url = environment.divUrl + "/LastCommitServer"
     this.logger.debug(label + " url ", url )
 

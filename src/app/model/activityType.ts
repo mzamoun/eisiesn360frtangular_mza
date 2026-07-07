@@ -9,6 +9,7 @@ export class ActivityType {
   billDay: boolean;
   congeDay: boolean;
   formaDay: boolean;
+  isWorkInWE : boolean;
 
   esn: Esn;
   esnId:number

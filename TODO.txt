@@ -1,5 +1,10 @@
 
 
+ajouter la prop isWorkInWE 
+dans activity et ActivityType
+lorsqu'on rajoute une nouvelle activity, on copy celle du type vers l'activity
+
+
 Activity : ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
 type activites : 

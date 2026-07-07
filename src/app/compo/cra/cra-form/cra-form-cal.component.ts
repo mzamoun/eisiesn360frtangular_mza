@@ -1538,6 +1538,14 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         return false;
       }
     }
+
+    if (! activity.isWorkInWE && this.utils.isDayInWE(day)) {
+      let msg = "activity is not allowed in weekend"
+      this.logger.debug("isActivityValidForDay: " + msg)
+      // this.utilsIhm.info(msg);
+      return false ;
+    }
+
     this.logger.debug("isActivityValidForDay: activity is valid for day")
     return true;
   }
