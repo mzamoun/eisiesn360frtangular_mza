@@ -548,20 +548,30 @@ export class DataSharingService implements CraStateService, ServiceLocator {
           caller.info = "Info : res=" + JSON.stringify(res)
         }
 
-        if (res.status == 200) {
-          this.authorization = res.headers.get('authorization');
-          // //////////this.logger.debug("login: authorization: ", this.authorization);
-          this.saveToken(this.authorization);
-          this.isUserLoggedInFct.next(true);
+        if (res.status === 200) {
+          const tokenFromHeader = res.headers.get('authorization') || res.headers.get('Authorization');
+          const body = res.body as any;
+          const tokenFromBody = body?.token || body?.accessToken || body?.authorization;
+          this.authorization = tokenFromHeader || tokenFromBody;
 
-          this.setKey(UtilsService.TOKEN_STORAGE_KEY_LAST_USERNAME, credentials.username)
-          this.saveLastLoginHistory(credentials.username)
+          if (this.authorization) {
+            // //////////this.logger.debug("login: authorization: ", this.authorization);
+            this.saveToken(this.authorization);
+            this.isUserLoggedInFct.next(true);
 
-          this.getConsultantConnectedAndHisInfos(credentials.username, caller);
+            this.setKey(UtilsService.TOKEN_STORAGE_KEY_LAST_USERNAME, credentials.username);
+            this.saveLastLoginHistory(credentials.username);
+
+            this.getConsultantConnectedAndHisInfos(credentials.username, caller);
+          } else {
+            if (caller) {
+              caller.error = 'ERROR : login succeeded but no token returned';
+            }
+          }
 
         } else {
           if (caller) {
-            caller.error = "ERROR : res=" + JSON.stringify(res)
+            caller.error = "ERROR : res=" + JSON.stringify(res);
           }
         }
       }, error => {

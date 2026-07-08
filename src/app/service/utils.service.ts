@@ -950,7 +950,8 @@ export class UtilsService {
   public isDayInWE(day: any) {
     if (!day) return false;
 
-    const date: Date = this.getDate(day);
+    const normalizedDay = (day as any)?.date ?? (day as any)?.day ?? (day as any)?.dayDate ?? day;
+    const date: Date = this.getDate(normalizedDay);
     if (!date || isNaN(date.getTime())) return false;
 
     const dayOfWeek = date.getDay();

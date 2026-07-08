@@ -1,10 +1,10 @@
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { LoggerService } from 'src/app/service/logger.service';
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 
-import {environment} from '../../../environments/environment';
-import {Credentials} from '../credentials';
-import {Observable} from "rxjs";
+import { Observable } from "rxjs";
+import { environment } from '../../../environments/environment';
+import { Credentials } from '../credentials';
 
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'}),
@@ -21,9 +21,13 @@ export class TokenService {
   }
 
   public getResponseHeaders(credentials: Credentials): Observable<HttpResponse<any>> {
-    
-    let loginUrl = API_URL + '/login';
-    return this.http.post<HttpResponse<any>>(loginUrl, credentials, httpOptions);
+    const loginUrl = API_URL + '/login';
+    const payload = {
+      username: credentials.username,
+      login: credentials.username,
+      password: credentials.password
+    };
+    return this.http.post<HttpResponse<any>>(loginUrl, payload, httpOptions);
   }
 
   public logout() {

@@ -1510,44 +1510,51 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   /***
-   * Returns true if the given day falls within the activity's dateDeb/dateFin range.
-   * If no date constraint is defined on the activity, returns true.
+   * Returns msg error if the given day falls 
+   * If no return null 
+   * 
    */
-  isActivityValidForDay(activity: Activity, day: any): boolean {
-    this.logger.debug("isActivityValidForDay: activity, day : ", activity, day)
+  isActivityValidForDay(activity: Activity, day: any): string {
+    let label = "isActivityValidForDay"
+    let msg = null
+    this.logger.debug(label + ": activity, day : ", activity, day)
     if (!activity) {
-      this.logger.debug("isActivityValidForDay: activity is null")
-      return false;
+      msg = "activity is null"
+      this.logger.debug(label + ": " + msg)
+      return msg;
     }
     if (!activity.dateDeb && !activity.dateFin) {
-      this.logger.debug("isActivityValidForDay: activity has no date constraints")
-      return true;
+      msg = "activity has no date constraints"
+      this.logger.debug(label + ": " + msg)
+      return msg;
     }
     const d = this.utils.getDate(day);
     if (activity.dateDeb) {
       const deb = this.utils.getDate(activity.dateDeb);
       if (d < deb) {
-        this.logger.debug("isActivityValidForDay: activity is before dateDeb")
-        return false;
+        msg = "activity is before dateDeb"
+        this.logger.debug(label + ": " + msg)
+        return msg;
       }
     }
     if (activity.dateFin) {
       const fin = this.utils.getDate(activity.dateFin);
       if (d > fin) {
-        this.logger.debug("isActivityValidForDay: activity is after dateFin")
-        return false;
+        msg = "activity is after dateFin"
+        this.logger.debug(label + ": " + msg)
+        return msg;
       }
     }
 
-    if (! activity.isWorkInWE && this.utils.isDayInWE(day)) {
+    if (!activity.isWorkInWE && this.utils.isDayInWE(day)) {
       let msg = "activity is not allowed in weekend"
-      this.logger.debug("isActivityValidForDay: " + msg)
+      this.logger.debug(label + ": " + msg)
       // this.utilsIhm.info(msg);
-      return false ;
+      return msg;
     }
 
-    this.logger.debug("isActivityValidForDay: activity is valid for day")
-    return true;
+    this.logger.debug(label + ": activity is valid for day")
+    return msg;
   }
 
   /***
@@ -1566,18 +1573,20 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
         ////////this.logger.debug("saveCurrentActivity: craDay:", this.craDay)
 
-        if (!this.isActivityValidForDay(this.craDayActivity.activity, this.craDay.day)) {
+        let msgError = this.isActivityValidForDay(this.craDayActivity.activity, this.craDay.day)
+
+        if (msgError) {
           const act = this.craDayActivity.activity;
           const debStr = act.dateDebFr || (act.dateDeb ? this.datePipe.transform(act.dateDeb, 'dd/MM/yyyy') : '?');
           const finStr = act.dateFinFr || (act.dateFin ? this.datePipe.transform(act.dateFin, 'dd/MM/yyyy') : '?');
-          this.utilsIhm.info(
-            this.utils.tr('app.compo.cra.form.activity.invalidForDate', {
-              name: act.name || '',
-              deb: debStr,
-              fin: finStr,
-            }),
-            null, null
-          );
+          let msg = msgError || "Activity is not valid for this day";
+          msg += "\n\n" + this.utils.tr('app.compo.cra.form.activity.invalidForDate', {
+            name: act.name || '',
+            deb: debStr,
+            fin: finStr,
+          })
+
+          this.utilsIhm.info(msg)
           return;
         }
 
@@ -1636,7 +1645,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.logger.debug("********* " + label + " : craDayNotFull OK")
         if (this.craService.isCraDayOpen(this.craDay)) {
           this.logger.debug("********* " + label + " : isCraDayOpen OK")
-          if (!this.isActivityValidForDay(craDayActivity.activity, date)) {
+          if ( this.isActivityValidForDay(craDayActivity.activity, date) ) {
             nbHorsPlage++;
             this.logger.debug("********* " + label + " : can add KO : date hors plage de l'activité : ", date, craDayActivity.activity)
           } else {

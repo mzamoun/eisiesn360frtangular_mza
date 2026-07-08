@@ -3,7 +3,7 @@ import { LoggerService } from 'src/app/service/logger.service';
 
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Router } from "@angular/router";
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from "rxjs/operators";
 import { MyError } from 'src/app/resource/MyError';
 
@@ -21,12 +21,22 @@ export class JwtTokenInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    //////////console.log("intercept", request, next)
-    let interceptedRequest = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${this.dataSharingService.getToken()}`
+    const requestUrl = request.url.toLowerCase();
+    const isAuthRequest = this.isAuthUrl(requestUrl);
+
+    const token = this.dataSharingService.getToken();
+    let interceptedRequest = request;
+
+    if (!isAuthRequest && token) {
+      const bearerToken = this.normalizeBearerToken(token);
+      if (bearerToken) {
+        interceptedRequest = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${bearerToken}`
+          }
+        });
       }
-    });
+    }
 
     return next.handle(interceptedRequest).pipe(catchError(x => this.handleErrors(x)));
   }
@@ -50,9 +60,7 @@ export class JwtTokenInterceptor implements HttpInterceptor {
     const errorStatus  = errorPayload?.status ?? null;
     const backendMsg   = errorPayload?.message ?? err.message ?? 'Erreur inconnue';
     const requestUrl = (err.url || '').toLowerCase();
-    const isAuthRequest = requestUrl.includes('/login')
-      || requestUrl.includes('/auth/')
-      || requestUrl.includes('/token');
+    const isAuthRequest = this.isAuthUrl(requestUrl);
     const hasToken = !!this.dataSharingService.getToken();
 
     if (err.status === 401 || errorStatus === 401) {
@@ -68,15 +76,14 @@ export class JwtTokenInterceptor implements HttpInterceptor {
       this.dataSharingService.redirectToUrl = this.router.url;
       this.utils.showNotification("error", backendMsg);
 
-      // Deconnecter seulement sur echec d'authentification explicite
-      // (login/token) ou absence de token local.
-      if (isAuthRequest || !hasToken) {
+      if (!isAuthRequest && hasToken) {
         this.dataSharingService.logout();
         if (this.router.url !== '/login') {
           this.router.navigate(['/login']);
         }
       }
-      return of(null);
+
+      return isAuthRequest ? throwError(() => err) : of(null);
     }
 
     // Erreurs réseau (status 0) ou serveur (4xx/5xx hors 401) :
@@ -84,5 +91,19 @@ export class JwtTokenInterceptor implements HttpInterceptor {
     const title = err.status ? `Erreur ${err.status} : ${err.name}` : 'Erreur réseau';
     this.dataSharingService.addError(new MyError(title, backendMsg));
     return of(null);
+  }
+
+  private isAuthUrl(url: string): boolean {
+    return url.includes('/login')
+      || url.includes('/auth/')
+      || url.includes('/token');
+  }
+
+  private normalizeBearerToken(token: string): string {
+    if (!token) {
+      return '';
+    }
+
+    return token.replace(/^Bearer\s+/i, '').trim();
   }
 }

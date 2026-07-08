@@ -1,4 +1,3 @@
-import { ar } from 'date-fns/locale';
 import { LoggerService } from './logger.service';
 
 
@@ -1745,6 +1744,11 @@ export class TradService {
       "en": "Valid",
       "ar": "صالح",
     },
+    "app.compo.activity.list.table.thead.isWorkInWE": {
+      "fr": "Travail en WE",
+      "en": "Work in WE",
+      "ar": "العمل في عطلة نهاية الأسبوع",
+    },
     "app.compo.activity.list.table.thead.action": {
       "fr": "Action",
       "en": "Action",
@@ -1804,6 +1808,11 @@ export class TradService {
       "fr": "Valide",
       "en": "Valid",
       "ar": "صالح",
+    },
+    "app.compo.activity.form.input.isWorkInWE": {
+      "fr": "Travail en WE",
+      "en": "Work in WE",
+      "ar": "العمل في عطلة نهاية الأسبوع",
     },
     "app.compo.activity.form.input.tjm": {
       "fr": "TJM",

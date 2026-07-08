@@ -37,6 +37,7 @@
                 <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.startDate')}}</th>
                 <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.endDate')}}</th>
                 <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.consultant')}}</th>
+                <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.isWorkInWE')}}</th>
                 <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.valid')}}</th>
                 <th scope="col">{{utils.tr('app.compo.activity.list.table.thead.action')}}</th>
             </tr>
@@ -63,6 +64,9 @@
                 </td>
                 <td>
                     {{ element.consultantFullName }}
+                </td>
+                <td>
+                    {{ element.isWorkInWE ? utils.tr('Yes') : utils.tr('No') }}
                 </td>
                 <td>
                     {{ element.valid }}

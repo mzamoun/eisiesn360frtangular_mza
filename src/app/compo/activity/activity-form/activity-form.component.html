@@ -27,8 +27,9 @@
           <label>{{ utils.tr('app.compo.activity.form.input.endDate') }} :
           </label>
 
-          <app-mz-date-picker-deb-fin [placeHolderDeb]="utils.tr('app.compo.datePicker.startDate')" [myDatePickerDeb]="myObj.dateDeb"
-            [onChangeCallerDeb]="'onStartDateChanged'" [placeHolderFin]="utils.tr('app.compo.datePicker.endDate')" [myDatePickerFin]="myObj.dateFin"
+          <app-mz-date-picker-deb-fin [placeHolderDeb]="utils.tr('app.compo.datePicker.startDate')"
+            [myDatePickerDeb]="myObj.dateDeb" [onChangeCallerDeb]="'onStartDateChanged'"
+            [placeHolderFin]="utils.tr('app.compo.datePicker.endDate')" [myDatePickerFin]="myObj.dateFin"
             [onChangeCallerFin]="'onEndDateChanged'" [objCaller]="this"></app-mz-date-picker-deb-fin>
 
           <!-- <mat-form-field appearance="fill">
@@ -76,11 +77,18 @@
 
         <div class="form-group" *ngIf="isActivityLabelVisible && myObj.type?.name == 'MISSION'">
           <label for="name">{{ utils.tr('app.compo.activity.form.input.tjm') }}</label>
-          <input type="text" [(ngModel)]="myObj.tjm" class="form-control" id="tjm" name="tjm" required
-            #tjm="ngModel" />
+          <input type="text" [(ngModel)]="myObj.tjm" class="form-control" id="tjm" name="tjm" required #tjm="ngModel" />
           <div [hidden]="tjm.valid" class="badge badge-danger">
             {{ utils.tr('app.compo.activity.form.input.tjm') }} {{ utils.tr('app.badge.required') }}
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="valid">{{
+            utils.tr('app.compo.activity.form.input.isWorkInWE')
+            }}</label>
+          <input type="checkbox" [(ngModel)]="myObj.isWorkInWE" class="form-check-input" style="margin-left: 10px;"
+            id="isWorkInWE" name="isWorkInWE" #isWorkInWE="ngModel" />
         </div>
 
         <div class="form-group">
