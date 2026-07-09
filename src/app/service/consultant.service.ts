@@ -13,6 +13,8 @@ import { Msg } from '../model/msg';
 import { MsgHisto } from '../model/msgHisto';
 import { GenericResponse } from "../model/response/genericResponse";
 import { DataSharingService } from './data-sharing.service';
+import { UtilsService } from './utils.service';
+import { ActivityService } from './activity.service';
 
 @Injectable({ providedIn: 'root' })
 export class ConsultantService {
@@ -30,7 +32,11 @@ export class ConsultantService {
   private consultant: Consultant;
   private managerSelected: Consultant = null;
 
-  constructor(private logger: LoggerService, private http: HttpClient, private datasharingService: DataSharingService, private injector: Injector) {
+  constructor(private logger: LoggerService
+    , private http: HttpClient
+    , private datasharingService: DataSharingService
+    , public utils: UtilsService
+    , private injector: Injector) {
     this.consultantUrl = environment.apiUrl + '/consultant';
     this.consultantUrlPub = environment.divUrl + '/consultant';
   }
@@ -38,6 +44,11 @@ export class ConsultantService {
   /** Résolution lazy pour éviter la dépendance circulaire ConsultantService ↔ DataSharingService */
   private get dataSharingServiceLazy(): DataSharingService {
     return this.injector.get(DataSharingService);
+  }
+
+  /** Résolution lazy pour ActivityService */
+  private get activityServiceLazy(): ActivityService {
+    return this.injector.get(ActivityService);
   }
 
   public setManagerSelected(m: Consultant) {
@@ -125,7 +136,7 @@ export class ConsultantService {
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
     return this.http.post<GenericResponse>(url + "/findByUsername", username);
   }
-  
+
   findConsultantByEmail(email: string, isPub: boolean = false): Observable<GenericResponse> {
     this.logger.debug("findConsultantByEmail email:", email)
     let url = isPub ? this.consultantUrlPub : this.consultantUrl
@@ -164,7 +175,7 @@ export class ConsultantService {
   /**
    * Sauvegarde le code de réinitialisation du password pour un email
    */
-  saveCodeResetPassword(username : string,  email: string, codeResetPassword: string, fctOnSuccess: Function, fctOnError: Function): void {
+  saveCodeResetPassword(username: string, email: string, codeResetPassword: string, fctOnSuccess: Function, fctOnError: Function): void {
     const label = "saveCodeResetPassword";
     const url = `${this.consultantUrlPub}/resetPassword`;
 
@@ -323,6 +334,65 @@ export class ConsultantService {
       );
     }
     /////////////////
+  }
+
+  /**
+   * maj les activity du consltant 
+   * @param myConsultant 
+   */
+  majActivityList(myConsultant: Consultant) {
+    let label = "majActivityList"
+    let listActivity = myConsultant.listActivity
+    this.logger.debug(label + " myConsultant : ", myConsultant)
+    if (listActivity && listActivity.length > 0) {
+      for (let activity of listActivity) {
+        this.logger.debug(label + " activity : ", activity)
+        if(!activity) continue;
+
+        let isChange = false;
+        activity.consultantId = myConsultant?.id 
+        activity.consultant = null 
+
+        if(!activity.dateDeb) activity.dateDeb = myConsultant.entryDate;
+        if(!activity.dateFin) activity.dateFin = this.addYear(myConsultant.entryDate, 1);
+
+        myConsultant.entryDate = this.utils.getDate(myConsultant.entryDate)
+        activity.dateDeb = this.utils.getDate(activity.dateDeb)
+        activity.dateFin = this.utils.getDate(activity.dateFin)
+
+        if (myConsultant.entryDate.getTime() < activity.dateDeb.getTime()) {
+          this.logger.debug(label + " activity.dateDeb < myConsultant.entryDate : ", activity.dateDeb, myConsultant.entryDate)
+          activity.dateDeb = myConsultant.entryDate
+          isChange = true
+        }
+
+        if (myConsultant.entryDate.getTime() > activity.dateFin.getTime()) {
+          this.logger.debug(label + " myConsultant.entryDate > activity.dateFin : ", myConsultant.entryDate, activity.dateFin)
+          activity.dateDeb = myConsultant.entryDate
+          activity.dateFin = this.addYear(myConsultant.entryDate, 1)
+          isChange = true
+        }
+
+        if (isChange) {
+          let labelSaveActivity = label + ".saveActivity"
+          this.logger.debug(labelSaveActivity + " maj activity : ", activity)
+          this.activityServiceLazy.save(activity).subscribe(
+            (data) => {
+              this.logger.debug(labelSaveActivity + " data : ", data)
+            },
+            (error) => {
+              this.logger.error(labelSaveActivity + " error : ", error)
+            }
+          );
+        }
+      }
+    }
+  }
+
+  addYear(date: Date, years: number): Date {
+    const newDate = new Date(date);
+    newDate.setFullYear(newDate.getFullYear() + years);
+    return newDate;
   }
 
   majCra(myObj: Cra) {

@@ -1,9 +1,5 @@
 
-
-ajouter la prop isWorkInWE 
-dans activity et ActivityType
-lorsqu'on rajoute une nouvelle activity, on copy celle du type vers l'activity
-
+si je modifie la date d'entree d'un consultant vers l'arrière, on dois maj les dates debut des ses activites à la mm date de la date d'entree du consultant
 
 Activity : ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
@@ -202,6 +198,11 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+2026-07-08 17:28:50
+ajouter la prop isWorkInWE 
+dans activity et ActivityType
+lorsqu'on rajoute une nouvelle activity, on copy celle du type vers l'activity
 
 2026-04-22 22:56:34
 set loading on login , goto home. debug on disconnect : OK 

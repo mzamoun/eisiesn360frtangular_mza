@@ -198,7 +198,10 @@ export class ConsultantFormComponent extends MereComponent {
     }
     // this.logger.info('entryDateString is string', date);
     // Si c'est une String (ex: reçue du serveur "2026-03-03T...")
-    // return date.split('T')[0];
+    // Extraire uniquement la partie date (yyyy-MM-dd)
+    if (typeof date === 'string') {
+      return String(date).split('T')[0];
+    }
     return date;
   }
 
@@ -218,7 +221,10 @@ export class ConsultantFormComponent extends MereComponent {
     }
     // this.logger.info('birthDayString is string', date);
     // Si c'est une String (ex: reçue du serveur)
-    // return date.split('T')[0];
+    // Extraire uniquement la partie date (yyyy-MM-dd)
+    if (typeof date === 'string') {
+      return String(date).split('T')[0];
+    }
     return date;
   }
 
@@ -678,13 +684,30 @@ export class ConsultantFormComponent extends MereComponent {
     this.logger.debug("onSubmit obj", this.myObj);
     let label = "onSubmit"
     this.beforeCallServer(label);
+
+    if (!this.myObj.adminConsultantId) this.myObj.adminConsultantId = this.myObj.adminConsultant?.id
+    this.myObj.adminConsultant = null;
     this.logger.debug("this.myObj.adminConsultant : before save ", this.myObj.adminConsultant)
+
+    if(this.myObj.role == 'ADMIN') {
+      this.myObj.admin = true;
+    }
+
+    this.dataSharingService.findAllActivitiesByConsultant(this.myObj.id,
+      (data) => {
+        this.myObj.listActivity = data?.body?.result || [];
+        this.consultantService.majActivityList(this.myObj);
+      },
+      (error) => {
+        this.addErrorFromErrorOfServer(label, error);
+      }
+    )
+
     this.consultantService.save(this.myObj, this.dataSharingService.IsAddEsnAndResp).subscribe(
       data => {
         this.afterCallServer(label, data)
 
         this.myObj = data.body.result
-
         this.logger.debug("after save this.myObj : ", this.myObj)
         this.logger.debug("this.myObj.adminConsultant : after save ", this.myObj.adminConsultant)
 

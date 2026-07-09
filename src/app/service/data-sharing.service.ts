@@ -149,10 +149,10 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   constructor(
     public router: Router
     , private injector: Injector
-    , private utils: UtilsService
-    , private utilsIhmService: UtilsIhmService
+    , public utils: UtilsService
+    , public utilsIhmService: UtilsIhmService
     , private consultantService: ConsultantService
-    , private activityService: ActivityService
+    , public activityService: ActivityService
     , private esnService: EsnService
     , private clientService: ClientService
     , private tokenService: TokenService
@@ -1264,6 +1264,23 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.emitEsnCurrentIfChanged(esn);
   }
 
-
+  findAllActivitiesByConsultant(consultantId: number, fctOk: Function, fctKo: Function) {
+    let label = "findAllActivitiesByConsultant" + " : consultantId=" + consultantId;
+    if (!consultantId) {
+      this.logger.debug(label + " ERROR - consultantId NULL !", consultantId)
+      return
+    }
+    this.addInfo(label)
+    this.activityService.findAllByConsultant(consultantId).subscribe(
+      data => {
+        this.delInfo(label);
+        if (fctOk) fctOk(data);
+      },
+      error => {
+        this.delInfo(label);
+        if (fctKo) fctKo(error);
+      }
+    );
+  }
 
 }
