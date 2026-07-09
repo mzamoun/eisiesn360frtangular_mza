@@ -22,7 +22,7 @@
                             <div class="d-flex align-items-center">
                                 <input id="password" class="form-control" [type]="showPassword ? 'text' : 'password'" 
                                     placeholder="{{utils.tr('app.login.password')}}" name="password" required 
-                                    [(ngModel)]="credentials.password" #password="ngModel">
+                                    [(ngModel)]="credentials.password" #password="ngModel" (keyup.enter)="login()">
                                 <div class="form-check ml-2">
                                     <input type="checkbox" class="form-check-input" id="showPassword" 
                                         [(ngModel)]="showPassword" name="showPassword">
