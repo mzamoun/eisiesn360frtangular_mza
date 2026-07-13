@@ -38,8 +38,15 @@ npm install --legacy-peer-deps
 ## 3. Configurer l'environnement local
 
 Copier le fichier d'environnement de développement :
+
+**Sur Windows (PowerShell/CMD) :**
 ```bash
-cp "src/environments/environment local.ts" src/environments/environment.ts
+copy "src\environments\environment local.ts" "src\environments\environment.ts"
+```
+
+**Sur Linux/Mac/Git Bash :**
+```bash
+cp "src/environments/environment local.ts" "src/environments/environment.ts"
 ```
 
 Puis éditer `src/environments/environment.ts` et renseigner :
@@ -80,9 +87,26 @@ Le résultat se trouve dans `docs/` (pour déploiement statique).
 
 ```bash
 ng test --watch=false --browsers=ChromeHeadless
+# ou
+npm run test:ci
 ```
 
-Résultat attendu : **184 SUCCESS** (tous les tests passent).
+Résultat attendu : **299 SUCCESS** (tous les tests passent).
+
+### Couverture de tests
+
+Les tests couvrent notamment :
+- **ActivityService** (service critique) - Tests HTTP complets
+- **JoursFeriesService** (jours fériés) - Tests de calcul de jours fériés et ouvrés
+- **PasswordValidatorService** (sécurité) - Tests de validation de mot de passe
+- **I18nService** (internationalisation) - Tests de mappings pays-langue
+- **ConnectionComponent** (authentification) - Tests du composant de connexion
+
+Couverture actuelle :
+- Instructions : 27.53%
+- Branches : 13.99%
+- Fonctions : 23.27%
+- Lignes : 26.73%
 
 ---
 

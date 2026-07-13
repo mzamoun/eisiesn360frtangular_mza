@@ -48,7 +48,13 @@ describe('ConsultantArboComponent', () => {
           router: { url: '/test', navigate: () => {} },
           idEsnCurrent: 1
         } },
-        { provide: ConsultantService, useValue: { findAll: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }), findAllByEsn: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }), findAllChildConsultants: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }) } },
+        { provide: ConsultantService, useValue: { 
+          findAll: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }), 
+          findAllByEsn: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }), 
+          findAllChildConsultants: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }),
+          getPhotoUrl: (consultant: any) => consultant?.photo ? 'data:image/jpeg;base64,' + consultant.photo : null,
+          getInitial: (consultant: any) => consultant?.fullName?.charAt(0) || '?'
+        } },
         { provide: CraService, useValue: { getListCraOfUser: () => ({ subscribe: (fn: any) => fn({ body: { result: [] } }) }) } }
       ]
     })

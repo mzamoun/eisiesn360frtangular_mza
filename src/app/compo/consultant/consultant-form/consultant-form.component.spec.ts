@@ -7,7 +7,7 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 
 
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ConsultantFormComponent } from './consultant-form.component';
 
@@ -15,7 +15,7 @@ describe('ConsultantFormComponent', () => {
   let component: ConsultantFormComponent;
   let fixture: ComponentFixture<ConsultantFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ ConsultantFormComponent ],
       imports: [RouterTestingModule, MatDialogModule, HttpClientTestingModule, FormsModule],
@@ -52,17 +52,18 @@ describe('ConsultantFormComponent', () => {
           majAdminConsultant: () => {},
           findNotAdminConsultant: () => ({ subscribe: (fn: any) => { fn({ body: { result: [] } }); return { unsubscribe: () => {} }; } }),
           getRoles: () => ({ subscribe: (fn: any) => { fn({ body: { result: [] } }); return { unsubscribe: () => {} }; } }),
-          save: () => ({ subscribe: () => ({ unsubscribe: () => {} }) })
+          save: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
+          getInitial: (consultant: any) => consultant?.fullName?.charAt(0) || '?'
         } }
       ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ConsultantFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    component.myObj = { id: null, address: {} } as any;
   });
 
   it('should create', () => {

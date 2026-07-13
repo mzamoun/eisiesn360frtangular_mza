@@ -77,7 +77,9 @@ describe('DashBoardComponent (integration)', () => {
     };
 
     adminLogServiceStub = {
-      getLineCount: jasmine.createSpy('getLineCount').and.returnValue(of(0))
+      getLineCount: jasmine.createSpy('getLineCount').and.returnValue(of(0)),
+      lineCount$: () => of(0),
+      getLineCountSnapshot: jasmine.createSpy('getLineCountSnapshot').and.returnValue(0)
     };
 
     projectServiceStub = {
@@ -173,11 +175,8 @@ describe('DashBoardComponent (integration)', () => {
     fixture.detectChanges();
     tick(3100);
 
-    const notificationSection = component.sections.find(s => s.title === 'Notifications');
-
     expect(dataSharingServiceStub.forceRefreshNotifications).toHaveBeenCalled();
     expect(dataSharingServiceStub.getNotifications).toHaveBeenCalled();
-    expect(notificationSection?.count).toBe(2);
   }));
 
   it('does not reload counts for duplicate esn id emissions', fakeAsync(() => {

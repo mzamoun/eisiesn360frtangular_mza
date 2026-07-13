@@ -14,7 +14,7 @@ export class AdminLogService {
   constructor(private http: HttpClient) {}
 
   tail(lines: number): Observable<string[]> {
-    const safeLines = Math.max(1, Math.min(5000, Number(lines) || 200));
+    const safeLines = Math.max(1, Math.min(1000000, Number(lines) || 200));
     const params = new HttpParams().set('lines', String(safeLines));
 
     return this.http

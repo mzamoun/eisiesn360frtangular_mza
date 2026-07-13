@@ -12,13 +12,15 @@ import { MereComponent } from '../_utils/mere-component';
 })
 export class AdminLogViewerComponent extends MereComponent implements OnInit {
 
-  lineOptions: number[] = [20, 50, 100, 200, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
-  selectedLines = 200;
+  lineOptions: number[] = [20, 50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+  selectedLines = 10000;
   nbLinesTotal: number | string = 'N/A';
   logLines: string[] = [];
+  errorLines: string[] = [];
   lastRefresh: Date | null = null;
   loadingLogs = false;
   isForbidden = false;
+  activeTab: 'logs' | 'errors' = 'logs';
 
   constructor(
     private adminLogService: AdminLogService,
@@ -57,6 +59,7 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
       (lines: string[]) => {
         this.afterCallServer(label, lines);
         this.logLines = lines || [];
+        this.filterErrorLines();
         this.lastRefresh = new Date();
         this.loadingLogs = false;
       },
@@ -78,18 +81,39 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
     );
   }
 
+  private filterErrorLines(): void {
+    this.errorLines = this.logLines.filter(line => 
+      line.toLowerCase().includes('error') || 
+      line.toLowerCase().includes('exception') ||
+      line.toLowerCase().includes('failed')
+    );
+  }
+
+  switchTab(tab: 'logs' | 'errors'): void {
+    this.activeTab = tab;
+  }
+
   copyText(): void {
     const textToCopy = this.logLines.join('\n');
+    this.copyToClipboard(textToCopy, 'AdminLogViewerComponent.copyText');
+  }
+
+  copyErrors(): void {
+    const textToCopy = this.errorLines.join('\n');
+    this.copyToClipboard(textToCopy, 'AdminLogViewerComponent.copyErrors');
+  }
+
+  private copyToClipboard(textToCopy: string, logLabel: string): void {
     if (!textToCopy) {
       return;
     }
 
     const onSuccess = () => {
-      this.logger.debug('AdminLogViewerComponent.copyText copied to clipboard');
+      this.logger.debug(`${logLabel} copied to clipboard`);
     };
 
     const onFailure = () => {
-      this.logger.debug('AdminLogViewerComponent.copyText clipboard copy failed');
+      this.logger.debug(`${logLabel} clipboard copy failed`);
     };
 
     if (navigator?.clipboard?.writeText) {

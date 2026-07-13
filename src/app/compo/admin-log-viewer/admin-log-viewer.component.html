@@ -14,16 +14,52 @@
 
     <div class="meta" *ngIf="lastRefresh">
       {{ utils.tr('app.admin.logs.lastRefresh') }} : {{ lastRefresh | date:'dd/MM/yyyy HH:mm:ss' }}
-      <button class="btn btn-primary" (click)="copyText()" [disabled]="loadingLogs">
-        {{ utils.tr('app.admin.logs.copy') }}
-      </button>
     </div>
 
-    <div class="log-wrapper" *ngIf="logLines?.length > 0; else emptyLogs">
-      <div class="log-pre">
-        <div class="log-line" *ngFor="let line of logLines; let i = index">
-          <span class="line-number">{{ i + 1 }}. </span>
-          <span class="line-text">{{ line }}</span>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mt-3">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'logs'" (click)="switchTab('logs')" style="cursor: pointer;">
+          Logs ({{logLines.length}})
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'errors'" (click)="switchTab('errors')" style="cursor: pointer;">
+          Errors ({{errorLines.length}})
+        </a>
+      </li>
+    </ul>
+
+    <!-- Logs Tab -->
+    <div class="tab-content mt-3" *ngIf="activeTab === 'logs'">
+      <div class="tab-actions mb-2">
+        <button class="btn btn-primary" (click)="copyText()" [disabled]="loadingLogs">
+          {{ utils.tr('app.admin.logs.copy') }}
+        </button>
+      </div>
+      <div class="log-wrapper" *ngIf="logLines?.length > 0; else emptyLogs">
+        <div class="log-pre">
+          <div class="log-line" *ngFor="let line of logLines; let i = index">
+            <span class="line-number">{{ i + 1 }}. </span>
+            <span class="line-text">{{ line }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Errors Tab -->
+    <div class="tab-content mt-3" *ngIf="activeTab === 'errors'">
+      <div class="tab-actions mb-2">
+        <button class="btn btn-primary" (click)="copyErrors()" [disabled]="loadingLogs">
+          {{ utils.tr('app.admin.logs.copy') }}
+        </button>
+      </div>
+      <div class="log-wrapper" *ngIf="errorLines?.length > 0; else emptyErrors">
+        <div class="log-pre">
+          <div class="log-line" *ngFor="let line of errorLines; let i = index">
+            <span class="line-number">{{ i + 1 }}. </span>
+            <span class="line-text">{{ line }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -31,6 +67,12 @@
     <ng-template #emptyLogs>
       <div class="alert alert-info mt-3">
         {{ utils.tr('app.admin.logs.empty') }}
+      </div>
+    </ng-template>
+
+    <ng-template #emptyErrors>
+      <div class="alert alert-info mt-3">
+        No errors found in logs
       </div>
     </ng-template>
   </div>

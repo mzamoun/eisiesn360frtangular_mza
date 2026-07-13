@@ -53,7 +53,6 @@ describe('ValidateEmailComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ValidateEmailComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

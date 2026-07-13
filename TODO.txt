@@ -1,5 +1,20 @@
 
-si je modifie la date d'entree d'un consultant vers l'arrière, on dois maj les dates debut des ses activites à la mm date de la date d'entree du consultant
+Autre projet : browser vxml pour les tests 
+---------------------------------------
+abonnement IA via eisi-consulting 
+-------------------------------------
+
+
+
+
+--------------------
+
+completer les tests unitaires 
+executer all tests avant chaque commit 
+-------------------------------------------
+
+
+
 
 Activity : ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
@@ -19,8 +34,6 @@ CONSULTANT_DOCUMENT
 fiche_paie 
 
 insc esn : un resp esn peut ajouter une esn 
-
-
 
 
 check saisi pour esn :
@@ -198,6 +211,36 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+13/07/2026
+Tests unitaires :
+- Amélioration des tests ConsultantService.spec.ts avec tests pour majActivityList et addYear
+- Ajout de tests pour les services critiques :
+  * ActivityService (service critique) - Tests HTTP complets
+  * JoursFeriesService (jours fériés) - Tests de calcul de jours fériés et ouvrés
+  * PasswordValidatorService (sécurité) - Tests de validation de mot de passe
+  * I18nService (internationalisation) - Tests de mappings pays-langue
+  * ConnectionComponent (authentification) - Tests du composant de connexion
+- RÉSULTAT FINAL : 299 SUCCESS / 0 FAILED
+- COUVERTURE ACTUELLE : Instructions 27.53%, Branches 13.99%, Fonctions 23.27%, Lignes 26.73%
+- MISE À JOUR INSTALL_LOCAL.md avec les nouvelles informations de tests
+
+10/07/2026
+Tests unitaires :
+- Amélioration des tests ConsultantService.spec.ts avec tests pour majActivityList et addYear
+- Configuration de husky pour exécuter les tests avant chaque commit (pre-commit hook)
+- Ajout du script test:watch dans package.json
+- Correction dashboard.component.spec.ts (title -> titleKey)
+- RÉSOLUTION DEPENDANCE CIRCULAIRE : Suppression de UtilsService dans LoggerService
+- ETAT DES TESTS : 14 FAILED / 184 SUCCESS (couverture 27.62%)
+- AMÉLIORATION SIGNIFICATIVE : De 8.95% à 27.62% de couverture
+- RECOMMANDATION : Corriger les 14 tests restants pour atteindre 100% de succès
+
+
+09/07/2026
+si je modifie la date d'entree d'un consultant vers l'arrière, on dois maj les dates debut 
+des ses activites à la mm date de la date d'entree du consultant
+
 
 2026-07-08 17:28:50
 ajouter la prop isWorkInWE 

@@ -3,6 +3,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LoggerService } from './logger.service';
+import { TradService } from './trad.service';
 
 
 
@@ -11,7 +12,12 @@ import { TestBed } from '@angular/core/testing';
 import { UtilsService } from './utils.service';
 
 describe('UtilsService', () => {
-  beforeEach(() => TestBed.configureTestingModule({ imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule] }));
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
+    providers: [
+      { provide: TradService, useValue: { tr: (key: string) => key } }
+    ]
+  }));
 
   it('should be created', () => {
     const service: UtilsService = TestBed.get(UtilsService);
@@ -21,6 +27,13 @@ describe('UtilsService', () => {
 
 // faire plusieurs tests à uniformName
 describe('uniformName', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [MatDialogModule, HttpClientTestingModule, RouterTestingModule],
+    providers: [
+      { provide: TradService, useValue: { tr: (key: string) => key } }
+    ]
+  }));
+
   it('should return empty string when name is empty', () => {
     const service: UtilsService = TestBed.get(UtilsService);
     expect(service.uniformName('')).toBe('');

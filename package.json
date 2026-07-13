@@ -10,12 +10,14 @@
         "watch": "%NVM_SYMLINK%\\node ./node_modules/@angular/cli/bin/ng build --watch --configuration development",
         "test": "%NVM_SYMLINK%\\node ./node_modules/@angular/cli/bin/ng test",
         "test:ci": "%NVM_SYMLINK%\\node ./node_modules/@angular/cli/bin/ng test --watch=false --browsers=ChromeHeadless --code-coverage",
+        "test:watch": "%NVM_SYMLINK%\\node ./node_modules/@angular/cli/bin/ng test --watch",
         "lint": "%NVM_SYMLINK%\\node ./lint.js",
         "lint:local": "cross-env ESLINT_LOCAL=1 %NVM_SYMLINK%\\node ./lint.js",
         "lint:i18n:update-baseline": "%NVM_SYMLINK%\\node ./scripts/check-i18n-hardcoded.mjs --update-baseline",
         "dev": "lite-server -c configs/lite-server.json --baseDir=dist/esn306",
         "dev2": "lite-server --baseDir=dist/esn306",
-        "dev3": "lite-server "
+        "dev3": "lite-server ",
+        "prepare": "husky install"
     },
     "private": true,
     "engines": {
@@ -90,6 +92,7 @@
         "@typescript-eslint/parser": "^4.33.0",
         "cross-env": "^7.0.3",
         "eslint": "^7.32.0",
+        "husky": "^8.0.3",
         "jasmine-core": "~3.8.0",
         "karma": "~6.3.0",
         "karma-chrome-launcher": "~3.1.0",

@@ -19,6 +19,62 @@
   font-size: 0.9rem;
 }
 
+/* Tabs Styles */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  padding: 0.5rem 0.5rem 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-item {
+  margin-right: 0.25rem;
+}
+
+.nav-link {
+  border: 2px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: #495057;
+  background-color: #e9ecef;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 1px;
+}
+
+.nav-link:hover {
+  background-color: #dee2e6;
+  color: #212529;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.active {
+  background-color: #ffffff;
+  border-color: #dee2e6 #dee2e6 #ffffff;
+  color: #0d6efd;
+  font-weight: 700;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tab-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.tab-content {
+  background-color: #ffffff;
+  border: 2px solid #dee2e6;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 .log-wrapper {
   margin: 10px;
   border: 1px solid black;

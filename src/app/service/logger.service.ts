@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class LoggerService {
     'code',
   ];
 
-  constructor(private utils: UtilsService) {
+  constructor() {
 
   }
 

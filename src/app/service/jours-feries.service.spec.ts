@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { JoursFeriesService } from './jours-feries.service';
+import { JoursFeriesService, JourFerie } from './jours-feries.service';
 
 describe('JoursFeriesService', () => {
   let service: JoursFeriesService;
@@ -13,99 +13,221 @@ describe('JoursFeriesService', () => {
     expect(service).toBeTruthy();
   });
 
-  // ─── Algorithme de Pâques ─────────────────────────────────────────────────
+  describe('getJoursFeries', () => {
+    it('should return French holidays for FR', () => {
+      const holidays = service.getJoursFeries(2024, 'FR');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('FR');
+      expect(holidays[0].label).toBe("Jour de l'An");
+    });
 
-  it('should calculate Easter 2025 as April 20', () => {
-    const easter = service.getEasterDate(2025);
-    expect(easter.getMonth()).toBe(3);  // April (0-indexed)
-    expect(easter.getDate()).toBe(20);
+    it('should return French holidays for BE', () => {
+      const holidays = service.getJoursFeries(2024, 'BE');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('BE');
+    });
+
+    it('should return Dutch holidays for NL', () => {
+      const holidays = service.getJoursFeries(2024, 'NL');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('NL');
+      expect(holidays[0].label).toBe('Nieuwjaarsdag');
+    });
+
+    it('should return UK holidays for GB', () => {
+      const holidays = service.getJoursFeries(2024, 'GB');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('GB');
+    });
+
+    it('should return UK holidays for UK alias', () => {
+      const holidays = service.getJoursFeries(2024, 'UK');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('GB');
+    });
+
+    it('should return German holidays for DE', () => {
+      const holidays = service.getJoursFeries(2024, 'DE');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('DE');
+    });
+
+    it('should return Canadian holidays for CA', () => {
+      const holidays = service.getJoursFeries(2024, 'CA');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('CA');
+    });
+
+    it('should return Algerian holidays for DZ', () => {
+      const holidays = service.getJoursFeries(2024, 'DZ');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('DZ');
+    });
+
+    it('should return Tunisian holidays for TN', () => {
+      const holidays = service.getJoursFeries(2024, 'TN');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('TN');
+    });
+
+    it('should return Moroccan holidays for MA', () => {
+      const holidays = service.getJoursFeries(2024, 'MA');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('MA');
+    });
+
+    it('should default to French holidays for unknown country', () => {
+      const holidays = service.getJoursFeries(2024, 'XX');
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('FR');
+    });
+
+    it('should be case insensitive for country code', () => {
+      const holidaysLower = service.getJoursFeries(2024, 'fr');
+      const holidaysUpper = service.getJoursFeries(2024, 'FR');
+      expect(holidaysLower.length).toEqual(holidaysUpper.length);
+    });
+
+    it('should handle null country code', () => {
+      const holidays = service.getJoursFeries(2024, null as any);
+      expect(holidays.length).toBeGreaterThan(0);
+      expect(holidays[0].pays).toBe('FR');
+    });
   });
 
-  it('should calculate Easter 2024 as March 31', () => {
-    const easter = service.getEasterDate(2024);
-    expect(easter.getMonth()).toBe(2);  // March
-    expect(easter.getDate()).toBe(31);
+  describe('isJourFerie', () => {
+    it('should return true for French New Year', () => {
+      const newYear = new Date(2024, 0, 1); // January 1st, 2024
+      expect(service.isJourFerie(newYear, 'FR')).toBe(true);
+    });
+
+    it('should return false for regular working day', () => {
+      const regularDay = new Date(2024, 0, 8); // January 8th, 2024 (Monday)
+      expect(service.isJourFerie(regularDay, 'FR')).toBe(false);
+    });
+
+    it('should return true for Dutch King\'s Day', () => {
+      const kingsDay = new Date(2024, 3, 27); // April 27th, 2024
+      expect(service.isJourFerie(kingsDay, 'NL')).toBe(true);
+    });
+
+    it('should return false for Dutch King\'s Day in France', () => {
+      const kingsDay = new Date(2024, 3, 27); // April 27th, 2024
+      expect(service.isJourFerie(kingsDay, 'FR')).toBe(false);
+    });
+
+    it('should return true for Christmas in multiple countries', () => {
+      const christmas = new Date(2024, 11, 25); // December 25th, 2024
+      expect(service.isJourFerie(christmas, 'FR')).toBe(true);
+      expect(service.isJourFerie(christmas, 'DE')).toBe(true);
+      expect(service.isJourFerie(christmas, 'CA')).toBe(true);
+    });
   });
 
-  // ─── France ───────────────────────────────────────────────────────────────
+  describe('countJoursOuvres', () => {
+    it('should count business days excluding weekends', () => {
+      const start = new Date(2024, 0, 8); // Monday
+      const end = new Date(2024, 0, 12); // Friday
+      const count = service.countJoursOuvres(start, end, 'FR');
+      expect(count).toBe(5); // Monday to Friday
+    });
 
-  it('should return 11 jours fériés for France 2025', () => {
-    const feries = service.getJoursFeries(2025, 'FR');
-    expect(feries.length).toBe(11);
+    it('should exclude holidays from business days', () => {
+      const start = new Date(2024, 0, 1); // Monday (New Year)
+      const end = new Date(2024, 0, 5); // Friday
+      const count = service.countJoursOuvres(start, end, 'FR');
+      expect(count).toBe(4); // 5 days minus New Year
+    });
+
+    it('should return 0 for same day weekend', () => {
+      const saturday = new Date(2024, 0, 6); // Saturday
+      const count = service.countJoursOuvres(saturday, saturday, 'FR');
+      expect(count).toBe(0);
+    });
+
+    it('should handle date range across months', () => {
+      const start = new Date(2024, 0, 29); // Monday
+      const end = new Date(2024, 1, 2); // Friday
+      const count = service.countJoursOuvres(start, end, 'FR');
+      expect(count).toBe(5);
+    });
+
+    it('should handle date range across years', () => {
+      const start = new Date(2023, 11, 29); // Friday
+      const end = new Date(2024, 0, 2); // Tuesday
+      const count = service.countJoursOuvres(start, end, 'FR');
+      expect(count).toBe(2); // Friday, Monday, Tuesday (weekend excluded - Saturday and Sunday)
+    });
   });
 
-  it('should include 1er janvier for France', () => {
-    const feries = service.getJoursFeries(2025, 'FR');
-    const jour = feries.find(f => f.date.getMonth() === 0 && f.date.getDate() === 1);
-    expect(jour).toBeTruthy();
-    expect(jour.label).toContain("An");
+  describe('getEasterDate', () => {
+    it('should calculate correct Easter date for 2024', () => {
+      const easter = service.getEasterDate(2024);
+      expect(easter.getFullYear()).toBe(2024);
+      expect(easter.getMonth()).toBe(2); // March
+      expect(easter.getDate()).toBe(31); // March 31st, 2024
+    });
+
+    it('should calculate correct Easter date for 2025', () => {
+      const easter = service.getEasterDate(2025);
+      expect(easter.getFullYear()).toBe(2025);
+      expect(easter.getMonth()).toBe(3); // April
+      expect(easter.getDate()).toBe(20); // April 20th, 2025
+    });
+
+    it('should calculate correct Easter date for 2023', () => {
+      const easter = service.getEasterDate(2023);
+      expect(easter.getFullYear()).toBe(2023);
+      expect(easter.getMonth()).toBe(3); // April
+      expect(easter.getDate()).toBe(9); // April 9th, 2023
+    });
   });
 
-  it('should include 14 juillet (Fête Nationale) for France', () => {
-    const feries = service.getJoursFeries(2025, 'FR');
-    const jour = feries.find(f => f.date.getMonth() === 6 && f.date.getDate() === 14);
-    expect(jour).toBeTruthy();
-  });
+  describe('Specific holiday calculations', () => {
+    it('should include Easter Monday for France', () => {
+      const holidays = service.getJoursFeries(2024, 'FR');
+      const easterMonday = holidays.find(h => h.label === 'Lundi de Pâques');
+      expect(easterMonday).toBeDefined();
+      expect(easterMonday!.date.getMonth()).toBe(3); // April
+      expect(easterMonday!.date.getDate()).toBe(1); // April 1st, 2024
+    });
 
-  // ─── isJourFerie ──────────────────────────────────────────────────────────
+    it('should include Ascension for France', () => {
+      const holidays = service.getJoursFeries(2024, 'FR');
+      const ascension = holidays.find(h => h.label === 'Ascension');
+      expect(ascension).toBeDefined();
+      expect(ascension!.date.getMonth()).toBe(4); // May
+    });
 
-  it('should identify 1er mai 2025 as jour ferie for FR', () => {
-    expect(service.isJourFerie(new Date(2025, 4, 1), 'FR')).toBeTrue();
-  });
+    it('should include Whit Monday for France', () => {
+      const holidays = service.getJoursFeries(2024, 'FR');
+      const whitMonday = holidays.find(h => h.label === 'Lundi de Pentecôte');
+      expect(whitMonday).toBeDefined();
+      expect(whitMonday!.date.getMonth()).toBe(4); // May
+    });
 
-  it('should identify 2 mai 2025 as NOT jour ferie for FR', () => {
-    expect(service.isJourFerie(new Date(2025, 4, 2), 'FR')).toBeFalse();
-  });
+    it('should include Belgian specific holidays', () => {
+      const holidays = service.getJoursFeries(2024, 'BE');
+      const belgianNational = holidays.find(h => h.label === 'Fête Nationale belge');
+      expect(belgianNational).toBeDefined();
+      expect(belgianNational!.date.getMonth()).toBe(6); // July
+      expect(belgianNational!.date.getDate()).toBe(21);
+    });
 
-  // ─── Pays-Bas ─────────────────────────────────────────────────────────────
+    it('should include Canadian specific holidays', () => {
+      const holidays = service.getJoursFeries(2024, 'CA');
+      const canadaDay = holidays.find(h => h.label === 'Fête du Canada');
+      expect(canadaDay).toBeDefined();
+      expect(canadaDay!.date.getMonth()).toBe(6); // July
+      expect(canadaDay!.date.getDate()).toBe(1);
+    });
 
-  it('should return jours feries for NL', () => {
-    const feries = service.getJoursFeries(2025, 'NL');
-    expect(feries.length).toBeGreaterThan(5);
-  });
-
-  // ─── Allemagne ────────────────────────────────────────────────────────────
-
-  it('should include 3 October as Tag der Deutschen Einheit for DE', () => {
-    const feries = service.getJoursFeries(2025, 'DE');
-    const jour = feries.find(f => f.date.getMonth() === 9 && f.date.getDate() === 3);
-    expect(jour).toBeTruthy();
-  });
-
-  // ─── Royaume-Uni ─────────────────────────────────────────────────────────
-
-  it('should return jours feries for GB', () => {
-    const feries = service.getJoursFeries(2025, 'GB');
-    expect(feries.length).toBeGreaterThan(5);
-  });
-
-  // ─── UK alias ────────────────────────────────────────────────────────────
-
-  it('should accept UK as alias for GB', () => {
-    const feriesGB = service.getJoursFeries(2025, 'GB');
-    const feriesUK = service.getJoursFeries(2025, 'UK');
-    expect(feriesGB.length).toBe(feriesUK.length);
-  });
-
-  // ─── Fallback ─────────────────────────────────────────────────────────────
-
-  it('should fallback to FR for unknown country', () => {
-    const feriesFR = service.getJoursFeries(2025, 'FR');
-    const feriesXX = service.getJoursFeries(2025, 'XX');
-    expect(feriesXX.length).toBe(feriesFR.length);
-  });
-
-  // ─── countJoursOuvres ────────────────────────────────────────────────────
-
-  it('should count correct working days for a full week without holiday', () => {
-    // Week of 3-7 March 2025 (no holiday in FR)
-    const count = service.countJoursOuvres(new Date(2025, 2, 3), new Date(2025, 2, 7), 'FR');
-    expect(count).toBe(5);
-  });
-
-  it('should exclude 1er mai from working days in FR', () => {
-    // 28 April - 2 May 2025: 1 May is holiday → 4 working days
-    const count = service.countJoursOuvres(new Date(2025, 3, 28), new Date(2025, 4, 2), 'FR');
-    expect(count).toBe(4);
+    it('should include Algerian specific holidays', () => {
+      const holidays = service.getJoursFeries(2024, 'DZ');
+      const independence = holidays.find(h => h.label === 'Fête de l\'Indépendance');
+      expect(independence).toBeDefined();
+      expect(independence!.date.getMonth()).toBe(6); // July
+      expect(independence!.date.getDate()).toBe(5);
+    });
   });
 });

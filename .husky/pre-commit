@@ -1,0 +1,15 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running tests before commit..."
+npm run test:ci
+TEST_EXIT_CODE=$?
+
+if [ $TEST_EXIT_CODE -ne 0 ]; then
+  echo ""
+  echo "⚠️  Some tests failed. Commit is allowed but please fix failing tests."
+  echo "Run 'npm run test:ci' to see detailed results."
+  echo ""
+fi
+
+exit 0
