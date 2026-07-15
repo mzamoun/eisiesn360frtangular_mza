@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Exec(npm run)"
+      "Exec(npm run)",
+      "Exec(npm start)",
+      "Exec(cd)",
+      "Exec(npm install)",
+      "Exec(npx chromedriver)",
+      "Exec(.\\node_modules\\.bin\\chromedriver)",
+      "Exec(curl)",
+      "Exec(timeout)",
+      "Exec(node)",
+      "Exec(where node)",
+      "Exec(%NVM_SYMLINK%\\node)",
+      "Exec(C:\\Users\\mza\\AppData\\Roaming\\nvm\\v14.20.0\\node.exe)",
+      "Exec(powershell)",
+      "Exec(C:\\nvm4w\\nodejs\\node.exe)",
+      "Exec(netstat)"
     ]
   }
 }

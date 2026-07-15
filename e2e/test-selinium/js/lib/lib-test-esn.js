@@ -13,7 +13,7 @@ export async function addEsn(driver, num) {
     await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
     await driver.sleep(1000);
 
-    await driver.findElement(By.id('myNavbar')).click();
+    await utils.clickElement(driver, 'myNavbar');
     await driver.findElement(By.id('esnAppLink')).click();
     await driver.sleep(1000);
     await driver.findElement(By.id('addEsn')).click();

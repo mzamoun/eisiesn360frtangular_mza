@@ -366,6 +366,9 @@ export async function clickElement(driver, elementId) {
         await scrollToElement(driver, elementId);
         // driver.sleep(1000)
 
+        // Attendre que l'overlay de chargement disparaisse avant de cliquer
+        await waitForLoadingOverlayToDisappear(driver);
+
         // Cliquer sur l'élément
         await element.click();
         console.log(`Élément avec l'id "${elementId}" cliqué avec succès.`);
@@ -375,5 +378,26 @@ export async function clickElement(driver, elementId) {
     }
 
     log("END click on elementId="+elementId)
+}
+
+/**
+ * Attend que l'overlay de chargement disparaisse
+ */
+export async function waitForLoadingOverlayToDisappear(driver) {
+    try {
+        let overlay = await driver.findElements(By.className('loading-overlay'));
+        let attempts = 0;
+        while (overlay.length > 0 && attempts < 20) {
+            await driver.sleep(500);
+            overlay = await driver.findElements(By.className('loading-overlay'));
+            attempts++;
+        }
+        if (attempts > 0) {
+            console.log(`Overlay de chargement disparu après ${attempts * 500}ms`);
+        }
+    } catch (e) {
+        // Si l'overlay n'existe pas, continuer
+        console.log("Pas d'overlay de chargement détecté");
+    }
 }
 
