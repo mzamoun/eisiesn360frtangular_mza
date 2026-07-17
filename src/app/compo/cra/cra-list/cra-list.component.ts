@@ -147,9 +147,15 @@ export class CraListComponent extends MereComponent {
   }
 
   showCra(cra: Cra, event: any) {
-    this.logger.debug("showCra craList ", cra)
-    this.clearInfos()
-    this.dataSharingService.showCra(cra);
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // Navigation directe optimisée - évite les opérations synchrones du service
+    this.currentCra = cra;
+    this.craService.setCra(cra);
+    this.router.navigate(['/cra_form'], { state: { cra } });
   }
 
   edit(cra: Cra) {

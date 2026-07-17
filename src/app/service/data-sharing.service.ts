@@ -382,31 +382,30 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   showCra(cra: Cra) {
-    let label = "navigate to cra_form with cra id=" + cra?.id
+    const label = "navigate to cra_form with cra id=" + cra?.id;
+    this.addInfo(label);
+
     if (!cra) {
-      this.logger.debug(label + " ERROR - cra NULL !", cra)
+      this.logger.debug("navigate to cra_form ERROR - cra NULL !", cra)
       return
     }
-    this.logger.debug(label + " START - cra: ", cra)
+
+    this.logger.debug(label + " START", cra);
 
     this.currentCraSource.next(cra);
     this.isAdd = "";
     this.typeCra = cra.type;
 
-    this.logger.debug(label + " avant navigate to cra_form", cra)
-    this.addInfo(label)
-    this.router.navigate(["/cra_form"], { state: { cra } }).then(
-      success => {
-        this.delInfo(label)
-        this.logger.debug(label + " navigate to cra_form success", cra)
-      },
-      error => {
-        this.delInfo(label)
-        this.logger.debug(label + " ERROR - navigate to cra_form", cra, error)
-      }
-    );
-
-    this.logger.debug(label + " END - navigate to cra_form", cra)
+    this.router.navigate(["/cra_form"], { state: { cra } })
+      .then(() => {
+        this.logger.debug(label + " success", cra);
+      })
+      .catch(error => {
+        this.logger.debug(label + " ERROR", cra, error);
+      })
+      .finally(() => {
+        this.delInfo(label);
+      });
   }
 
   showFee(fee: NoteFrais) {
