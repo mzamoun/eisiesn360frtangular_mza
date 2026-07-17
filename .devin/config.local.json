@@ -15,7 +15,8 @@
       "Exec(C:\\Users\\mza\\AppData\\Roaming\\nvm\\v14.20.0\\node.exe)",
       "Exec(powershell)",
       "Exec(C:\\nvm4w\\nodejs\\node.exe)",
-      "Exec(netstat)"
+      "Exec(netstat)",
+      "Exec(npm test)"
     ]
   }
 }

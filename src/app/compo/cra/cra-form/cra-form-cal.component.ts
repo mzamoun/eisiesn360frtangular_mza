@@ -166,8 +166,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     , public dialog: MatDialog
   ) {
     super(utils, dataSharingService);
-    this.logger.debug("DBG: cra-form-cal: constructot: currentCra: ", this.currentCra)
-    this.logger.debug("cra list findAll Constr : dataSharingService.listCra:", this.dataSharingService.getListCra())
   }
 
   /**
@@ -220,13 +218,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.is_canValidateCraOrConge = this.canValidateCraOrConge();
     this.is_canSubmitCra = this.canSubmitCra();
-
-    this.logger.debug("cra list findAll ap call majCra : dataSharingService.listCra:", this.dataSharingService.getListCra())
-    this.logger.debug("cra list findAll ap call majCra : currentCra:", this.currentCra)
-
-    // this.showCra(this.currentCra)
-
-    this.logger.debug("+++ ngOnit FIN");
 
   }
 
@@ -291,16 +282,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
   setCurrentCraConsultantId() {
-    this.logger.debug("DBG: setCurrentCraConsultantId currentCra.consultantId DEB : ", this.currentCra.consultantId)
     if (!this.currentCra.consultantId) {
       if (this.currentCra.consultant && this.currentCra.consultant.id) {
         this.currentCra.consultantId = this.currentCra.consultant.id
-        this.logger.debug("DBG: setCurrentCraConsultantId currentCra.consultantId 1 : ", this.currentCra.consultantId)
-        this.logger.debug("+++ saveCra : change 02 of consultant of currentCra ", this.currentCra)
       } else {
         this.currentCra.consultantId = this.userConnected.id
-        this.logger.debug("DBG: setCurrentCraConsultantId currentCra.consultantId 2 : ", this.currentCra.consultantId)
-        this.logger.debug("+++ saveCra : change 03 of consultant of currentCra ", this.currentCra)
       }
     }
   }
@@ -327,21 +313,21 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           // Fallback: récupérer depuis le dataSharingService
           this.currentCra = this.dataSharingService.getCurrentCra();
         }
+        if (!this.currentCra) {
+          // Si toujours null, créer un nouveau CRA
+          this.currentCra = new Cra();
+          this.isAdd = "true";
+        }
+      } else {
+        this.currentCra = new Cra();
       }
     }
 
     this.currentCraUser = this.currentCra?.consultant
 
-    if (this.currentCra == null) {
-      this.currentCra = new Cra();
-      this.isAdd = "true"
-    }
-
     // save pour la navigation :
     this.dataSharingService.isAdd = this.isAdd;
     this.dataSharingService.typeCra = this.typeCra;
-
-    this.logger.debug("initParams isAdd, typeCra, currentCra : ", this.isAdd, this.typeCra, this.currentCra);
   }
 
   getCurrentCraFromContext() {
@@ -415,17 +401,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           this.activities = new Array();
         } else {
           this.activities = data.body.result;
-          this.logger.debug(label + " activities 1 : ", this.activities);
           let list = []
           for (let ac of this.activities) {
-            this.logger.debug(label + " ac : ", ac);
-            this.logger.debug(label + " ac.valid : ", ac.valid);
             if (ac.valid == true) {
               if (this.typeCra == "CONGE") {
                 let type = ac.type
                 let typeName = ac.typeName ? ac.typeName : type?.name;
                 if (!typeName) typeName = "";
-                this.logger.debug(label + " : typeName, ac : ", typeName, ac.name)
                 if (typeName.includes("CONG") || ac.name.includes("CONG")) {
                   list.push(ac)
                 }
@@ -435,12 +417,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             }
           }
           this.activities = list;
-          this.logger.debug(label + " activities 2 : ", this.activities);
         }
-        //////////this.logger.debug("*************** findAllActivities activities:", this.activities);
-        ////////this.logger.debug("*************** findAllActivities isAdd:", this.isAdd);
-        //
-        this.logger.debug(label + " isAdd : ", this.isAdd);
+        
         if (this.isAdd == 'true') {
 
           if (this.typeCra == 'CONGE') {
@@ -453,13 +431,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
         } else {
 
-          // this.getCurrentCraFromContext();
           this.currentCra = this.dataSharingService.getCurrentCra();
-          this.logger.debug(label + " get cra from dataSharingService : ", this.currentCra);
 
           if (!this.currentCra) {
             this.currentCra = this.craService.getCra();
-            this.logger.debug(label + " get cra from craService : ", this.currentCra);
           }
           this.initCra(this.currentCra);
           this.btnActionTitle = "UPDATE " + this.getNameByType();
@@ -467,10 +442,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         //
         this.process();
         this.refreshMe();
-
-        this.logger.debug(label + " fin");
       }, error => {
-        this.logger.debug(label + " error", error)
         this.addErrorFromErrorOfServer(info_id, error);
       }
     );
@@ -480,7 +452,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    * Used to initialized cra
    */
   initCra(currentCra: Cra) {
-    this.logger.debug("+++ initCra deb currentCra", currentCra);
     if (currentCra != null && currentCra.craDays != null) {
       this.deleteCraDayActivitiesOfActivityNullInCra(currentCra)
       this.viewDate = currentCra.month;
@@ -509,22 +480,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.craService.majNewCra(this.currentCra, this.viewDate);
 
     }
-    this.logger.debug("+++ initCra fin");
   }
 
   addActivitiesOfCra(cra: Cra) {
-    this.logger.debug("addActivitiesOfCra deb this.currentCra=", this.currentCra)
     cra.craDays.forEach((craDay, k) => {
-
       this.craDay = this.getNewCraDayFrom(craDay);
-      //////this.logger.debug("craDay", i, craDay)
-
       let isSet = this.craService.setCraDayInCraByDate(this.currentCra, this.craDay.day, this.craDay, false)
-      ////this.logger.debug("** isSet="+isSet)
-
     })
-
-    this.logger.debug("addActivitiesOfCra fin this.currentCra=", this.currentCra)
 
   }
 
@@ -599,10 +561,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
      */
 
     let craInDateView: Cra = this.craService.getCraInDate(this.viewDate, this.dataSharingService.getListCra());
-    this.logger.debug(label + " craInDateView", craInDateView)
 
     if (craInDateView != null) {
-      this.logger.debug(label + " showCra valide deb")
+
 
       this.statusHistoJsonToTab()
 
@@ -612,18 +573,16 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
       // this.addErrorTitleMsg("Error Add " + this.getLabelByType(), "On ne peut pas ajouter un nouveau "+this.getLabelByType+" lorsqu'il y'a deja un CRA valide ce mois-ci !")
 
-      this.logger.debug(label + " showCra valide fin")
+
 
     } else {
       this.beforeCallServer(label)
-      this.logger.debug(label + " before getNewCraOfDate : viewDate ", this.viewDate)
+
       this.craService.getNewCraOfDate(this.viewDate).subscribe(
         data => {
-          this.logger.debug(label + " : viewDate, data : ", this.viewDate, data)
           this.afterCallServer(label, data)
           if (data != null && data.body != null && data.body.result != null) {
             this.currentCra = data.body.result;
-            this.logger.debug(label + " we have a new cra from initCra du server. currentCra : ", this.currentCra)
             this.craService.majNewCra(this.currentCra, this.viewDate);
 
             this.statusHistoJsonToTab()
@@ -632,32 +591,21 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             // this.currentCra.month = new Date(this.currentCra.monthStr);
             this.setMonthCurentCraIfNull();
           } else {
-            this.logger.debug(label + " data null : set new Cra of this viewDate ", this.viewDate)
             this.currentCra = new Cra();
             this.setMonthCurentCraIfNull();
             this.events = [];
             this.craService.majNewCra(this.currentCra, this.viewDate);
           }
 
-          this.logger.debug(label + " currentCra : ", this.currentCra)
-
           if (!this.getError() || this.getError().length == 0) {
-            this.logger.debug(label + " NO_ERROR : goto showCra", this.currentCra)
-            // this.addActivitiesValidOfThisMonth();
-            // this.currentCra.month = this.viewDate;
-
-            // this.dataSharingService.showCra(this.currentCra);
-
             this.setMonthCurentCraIfNull();
 
             let craContext: CraContext = new CraContext();
-            this.logger.debug(label + " +++++ craContext:", craContext)
 
             let month = this.utils.getDate(this.currentCra.month);
             craContext.cra = this.currentCra;
             craContext.viewDate = month;
             craContext.events = [];
-            this.logger.debug(label + " +++++ craContext after setting viewDate and events:", craContext)
             this.dataSharingService.onCraInit(craContext);
             // this.router.navigate(["/cra_form"])
             ////////this.logger.debug("showCra fin", cra)
@@ -678,8 +626,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           this.addErrorFromErrorOfServer(label, error);
         })
     }
-
-    this.logger.debug(label + " fin currentCra ", this.currentCra)
 
   }
 
