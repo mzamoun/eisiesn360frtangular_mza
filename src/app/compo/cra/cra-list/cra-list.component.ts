@@ -152,10 +152,7 @@ export class CraListComponent extends MereComponent {
       event.stopPropagation();
     }
     
-    // Navigation directe optimisée - évite les opérations synchrones du service
-    this.currentCra = cra;
-    this.craService.setCra(cra);
-    this.router.navigate(['/cra_form'], { state: { cra } });
+    this.dataSharingService.showCra(cra);
   }
 
   edit(cra: Cra) {

@@ -2740,6 +2740,11 @@ export class TradService {
       "en": "Please check your CRA. Each worked day must total 1.",
       "ar": "يرجى التحقق من CRA. يجب أن يكون مجموع كل يوم عمل 1.",
     },
+    "app.compo.cra.form.validation.dayCannotExceedOne": {
+      "fr": "La somme des durées dépasse 1 jour pour cette date",
+      "en": "The total duration exceeds 1 day for this date",
+      "ar": "إجمالي المدة يتجاوز يوم واحد لهذا التاريخ",
+    },
     "app.compo.cra.form.validation.craValidSubmit": {
       "fr": "Votre CRA est valide.\nVous pouvez le soumettre à votre manager.",
       "en": "Your CRA is valid.\nYou can submit it to your manager.",
@@ -3004,6 +3009,11 @@ export class TradService {
       "fr": "Cette date est hors de l'intervalle de l'activite selectionnee",
       "en": "This date is outside the selected activity interval",
       "ar": "هذا التاريخ خارج نطاق النشاط المحدد",
+    },
+    "app.compo.cra.addMultiDate.error.exceedsOneDay": {
+      "fr": "La somme des durées dépasse 1 jour pour cette date",
+      "en": "The total duration exceeds 1 day for this date",
+      "ar": "إجمالي المدة يتجاوز يوم واحد لهذا التاريخ",
     },
     "app.compo.cra.list.confirmDelete": {
       "fr": "Voulez-vous vraiment supprimer la ligne avec id=",

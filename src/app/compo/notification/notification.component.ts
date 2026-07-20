@@ -316,38 +316,66 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
       return;
     }
 
-    let label2 = label + " - CRA ID: " + notification.cra.id + " - récupération du CRA en cours...";
+    let label2 = label + " - CRA ID: " + notification.cra.id + " - récupération du CRA complet en cours...";
     this.addInfo(label2);
     const originalCra = notification.cra;
 
-    this.craService.findAll().subscribe(
+    // Récupérer le CRA complet avec ses activités via findById
+    this.craService.findById(notification.cra.id).subscribe(
       (data) => {
         this.delInfo(label2);
-        const allCra = data?.body?.result || [];
-        this.logger.debug(label + " - liste CRA trouvée: data : ", data);
-        this.dataSharingService.setListCra(allCra);
+        const craComplete = data?.body?.result;
+        this.logger.debug(label + " - CRA complet trouvé: data : ", data);
 
-        const craFromList = allCra.find(cra => cra?.id === notification.cra.id);
-        if (!craFromList) {
-          console.warn(label + " - CRA introuvable dans findAll, fallback sur la notification");
-          notification.cra = this.mergeCraComment(notification.cra, notification, originalCra);
-        } else {
-          notification.cra = this.mergeCraComment(craFromList, notification, originalCra);
+        if (!craComplete) {
+          console.error(label + " - CRA complet introuvable");
+          this.addErrorTxt("CRA introuvable");
+          return;
         }
 
-        this.dataSharingService.showCra(notification.cra);
-        notification.viewed = true;
-        this.saveNotification(notification, (saveData) => {
-          this.logger.debug(label + " - callback saveNotification OK: ", saveData);
-          this.dataSharingService.fromNotif = true;
-        }, (error) => {
-          console.error(label + " - ERREUR saveNotification: ", error);
-        });
+        // Fusionner les commentaires et statuts
+        notification.cra = this.mergeCraComment(craComplete, notification, originalCra);
+
+        // Récupérer aussi la liste des CRAs pour le contexte
+        this.craService.findAll().subscribe(
+          (listData) => {
+            const allCra = listData?.body?.result || [];
+            this.logger.debug(label + " - liste CRA trouvée: data : ", listData);
+            this.dataSharingService.setListCra(allCra);
+
+            // Afficher immédiatement le CRA récupéré
+            this.dataSharingService.fromNotif = true;
+            this.dataSharingService.showCra(notification.cra);
+
+            // Sauvegarder la notification comme vue en arrière-plan
+            notification.viewed = true;
+            this.saveNotification(notification, (saveData) => {
+              this.logger.debug(label + " - callback saveNotification OK: ", saveData);
+            }, (error) => {
+              console.error(label + " - ERREUR saveNotification: ", error);
+            });
+          },
+          (error) => {
+            // Continuer même si la liste échoue
+            console.warn(label + " - ERREUR lors de la récupération de la liste des CRA: ", error);
+
+            // Afficher quand même le CRA même sans la liste
+            this.dataSharingService.fromNotif = true;
+            this.dataSharingService.showCra(notification.cra);
+
+            notification.viewed = true;
+            this.saveNotification(notification, (saveData) => {
+              this.logger.debug(label + " - callback saveNotification OK: ", saveData);
+            }, (error) => {
+              console.error(label + " - ERREUR saveNotification: ", error);
+            });
+          }
+        );
       },
       (error) => {
         this.delInfo(label2);
-        console.error(label + " - ERREUR lors de la récupération de la liste des CRA: ", error);
-        this.addErrorTxt("Erreur lors de la récupération de la liste des CRA : " + JSON.stringify(error));
+        console.error(label + " - ERREUR lors de la récupération du CRA complet: ", error);
+        this.addErrorTxt("Erreur lors de la récupération du CRA : " + JSON.stringify(error));
       }
     );
 
@@ -366,7 +394,48 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
 
   showCra(notification: Notification) {
     // Keep a single opening flow for CRA from notifications to avoid status drift.
-    this.showForm(notification);
+    // this.showForm(notification);
+
+    if (notification && notification.cra && notification.cra.id) {
+      // this.dataSharingService.showCra(notification.cra);
+
+      let cra = notification.cra
+      let label = "find cra id=" + cra.id
+      this.addInfo(label)
+      this.craService.findById(cra.id).subscribe(
+        (data) => {
+          this.delInfo(label)
+          cra = data?.body?.result;
+          notification.cra = cra
+
+          this.dataSharingService.majCra(cra)
+
+
+          label += " waiting ... "
+          this.addInfo(label)
+          setTimeout(() => {
+            this.dataSharingService.showCra(cra);
+            this.delInfo(label)
+          }, 2000);
+
+          notification.viewed = true
+          this.saveNotification(notification,
+            () => {
+              //
+            },
+            () => {
+              //
+            }
+          )
+        },
+        (error) => {
+          this.delInfo(label)
+          this.addError(new MyError("Error find cra id=" + cra.id, JSON.stringify(error)))
+        }
+      )
+    } else {
+      this.showForm(notification);
+    }
 
 
   }
@@ -416,7 +485,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
           }
           , (error) => {
             console.error("deleteAllNotifications - ERREUR deleteNotifications: ", error);
-            mythis.dataSharingService.addError(new MyError("Erreur lors de la suppression des notifications : " , JSON.stringify(error)));
+            mythis.dataSharingService.addError(new MyError("Erreur lors de la suppression des notifications : ", JSON.stringify(error)));
           }
         );
       }

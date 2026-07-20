@@ -124,6 +124,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   currentCraUser: Consultant = null;  //user of cra
   userConnected: Consultant = null;  //user connected
 
+  activityErrorMessage: string = ''; // Message d'erreur pour la boîte de dialogue d'ajout d'activité
+
   craReportActivities: CraReportActivity[];
 
   isAffWeekNumber = true;
@@ -219,6 +221,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     this.is_canValidateCraOrConge = this.canValidateCraOrConge();
     this.is_canSubmitCra = this.canSubmitCra();
 
+    setTimeout(() => {
+      this.process();
+      this.refreshMe();
+    }, 2000);
+
   }
 
   getClassForStatus(): string {
@@ -307,8 +314,16 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     if (this.currentCra == null) {
       if (this.isAdd != "true") {
-        // Essayer de récupérer le CRA depuis le service (défini par cra-list)
-        this.currentCra = this.craService.getCra();
+        // Essayer de récupérer le CRA depuis le state de navigation (passé par showCra)
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation && navigation.extras && navigation.extras.state) {
+          this.currentCra = navigation.extras.state['cra'];
+        }
+
+        if (!this.currentCra) {
+          // Essayer de récupérer le CRA depuis le service (défini par cra-list)
+          this.currentCra = this.craService.getCra();
+        }
         if (!this.currentCra) {
           // Fallback: récupérer depuis le dataSharingService
           this.currentCra = this.dataSharingService.getCurrentCra();
@@ -325,9 +340,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.currentCraUser = this.currentCra?.consultant
 
-    // save pour la navigation :
-    this.dataSharingService.isAdd = this.isAdd;
-    this.dataSharingService.typeCra = this.typeCra;
+    // Initialiser le CRA pour afficher les activités dans le calendrier
+    if (this.currentCra && !this.isAdd) {
+      this.initCra(this.currentCra);
+    }
   }
 
   getCurrentCraFromContext() {
@@ -418,7 +434,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           }
           this.activities = list;
         }
-        
+
         if (this.isAdd == 'true') {
 
           if (this.typeCra == 'CONGE') {
@@ -923,17 +939,17 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     if (!this.craDay || !this.craDay.craDayActivities) {
       return true;
     }
-    
+
     let craDayActivities: CraDayActivity[] = this.craDay.craDayActivities;
     if (craDayActivities.length === 0) {
       return true;
     }
-    
+
     let numberDays: number = 0;
     for (let value of craDayActivities) {
       numberDays += value.nbDay;
     }
-    
+
     return numberDays < 1;
   }
 
@@ -942,6 +958,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.craDayActivity = new CraDayActivity()
     this.craDayActivity.nbDay = 1;
+    this.activityErrorMessage = ''; // Réinitialiser le message d'erreur
     this.modal.open(this.addActivityView, { size: 'lg' });
   }
 
@@ -977,6 +994,37 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       this.isDaySelectedInCurentMonth = false;
       ////////////this.logger.debug("EXIIIIIIIIT AUTRE")
       this.craService.setEventTitle(this.craDay, this.events);
+    });
+  }
+
+  addMultiActivityForDay() {
+    this.modal.dismissAll(this.dayDetailView);
+
+    this.isAddMultiDate = true;
+    this.isDaySelectedInCurentMonth = true;
+
+    this.craDayActivity = new CraDayActivity()
+    this.craDayActivity.nbDay = 1
+
+    // Pré-remplir les dates avec le jour sélectionné
+    if (this.craDay && this.craDay.day) {
+      this.addMultiDateStartDate = new Date(this.craDay.day);
+      this.addMultiDateEndDate = new Date(this.craDay.day);
+    }
+
+    this.logger.debug("---- addMultiActivityForDay: addMultiDateStartDate ", this.addMultiDateStartDate)
+
+    let refModal = this.modal.open(this.addActivityView, { size: 'lg' });
+    refModal.result.then((result) => {
+      this.isEditCraActivity = false
+      this.isAddMultiDate = false;
+      this.isDaySelectedInCurentMonth = false;
+      this.craService.setEventTitle(this.craDay, this.events);
+    }, (reason) => {
+      this.isEditCraActivity = false
+      this.isAddMultiDate = false;
+      this.isDaySelectedInCurentMonth = false;
+      this.craService.setEventTitle(this.craDay, this.events);
     }
     );
 
@@ -984,23 +1032,18 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   craDayActivityEdit(craDayActivity: CraDayActivity) {
 
-    this.logger.debug("craDayActivityEdit this.currentCra=", this.currentCra)
-
     this.isEditCraActivity = true
     this.craDayActivity = craDayActivity;
-    ////this.logger.debug(this.craDayActivityCurrent)
+    this.activityErrorMessage = ''; // Réinitialiser le message d'erreur
 
-    //TODO replace by ???
-    // this.activityForm = this.utils.getFormGroup(this.fb, this.activities, this.craDayActivityCurrent.activity.id, this.craDayActivityCurrent.activity, "activityControl")
-    // this.timesForm = this.utils.getFormGroup(this.fb, this.times, this.getIndexOfTime(this.craDayActivityCurrent.nbDay), this.craDayActivityCurrent, "timesControl", false)
     let refModal = this.modal.open(this.addActivityView, { size: 'lg' });
     refModal.result.then((result) => {
       this.isEditCraActivity = false
-      ////////////this.logger.debug("EXIIIIIIIIT NORMAL")
+      this.activityErrorMessage = ''; // Réinitialiser le message d'erreur
       this.craService.setEventTitle(this.craDay, this.events);
     }, (reason) => {
       this.isEditCraActivity = false
-      ////////////this.logger.debug("EXIIIIIIIIT AUTRE")
+      this.activityErrorMessage = ''; // Réinitialiser le message d'erreur
       this.craService.setEventTitle(this.craDay, this.events);
     }
     );
@@ -1361,36 +1404,32 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    */
   addActivity(craDayActivity: CraDayActivity, craDay: CraDay, isLanceProcess: boolean) {
 
-    this.logger.debug("addActivity this.currentCra=", this.currentCra)
-
-    this.logger.debug("addActivity craDayActivity=", craDayActivity)
-    this.logger.debug("addActivity craDay=", craDay)
-    this.logger.debug("addActivity isLanceProcess=", isLanceProcess)
-
-    this.logger.debug("addActivity craDayActivity.activity=", craDayActivity.activity)
-
-    ////this.logger.debug("saveActivity: this.craDay:", this.craDay)
-    ////this.logger.debug("saveActivity: craDayActivity:", craDayActivity)
-    ////this.logger.debug("saveActivity: isAddMultiDate:", this.isAddMultiDate)
-
     if (craDayActivity != null && craDayActivity.activity != null) {
 
       if (!craDay.craDayActivities) {
         craDay.craDayActivities = []
       }
 
+      // Calculer le temps total actuel des activités du jour
+      let currentTime = 0;
+      for (let existingActivity of craDay.craDayActivities) {
+        currentTime += existingActivity.nbDay;
+      }
+
+      // Vérifier que l'ajout de la nouvelle activité ne dépasse pas 1 jour
+      if (currentTime + craDayActivity.nbDay > 1) {
+        this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.dayCannotExceedOne'), null, null);
+        return;
+      }
+
       craDay.craDayActivities.push(craDayActivity);
       this.setEvent(craDay, craDayActivity);
-
-      this.logger.debug("++++ addActivity OK craDayActivity=", craDayActivity)
 
       this.craService.setDayProps(craDay);
 
       if (isLanceProcess) {
         this.process();
       }
-    } else {
-      this.logger.debug("++++ addActivity KO craDayActivity=", craDayActivity)
     }
 
   }
@@ -1432,10 +1471,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    * used to add new cra day activity
    */
   addCurrentActivity() {
+    this.activityErrorMessage = ''; // Réinitialiser le message d'erreur
+
     if (!this.isAddMultiDate) {
       if (this.craDayActivity != null && !this.isEditCraActivity) {
-
-        ////////this.logger.debug("saveCurrentActivity: craDay:", this.craDay)
 
         let msgError = this.isActivityValidForDay(this.craDayActivity.activity, this.craDay.day)
 
@@ -1450,10 +1489,23 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
               deb: debStr,
               fin: finStr,
             })
-            this.utilsIhm.info(msg)
+            this.activityErrorMessage = msg;
           } else {
-            this.utilsIhm.info(msgError || "Activity is not valid for this day")
+            this.activityErrorMessage = msgError || "Activity is not valid for this day";
           }
+          return;
+        }
+
+        // Vérifier que l'ajout ne dépasse pas 1 jour
+        let currentTime = 0;
+        if (this.craDay.craDayActivities) {
+          for (let existingActivity of this.craDay.craDayActivities) {
+            currentTime += existingActivity.nbDay;
+          }
+        }
+
+        if (currentTime + this.craDayActivity.nbDay > 1) {
+          this.activityErrorMessage = this.utils.tr('app.compo.cra.form.validation.dayCannotExceedOne');
           return;
         }
 
@@ -1461,18 +1513,38 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
         this.craDayActivity = new CraDayActivity();
         this.refreshMe();
+        this.modal.dismissAll(this.dayDetailView);
       }
 
       if (this.isEditCraActivity) {
-        //this.craDayActivityCurrent
+        // Pour l'édition, calculer le temps total sans l'activité actuelle
+        let currentTime = 0;
+        if (this.craDay.craDayActivities) {
+          for (let existingActivity of this.craDay.craDayActivities) {
+            if (existingActivity !== this.craDayActivity) {
+              currentTime += existingActivity.nbDay;
+            }
+          }
+        }
+
+        // Vérifier que la modification ne dépasse pas 1 jour
+        if (currentTime + this.craDayActivity.nbDay > 1) {
+          this.activityErrorMessage = this.utils.tr('app.compo.cra.form.validation.dayCannotExceedOne');
+          return;
+        }
+
+        // Mettre à jour l'activité éditée
+        this.setEvent(this.craDay, this.craDayActivity);
+        this.craService.setDayProps(this.craDay);
+        this.process();
+        this.refreshMe();
+        this.modal.dismissAll(this.dayDetailView);
       }
 
       this.currentCra = this.craService.updateCraDay(this.currentCra, this.craDay);
       this.process();
       this.refreshMe();
     } else {
-      ////this.logger.debug("date deb" , this.addMultiDateStartDate)
-      ////this.logger.debug("date fin" , this.addMultiDateEndDate)
       this.modal.dismissAll(this.dayDetailView);
       this.addActivityInDates(this.craDayActivity, this.addMultiDateStartDate, this.addMultiDateEndDate);
       return;
@@ -1511,7 +1583,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.logger.debug("********* " + label + " : craDayNotFull OK")
         if (this.craService.isCraDayOpen(this.craDay)) {
           this.logger.debug("********* " + label + " : isCraDayOpen OK")
-          if ( this.isActivityValidForDay(craDayActivity.activity, date) ) {
+          if (this.isActivityValidForDay(craDayActivity.activity, date)) {
             nbHorsPlage++;
             this.logger.debug("********* " + label + " : can add KO : date hors plage de l'activité : ", date, craDayActivity.activity)
           } else {
@@ -1628,7 +1700,15 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         let time: number = 0;
 
         for (let craDayActivity of craDayActivities) {
+
+          let actName = craDayActivity.activity.name
+          let actType = craDayActivity.activity.type
+          let congeDay = craDayActivity.activity.type.congeDay
+
+          this.logger.debug("isCraValid : i=" , i , ", actName=" , actName , ", actType=" , actType , ", congeDay=" , congeDay);
+          
           if (craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
+
             this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.congeTypeOnly'), null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
@@ -1673,22 +1753,27 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     } else {
       for (let i = 0; i < this.currentCra.craDays.length; i++) {
         let craDay: CraDay = this.currentCra.craDays[i];
+        let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
+        let time: number = 0;
+
+        // Calculer le temps total pour toutes les activités du jour
+        craDayActivities.forEach(craDayActivity => {
+          time = time + craDayActivity.nbDay;
+        })
+
+        // Vérifier que le temps total ne dépasse pas 1 jour par jour (pour tous les types de jours)
+        if (time > 1) {
+          this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.dayCannotExceedOne'), null, null);
+          this.currentCra.validByConsultant = null;
+          this.currentCra.dateValidationConsultant = null;
+          this.maj_canSubmitCra();
+          return false;
+        }
+
+        // Pour les jours travaillés, vérifier que le temps total est exactement 1
         if (craDay.type == "DAY_WORKED") {
-          let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
-          let time: number = 0;
-          craDayActivities.forEach(craDayActivity => {
-            time = time + craDayActivity.nbDay;
-          })
           if (time < 1) {
-            // alert("Oops,verify your cra plz.All days you have been equals a 1.");
             this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.dayMustEqualOne'), null, null);
-            this.currentCra.validByConsultant = null;
-            this.currentCra.dateValidationConsultant = null;
-            this.maj_canSubmitCra();
-            return false;
-          }
-          if (time > 1) {
-            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.dayCannotExceedOne'), null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
             this.maj_canSubmitCra();

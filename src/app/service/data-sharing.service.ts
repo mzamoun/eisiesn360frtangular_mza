@@ -393,6 +393,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     this.logger.debug(label + " START", cra);
 
     this.currentCraSource.next(cra);
+    this.craService.setCra(cra);
     this.isAdd = "";
     this.typeCra = cra.type;
 
@@ -406,6 +407,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       .finally(() => {
         this.delInfo(label);
       });
+
   }
 
   showFee(fee: NoteFrais) {

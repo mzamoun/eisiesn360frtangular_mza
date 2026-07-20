@@ -263,6 +263,12 @@
 
 <!--addActivityView start-->
 <ng-template #addActivityView let-modal let-day="day">
+
+    <!-- Message d'erreur -->
+    <div *ngIf="activityErrorMessage" class="alert alert-danger" role="alert">
+        {{activityErrorMessage}}
+    </div>
+
     <div class="modal-header">
         <h5 class="modal-title">{{getTitleAddCraDayActivity()}} : <span class="cal-cell-col">{{daySelectedStr}}</span>
         </h5>
@@ -271,6 +277,7 @@
         </button>
     </div>
     <div class="modal-body" *ngIf="isDaySelectedInCurentMonth">
+
         <label for="craDayActivityEndHour">{{utils.tr('app.compo.cra.form.selectActivity')}}</label>
         <div class="form-group">
             <app-select #compoSelectActivity [selectId]="'cra-form-select-activity'" [objectName]="'Activity'"
@@ -403,6 +410,10 @@
     </div>
 
     <div class="modal-footer">
+        <button (click)="addMultiActivityForDay()" id="btn-cra-form-add-multi-date-day" class="btn btn-outline-success me-2" type="submit"
+            *ngIf="!currentCra?.validByConsultant">
+            <i class="fas fa-calendar-plus me-1"></i> {{utils.tr('app.compo.cra.form.addMultiDate')}}
+        </button>
         <button (click)="craDayActivityNew()" id="btn-cra-form-new" class="btn btn-info" type="submit"
             [disabled]="!isEnableAddCraActivity()">
             +

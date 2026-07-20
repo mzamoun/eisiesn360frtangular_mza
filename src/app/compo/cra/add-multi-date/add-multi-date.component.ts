@@ -101,9 +101,11 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
   }
 
   errorDates = "";
+  validationError = "";
   onStartDateInputChanged(date: Date, error: string) {
     this.myObj.startDate=date;
     this.errorDates=error;
+    this.validationError = "";
     ////////////this.logger.debug("main onChangeDateDeb myDatePickerDeb", date, error);
     if(this.errorDates) {
       this.utils.showNotification("error", this.utils.tr('app.compo.cra.addMultiDate.error.endDateBeforeStart'))
@@ -123,15 +125,71 @@ export class AddMultiDateComponent extends MereComponent implements CraObservabl
    * Invoked to add new item
    */
   push() {
+    // Validate that adding this activity won't exceed 1 day for any date in the range
+    if (!this.validateActivityRange()) {
+      return;
+    }
+
     this.data.push(this.myObj);
     this.data.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
     this.myObj = new MultiDateActivity();
     this.activityForm.reset();
     this.timesForm.reset();
+    this.validationError = "";
     if(this.myDatePickerDebFin)     this.myDatePickerDebFin.reset();
     else {
       ////////this.logger.debug("cant reset because: myDatePickerDebFin IS NULL")
     }
+  }
+
+  /***
+   * Validate that adding the current activity won't exceed 1 day for any date in its range
+   */
+  validateActivityRange(): boolean {
+    if (!this.myObj.startDate || !this.myObj.endDate || !this.myObj.activity || !this.myObj.time) {
+      return false;
+    }
+
+    const startDate = new Date(this.datePipe.transform(this.myObj.startDate, 'yyyy-MM-dd'));
+    const endDate = new Date(this.datePipe.transform(this.myObj.endDate, 'yyyy-MM-dd'));
+    
+    // Check each day in the range
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      let totalTime = this.myObj.time;
+      
+      // Add time from activities in the dialog (this.data)
+      this.data.forEach((value) => {
+        if (value.startDate.getTime() <= currentDate.getTime() && currentDate.getTime() <= value.endDate.getTime()) {
+          totalTime += value.time;
+        }
+      });
+
+      // Add time from existing activities in currentCra.craDays
+      if (this.currentCra && this.currentCra.craDays) {
+        const craDay = this.currentCra.craDays.find(craDay => {
+          const dayDate = new Date(this.datePipe.transform(craDay.day, 'yyyy-MM-dd'));
+          return dayDate.getTime() === currentDate.getTime();
+        });
+
+        if (craDay && craDay.craDayActivities) {
+          craDay.craDayActivities.forEach(cda => {
+            totalTime += cda.nbDay;
+          });
+        }
+      }
+
+      if (totalTime > 1) {
+        this.validationError = this.utils.tr('app.compo.cra.addMultiDate.error.exceedsOneDay') + 
+          ' (' + this.datePipe.transform(currentDate, 'dd-MM-yyyy') + ')';
+        return false;
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    this.validationError = "";
+    return true;
   }
 
   /***
