@@ -2860,6 +2860,28 @@ export class TradService {
       "en": "Cannot enter outside current month:",
       "ar": "لا يمكن الإدخال خارج الشهر الحالي:",
     },
+    
+    "app.compo.cra.form.hasRoleManagerValidate": {
+      "fr": "A le rôle de manager à valider",
+      "en": "Has the role of manager to validate",
+      "ar": "لديه دور المدير للتحقق",
+    },
+    "app.compo.cra.form.currentCraValidByManager": {
+      "fr": "Le CRA actuel est validé par le manager",
+      "en": "The current CRA is validated by the manager",
+      "ar": "تم التحقق من CRA الحالي من قبل المدير",
+    },
+    "app.compo.cra.form.isTimeToModify": {
+      "fr": "C'est le temps de modifier",
+      "en": "It's time to modify",
+      "ar": "هذا الوقت للتعديل",
+    },
+    "app.compo.cra.form.isCraOfManagerRole": {
+      "fr": "C'est un CRA d'un manager",
+      "en": "It's a CRA of a manager",
+      "ar": "هذا CRA لمسؤول",
+    },
+
     "app.compo.adminDoc.form.docCategories": {
       "fr": "Document Catégories :",
       "en": "Document Categories:",

@@ -1,4 +1,22 @@
 
+Bugs en tant que role MANAGER : 
+
+Test	Statuts	Remarques	TODO	complexite tech	poids fct	Statut
+
+
+Message durant la suppression d'un CRA consultant à MAJ	KO				2	
+Libellet du Bouton Supprimer pour supprimer le CRA consultant est à MAJ	KO				2	
+Libbelet du Bouton pour supprimer les activités renseignées dans un CRA consultant à MAJ	KO				2	
+Message durant la suppression des activités renseignées dans un CRA à MAJ	KO				2	
+Libellet Bouton Update CRA consultant à MAJ	KO				3	
+Aucun resultat durant la recherche de consultant par username 	KO				2	
+Historique CRA Consultant filtre date KO 	KO				2	
+Historique CRA Consultan Clarifier le comportement en ajoutant du text	KO				3	
+Absence de Notification pour la demande de validation de CRA	KO				1	
+						
+---------------------
+
+
 Autre projet : browser vxml pour les tests 
 ---------------------------------------
 abonnement IA via eisi-consulting 
@@ -211,6 +229,10 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+20/07/2026
+Absence de bouton pour valider le CRA Consultant Aléatoire 	KO				3	
+
 
 13/07/2026
 Tests unitaires :
