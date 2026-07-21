@@ -3092,6 +3092,21 @@ export class TradService {
       "en": "Do you really want to delete the row with date=",
       "ar": "هل تريد فعلا حذف السطر بالتاريخ=",
     },
+    "app.common.confirm.deleteThis": {
+      "fr": "Voulez-vous vraiment supprimer ce ",
+      "en": "Do you really want to delete this ",
+      "ar": "هل تريد فعلا حذف هذا ",
+    },
+    "CRA": {
+      "fr": "Compte Rendu d'Activité",
+      "en": "Activity Report",
+      "ar": "تقرير النشاط"
+    },
+    "CONGE": {
+      "fr": "Congé",
+      "en": "Leave",
+      "ar": "إجازة"
+    },
     "app.common.confirm.deleteAllNotifications": {
       "fr": "Voulez-vous vraiment supprimer toutes les notifications",
       "en": "Do you really want to delete all notifications",

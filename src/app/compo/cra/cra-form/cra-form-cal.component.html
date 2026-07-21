@@ -146,7 +146,7 @@
                 </div>
             </div>
 
-            <!-- Summary Sidebar -->
+            <!-- Summary Sidebar Resume -->
             <div class="col-lg-2 col-md-3">
                 <div class="card mb-3">
                     <div class="card-header bg-primary text-white">
@@ -183,6 +183,25 @@
                             </button>
                         </div>
                     </div>
+                    <div class="center" style="margin-top: 20px;">
+                        <!-- pdf -->
+                        <button class="btn btn-outline-danger me-2 btnSumrPdf" id="btn-cra-form-getClientsOfCra"
+                            (click)="generateCliPDFGenLinks()" *ngIf="currentCra.id!=null">
+                            <i class="fas fa-file-pdf me-1"></i> {{utils.tr('app.compo.cra.form.pdfForClient')}}
+                        </button>
+
+                        <button class="btn btn-outline-primary me-2 btnSumrPdf" id="btn-cra-form-generate-esn-pdf"
+                            (click)="generateEsnPDF()" *ngIf="currentCra.id!=null">
+                            <i class="fas fa-file-pdf me-1"></i> {{utils.tr('app.compo.cra.form.pdfForEsn')}}
+                        </button>
+
+                        <button class="btn btn-outline-warning me-2 btnSumrPdf"
+                            id="btn-cra-form-generate-fiche-paie-pdf" (click)="generateFichePaieFromCra()"
+                            *ngIf="currentCra.id!=null">
+                            <i class="fas fa-file-invoice-dollar me-1"></i>
+                            {{utils.tr('app.compo.cra.form.generateFichePaieFromCra')}}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,40 +221,51 @@
                         {{getNameByType()}}
                     </button>
 
+                    <div *ngIf="isManager">
+                        <div class="mt-3" *ngIf="is_canValidateCraOrConge">
+                            <button class="btn btn-success me-2" id="btn-cra-form-valid" (click)="validCra()">
+                                <i class="fas fa-check me-1"></i> {{utils.tr('app.compo.cra.form.approve')}}
+                                {{getNameByType()}}
+                            </button>
+                            <button class="btn btn-danger" id="btn-cra-form-reject"
+                                (click)="openModalPopup(rejectCraView)">
+                                <i class="fas fa-times me-1"></i> {{utils.tr('app.compo.cra.form.reject')}}
+                            </button>
+                        </div>
+                        <div class="mt-3" *ngIf="!is_canValidateCraOrConge">
+                            {{utils.tr('app.compo.cra.form.hasRoleManagerValidate')}} : {{isManager}} <br>
+                            {{utils.tr('app.compo.cra.form.currentCraValidByManager')}} : {{currentCra.validByManager}}
+                            <br>
+                            {{utils.tr('app.compo.cra.form.isTimeToModify')}} : {{isTimeToModify()}} <br>
+                            {{utils.tr('app.compo.cra.form.isCraOfManagerRole')}} : {{isCraOfManagerRole()}}
+                        </div>
+                    </div>
+
                 </div>
 
-                <div id="actions_cra_right">
-                    <button class="btn btn-outline-danger me-2" id="btn-cra-form-getClientsOfCra"
-                        (click)="generateCliPDFGenLinks()" *ngIf="currentCra.id!=null">
-                        <i class="fas fa-file-pdf me-1"></i> {{utils.tr('app.compo.cra.form.pdfForClient')}}
-                    </button>
+                <div id="actions_cra_right" class="right">
+                    <div class="center">
+                        <button class="btn btn-primary me-2" id="btn-cra-form-save"
+                            (click)="saveCra(true, false, '', '')" *ngIf="!currentCra?.validByConsultant">
+                            <i class="fas fa-save me-1"></i> {{utils.tr('Save')}} {{utils.tr(currentCra.type)}}
+                        </button>
+                        <br>
 
-                    <button class="btn btn-outline-primary me-2" id="btn-cra-form-generate-esn-pdf"
-                        (click)="generateEsnPDF()" *ngIf="currentCra.id!=null">
-                        <i class="fas fa-file-pdf me-1"></i> {{utils.tr('app.compo.cra.form.pdfForEsn')}}
-                    </button>
+                        <button type="button" class="btn btn-outline-danger" *ngIf="!currentCra?.validByConsultant"
+                            id="btn-cra-form-delete-all-event" (click)="deleteAllEvents()"
+                            title="{{utils.tr('app.compo.cra.form.deleteAllActiviteesInCra')}}">
+                            <i class="fas fa-trash-alt me-1"></i>
+                            {{utils.tr('app.compo.cra.form.deleteAllActiviteesInCra')}}
+                        </button>
+                        <br>
 
-                    <button class="btn btn-outline-warning me-2" id="btn-cra-form-generate-fiche-paie-pdf"
-                        (click)="generateFichePaieFromCra()" *ngIf="currentCra.id!=null">
-                        <i class="fas fa-file-invoice-dollar me-1"></i>
-                        {{utils.tr('app.compo.cra.form.generateFichePaieFromCra')}}
-                    </button>
-
-                    <button class="btn btn-primary me-2" id="btn-cra-form-save" (click)="saveCra(true, false, '', '')"
-                        *ngIf="!currentCra?.validByConsultant">
-                        <i class="fas fa-save me-1"></i> {{utils.tr('Save')}} {{currentCra.type}}
-                    </button>
-
-                    <button type="button" class="btn btn-outline-danger" *ngIf="!currentCra?.validByConsultant"
-                        id="btn-cra-form-delete-all-event" (click)="deleteAllEvents()"
-                        title="{{utils.tr('app.compo.cra.form.deleteAllActiviteesInCra')}}">
-                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('app.compo.cra.form.deleteAll')}} 
-                    </button>
-
-                    <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
-                        *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT" permission="DELETE">
-                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}} {{currentCra.type}}
-                    </button>
+                        <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
+                            *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT"
+                            permission="DELETE">
+                            <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}} {{utils.tr(currentCra.type)}}
+                        </button>
+                        <br>
+                    </div>
                 </div>
 
             </div>
@@ -245,23 +275,6 @@
                 <app-download-client-cra-dialog [data]="downloadSendEmailCraData"
                     (closeRequested)="closeDownloadSendEmailPanel()">
                 </app-download-client-cra-dialog>
-            </div>
-
-            <div *ngIf="isManager">
-                <div class="mt-3" *ngIf="is_canValidateCraOrConge">
-                    <button class="btn btn-success me-2" id="btn-cra-form-valid" (click)="validCra()">
-                        <i class="fas fa-check me-1"></i> {{utils.tr('app.compo.cra.form.approve')}} {{getNameByType()}}
-                    </button>
-                    <button class="btn btn-danger" id="btn-cra-form-reject" (click)="openModalPopup(rejectCraView)">
-                        <i class="fas fa-times me-1"></i> {{utils.tr('app.compo.cra.form.reject')}}
-                    </button>
-                </div>
-                <div class="mt-3" *ngIf="!is_canValidateCraOrConge">
-                    {{utils.tr('app.compo.cra.form.hasRoleManagerValidate')}} : {{isManager}} <br>
-                    {{utils.tr('app.compo.cra.form.currentCraValidByManager')}} : {{currentCra.validByManager}} <br>
-                    {{utils.tr('app.compo.cra.form.isTimeToModify')}} : {{isTimeToModify()}} <br>
-                    {{utils.tr('app.compo.cra.form.isCraOfManagerRole')}} : {{isCraOfManagerRole()}}
-                </div>
             </div>
 
         </div>

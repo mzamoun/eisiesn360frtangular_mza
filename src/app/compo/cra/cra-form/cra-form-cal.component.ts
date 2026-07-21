@@ -1370,7 +1370,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   delete(myObj: Cra) {
     this.logger.debug("delete this.currentCra=", this.currentCra)
     let mythis = this;
-    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.common.confirm.deleteThis') + " " + this.utils.tr(myObj.type), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.craService.deleteById(myObj.id)

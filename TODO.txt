@@ -7,18 +7,22 @@ Test	Statuts	Remarques	TODO	complexite tech	poids fct	Statut
 Message durant la suppression d'un CRA consultant à MAJ	KO				2	
 
 Libellet du Bouton Supprimer pour supprimer le CRA consultant est à MAJ	KO				2	
-Libbelet du Bouton pour supprimer les activités renseignées dans un CRA consultant à MAJ	KO				2	
 Message durant la suppression des activités renseignées dans un CRA à MAJ	KO				2	
-Libellet Bouton Update CRA consultant à MAJ	KO				3	
 Aucun resultat durant la recherche de consultant par username 	KO				2	
 Historique CRA Consultant filtre date KO 	KO				2	
 Historique CRA Consultan Clarifier le comportement en ajoutant du text	KO				3	
-Absence de Notification pour la demande de validation de CRA	KO				1	
 
 on viewDateChange : si je tombe sur un congé : 
 - les activitees doivent etre toutes de type CONGE 
 - s'il est rejected ou draft : je dois pouvoir l'envoyer to validate 
 						
+---------------------
+21/07/2026
+Libbelet du Bouton pour supprimer les activités renseignées dans un CRA consultant à MAJ	KO				2	
+Libellet Bouton Update CRA consultant à MAJ	KO				3	
+Absence de Notification pour la demande de validation de CRA	KO				1	
+
+
 ---------------------
 
 
