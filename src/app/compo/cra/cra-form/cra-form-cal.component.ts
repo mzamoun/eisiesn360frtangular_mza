@@ -140,6 +140,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   is_canValidateCraOrConge = false;
   is_canSubmitCra = false;
+  isManager = false;
 
   showDownloadSendEmailCraPanel = false;
   downloadSendEmailCraData: DownloadClientCraDialogData = null;
@@ -218,8 +219,13 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       })
     );
 
+    this.isManager = this.hasRoleManagerValidate();
+    this.logger.debug("ngOnit : isManager=", this.isManager)
+    
     this.is_canValidateCraOrConge = this.canValidateCraOrConge();
+    this.logger.debug("ngOnit : is_canValidateCraOrConge=", this.is_canValidateCraOrConge)
     this.is_canSubmitCra = this.canSubmitCra();
+    this.logger.debug("ngOnit : is_canSubmitCra=", this.is_canSubmitCra)
 
     setTimeout(() => {
       this.process();
@@ -1251,12 +1257,12 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     let label = "canValidateCraOrConge"
 
-    this.logger.debug(label + " this.hasRoleManagerValidate()=", this.hasRoleManagerValidate())
+    this.logger.debug(label + " this.isManager=", this.isManager)
     this.logger.debug(label + " this.currentCra.validByManager=", this.currentCra.validByManager)
     this.logger.debug(label + " this.isTimeToModify()=", this.isTimeToModify())
     this.logger.debug(label + " this.isCraOfManagerRole()=", this.isCraOfManagerRole())
 
-    let res = this.hasRoleManagerValidate() && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
+    let res = this.isManager && !this.currentCra.validByManager && this.isTimeToModify() && !this.isCraOfManagerRole();
 
     this.logger.debug(label + " res=", res)
 
@@ -1281,7 +1287,6 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.logger.debug("sendNotification this.currentCra=", this.currentCra)
 
-    let isManager = this.hasRoleManagerValidate();
     let currentUser = this.userConnected;
     // let currentUser = this.currentCra.consultant
     this.logger.debug("sendNotification currentUser=", currentUser)
@@ -1340,7 +1345,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     notification.toUsername = notification.toUser.username
 
-    this.logger.debug("sendNotification isManager=", isManager)
+    this.logger.debug("sendNotification isManager=", this.isManager)
     this.logger.debug("sendNotification currentUser=", currentUser)
     this.logger.debug("sendNotification currentCra.consultant=", this.currentCra.consultant)
     this.logger.debug("sendNotification currentCra.consultant.adminConsultant=", this.currentCra.consultant.adminConsultant)
@@ -2072,10 +2077,25 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    * used to verify current user has role to validate manager cra
    */
   hasRoleManagerValidate() {
+    let label = "hasRoleManagerValidate"
     let currentUser = this.dataSharingService.userConnected
     let isCurUserRespOrAdmin = this.dataSharingService.isCurrenUserRespOrAdmin()
-    if (this.isAdd || (this.isCurrenUserSameAsUserOfCurrentCra() && !isCurUserRespOrAdmin)) return false;
-    if (currentUser.role == "MANAGER" || isCurUserRespOrAdmin) return true;
+
+    this.logger.debug(label + " : currentUser.role="+currentUser.role)
+    this.logger.debug(label + " : isCurUserRespOrAdmin="+isCurUserRespOrAdmin)
+    this.logger.debug(label + " : isAdd="+this.isAdd)
+    this.logger.debug(label + " : isCurrenUserSameAsUserOfCurrentCra="+this.isCurrenUserSameAsUserOfCurrentCra())
+
+    if (this.isAdd || (this.isCurrenUserSameAsUserOfCurrentCra() && !isCurUserRespOrAdmin)) {
+      this.logger.debug(label + " : res false 1")
+      return false;
+    }
+    if (currentUser.role == "MANAGER" || isCurUserRespOrAdmin) {
+      this.logger.debug(label + " : res true 1")
+      return true;
+    }
+
+    this.logger.debug(label + " : res false 2")
     return false;
   }
 

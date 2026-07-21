@@ -223,17 +223,18 @@
 
                     <button class="btn btn-primary me-2" id="btn-cra-form-save" (click)="saveCra(true, false, '', '')"
                         *ngIf="!currentCra?.validByConsultant">
-                        <i class="fas fa-save me-1"></i> {{btnActionTitle}}
+                        <i class="fas fa-save me-1"></i> {{utils.tr('Save')}} {{currentCra.type}}
                     </button>
 
                     <button type="button" class="btn btn-outline-danger" *ngIf="!currentCra?.validByConsultant"
-                        id="btn-cra-form-delete-all-event" (click)="deleteAllEvents()">
-                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('app.compo.cra.form.deleteAll')}}
+                        id="btn-cra-form-delete-all-event" (click)="deleteAllEvents()"
+                        title="{{utils.tr('app.compo.cra.form.deleteAllActiviteesInCra')}}">
+                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('app.compo.cra.form.deleteAll')}} 
                     </button>
 
                     <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
                         *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT" permission="DELETE">
-                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}}
+                        <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}} {{currentCra.type}}
                     </button>
                 </div>
 
@@ -246,20 +247,21 @@
                 </app-download-client-cra-dialog>
             </div>
 
-            <div class="mt-3" *ngIf="is_canValidateCraOrConge">
-                <button class="btn btn-success me-2" id="btn-cra-form-valid" (click)="validCra()">
-                    <i class="fas fa-check me-1"></i> {{utils.tr('app.compo.cra.form.approve')}} {{getNameByType()}}
-                </button>
-                <button class="btn btn-danger" id="btn-cra-form-reject" (click)="openModalPopup(rejectCraView)">
-                    <i class="fas fa-times me-1"></i> {{utils.tr('app.compo.cra.form.reject')}}
-                </button>
-            </div>
-            <div class="mt-3" *ngIf="!is_canValidateCraOrConge">
-                <!-- on doit internationaliser ces labels dans utils.tr() -->
-                {{utils.tr('app.compo.cra.form.hasRoleManagerValidate')}} : {{hasRoleManagerValidate()}} <br>
-                {{utils.tr('app.compo.cra.form.currentCraValidByManager')}} : {{currentCra.validByManager}} <br>
-                {{utils.tr('app.compo.cra.form.isTimeToModify')}} : {{isTimeToModify()}} <br>
-                {{utils.tr('app.compo.cra.form.isCraOfManagerRole')}} : {{isCraOfManagerRole()}}
+            <div *ngIf="isManager">
+                <div class="mt-3" *ngIf="is_canValidateCraOrConge">
+                    <button class="btn btn-success me-2" id="btn-cra-form-valid" (click)="validCra()">
+                        <i class="fas fa-check me-1"></i> {{utils.tr('app.compo.cra.form.approve')}} {{getNameByType()}}
+                    </button>
+                    <button class="btn btn-danger" id="btn-cra-form-reject" (click)="openModalPopup(rejectCraView)">
+                        <i class="fas fa-times me-1"></i> {{utils.tr('app.compo.cra.form.reject')}}
+                    </button>
+                </div>
+                <div class="mt-3" *ngIf="!is_canValidateCraOrConge">
+                    {{utils.tr('app.compo.cra.form.hasRoleManagerValidate')}} : {{isManager}} <br>
+                    {{utils.tr('app.compo.cra.form.currentCraValidByManager')}} : {{currentCra.validByManager}} <br>
+                    {{utils.tr('app.compo.cra.form.isTimeToModify')}} : {{isTimeToModify()}} <br>
+                    {{utils.tr('app.compo.cra.form.isCraOfManagerRole')}} : {{isCraOfManagerRole()}}
+                </div>
             </div>
 
         </div>

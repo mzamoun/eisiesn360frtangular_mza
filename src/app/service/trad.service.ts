@@ -2645,6 +2645,11 @@ export class TradService {
       "en": "Delete All",
       "ar": "حذف الكل",
     },
+    "app.compo.cra.form.deleteAllActiviteesInCra": {
+      "fr": "Supprimer toutes les activitées dans ce CRA/Congé",
+      "en": "Delete All Activities in CRA/Leave",
+      "ar": "حذف جميع الأنشطة في CRA/الإجازة",
+    },
     "app.compo.cra.form.approve": {
       "fr": "Approuver",
       "en": "Approve",
@@ -2860,7 +2865,7 @@ export class TradService {
       "en": "Cannot enter outside current month:",
       "ar": "لا يمكن الإدخال خارج الشهر الحالي:",
     },
-    
+
     "app.compo.cra.form.hasRoleManagerValidate": {
       "fr": "A le rôle de manager à valider",
       "en": "Has the role of manager to validate",
