@@ -796,22 +796,43 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     }
   }
 
-  majCra(cra: Cra) {
+  majCra(cra: Cra, fct: Function = null) {
 
-    this.majConsultantInCra(cra);
-    this.majActivityInCra(cra);
+    this.majConsultantInCra(cra,
+      () => {
+        this.majActivityInCra(cra, fct);
+      }
+    );
   }
 
-  public majActivityInCra(cra: Cra) {
+  public majActivityInCra(cra: Cra, fct: Function = null) {
     if (cra != null) {
+      let iCraDay = 0, nbCraDay = cra.craDays.length;
+      if (nbCraDay == 0) {
+        if (fct) fct();
+        return;
+      }
+      
       for (let craDay of cra.craDays) {
         if (craDay != null) {
+          let iCraDayActivity = 0, nbCraDayActivity = craDay.craDayActivities.length;
           for (let craDayActivities of craDay.craDayActivities) {
             // craDayActivities.craDay = craDay
-            this.majActivityInCraDayActivity(craDayActivities);
+            if (iCraDay >= nbCraDay - 1 && iCraDayActivity >= nbCraDayActivity - 1) {
+              this.majActivityInCraDayActivity(craDayActivities, fct);
+            } else {
+              this.majActivityInCraDayActivity(craDayActivities);
+            }
+            iCraDayActivity++;
           }
+        } else {
+          // craDay is null
         }
+        iCraDay++;
       }
+    } else {
+      // cra is null
+      if (fct) fct();
     }
   }
 
@@ -819,6 +840,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
 
     // this.logger.debug("majConsultantInCra cra : ", cra);
     if (cra == null) {
+      if (fct) fct()
       return;
     }
 
@@ -842,6 +864,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             if (fct) fct()
           }, error => {
             this.logger.debug("majCra ERROR : ", error);
+            if (fct) fct()
           }
         );
       }
@@ -895,10 +918,11 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
 
-  majActivityInCraDayActivity(craDayActivities: CraDayActivity) {
+  majActivityInCraDayActivity(craDayActivities: CraDayActivity, fct: Function = null) {
 
     // this.logger.debug("majActivityInCraDayActivity craDayActivities : ", craDayActivities);
     if (craDayActivities == null) {
+      if (fct) fct();
       return;
     }
 
@@ -908,6 +932,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
       let act = this.mapAct[activityId];
       if (act != null) {
         craDayActivities.activity = act;
+        if (fct) fct();
       } else {
         this.activityService.findById(activityId).subscribe(
           data => {
@@ -916,11 +941,15 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             craDayActivities.activity = act;
             // this.logger.debug("majListCra act : ", act);
             // this.logger.debug("majListCra listCra : ", this.listCra);
+            if (fct) fct();
           }, error => {
             this.logger.debug("majListCra ERROR : ", error);
+            if (fct) fct();
           }
         );
       }
+    } else {
+      if (fct) fct();
     }
   }
 

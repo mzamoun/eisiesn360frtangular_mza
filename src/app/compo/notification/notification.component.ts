@@ -416,7 +416,7 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
           setTimeout(() => {
             this.dataSharingService.showCra(cra);
             this.delInfo(label)
-          }, 2000);
+          }, 5000);
 
           notification.viewed = true
           this.saveNotification(notification,

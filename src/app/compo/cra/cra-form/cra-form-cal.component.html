@@ -245,13 +245,13 @@
 
                 <div id="actions_cra_right" class="right">
                     <div class="center">
-                        <button class="btn btn-primary me-2" id="btn-cra-form-save"
+                        <button class="btn btn-primary me-2 btnsSaveDelCra" id="btn-cra-form-save"
                             (click)="saveCra(true, false, '', '')" *ngIf="!currentCra?.validByConsultant">
                             <i class="fas fa-save me-1"></i> {{utils.tr('Save')}} {{utils.tr(currentCra.type)}}
                         </button>
                         <br>
 
-                        <button type="button" class="btn btn-outline-danger" *ngIf="!currentCra?.validByConsultant"
+                        <button class="btn btn-outline-danger btnsSaveDelCra" id="btn-cra-form-deleteAllActiviteesInCra" *ngIf="!currentCra?.validByConsultant"
                             id="btn-cra-form-delete-all-event" (click)="deleteAllEvents()"
                             title="{{utils.tr('app.compo.cra.form.deleteAllActiviteesInCra')}}">
                             <i class="fas fa-trash-alt me-1"></i>
@@ -259,7 +259,7 @@
                         </button>
                         <br>
 
-                        <button class="btn btn-danger" id="btn-cra-form-delete" (click)="delete(currentCra)"
+                        <button class="btn btn-danger btnsSaveDelCra" id="btn-cra-form-delete" (click)="delete(currentCra)"
                             *ngIf="canDeleteCurrentCra()" [appAuthorization] feature="CRA_MANAGEMENT"
                             permission="DELETE">
                             <i class="fas fa-trash-alt me-1"></i> {{utils.tr('Delete')}} {{utils.tr(currentCra.type)}}
