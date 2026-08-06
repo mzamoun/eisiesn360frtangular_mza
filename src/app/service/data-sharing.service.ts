@@ -5,6 +5,7 @@ import { Injectable, Injector } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from "rxjs";
+import { tap, catchError, map, take } from 'rxjs/operators';
 import { Credentials } from '../auth/credentials';
 import { TokenService } from '../auth/services/token.service';
 import { CraStateService, ServiceLocator } from "../core/core";
@@ -12,9 +13,11 @@ import { CraContext } from "../core/model/cra-context";
 import { HeaderComponent } from '../layout/header/header.component';
 import { Activity } from '../model/activity';
 import { ActivityType } from '../model/activityType';
+import { Client } from '../model/client';
 import { Consultant } from "../model/consultant";
 import { Cra } from '../model/cra';
 import { CraDayActivity } from '../model/cra-day-activity';
+import { Document as AppDocument } from '../model/document';
 import { NoteFrais } from '../model/noteFrais';
 import { Project } from '../model/project';
 import { MyError } from '../resource/MyError';
@@ -32,6 +35,7 @@ import { ClientService } from './client.service';
 // CraService importé en lazy via Injector pour éviter la dépendance circulaire
 import { CraService } from './cra.service';
 import { EsnService } from './esn.service';
+import { ProjectService } from './project.service';
 
 import { MsgService } from './msg.service';
 import { NotificationFacade } from './notification.facade';
@@ -79,6 +83,27 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   private currentCraSource = new BehaviorSubject<Cra>(null);
   private listCraSource = new BehaviorSubject<Cra[]>([]);
   private userConnectedSource = new BehaviorSubject<Consultant>(null);
+  private isLoadFirstOneSource = new BehaviorSubject<boolean>(false);
+  
+  // Listes observables pour optimisation et synchronisation entre composants
+  // (notifications utilise déjà la facade NotificationFacade)
+  private listEsnSource = new BehaviorSubject<Esn[]>([]);
+  private listClientSource = new BehaviorSubject<Client[]>([]);
+  private listProjectSource = new BehaviorSubject<Project[]>([]);
+  private listActivitySource = new BehaviorSubject<Activity[]>([]);
+  private listConsultantSource = new BehaviorSubject<Consultant[]>([]);
+  private listDocumentSource = new BehaviorSubject<AppDocument[]>([]);
+  private listSupportTicketsSource = new BehaviorSubject<any[]>([]);
+
+  // Flags pour suivre si les listes ont déjà été chargées
+  private listEsnLoaded = false;
+  private listClientLoaded = false;
+  private listProjectLoaded = false;
+  private listActivityLoaded = false;
+  private listConsultantLoaded = false;
+  private listDocumentLoaded = false;
+  private listSupportTicketsLoaded = false;
+  private listCraLoaded = false;
 
   // -- Délégation aux facades (refactor progressif) --
   get infos$() { return this.uiFeedback.infos$; }
@@ -89,6 +114,16 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   currentCra$ = this.currentCraSource.asObservable();
   listCra$ = this.listCraSource.asObservable();
   userConnected$ = this.userConnectedSource.asObservable();
+  isLoadFirstOne$ = this.isLoadFirstOneSource.asObservable();
+  
+  // Observables pour les listes partagées (notifications utilise déjà la facade)
+  listEsn$ = this.listEsnSource.asObservable();
+  listClient$ = this.listClientSource.asObservable();
+  listProject$ = this.listProjectSource.asObservable();
+  listActivity$ = this.listActivitySource.asObservable();
+  listConsultant$ = this.listConsultantSource.asObservable();
+  listDocument$ = this.listDocumentSource.asObservable();
+  listSupportTickets$ = this.listSupportTicketsSource.asObservable();
 
   isAdd: string;
   typeCra: string;
@@ -374,12 +409,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     return this.listCraSource.value;
   }
 
-  /***
-   * Set and notify subscribers of new CRA list
-   */
-  setListCra(list: Cra[]): void {
-    this.listCraSource.next(list);
-  }
 
   showCra(cra: Cra) {
     const label = "navigate to cra_form with cra id=" + cra?.id;
@@ -605,6 +634,22 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER);
     localStorage.removeItem(UtilsService.TOKEN_STORAGE_USER_CONNECTED);
     localStorage.removeItem(UtilsService.DEFAULT_LOCALE);
+
+    // Vider les caches pour le prochain utilisateur
+    this.setListEsn([]);
+    this.setListClient([]);
+    this.setListProject([]);
+    this.setListActivity([]);
+    this.setListConsultant([]);
+    this.setListDocument([]);
+    this.setListSupportTickets([]);
+    this.setListCra([]);
+    this.setListNotifications([]);
+    this.currentCraSource.next(null);
+    this.esnCurrentReadySource.next(null);
+    this.idEsnCurrentSource.next(null);
+    this.isLoadFirstOneSource.next(false);
+
     this.isUserLoggedInFct.next(false);
     this.setUserConnected(null)
     this.router.navigate(["/login"]);
@@ -784,35 +829,128 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
   mapAct = new Map<number, Activity>();
-  majListCra() {
-    this.majListCraParam(this.listCraSource.value)
+  majListCra(isMajActivites : boolean = true) {
+    this.majListCraParam(this.listCraSource.value, isMajActivites)
   }
 
-  majListCraParam(list: Cra[]) {
+  majListCraParam(list: Cra[], isMajActivites : boolean = true) {
     if (list != null) {
       for (let cra of list) {
-        this.majCra(cra)
+        this.majCra(cra, null, null, isMajActivites)
       }
     }
   }
 
-  majCra(cra: Cra, fct: Function = null) {
+  majCra(cra: Cra, fctOk: Function = null, fctKo: Function = null, isMajActivites : boolean = true) {
 
     this.majConsultantInCra(cra,
       () => {
-        this.majActivityInCra(cra, fct);
+        if(isMajActivites)    this.majActivityInCra(cra, fctOk, fctKo);
       }
     );
   }
 
-  public majActivityInCra(cra: Cra, fct: Function = null) {
+  /***
+   * Les CRA charges via la liste (GET /cra/) contiennent deja leurs craDays et craDayActivities.
+   * Seul l'objet activity peut manquer : on le resout depuis la liste d'activites partagee
+   * (mise en cache) pour eviter un appel serveur par CRA.
+   * fctOk recoit le nombre de craDayActivities dont l'activity n'a pas pu etre resolue.
+   */
+  public resolveActivitiesOfCraFromCache(cra: Cra, fctOk: (nbUnresolved: number) => void) {
+    const toResolve: CraDayActivity[] = [];
+    for (const craDay of (cra?.craDays || [])) {
+      for (const cda of (craDay?.craDayActivities || [])) {
+        if (cda != null && cda.activity == null && cda.activityId != null) {
+          toResolve.push(cda);
+        }
+      }
+    }
+
+    if (toResolve.length == 0) {
+      if (fctOk) fctOk(0);
+      return;
+    }
+
+    const label = "resolveActivitiesOfCraFromCache cra " + cra?.id;
+    this.addInfo(label);
+    this.loadListActivity().pipe(take(1)).subscribe({
+      next: (activities: Activity[]) => {
+        this.delInfo(label);
+        for (const activity of (activities || [])) {
+          if (activity?.id != null) this.mapAct[activity.id] = activity;
+        }
+        let nbUnresolved = 0;
+        for (const cda of toResolve) {
+          const activity = this.mapAct[cda.activityId];
+          if (activity != null) cda.activity = activity;
+          else nbUnresolved++;
+        }
+        this.logger.debug("resolveActivitiesOfCraFromCache cra " + cra?.id
+          + " : a resoudre=" + toResolve.length + ", non resolues=" + nbUnresolved);
+        if (fctOk) fctOk(nbUnresolved);
+      },
+      error: (error) => {
+        this.delInfo(label);
+        this.logger.error("Error while resolveActivitiesOfCraFromCache: ", error);
+        if (fctOk) fctOk(toResolve.length);
+      }
+    });
+  }
+
+  public majActivityInCra(cra: Cra, fctOk: Function = null, fctKo: Function = null) {
+    if (cra != null && cra.id > 0) {
+      let label = "majActivityInCra in cra " + cra.id;
+      this.addInfo(label)
+      this.craService.majActivityInCra(cra.id).subscribe({
+        next: (response) => {
+          this.delInfo(label);
+          const craLoaded: Cra = response?.body?.result;
+          this.logger.debug("majActivityInCra craLoaded: ", craLoaded);
+          if (craLoaded == null) {
+            if (fctKo) fctKo();
+            return;
+          }
+
+          // On renseigne l'objet cra passe en parametre (celui affiche par les composants)
+          // au lieu de remplacer la variable locale, sinon les activites restent invisibles.
+          cra.craDays = craLoaded.craDays || [];
+          for (let craDay of cra.craDays) {
+            if (craDay != null) {
+              craDay.cra = cra
+              craDay.craId = cra.id;
+              for (let craDayActivity of (craDay.craDayActivities || [])) {
+                if (craDayActivity != null) {
+                  craDayActivity.craDay = craDay;
+                  craDayActivity.craDayId = craDay.id;
+                }
+              }
+            }
+          }
+          const nbActivities = cra.craDays.reduce((n, cd) => n + (cd?.craDayActivities?.length || 0), 0);
+          this.logger.debug("majActivityInCra cra id: " + cra.id + ", craDays: " + cra.craDays?.length
+            + ", craDayActivities total: " + nbActivities);
+          if (fctOk) fctOk();
+        },
+        error: (error) => {
+          this.logger.error("Error while majActivityInCra: ", error);
+          if (fctKo) fctKo();
+        }
+      });
+
+    } else {
+      // cra is null
+      if (fctKo) fctKo();
+    }
+  }
+
+  public majActivityInCra00(cra: Cra, fct: Function = null) {
     if (cra != null) {
       let iCraDay = 0, nbCraDay = cra.craDays.length;
       if (nbCraDay == 0) {
         if (fct) fct();
         return;
       }
-      
+
       for (let craDay of cra.craDays) {
         if (craDay != null) {
           let iCraDayActivity = 0, nbCraDayActivity = craDay.craDayActivities.length;
@@ -836,6 +974,42 @@ export class DataSharingService implements CraStateService, ServiceLocator {
     }
   }
 
+  majActivityInCraDayActivity(craDayActivities: CraDayActivity, fct: Function = null) {
+
+    // this.logger.debug("majActivityInCraDayActivity craDayActivities : ", craDayActivities);
+    if (craDayActivities == null) {
+      if (fct) fct();
+      return;
+    }
+
+    let activity = craDayActivities.activity;
+    let activityId = craDayActivities.activityId;
+    if (activityId != null && activity == null) {
+      let act = this.mapAct[activityId];
+      if (act != null) {
+        craDayActivities.activity = act;
+        if (fct) fct();
+      } else {
+        this.activityService.findById(activityId).subscribe(
+          data => {
+            act = data.body.result;
+            this.mapAct[activityId] = act;
+            craDayActivities.activity = act;
+            // this.logger.debug("majListCra act : ", act);
+            // this.logger.debug("majListCra listCra : ", this.listCra);
+            if (fct) fct();
+          }, error => {
+            this.logger.debug("majListCra ERROR : ", error);
+            if (fct) fct();
+          }
+        );
+      }
+    } else {
+      if (fct) fct();
+    }
+  }
+
+
   majConsultantInCra(cra: Cra, fct: Function = null) {
 
     // this.logger.debug("majConsultantInCra cra : ", cra);
@@ -858,8 +1032,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
             consul = data.body.result;
             this.consultantService.mapConsul[consultantId] = consul;
             cra.consultant = consul;
-            this.logger.debug("majCra act : ", consul);
-            this.logger.debug("majCra listCra : ", this.listCraSource.value);
+            this.logger.debug("majCra consultant id: " + consul.id + ", listCra size: " + this.listCraSource.value?.length);
             this.consultantService.majAdminConsultant(cra.consultant)
             if (fct) fct()
           }, error => {
@@ -918,41 +1091,6 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   }
 
 
-  majActivityInCraDayActivity(craDayActivities: CraDayActivity, fct: Function = null) {
-
-    // this.logger.debug("majActivityInCraDayActivity craDayActivities : ", craDayActivities);
-    if (craDayActivities == null) {
-      if (fct) fct();
-      return;
-    }
-
-    let activity = craDayActivities.activity;
-    let activityId = craDayActivities.activityId;
-    if (activityId != null && activity == null) {
-      let act = this.mapAct[activityId];
-      if (act != null) {
-        craDayActivities.activity = act;
-        if (fct) fct();
-      } else {
-        this.activityService.findById(activityId).subscribe(
-          data => {
-            act = data.body.result;
-            this.mapAct[activityId] = act;
-            craDayActivities.activity = act;
-            // this.logger.debug("majListCra act : ", act);
-            // this.logger.debug("majListCra listCra : ", this.listCra);
-            if (fct) fct();
-          }, error => {
-            this.logger.debug("majListCra ERROR : ", error);
-            if (fct) fct();
-          }
-        );
-      }
-    } else {
-      if (fct) fct();
-    }
-  }
-
   /////////////// dash board 
 
 
@@ -985,6 +1123,9 @@ export class DataSharingService implements CraStateService, ServiceLocator {
   majListNotifications() {
     const notifs = this.getListNotifications();
     if (!notifs) return;
+    // Désactivé l'appel automatique à majCra pour optimiser le chargement
+    // Les composants peuvent appeler majCra explicitement si nécessaire
+    /*
     for (let notif of notifs) {
       if (!notif) {
         continue;
@@ -1011,6 +1152,7 @@ export class DataSharingService implements CraStateService, ServiceLocator {
         }
       }
     }
+    */
   }
 
   getCraInListCraById(craId: number) {
@@ -1292,6 +1434,223 @@ export class DataSharingService implements CraStateService, ServiceLocator {
    */
   notifyEsnCurrentReady(esn: Esn): void {
     this.emitEsnCurrentIfChanged(esn);
+  }
+
+  /**
+   * Mettre à jour isLoadFirstOne et notifier les abonnés
+   */
+  setIsLoadFirstOne(value: boolean): void {
+    this.isLoadFirstOneSource.next(value);
+  }
+
+  /**
+   * Accès synchrone aux listes partagées déjà en cache (sans appel serveur)
+   */
+  getListEsn(): Esn[] { return this.listEsnSource.value || []; }
+  getListClient(): Client[] { return this.listClientSource.value || []; }
+  getListProject(): Project[] { return this.listProjectSource.value || []; }
+  getListActivity(): Activity[] { return this.listActivitySource.value || []; }
+  getListConsultant(): Consultant[] { return this.listConsultantSource.value || []; }
+  getListDocument(): AppDocument[] { return this.listDocumentSource.value || []; }
+  getListSupportTickets(): any[] { return this.listSupportTicketsSource.value || []; }
+
+  /**
+   * Méthodes setter pour les listes partagées
+   */
+  setListEsn(list: Esn[]): void {
+    this.listEsnSource.next(list);
+    this.listEsnLoaded = list && list.length > 0;
+  }
+
+  setListClient(list: Client[]): void {
+    this.listClientSource.next(list);
+    this.listClientLoaded = list && list.length > 0;
+  }
+
+  setListProject(list: Project[]): void {
+    this.listProjectSource.next(list);
+    this.listProjectLoaded = list && list.length > 0;
+  }
+
+  setListActivity(list: Activity[]): void {
+    this.listActivitySource.next(list);
+    this.listActivityLoaded = list && list.length > 0;
+  }
+
+  setListConsultant(list: Consultant[]): void {
+    this.listConsultantSource.next(list);
+    this.listConsultantLoaded = list && list.length > 0;
+  }
+
+  setListDocument(list: AppDocument[]): void {
+    this.listDocumentSource.next(list);
+    this.listDocumentLoaded = list && list.length > 0;
+  }
+
+  setListSupportTickets(list: any[]): void {
+    this.listSupportTicketsSource.next(list);
+    this.listSupportTicketsLoaded = list && list.length > 0;
+  }
+
+  setListCra(list: Cra[]): void {
+    this.listCraSource.next(list);
+    this.listCraLoaded = list && list.length > 0;
+    // NE PAS appeler majListCra ici car c'est très coûteux en performance
+    // Les composants qui ont besoin des activités peuvent l'appeler explicitement
+  }
+
+  /**
+   * Méthodes de chargement lazy depuis le serveur (premier accès)
+   */
+  loadListEsn(forceRefresh: boolean = false): Observable<Esn[]> {
+    if (this.listEsnLoaded && !forceRefresh) {
+      return this.listEsn$;
+    }
+    let label = "Chargement des ESN...";
+    this.addInfo(label);
+    return this.esnService.findAll().pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        this.setListEsn(list);
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
+  }
+
+  loadListClient(forceRefresh: boolean = false): Observable<Client[]> {
+    if (this.listClientLoaded && !forceRefresh) {
+      return this.listClient$;
+    }
+    const esnId = this.idEsnCurrent;
+    let label = "Chargement des Clients...";
+    this.addInfo(label);
+    return this.clientService.findAll(esnId).pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        this.setListClient(list);
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des Clients : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
+  }
+
+  loadListProject(forceRefresh: boolean = false): Observable<Project[]> {
+    if (this.listProjectLoaded && !forceRefresh) {
+      return this.listProject$;
+    }
+    const esnId = this.idEsnCurrent;
+    let label = "Chargement des Projets...";
+    this.addInfo(label);
+    return this.injector.get(ProjectService).findAll(esnId).pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        this.setListProject(list);
+        this.majClientInProjectList(list);
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des Projets : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
+  }
+
+  loadListActivity(forceRefresh: boolean = false): Observable<Activity[]> {
+    if (this.listActivityLoaded && !forceRefresh) {
+      return this.listActivity$;
+    }
+    let label = "Chargement des Activités..."
+    this.addInfo(label);
+    return this.activityService.findAll().pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        this.setListActivity(list);
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des Activités : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
+  }
+
+  loadListConsultant(forceRefresh: boolean = false): Observable<Consultant[]> {
+    if (this.listConsultantLoaded && !forceRefresh) {
+      return this.listConsultant$;
+    }
+    const role = this.userConnected?.role;
+    const esnId = this.userConnected?.esn?.id || this.userConnected?.esnId || this.idEsnCurrent;
+    let label = "Chargement des Consultants...";
+    this.addInfo(label);
+
+    // ADMIN et RESPONSIBLE_ESN : findAll() (le serveur applique le périmètre de l'utilisateur connecté),
+    // comme le fait la page consultant-list. findAllByEsn() n'est utilisé que si un esnId est connu.
+    let observable: Observable<any>;
+    if (role === 'ADMIN' || role === 'RESPONSIBLE_ESN' || !esnId) {
+      observable = this.consultantService.findAll();
+    } else {
+      observable = this.consultantService.findAllByEsn(esnId);
+    }
+    this.logger.debug("loadListConsultant : role=" + role + ", esnId=" + esnId);
+
+    return observable.pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        this.logger.debug("loadListConsultant : nb consultants=" + list.length);
+        this.setListConsultant(list);
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des Consultants : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
+  }
+
+  // Note: loadListDocument et loadListSupportTickets omis pour éviter les dépendances circulaires
+  // Les composants continueront à gérer ces cas spécifiques
+
+  loadListCra(forceRefresh: boolean = false): Observable<Cra[]> {
+    if (this.listCraLoaded && !forceRefresh) {
+      return this.listCra$;
+    }
+    let label = "Chargement des CRA...";
+    this.addInfo(label);
+    return this.craService.findAll().pipe(
+      map((data: any) => {
+        this.delInfo(label);
+        const list = data?.body?.result || [];
+        // NE PAS appeler majListCra ici car c'est très coûteux en performance
+        // Les composants qui ont besoin des activités peuvent l'appeler explicitement
+        this.setListCra(list);
+        for (const cra of list) {
+          this.majConsultantInCra(cra);
+        }
+        return list;
+      }),
+      catchError(error => {
+        this.delInfo(label);
+        this.addError(new MyError('Erreur lors du chargement des CRA : ', JSON.stringify(error)));
+        return of([]);
+      })
+    );
   }
 
   findAllActivitiesByConsultant(consultantId: number, fctOk: Function, fctKo: Function) {

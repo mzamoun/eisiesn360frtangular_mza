@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, take, takeUntil } from 'rxjs/operators';
 import { Feature } from 'src/app/authorization/authorization.types';
 import { AuthorizationService } from 'src/app/authorization/service/authorization.service';
 import { Activity } from 'src/app/model/activity';
@@ -11,6 +11,7 @@ import { Cra } from 'src/app/model/cra';
 import { Esn } from 'src/app/model/esn';
 import { Notification } from 'src/app/model/notification';
 import { Project } from 'src/app/model/project';
+import { Document as AppDocument } from 'src/app/model/document';
 import { MyError } from 'src/app/resource/MyError';
 import { ActivityService } from 'src/app/service/activity.service';
 import { AdminLogService } from 'src/app/service/admin-log.service';
@@ -50,11 +51,11 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         // ADMIN uniquement
         { id: 'ESN', titleKey: 'app.dashboard.section.esn', route: '/esn_app', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'] },
         // ADMIN + RESPONSIBLE_ESN
-        { id: 'CONSULTANTS', titleKey: 'app.dashboard.section.consultants', route: '/consultant_app', feature: 'CONSULTANT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
-        { id: 'CLIENTS', titleKey: 'app.dashboard.section.clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
-        { id: 'PROJECTS', titleKey: 'app.dashboard.section.projects', route: '/project_app', feature: 'PROJECT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN'] },
-        // MANAGER : ses consultants uniquement
+        { id: 'CONSULTANTS', titleKey: 'app.dashboard.section.consultants', route: '/consultant_app', feature: 'CONSULTANT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
         { id: 'MY_CONSULTANTS', titleKey: 'app.dashboard.section.myConsultants', route: '/consultant_list', feature: 'CONSULTANT_MANAGEMENT', roles: ['MANAGER'], queryParams: { myConsultants: true } },
+        { id: 'CLIENTS', titleKey: 'app.dashboard.section.clients', route: '/client_app', feature: 'CLIENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        { id: 'PROJECTS', titleKey: 'app.dashboard.section.projects', route: '/project_app', feature: 'PROJECT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
+        // MANAGER : ses consultants uniquement
         // ADMIN + RESPONSIBLE_ESN + MANAGER : toutes les activites
         { id: 'ACTIVITIES', titleKey: 'app.dashboard.section.activities', route: '/activity_app', feature: 'ACTIVITY_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER'] },
         // ADMIN + RESPONSIBLE_ESN + MANAGER : tous les CRA
@@ -62,12 +63,14 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         // CONSULTANT : uniquement ses CRA
         { id: 'MY_CRA', titleKey: 'app.dashboard.section.myCra', route: '/cra_app', feature: 'CRA_MANAGEMENT', roles: ['CONSULTANT'], queryParams: { myCra: true } },
         // Documents administratifs
-        { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT' },
+        // { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', feature: 'IDENTITY_DOCUMENT_MANAGEMENT', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER', 'CONSULTANT'] },
+        { id: 'DOCUMENTS', titleKey: 'app.dashboard.section.documents', route: '/admindoc_list', roles: ['ADMIN', 'RESPONSIBLE_ESN', 'MANAGER', 'CONSULTANT'] },
         { id: 'ADMIN_LOGS', titleKey: 'app.dashboard.section.adminLogs', route: '/admin_logs', feature: 'ESN_MANAGEMENT', roles: ['ADMIN'], chartable: false },
         // Section Aide (visible par tous les rôles, pas de feature spécifique)
         { id: 'SUPPORT', titleKey: 'app.dashboard.section.help', route: '/help', feature: null, chartable: false },
     ];
 
+    // Les listes sont maintenant des observables via DataSharingService
     listNotifications: Notification[] = [];
     listEsn: Esn[] = [];
     listClient: Client[] = [];
@@ -75,7 +78,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     listActivity: Activity[] = [];
     listConsultant: Consultant[] = [];
     listCra: Cra[] = [];
-    listDocument: Document[] = [];
+    listDocument: AppDocument[] = [];
     listSupportTickets: any[] = [];
     esn: Esn = null;
     esnId: number = 0;
@@ -110,7 +113,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.logger.debug('DashboardComponent.ngOnInit called');
+
+        // Les cartes doivent être calculées à chaque init du composant (retour sur /home inclus)
         this.refreshVisibleSections();
+
         this.dataSharingService.userConnected$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
             this.refreshVisibleSections();
             this.tryLoadCountsFromUserContext(user);
@@ -131,6 +137,23 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             this.loadCountsOncePerEsn();
         });
 
+        // La carte Consultants suit en continu la liste partagée (évite un compteur figé à 0
+        // si la liste est chargée après le premier loadCounts)
+        this.dataSharingService.listConsultant$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((consultants: Consultant[]) => {
+                if (!Array.isArray(consultants) || consultants.length === 0) {
+                    return;
+                }
+                this.listConsultant = consultants;
+                this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+                const user = this.dataSharingService.userConnected;
+                if (user?.role === 'MANAGER') {
+                    const myConsultants = this.listConsultant.filter(c => c.adminConsultantId === user.id || c.id === user.id);
+                    this.updateSectionCount('MY_CONSULTANTS', myConsultants.length);
+                }
+            });
+
         this.tryLoadCountsFromUserContext(this.dataSharingService.userConnected);
 
         this.adminLogService.lineCount$()
@@ -142,6 +165,78 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                 }
                 this.updateSectionCount('ADMIN_LOGS', count);
             });
+
+        // Dashboard complètement chargé, on notifie le header
+        this.dataSharingService.setIsLoadFirstOne(true);
+    }
+    
+    // Refresh the dashboard lists and counts (bouton Actualiser) : recharge depuis le serveur
+    public refresh(): void {
+        this.logger.debug('DashboardComponent.refresh called');
+        this.hasLoadedCounts = true;
+        this.lastLoadedEsnId = this.esnId || null;
+        this.adminCountsLoaded = true;
+        this.isCraLoaded = false;
+        this.isCraLoading = false;
+        this.refreshVisibleSections();
+        this.loadCounts(true);
+    }
+
+    /**
+     * Point d'entree du chargement des compteurs :
+     * - si les listes partagees sont deja en cache : aucun appel serveur, on recalcule juste les compteurs
+     * - sinon : rechargement complet (equivalent du bouton Actualiser)
+     */
+    private initCounts(): void {
+        const cachedConsultants = this.dataSharingService.getListConsultant();
+        if (Array.isArray(cachedConsultants) && cachedConsultants.length > 0) {
+            this.logger.debug('DashboardComponent.initCounts : listes en cache, pas d appel serveur');
+            this.refreshVisibleSections();
+            this.updateCountsFromCache();
+            return;
+        }
+        this.logger.debug('DashboardComponent.initCounts : cache vide, chargement complet');
+        this.refresh();
+    }
+
+    /**
+     * Recalcule tous les compteurs a partir des listes deja presentes dans DataSharingService
+     */
+    private updateCountsFromCache(): void {
+        const role = this.dataSharingService.userConnected?.role;
+
+        this.listNotifications = this.dataSharingService.getListNotifications() || [];
+        this.listConsultant = this.dataSharingService.getListConsultant();
+        this.listEsn = this.dataSharingService.getListEsn();
+        this.listClient = this.dataSharingService.getListClient();
+        this.listProject = this.dataSharingService.getListProject();
+        this.listActivity = this.dataSharingService.getListActivity();
+        this.listDocument = this.dataSharingService.getListDocument();
+        this.listSupportTickets = this.dataSharingService.getListSupportTickets();
+        this.listCra = this.dataSharingService.getListCra() || [];
+        this.isCraLoaded = this.listCra.length > 0;
+
+        this.updateSectionCount('NOTIFICATIONS', this.listNotifications.length);
+        this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+        this.updateSectionCount('ESN', this.listEsn.length);
+        this.updateSectionCount('CLIENTS', this.listClient.length);
+        this.updateSectionCount('PROJECTS', this.listProject.length);
+        this.updateSectionCount('ACTIVITIES', this.listActivity.length);
+        this.updateSectionCount('DOCUMENTS', this.listDocument.length);
+        this.updateSectionCount('SUPPORT', this.listSupportTickets.length);
+        this.updateSectionCount('CRA', this.listCra.length);
+
+        if (role === 'MANAGER') {
+            const userId = this.dataSharingService.userConnected?.id;
+            const myConsultants = this.listConsultant.filter(c => c.adminConsultantId === userId || c.id === userId);
+            this.updateSectionCount('MY_CONSULTANTS', myConsultants.length);
+        }
+        if (role === 'CONSULTANT') {
+            this.updateSectionCount('MY_CRA', this.listCra.length);
+        }
+
+        // Snapshot uniquement : aucun appel serveur sur le chemin cache
+        this.loadAdminLogCount(role, false);
     }
 
     private tryLoadCountsFromUserContext(user: Consultant): void {
@@ -157,7 +252,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             this.adminCountsLoaded = true;
             this.esnId = 0;
             this.logger.debug('DashboardComponent: admin context detected, loading counts');
-            this.loadCounts();
+            this.initCounts();
             return;
         }
 
@@ -212,14 +307,14 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         }
         this.hasLoadedCounts = true;
         this.lastLoadedEsnId = currentEsnId;
-        this.loadCounts();
+        this.initCounts();
     }
 
-    loadCounts(): void {
-        this.logger.debug('DashboardComponent.loadCounts called');
+    loadCounts(forceRefresh: boolean = false): void {
+        this.logger.debug('DashboardComponent.loadCounts called, forceRefresh = ', forceRefresh);
         const role = this.dataSharingService.userConnected?.role;
 
-        // Notifications (pour tous les rôles)
+        // Notifications (pour tous les rôles) - utilise déjà la facade
         let idConsultant = this.dataSharingService.userConnected?.id;
         if (role === 'ADMIN') {
             idConsultant = 0; // pour admin, récupérer toutes les notifications
@@ -247,23 +342,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         );
 
         if (role !== 'CONSULTANT') {
-            // ESN (hors CONSULTANT)
-            let labelEsn = 'Chargement des ESN...';
-            this.dataSharingService.addInfo(labelEsn);
-
-            this.esnService.findAll().subscribe({
-                next: (resp) => {
-                    this.logger.debug('DashboardComponent: Loaded ESNs, resp = ', resp);
-                    this.dataSharingService.delInfo(labelEsn);
-                    this.listEsn = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('ESN', this.listEsn.length);
-                },
-                error: (err) => {
-                    this.logger.debug('DashboardComponent: Error loading ESNs', err);
-                    this.dataSharingService.delInfo(labelEsn);
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des ESN : ', JSON.stringify(err)));
-                    this.updateSectionCount('ESN', 0);
-                }
+            // ESN (hors CONSULTANT) - utilise la méthode loadListEsn de DataSharingService
+            this.dataSharingService.loadListEsn(forceRefresh).pipe(take(1)).subscribe((esnList: Esn[]) => {
+                this.listEsn = Array.isArray(esnList) ? esnList : [];
+                this.updateSectionCount('ESN', this.listEsn.length);
             });
         } else {
             this.updateSectionCount('ESN', 0);
@@ -279,6 +361,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
                     next: (resp) => {
                         this.dataSharingService.delInfo(labelMyCra);
                         this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
+                        this.dataSharingService.setListCra(this.listCra); // Stocker dans DataSharingService
                         this.updateSectionCount('MY_CRA', this.listCra.length);
                         this.updateSectionCount('CRA', this.listCra.length);
                     },
@@ -297,98 +380,76 @@ export class DashBoardComponent implements OnInit, OnDestroy {
             this.updateSectionCount('CRA', this.listCra.length);
         } else if (!this.isCraLoading) {
             this.isCraLoading = true;
-            let labelCra = 'Chargement des CRA...';
-            this.dataSharingService.addInfo(labelCra);
-
-            this.craService.findAll().subscribe({
-                next: (resp) => {
-                    this.isCraLoading = false;
-                    this.isCraLoaded = true;
-                    this.listCra = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.logger.debug('DashboardComponent: Loaded CRA, listCra = ', this.listCra);
-
-                    this.dataSharingService.setListCra(this.listCra);
-                    this.dataSharingService.majListCra();
-
-                    setTimeout(() => {
-                        this.logger.debug('DashboardComponent: ap set timeout, listCra = ', this.listCra);
-                        this.dataSharingService.delInfo(labelCra);
-                        this.updateSectionCount('CRA', this.listCra.length);
-                    }, 3000);
-
-                },
-                error: (error) => {
-                    this.isCraLoading = false;
-                    this.dataSharingService.delInfo(labelCra);
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des CRA : ', JSON.stringify(error)));
-                    this.updateSectionCount('CRA', 0);
-                }
+            // Utilise loadListCra de DataSharingService pour le lazy loading (optimisation)
+            this.dataSharingService.loadListCra(forceRefresh).pipe(take(1)).subscribe((craList: Cra[]) => {
+                this.isCraLoading = false;
+                this.isCraLoaded = true;
+                this.listCra = Array.isArray(craList) ? craList : [];
+                this.logger.debug('DashboardComponent: Loaded CRA, listCra = ', this.listCra);
+                this.updateSectionCount('CRA', this.listCra.length);
+            }, (error) => {
+                this.isCraLoading = false;
+                this.dataSharingService.addError(new MyError('Erreur lors du chargement des CRA : ', JSON.stringify(error)));
+                this.updateSectionCount('CRA', 0);
             });
         }
 
-        // Documents (pour tous les rôles)
-        let labelDocuments = 'Chargement des Documents...';
-        this.dataSharingService.addInfo(labelDocuments);
-
-        this.documentService.findAllByConsultant(this.dataSharingService.userConnected?.id).subscribe({
-            next: (resp) => {
-                this.dataSharingService.delInfo(labelDocuments);
-                this.listDocument = resp && resp.body && resp.body.result ? resp.body.result : [];
+        // Documents (pour tous les rôles) - garde la logique existante (service spécifique par consultant)
+        // Note: Documents reste géré directement par le composant pour éviter les dépendances circulaires
+        this.dataSharingService.listDocument$.pipe(take(1)).subscribe((existingDocs: AppDocument[]) => {
+            if (!forceRefresh && existingDocs && existingDocs.length > 0) {
+                this.logger.debug('DashboardComponent: Using cached Documents, count = ', existingDocs.length);
+                this.listDocument = existingDocs;
                 this.updateSectionCount('DOCUMENTS', this.listDocument.length);
-            },
-            error: (error) => {
-                this.dataSharingService.delInfo(labelDocuments);
-                this.dataSharingService.addError(new MyError('Erreur lors du chargement des documents : ', JSON.stringify(error)));
-                this.updateSectionCount('DOCUMENTS', 0);
+            } else {
+                let labelDocuments = 'Chargement des Documents...';
+                this.dataSharingService.addInfo(labelDocuments);
+
+                this.documentService.findAllByConsultant(this.dataSharingService.userConnected?.id).subscribe({
+                    next: (resp) => {
+                        this.dataSharingService.delInfo(labelDocuments);
+                        this.listDocument = resp && resp.body && resp.body.result ? resp.body.result : [];
+                        this.dataSharingService.setListDocument(this.listDocument as AppDocument[]); // Stocker dans DataSharingService
+                        this.updateSectionCount('DOCUMENTS', this.listDocument.length);
+                    },
+                    error: (error) => {
+                        this.dataSharingService.delInfo(labelDocuments);
+                        this.dataSharingService.addError(new MyError('Erreur lors du chargement des documents : ', JSON.stringify(error)));
+                        this.updateSectionCount('DOCUMENTS', 0);
+                    }
+                });
             }
         });
 
-        this.loadSupportTicketCount(role);
-        this.loadAdminLogCount(role);
+        this.loadSupportTicketCount(role, forceRefresh);
+        this.loadAdminLogCount(role, forceRefresh);
 
         // Consultants
         if (role !== 'CONSULTANT') {
-            this.loadAllConsultantsAndUpdateCounts();
+            this.loadAllConsultantsAndUpdateCounts(forceRefresh);
         } else {
             this.updateSectionCount('CONSULTANTS', 0);
             this.updateSectionCount('MY_CONSULTANTS', 0);
         }
 
-        // Pour ADMIN: listes globales
+        // Pour ADMIN: listes globales - utilise les méthodes loadListX de DataSharingService
         if (role === 'ADMIN') {
-            const clientObservable = this.clientService.findAllAll();
-
-            clientObservable.subscribe({
-                next: (resp) => {
-                    this.listClient = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('CLIENTS', this.listClient.length);
-                },
-                error: (error) => {
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des clients : ', JSON.stringify(error)));
-                    this.updateSectionCount('CLIENTS', 0);
-                }
+            // Clients
+            this.dataSharingService.loadListClient(forceRefresh).pipe(take(1)).subscribe((clients: Client[]) => {
+                this.listClient = Array.isArray(clients) ? clients : [];
+                this.updateSectionCount('CLIENTS', this.listClient.length);
             });
 
-            this.projectService.findAll(this.esnId).subscribe({
-                next: (resp) => {
-                    this.listProject = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('PROJECTS', this.listProject.length);
-                },
-                error: (error) => {
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des projets : ', JSON.stringify(error)));
-                    this.updateSectionCount('PROJECTS', 0);
-                }
+            // Projects
+            this.dataSharingService.loadListProject(forceRefresh).pipe(take(1)).subscribe((projects: Project[]) => {
+                this.listProject = Array.isArray(projects) ? projects : [];
+                this.updateSectionCount('PROJECTS', this.listProject.length);
             });
 
-            this.activityService.findAll().subscribe({
-                next: (resp) => {
-                    this.listActivity = resp && resp.body && resp.body.result ? resp.body.result : [];
-                    this.updateSectionCount('ACTIVITIES', this.listActivity.length);
-                },
-                error: (error) => {
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des activités : ', JSON.stringify(error)));
-                    this.updateSectionCount('ACTIVITIES', 0);
-                }
+            // Activities
+            this.dataSharingService.loadListActivity(forceRefresh).pipe(take(1)).subscribe((activities: Activity[]) => {
+                this.listActivity = Array.isArray(activities) ? activities : [];
+                this.updateSectionCount('ACTIVITIES', this.listActivity.length);
             });
         }
 
@@ -398,19 +459,19 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         }
     }
 
-    private loadAdminLogCount(role: string): void {
+    private loadAdminLogCount(role: string, forceRefresh: boolean = false): void {
         if (role !== 'ADMIN') {
             this.updateSectionCount('ADMIN_LOGS', 0);
             return;
         }
 
         const cachedCount = this.adminLogService.getLineCountSnapshot();
-        if (cachedCount >= 0) {
+        if (!forceRefresh && cachedCount >= 0) {
             this.updateSectionCount('ADMIN_LOGS', cachedCount);
             return;
         }
 
-        this.adminLogService.getLineCount().subscribe({
+        this.adminLogService.getLineCount(forceRefresh).subscribe({
             next: (count) => {
                 if (count >= 0) {
                     this.updateSectionCount('ADMIN_LOGS', count);
@@ -424,18 +485,28 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         });
     }
 
-    private loadSupportTicketCount(role: string): void {
-        const supportObservable = role === 'ADMIN'
-            ? this.supportService.findAll()
-            : this.supportService.findMyTickets();
-
-        supportObservable.subscribe({
-            next: (resp) => {
-                this.listSupportTickets = resp?.body?.result || [];
+    private loadSupportTicketCount(role: string, forceRefresh: boolean = false): void {
+        // Utilise maintenant l'observable pour éviter de recharger
+        this.dataSharingService.listSupportTickets$.pipe(take(1)).subscribe((existingTickets: any[]) => {
+            if (!forceRefresh && existingTickets && existingTickets.length > 0) {
+                this.logger.debug('DashboardComponent: Using cached SupportTickets, count = ', existingTickets.length);
+                this.listSupportTickets = existingTickets;
                 this.updateSectionCount('SUPPORT', this.listSupportTickets.length);
-            },
-            error: () => {
-                this.updateSectionCount('SUPPORT', 0);
+            } else {
+                const supportObservable = role === 'ADMIN'
+                    ? this.supportService.findAll()
+                    : this.supportService.findMyTickets();
+
+                supportObservable.subscribe({
+                    next: (resp) => {
+                        this.listSupportTickets = resp?.body?.result || [];
+                        this.dataSharingService.setListSupportTickets(this.listSupportTickets); // Stocker dans DataSharingService
+                        this.updateSectionCount('SUPPORT', this.listSupportTickets.length);
+                    },
+                    error: () => {
+                        this.updateSectionCount('SUPPORT', 0);
+                    }
+                });
             }
         });
     }
@@ -548,113 +619,76 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         });
     }
 
-    private loadAllConsultantsAndUpdateCounts(): void {
+    private loadAllConsultantsAndUpdateCounts(forceRefresh: boolean = false): void {
         this.logger.debug('DashboardComponent.loadAllConsultantsAndUpdateCounts called');
         const user = this.dataSharingService.userConnected;
         const role = user?.role;
 
         if (!user) {
-            this.updateSectionCount('CONSULTANTS', 0);
-            this.updateSectionCount('MY_CONSULTANTS', 0);
+            // Pas encore de user : on ne fige pas le compteur, le chargement sera relancé
+            // dès que userConnected$ émet.
+            this.logger.debug('DashboardComponent.loadAllConsultantsAndUpdateCounts : userConnected null, chargement reporté');
             return;
         }
 
-        // Load all consultants for ADMIN
+        // Load all consultants for ADMIN - utilise loadListConsultant de DataSharingService
         if (role === 'ADMIN') {
-            this.consultantService.findAll().subscribe({
-                next: (resp) => {
-                    this.listConsultant = resp?.body?.result || [];
-                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
-                },
-                error: () => this.updateSectionCount('CONSULTANTS', 0)
-            });
-            return;
-        }
-
-        // Load ESN consultants for RESPONSIBLE_ESN
-        if (role === 'RESPONSIBLE_ESN') {
-            let labelConsultant = 'Chargement des Consultants...';
-            this.dataSharingService.addInfo(labelConsultant);
-            this.consultantService.findAllByEsn(this.esnId).subscribe({
-                next: (resp) => {
-                    this.listConsultant = resp?.body?.result || [];
-                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
-                    this.dataSharingService.delInfo(labelConsultant);
-
-                    // Test: si listConsultant ne contient pas un manager, afficher dialog
-                    let hasManager = this.listConsultant.some(c => c.role === 'MANAGER');
-                    if (!hasManager && !this.dataSharingService.managerWarningShown) {
-                        this.dataSharingService.managerWarningShown = true;
-                        this.utilsIhm.confirmDialog(
-                            "Aucun consultant de rôle MANAGER n'est associé à cette ESN. Veuillez ajouter un consultant avec le rôle MANAGER pour une gestion optimale.",
-                            () => this.router.navigate(['/consultant_app']),
-                            () => { }
-                        );
-                    }
-                },
-                error: (error) => {
-                    this.dataSharingService.delInfo(labelConsultant);
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                    this.updateSectionCount('CONSULTANTS', 0);
-                }
-            });
-            return;
-        }
-
-        // Load ESN consultants once for MANAGER
-        if (role === 'MANAGER') {
-            const esnId = user?.esn?.id || user?.esnId;
-            let labelConsultant = 'Chargement des Consultants...';
-            this.dataSharingService.addInfo(labelConsultant);
-
-            this.consultantService.findAllByEsn(esnId).subscribe({
-                next: (resp) => {
-                    this.dataSharingService.delInfo(labelConsultant);
-                    const allConsultants = resp?.body?.result || [];
-                    this.listConsultant = allConsultants;
-                    // Mes Consultants: filter by adminConsultantId = userConnected.id, include manager himself
-                    const myConsultants = allConsultants.filter(c => c.adminConsultantId === user.id || c.id === user.id);
-                    this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
-                    this.updateSectionCount('MY_CONSULTANTS', myConsultants.length);
-
-                    // Test hiérarchique dans loadClientAndCheckHierarchy: vérifier si consultant CONSULTANT existe
-                    if (!this.listConsultant.some(c => c.role === 'CONSULTANT') &&
-                        !this.dataSharingService.consultantWarningShown &&
-                        this.listProject.length > 0) {
-                        this.dataSharingService.consultantWarningShown = true;
-                        this.utilsIhm.confirmDialog(
-                            "Aucun <b>CONSULTANT</b> de rôle CONSULTANT n'est associé à cette ESN. Veuillez ajouter un consultant avec le rôle CONSULTANT pour une gestion optimale des activités.",
-                            () => this.router.navigate(['/consultant_app']),
-                            () => { }
-                        );
-                    }
-                },
-                error: (error) => {
-                    this.dataSharingService.delInfo(labelConsultant);
-                    this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                    this.updateSectionCount('CONSULTANTS', 0);
-                    this.updateSectionCount('MY_CONSULTANTS', 0);
-                }
-            });
-            return;
-        }
-
-        // Default fallback: consultants of current ESN
-        let labelConsultant = 'Chargement des Consultants...';
-        this.dataSharingService.addInfo(labelConsultant);
-        this.consultantService.findAllByEsn(this.esnId).subscribe({
-            next: (resp) => {
-                this.dataSharingService.delInfo(labelConsultant);
-                this.listConsultant = resp?.body?.result || [];
+            this.dataSharingService.loadListConsultant(forceRefresh).pipe(take(1)).subscribe((consultants: Consultant[]) => {
+                this.listConsultant = Array.isArray(consultants) ? consultants : [];
+                this.logger.debug('DashboardComponent: Loaded Consultants (ADMIN), count = ', this.listConsultant.length);
                 this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
-                this.updateSectionCount('MY_CONSULTANTS', 0);
-            },
-            error: (error) => {
-                this.dataSharingService.delInfo(labelConsultant);
-                this.dataSharingService.addError(new MyError('Erreur lors du chargement des consultants : ', JSON.stringify(error)));
-                this.updateSectionCount('CONSULTANTS', 0);
-                this.updateSectionCount('MY_CONSULTANTS', 0);
-            }
+            });
+            return;
+        }
+
+        // Load ESN consultants for RESPONSIBLE_ESN - utilise loadListConsultant de DataSharingService
+        if (role === 'RESPONSIBLE_ESN') {
+            this.dataSharingService.loadListConsultant(forceRefresh).pipe(take(1)).subscribe((consultants: Consultant[]) => {
+                this.listConsultant = Array.isArray(consultants) ? consultants : [];
+                this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+
+                // Test: si listConsultant ne contient pas un manager, afficher dialog
+                let hasManager = this.listConsultant.some(c => c.role === 'MANAGER');
+                if (!hasManager && !this.dataSharingService.managerWarningShown) {
+                    this.dataSharingService.managerWarningShown = true;
+                    this.utilsIhm.confirmDialog(
+                        "Aucun consultant de rôle MANAGER n'est associé à cette ESN. Veuillez ajouter un consultant avec le rôle MANAGER pour une gestion optimale.",
+                        () => this.router.navigate(['/consultant_app']),
+                        () => { }
+                    );
+                }
+            });
+            return;
+        }
+
+        // Load ESN consultants once for MANAGER - utilise loadListConsultant de DataSharingService
+        if (role === 'MANAGER') {
+            this.dataSharingService.loadListConsultant(forceRefresh).pipe(take(1)).subscribe((consultants: Consultant[]) => {
+                this.listConsultant = Array.isArray(consultants) ? consultants : [];
+                const myConsultants = this.listConsultant.filter(c => c.adminConsultantId === user.id || c.id === user.id);
+                this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+                this.updateSectionCount('MY_CONSULTANTS', myConsultants.length);
+
+                // Test hiérarchique dans loadClientAndCheckHierarchy: vérifier si consultant CONSULTANT existe
+                if (!this.listConsultant.some(c => c.role === 'CONSULTANT') &&
+                    !this.dataSharingService.consultantWarningShown &&
+                    this.listProject.length > 0) {
+                    this.dataSharingService.consultantWarningShown = true;
+                    this.utilsIhm.confirmDialog(
+                        "Aucun <b>CONSULTANT</b> de rôle CONSULTANT n'est associé à cette ESN. Veuillez ajouter un consultant avec le rôle CONSULTANT pour une gestion optimale des activités.",
+                        () => this.router.navigate(['/consultant_app']),
+                        () => { }
+                    );
+                }
+            });
+            return;
+        }
+
+        // Default fallback: consultants of current ESN - utilise loadListConsultant de DataSharingService
+        this.dataSharingService.loadListConsultant(forceRefresh).pipe(take(1)).subscribe((consultants: Consultant[]) => {
+            this.listConsultant = Array.isArray(consultants) ? consultants : [];
+            this.updateSectionCount('CONSULTANTS', this.listConsultant.length);
+            this.updateSectionCount('MY_CONSULTANTS', 0);
         });
     }
 

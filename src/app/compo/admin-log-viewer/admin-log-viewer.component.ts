@@ -13,7 +13,7 @@ import { MereComponent } from '../_utils/mere-component';
 export class AdminLogViewerComponent extends MereComponent implements OnInit {
 
   lineOptions: number[] = [20, 50, 100, 1000, 5000, 10000, 50000, 100000, 500000, 1000000];
-  selectedLines = 10000;
+  selectedLines = 5000;
   nbLinesTotal: number | string = 'N/A';
   logLines: string[] = [];
   errorLines: string[] = [];
@@ -41,10 +41,11 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
       return;
     }
 
-    this.refreshLogs();
+    // Au premier affichage : utilise le cache s'il existe (pas d'appel serveur)
+    this.refreshLogs(false);
   }
 
-  refreshLogs(): void {
+  refreshLogs(forceRefresh: boolean = true): void {
     if (!this.isAdmin) {
       this.isForbidden = true;
       return;
@@ -53,25 +54,36 @@ export class AdminLogViewerComponent extends MereComponent implements OnInit {
     this.loadingLogs = true;
     const label = 'loadAdminLogs';
     this.beforeCallServer(label);
-    this.loadNbLinesTotal();
+    // this.addInfo(label)
+    this.loadNbLinesTotal(forceRefresh);
 
-    this.adminLogService.tail(this.selectedLines).subscribe(
+    this.adminLogService.tailCached(this.selectedLines, forceRefresh).subscribe(
       (lines: string[]) => {
         this.afterCallServer(label, lines);
+        // this.delInfo(label)
         this.logLines = lines || [];
         this.filterErrorLines();
-        this.lastRefresh = new Date();
+        this.lastRefresh = this.adminLogService.getCachedLinesDate() || new Date();
         this.loadingLogs = false;
       },
       (error) => {
+        // this.delInfo(label);
         this.addErrorFromErrorOfServer(label, error);
         this.loadingLogs = false;
       }
     );
   }
 
-  private loadNbLinesTotal(): void {
-    this.adminLogService.refreshLineCount().subscribe(
+  private loadNbLinesTotal(forceRefresh: boolean = true): void {
+    if (!forceRefresh) {
+      const snapshot = this.adminLogService.getLineCountSnapshot();
+      if (snapshot >= 0) {
+        this.nbLinesTotal = snapshot;
+        return;
+      }
+    }
+
+    this.adminLogService.getLineCount(forceRefresh).subscribe(
       (count: number) => {
         this.nbLinesTotal = count >= 0 ? count : 'N/A';
       },

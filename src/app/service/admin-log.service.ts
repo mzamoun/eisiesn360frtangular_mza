@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -10,8 +10,34 @@ export class AdminLogService {
   private readonly logUrl = environment.apiUrl + '/admin/logs';
   private readonly lineCountSubject = new BehaviorSubject<number>(-1);
   private lineCountRequest$: Observable<number> | null = null;
+  private cachedLines: string[] = [];
+  private cachedLinesFor = 0;
+  private cachedLinesDate: Date | null = null;
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Retourne les lignes en cache si elles correspondent au nombre demande,
+   * sinon interroge le serveur. forceRefresh ignore le cache.
+   */
+  tailCached(lines: number, forceRefresh = false): Observable<string[]> {
+    const safeLines = Number(lines) || 0;
+    if (!forceRefresh && this.cachedLines.length > 0 && this.cachedLinesFor === safeLines) {
+      return of(this.cachedLines);
+    }
+
+    return this.tail(safeLines).pipe(
+      tap((result: string[]) => {
+        this.cachedLines = result || [];
+        this.cachedLinesFor = safeLines;
+        this.cachedLinesDate = new Date();
+      })
+    );
+  }
+
+  getCachedLinesDate(): Date | null {
+    return this.cachedLinesDate;
+  }
 
   tail(lines: number): Observable<string[]> {
     const safeLines = Math.max(1, Math.min(1000000, Number(lines) || 200));

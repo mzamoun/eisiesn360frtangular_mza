@@ -269,7 +269,7 @@ export class ConsultantService {
         let ca = this.mapConsul[id]
         if (ca != null) {
           consultant.adminConsultant = ca
-          this.logger.debug("setAdminConsultant trouve dans map ca : ", ca);
+          this.logger.debug("setAdminConsultant trouve dans map ca id: " + ca.id);
           if (fct) fct()
           return
         }
@@ -281,7 +281,7 @@ export class ConsultantService {
         return;
       }
 
-      this.logger.debug("setAdminConsultant DEB consultant, idAdmin, admin : ", consultant, id, obj)
+      this.logger.debug("setAdminConsultant DEB consultant id: " + consultant.id + ", idAdmin: " + id);
       this.pendingAdminConsultantById.set(id, [{ consultant, fct }]);
 
       this.findById(id).subscribe(
@@ -300,7 +300,7 @@ export class ConsultantService {
             let ca = this.mapConsul[id]
             this.mapConsul[id] = adminConsultant
           }
-          this.logger.debug("setAdminConsultant trouve dans server ca : ", adminConsultant);
+          this.logger.debug("setAdminConsultant trouve dans server ca id: " + adminConsultant.id);
           this.pendingAdminConsultantById.delete(id);
         },
         error => {
@@ -309,11 +309,11 @@ export class ConsultantService {
             item.consultant.adminConsultant = null;
           }
           this.pendingAdminConsultantById.delete(id);
-          this.logger.debug("setAdminConsultant ERROR label consultant, err", label, consultant, error)
+          this.logger.debug("setAdminConsultant ERROR label consultant id: " + consultant.id + ", err: " + error)
         }
       );
     }
-    /////////////////
+    ///////////////// 
   }
 
   majActivity(myObj: Activity) {
@@ -395,7 +395,7 @@ export class ConsultantService {
     return newDate;
   }
 
-  majCra(myObj: Cra) {
+  majCra(myObj: Cra, fctOk : Function ) {
     ////////////////
     this.logger.debug("*** majCra DEB : myObj Cra : ", myObj)
     let id = myObj.consultantId
@@ -412,8 +412,11 @@ export class ConsultantService {
           this.logger.debug("*** majCra : myObj : ", myObj)
           this.majAdminConsultant(myObj.consultant, () => {
             myObj.manager = myObj.consultant.adminConsultant
-            this.majActivityInCra(myObj)
+            // Désactivé majActivityInCra pour optimiser le chargement
+            // this.majActivityInCra(myObj)
             this.logger.debug("*** majCra END : myObj : Cra : ", myObj)
+
+            if (fctOk) fctOk();
           });
         },
         error => {
@@ -421,6 +424,8 @@ export class ConsultantService {
         }
       );
 
+    }else {
+      if (fctOk) fctOk();
     }
     /////////////////
   }

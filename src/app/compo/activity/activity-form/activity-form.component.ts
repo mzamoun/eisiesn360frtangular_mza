@@ -431,10 +431,12 @@ export class ActivityFormComponent extends MereComponent {
     this.router.navigate(["/activity_app"]);
   }
 
-  /////////////
+  /////////////save/////
   onSubmit() {
     //////////
-    this.logger.debug("onSubmit: myObj", this.myObj);
+    let label = "save Activity " + this.myObj?.id
+
+    this.logger.debug(label + ": myObj", this.myObj);
     if (!this.myObj.name && this.myObj.type) {
       this.myObj.name = this.myObj.type.name;
     }
@@ -444,18 +446,22 @@ export class ActivityFormComponent extends MereComponent {
       this.myObj.consultantId = this.consultantSelected?.id;
     }
 
-    this.logger.debug("onSubmit ", this.myObj)
+    if(this.myObj.project && this.myObj.project.id) {
+      this.myObj.projectId = this.myObj.project.id;
+    }
 
-    this.beforeCallServer("onSubmit");
+    this.logger.debug(label + " ", this.myObj)
+
+    this.beforeCallServer(label);
     this.activityService.save(this.myObj).subscribe(
       (data) => {
-        this.afterCallServer("onSubmit", data)
+        this.afterCallServer(label, data)
         this.sendMsgToManager();
 
         if (!this.getError()) this.gotoActivityList();
       },
       (error) => {
-        this.addErrorFromErrorOfServer("onSubmit", error);
+        this.addErrorFromErrorOfServer(label, error);
         ;
       }
     );
@@ -476,17 +482,18 @@ export class ActivityFormComponent extends MereComponent {
 
     //////////this.logger.debug("sendMsgToManager", msg);
 
-    this.beforeCallServer("sendMsgToManager")
+    let label = "sendMsgToManager"
+    this.beforeCallServer(label)
     this.msgService.save(msg).subscribe(
       (data) => {
         ////////////this.logger.debug("data:"+data);
-        this.afterCallServer("sendMsgToManager", data)
+        this.afterCallServer(label, data)
         ////////////this.logger.debug("error:", this.error );
 
         if (!this.isError()) this.gotoActivityList();
       },
       (error) => {
-        this.addErrorFromErrorOfServer("sendMsgToManager", error);
+        this.addErrorFromErrorOfServer(label, error);
         ;
       }
     );

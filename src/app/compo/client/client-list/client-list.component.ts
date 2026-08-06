@@ -3,6 +3,7 @@
 
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -59,18 +60,12 @@ export class ClientListComponent extends MereComponent {
 	}
 
 	findAll() {
-		this.beforeCallServer("findAll")
-		this.clientService.findAll(this.getEsnId()).subscribe(
-			data => {
-				this.afterCallServer("findAll", data)
-				this.myList = data.body.result;
-				this.myList00 = this.myList;
-				////this.logger.debug(this.myList)
-			}, error => {
-				this.addErrorFromErrorOfServer("findAll", error);
-				////this.logger.debug(error);
-			}
-		);
+		// Utilise la méthode loadListClient de DataSharingService pour le lazy loading
+		this.dataSharingService.loadListClient().subscribe((clients: Client[]) => {
+			this.myList = clients;
+			this.myList00 = this.myList;
+			this.getTitle();
+		});
 	}
 
 	setMyList(myList: any[]) {

@@ -3,6 +3,7 @@
 
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { SelectConsultantComponent } from 'src/app/compo/_reuse/select-consultant/select-consultant.component';
 import { ActivityType } from 'src/app/model/activityType';
@@ -137,7 +138,9 @@ export class ActivityListComponent extends MereComponent {
   }
 
   findAll() {
-    this.logger.debug("findAll Activity DEB : ", this.myList)
+    let label = "findAll Activity";
+
+    this.logger.debug(label + " DEB : ", this.myList)
     const role = this.userConnected?.role;
     const userId = this.userConnected?.id;
     const esnId = this.getEsnId();
@@ -150,14 +153,16 @@ export class ActivityListComponent extends MereComponent {
       return;
     }
 
-    this.beforeCallServer("findAll");
+    this.logger.debug(label + " DEB : ", this.myList)
 
+    
     // Si un consultant spécifique est sélectionné (filtre)
-    this.logger.debug("findAll Activity - consultant filter:", this.consultant);
+    this.logger.debug(label + " - consultant filter:", this.consultant);
     if (this.consultant != null) {
+      this.beforeCallServer(label);
       this.activityService.findAllByConsultant(this.consultant.id).subscribe(
         data => {
-          this.afterCallServer("findAll", data);
+          this.afterCallServer(label, data);
           if (data.body != null) {
             this.myList = data.body.result || [];
             this.myList00 = this.myList;
@@ -165,113 +170,86 @@ export class ActivityListComponent extends MereComponent {
           }
         },
         error => {
-          this.addErrorFromErrorOfServer("findAll", error);
+          this.addErrorFromErrorOfServer(label, error);
         }
       );
       return;
     }
 
-    // Pas de filtre consultant: charger selon le rôle
+    // Pas de filtre consultant: charger selon le rôle - utilise loadListActivity de DataSharingService
     if (role === 'ADMIN') {
       // ADMIN voit TOUTES les activités
-      this.activityService.findAll().subscribe(
-        data => {
-          this.afterCallServer("findAll", data);
-          if (data.body != null) {
-            this.myList = data.body.result || [];
-            this.logger.debug("findAll Activity - ADMIN myList:", this.myList);
-            this.myList00 = this.myList;
-            this.updateTitle();
-          }
-        },
-        error => {
-          this.addErrorFromErrorOfServer("findAll", error);
-        }
-      );
+      this.dataSharingService.loadListActivity().subscribe((activities: Activity[]) => {
+        this.myList = activities;
+        this.myList00 = this.myList;
+        this.updateTitle();
+      });
     } else if (role === 'RESPONSIBLE_ESN') {
       // RESPONSIBLE_ESN: charger les activités de son ESN
-      this.activityService.findAll().subscribe(
-        data => {
-          this.afterCallServer("findAll", data);
-          if (data.body != null) {
-            let allActivities = data.body.result || [];
-            this.logger.debug("findAll Activity - RESPONSIBLE_ESN allActivities:", allActivities);
-            this.logger.debug("findAll Activity - RESPONSIBLE_ESN allActivities map consultant.esnId:", allActivities.map(a => a.consultant?.esnId));
-            this.dataSharingService.majConsultantInActivityList(allActivities,
-              (activity) => {
-                // Filtrer par ESN via consultant.esnId
-                let x = activity.consultant?.esnId === esnId;
-                if (x) {
-                  this.myList.push(activity);
-                  this.myList00.push(activity);
-                  this.updateTitle();
-                }
-              }
-            );
-
+      this.dataSharingService.loadListActivity().subscribe((activities: Activity[]) => {
+        this.logger.debug(label + " - RESPONSIBLE_ESN allActivities:", activities);
+        this.logger.debug(label + " - RESPONSIBLE_ESN allActivities map consultant.esnId:", activities.map(a => a.consultant?.esnId));
+        this.myList = [];
+        this.myList00 = [];
+        this.dataSharingService.majConsultantInActivityList(activities,
+          (activity) => {
+            // Filtrer par ESN via consultant.esnId
+            let x = activity.consultant?.esnId === esnId;
+            if (x) {
+              this.myList.push(activity);
+              this.myList00.push(activity);
+              this.updateTitle();
+            }
           }
-        },
-        error => {
-          this.addErrorFromErrorOfServer("findAll", error);
-        }
-      );
+        );
+      });
     } else if (role === 'MANAGER') {
       // MANAGER: charger les activités de ses consultants
-      // D'abord charger les consultants gérés par ce manager
-      this.logger.debug("findAll Activity - MANAGER loading managed consultants for userId:", userId);
+      this.logger.debug(label + " - MANAGER loading managed consultants for userId:", userId);
       this.myList = []
+      let label_findAllChildConsultants = "findAllChildConsultants";
+      this.addInfo(label_findAllChildConsultants)
       this.consultantService.findAllChildConsultants(this.userConnected).subscribe(
         consultantsData => {
-          this.logger.debug("findAll Activity - MANAGER consultantsData:", consultantsData);
+          this.delInfo(label_findAllChildConsultants)
+          this.logger.debug(label + " - MANAGER consultantsData:", consultantsData);
           if (consultantsData.body != null) {
             this.managedConsultants = consultantsData.body.result || [];
             const managedConsultantIds = this.managedConsultants.map(c => c.id);
             // Ajouter le manager lui-même
             this.managedConsultants.push(this.userConnected);
             managedConsultantIds.push(userId);
-            this.logger.debug("findAll Activity - MANAGER managedConsultantIds:", managedConsultantIds);
+            this.logger.debug(label + " - MANAGER managedConsultantIds:", managedConsultantIds);
 
-            // Charger toutes les activités
-            this.activityService.findAll().subscribe(
-              data => {
-                this.afterCallServer("findAll", data);
-                if (data.body != null) {
-                  let allActivities = data.body.result || [];
-                  this.myList = allActivities;
-                  this.logger.debug("findAll Activity - MANAGER allActivities:", allActivities);
-                  this.logger.debug("findAll Activity - MANAGER allActivities map consultantIds:", allActivities.map(a => a.consultantId));
-                  // Filtrer par consultantId (pas consultant?.id)
-                  // this.myList = allActivities.filter(a => managedConsultantIds.includes(a.consultantId));
-                  this.logger.debug("findAll Activity - MANAGER filtered myList:", this.myList);
-                  this.myList00 = this.myList;
-                  this.updateTitle();
-                }
-              },
-              error => {
-                this.addErrorFromErrorOfServer("findAll", error);
-              }
-            );
+            // Charger toutes les activités via DataSharingService
+            this.dataSharingService.loadListActivity().subscribe((activities: Activity[]) => {
+              this.myList = activities;
+              this.logger.debug(label + " - MANAGER allActivities:", activities);
+              this.logger.debug(label + " - MANAGER allActivities map consultantIds:", activities.map(a => a.consultantId));
+              // Filtrer par consultantId (pas consultant?.id)
+              // this.myList = allActivities.filter(a => managedConsultantIds.includes(a.consultantId));
+              this.logger.debug(label + " - MANAGER filtered myList:", this.myList);
+              this.myList00 = this.myList;
+              this.updateTitle();
+            });
           }
         },
         error => {
-          this.logger.debug("findAll Activity - MANAGER error getting consultants:", error);
+          this.delInfo(label_findAllChildConsultants)
+          this.logger.debug(label + " - MANAGER error getting consultants:", error);
           // En cas d'erreur sur les consultants, charger toutes les activités et filtrer par manager
-          this.activityService.findAll().subscribe(
-            data => {
-              this.afterCallServer("findAll", data);
-              if (data.body != null) {
-                let allActivities = data.body.result || [];
-                // Fallback: filtrer par consultant.adminConsultantId
-                // this.myList = allActivities.filter(a =>
-                //   a.consultant?.adminConsultantId === userId || a.consultantId === userId
-                // );
-                this.myList00 = this.myList;
-              }
-            },
-            error => {
-              this.addErrorFromErrorOfServer("findAll", error);
-            }
-          );
+          let label_loadListActivity = "loadListActivity";
+          this.addInfo(label_loadListActivity)
+          this.dataSharingService.loadListActivity().subscribe((activities: Activity[]) => {
+            this.delInfo(label_loadListActivity)
+            this.myList = activities;
+            // Fallback: filtrer par consultant.adminConsultantId
+            // this.myList = allActivities.filter(a =>
+            //   a.consultant?.adminConsultantId === userId || a.consultantId === userId
+            // );
+            this.myList00 = this.myList;
+            this.updateTitle();
+          });
         }
       );
     }

@@ -24,6 +24,8 @@ export class Cra {
 
   consultant : Consultant;
   consultantId : number;
+  consultantUsername : string;
+  consultantFullName : string;
   manager: Consultant;
   managerId: number;
   

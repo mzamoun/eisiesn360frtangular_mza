@@ -2,6 +2,7 @@
 
 
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -78,13 +79,10 @@ export class SelectConsultantComponent extends MereComponent {
 	}
 
 	private loadAllConsultants(): void {
-		this.consultantService.findAll().subscribe(
-			data => {
-				this.afterCallServer(this.title, data);
-				this.myList = [null, ...(data.body.result || [])];
-			},
-			error => this.addErrorFromErrorOfServer(this.title, error)
-		);
+		// Utilise la méthode loadListConsultant de DataSharingService pour le lazy loading
+		this.dataSharingService.loadListConsultant().subscribe((consultants: Consultant[]) => {
+			this.myList = [null, ...consultants];
+		});
 	}
 
 	setMyList(myList: Consultant[]): void {

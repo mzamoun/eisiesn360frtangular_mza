@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { ProjectService } from 'src/app/service/project.service';
@@ -56,23 +57,12 @@ export class ProjectListComponent extends MereComponent {
 
 
   findAll() {
-    this.beforeCallServer("findAll")
-    this.projectService.findAll(this.getEsnId()).subscribe(
-      data => {
-        this.afterCallServer("findAll", data)
-        this.myList = data.body.result;
-        this.dataSharingService.majClientInProjectList(this.myList);
-        setTimeout(
-          () => {
-            this.myList00 = this.myList;
-          }, 5000
-        )
-        this.logger.debug("findAll : myList : ", this.myList);
-      }, error => {
-        this.addErrorFromErrorOfServer("findAll", error);
-        ////this.logger.debug(error);
-      }
-    );
+    // Utilise la méthode loadListProject de DataSharingService pour le lazy loading
+    this.dataSharingService.loadListProject().subscribe((projects: Project[]) => {
+      this.myList = projects;
+      this.myList00 = this.myList;
+      this.getTitle();
+    });
   }
 
   setMyList(myList: any[]) {

@@ -7,6 +7,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthorizationService } from 'src/app/authorization/service/authorization.service';
 import { ActivityService } from 'src/app/service/activity.service';
 import { AdminLogService } from 'src/app/service/admin-log.service';
@@ -26,12 +27,18 @@ function okResponse(result: any) {
   return of({ body: { result } } as any);
 }
 
+// Reproduit le comportement de DataSharingService.loadListX : emet la liste extraite de la reponse
+function listFrom(response$: any) {
+  return response$.pipe(map((resp: any) => resp?.body?.result || []));
+}
+
 describe('DashBoardComponent (integration)', () => {
   let fixture: ComponentFixture<DashBoardComponent>;
   let component: DashBoardComponent;
 
   let userConnectedSubject: BehaviorSubject<any>;
   let esnCurrentReadySubject: BehaviorSubject<any>;
+  let listConsultantSubject: BehaviorSubject<any[]>;
 
   let dataSharingServiceStub: any;
   let authzStub: any;
@@ -51,6 +58,7 @@ describe('DashBoardComponent (integration)', () => {
   beforeEach(waitForAsync(() => {
     userConnectedSubject = new BehaviorSubject<any>(null);
     esnCurrentReadySubject = new BehaviorSubject<any>(null);
+    listConsultantSubject = new BehaviorSubject<any[]>([]);
 
     authzStub = {
       hasPermission: jasmine.createSpy('hasPermission').and.returnValue(true)
@@ -122,6 +130,37 @@ describe('DashBoardComponent (integration)', () => {
         }
       }),
       getListNotifications: jasmine.createSpy('getListNotifications').and.returnValue([{ id: 100 }, { id: 101 }]),
+      listConsultant$: listConsultantSubject.asObservable(),
+      listDocument$: new BehaviorSubject<any[]>([]).asObservable(),
+      listSupportTickets$: new BehaviorSubject<any[]>([]).asObservable(),
+      getListConsultant: jasmine.createSpy('getListConsultant').and.returnValue([]),
+      getListEsn: jasmine.createSpy('getListEsn').and.returnValue([]),
+      getListClient: jasmine.createSpy('getListClient').and.returnValue([]),
+      getListProject: jasmine.createSpy('getListProject').and.returnValue([]),
+      getListActivity: jasmine.createSpy('getListActivity').and.returnValue([]),
+      getListDocument: jasmine.createSpy('getListDocument').and.returnValue([]),
+      getListSupportTickets: jasmine.createSpy('getListSupportTickets').and.returnValue([]),
+      getListCra: jasmine.createSpy('getListCra').and.returnValue([]),
+      setListDocument: jasmine.createSpy('setListDocument'),
+      setListSupportTickets: jasmine.createSpy('setListSupportTickets'),
+      loadListEsn: () => listFrom(esnServiceStub.findAll()),
+      loadListClient: () => listFrom(clientServiceStub.findAll()),
+      loadListProject: () => listFrom(projectServiceStub.findAll()),
+      loadListActivity: () => listFrom(activityServiceStub.findAll()),
+      loadListCra: () => listFrom(craServiceStub.findAll()),
+      loadListConsultant: () => {
+        const role = dataSharingServiceStub.userConnected?.role;
+        const response$ = (role === 'ADMIN' || role === 'RESPONSIBLE_ESN')
+          ? consultantServiceStub.findAll()
+          : consultantServiceStub.findAllByEsn(dataSharingServiceStub.idEsnCurrent);
+        return listFrom(response$).pipe(
+          map((list: any[]) => {
+            listConsultantSubject.next(list);
+            return list;
+          })
+        );
+      },
+      setIsLoadFirstOne: jasmine.createSpy('setIsLoadFirstOne'),
       addInfo: jasmine.createSpy('addInfo'),
       delInfo: jasmine.createSpy('delInfo'),
       addError: jasmine.createSpy('addError'),

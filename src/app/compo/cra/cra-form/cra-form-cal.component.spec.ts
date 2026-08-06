@@ -53,6 +53,7 @@ describe('CraFormComponent', () => {
           onCraInit: () => {},
           findConsultantByUsername: () => {},
           majConsultantInCra: () => {},
+          resolveActivitiesOfCraFromCache: (cra: any, cb: any) => { if (cb) cb(0); },
           isCurrenUserRespOrAdmin: () => false,
           addNotificationServer: () => ({ subscribe: (next: any) => { if (next) { next({}); } return { unsubscribe: () => {} }; } }),
           getNotifications: () => {},

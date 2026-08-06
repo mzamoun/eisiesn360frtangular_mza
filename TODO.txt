@@ -1,4 +1,10 @@
 
+completer tous les tests unitaires des services 
+les executer 
+corriger les erreurs 
+
+---------------------
+
 Bugs en tant que role MANAGER : 
 
 Test	Statuts	Remarques	TODO	complexite tech	poids fct	Statut

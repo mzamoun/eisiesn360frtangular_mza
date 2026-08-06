@@ -10,6 +10,7 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { DatePipe } from '@angular/common';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { of } from 'rxjs';
 import { CraListComponent } from "../../cra/cra-list/cra-list.component";
 
 describe('CraListComponent', () => {
@@ -41,6 +42,8 @@ describe('CraListComponent', () => {
           setListCra: () => {},
           majListCra: () => {},
           getListCra: () => [],
+          listCra$: of([]),
+          loadListCra: () => of([]),
           isPublicRoute: () => false,
           router: { url: '/cra' },
           gotoLogin: () => {},
@@ -48,7 +51,7 @@ describe('CraListComponent', () => {
           getLastUserName: () => 'test',
           majManagerOfUserCurent: () => {}
         } },
-        { provide: ConsultantService, useValue: {} },
+        { provide: ConsultantService, useValue: { findAll: () => of({ body: { result: [] } }) } },
         DatePipe
       ]
     })

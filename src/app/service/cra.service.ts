@@ -2,7 +2,7 @@ import { LoggerService } from './logger.service';
 
 
 
-﻿import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -135,6 +135,10 @@ export class CraService {
 
   public getClientsOfCra(idCra: number): Observable<GenericResponse> {
     return this.http.get<GenericResponse>(this.craUrl + "getClientsOfCra/" + idCra)
+  }
+
+  majActivityInCra(idCra: number): Observable<GenericResponse> {
+    return this.http.get<GenericResponse>(this.craUrl + "majActivityInCra/" + idCra)
   }
 
   public generateEsnPDF(idCra: number): Observable<GenericResponse> {
@@ -570,5 +574,7 @@ export class CraService {
     }
     /////////////////
   }
+
+  ///////////////////////////////////////////////////
 
 }

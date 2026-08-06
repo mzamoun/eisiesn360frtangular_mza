@@ -36,6 +36,7 @@
                     <button class="btn " [ngClass]="getClassForStatus()" id="cra-form-status"
                         (click)="showHistoryStatus()"> {{currentCra?.status}} </button>
                 </h3>
+                <button (click)="refreshData()" class="btn btn-outline-primary">Refresh</button>
 
 
             </div>

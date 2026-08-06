@@ -33,6 +33,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from "rxjs";
+import { take } from 'rxjs/operators';
 import { CraContext } from 'src/app/core/model/cra-context';
 import { Consultant } from 'src/app/model/consultant';
 import { Notification } from 'src/app/model/notification';
@@ -199,14 +200,19 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     } else {
       // Utiliser directement le consultant du CRA existant pour éviter l'appel serveur
       this.currentCraUser = this.currentCra?.consultant || this.userConnected;
-      this.findAllActivities();
+      this.loadActivitiesForSelect();
     }
 
-    this.setCurrentCraConsultantId()
+    this.setCurrentCraConsultant()
 
     this.consultantService.majAdminConsultant(this.userConnected)
 
-    this.consultantService.majCra(this.currentCra);
+    // this.consultantService.majCra(this.currentCra,
+    //   () => {
+
+
+    //   }
+    // );
 
     this.statusHistoJsonToTab()
 
@@ -221,17 +227,49 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     this.isManager = this.hasRoleManagerValidate();
     this.logger.debug("ngOnit : isManager=", this.isManager)
-    
+
     this.is_canValidateCraOrConge = this.canValidateCraOrConge();
     this.logger.debug("ngOnit : is_canValidateCraOrConge=", this.is_canValidateCraOrConge)
     this.is_canSubmitCra = this.canSubmitCra();
     this.logger.debug("ngOnit : is_canSubmitCra=", this.is_canSubmitCra)
 
-    setTimeout(() => {
+    this.loadActivitiesOfCurrentCra();
+
+
+  }
+
+  /***
+   * Les CRA arrivent de la liste avec leurs craDays et craDayActivities : on affiche donc
+   * directement le CRA en memoire. Seul l'objet activity peut manquer, il est resolu depuis
+   * la liste d'activites partagee. On ne retombe sur un appel serveur (refreshData) que si
+   * des activites restent introuvables.
+   */
+  private loadActivitiesOfCurrentCra() {
+    this.dataSharingService.resolveActivitiesOfCraFromCache(this.currentCra, (nbUnresolved: number) => {
+      if (nbUnresolved > 0) {
+        this.logger.debug("loadActivitiesOfCurrentCra : " + nbUnresolved
+          + " activites non resolues depuis le cache, appel serveur");
+        this.refreshData();
+        return;
+      }
+      this.initCra(this.currentCra);
       this.process();
       this.refreshMe();
-    }, 2000);
+    });
+  }
 
+  refreshData() {
+    let label = "refreshData"
+    this.addInfo(label)
+    this.dataSharingService.majCra(this.currentCra,
+      () => {
+        this.delInfo(label)
+        // Les craDays viennent d'etre charges : il faut reconstruire les events du calendrier
+        this.initCra(this.currentCra);
+        this.process();
+        this.refreshMe();
+      }
+    )
   }
 
   getClassForStatus(): string {
@@ -294,13 +332,18 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     }
   }
 
-  setCurrentCraConsultantId() {
+  setCurrentCraConsultant() {
     if (!this.currentCra.consultantId) {
       if (this.currentCra.consultant && this.currentCra.consultant.id) {
         this.currentCra.consultantId = this.currentCra.consultant.id
-      } else {
-        this.currentCra.consultantId = this.userConnected.id
       }
+    } else {
+      this.consultantService.findById(this.currentCra.consultantId).subscribe(
+        (data) => {
+          this.currentCra.consultant = data?.body?.result;
+          this.logger.debug("setCurrentCraConsultant consultant: ", this.currentCra.consultant);
+        }
+      );
     }
   }
 
@@ -311,28 +354,32 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.isAdd = this.dataSharingService.isAdd;
       }
     }
+    this.logger.debug("initParams isAdd: " + this.isAdd);
+
     if (this.typeCra == null) {
       this.typeCra = this.route.snapshot.queryParamMap.get('typeCra');
       if (this.typeCra == null) {
         this.typeCra = this.dataSharingService.typeCra;
       }
     }
+    this.logger.debug("initParams typeCra: " + this.typeCra);
 
     if (this.currentCra == null) {
       if (this.isAdd != "true") {
-        // Essayer de récupérer le CRA depuis le state de navigation (passé par showCra)
-        const navigation = this.router.getCurrentNavigation();
-        if (navigation && navigation.extras && navigation.extras.state) {
-          this.currentCra = navigation.extras.state['cra'];
-        }
+        // Source de verite : le CRA memorise par showCra(). C'est la meme reference que celle
+        // de la liste, donc craDays et craDayActivities sont deja charges.
+        this.currentCra = this.dataSharingService.getCurrentCra();
 
         if (!this.currentCra) {
-          // Essayer de récupérer le CRA depuis le service (défini par cra-list)
+          // Fallback : CRA defini par cra-list via craService.setCra()
           this.currentCra = this.craService.getCra();
         }
         if (!this.currentCra) {
-          // Fallback: récupérer depuis le dataSharingService
-          this.currentCra = this.dataSharingService.getCurrentCra();
+          // Fallback : state de navigation (copie serialisee, uniquement pendant la navigation)
+          const navigation = this.router.getCurrentNavigation();
+          if (navigation?.extras?.state) {
+            this.currentCra = navigation.extras.state['cra'];
+          }
         }
         if (!this.currentCra) {
           // Si toujours null, créer un nouveau CRA
@@ -344,12 +391,12 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
       }
     }
 
+    this.logger.debug("initParams currentCra: ", this.currentCra);
+
     this.currentCraUser = this.currentCra?.consultant
 
-    // Initialiser le CRA pour afficher les activités dans le calendrier
-    if (this.currentCra && !this.isAdd) {
-      this.initCra(this.currentCra);
-    }
+    // initCra() n'est pas appele ici : il supprime les craDayActivities dont activity est null.
+    // Il est appele par loadActivitiesOfCurrentCra(), une fois les activites resolues.
   }
 
   getCurrentCraFromContext() {
@@ -404,6 +451,46 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
   }
 
 
+  /***
+   * Ne garde que les activites valides, et uniquement les activites de conge si le CRA est un CONGE.
+   */
+  private filterActivitiesForTypeCra(list: Activity[]): Activity[] {
+    const res: Activity[] = [];
+    for (const ac of (list || [])) {
+      if (ac?.valid != true) continue;
+      if (this.typeCra == "CONGE") {
+        const typeName = (ac.typeName ? ac.typeName : ac.type?.name) || "";
+        if (typeName.includes("CONG") || ac.name?.includes("CONG")) {
+          res.push(ac);
+        }
+      } else {
+        res.push(ac);
+      }
+    }
+    return res;
+  }
+
+  /***
+   * Alimente la liste deroulante d'activites (modale d'ajout/edition d'un craDay) depuis la
+   * liste d'activites partagee (deja en cache), filtree sur le consultant du CRA.
+   * On ne retombe sur findAllActivities() (appel serveur) que si le cache ne donne rien.
+   */
+  private loadActivitiesForSelect() {
+    if (!this.currentCraUser) this.currentCraUser = this.currentCra?.consultant || this.userConnected;
+    const consultantId = this.currentCraUser?.id;
+
+    this.dataSharingService.loadListActivity().pipe(take(1)).subscribe((list: Activity[]) => {
+      const ofConsultant = (list || []).filter(
+        a => a?.consultantId === consultantId || a?.consultant?.id === consultantId);
+      this.activities = this.filterActivitiesForTypeCra(ofConsultant);
+      this.logger.debug("loadActivitiesForSelect : consultant " + consultantId
+        + ", activites du cache = " + this.activities.length);
+      if (this.activities.length == 0) {
+        this.findAllActivities();
+      }
+    });
+  }
+
   /****
    * used to retrieve cra activity
    */
@@ -422,23 +509,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         if (data == null) {
           this.activities = new Array();
         } else {
-          this.activities = data.body.result;
-          let list = []
-          for (let ac of this.activities) {
-            if (ac.valid == true) {
-              if (this.typeCra == "CONGE") {
-                let type = ac.type
-                let typeName = ac.typeName ? ac.typeName : type?.name;
-                if (!typeName) typeName = "";
-                if (typeName.includes("CONG") || ac.name.includes("CONG")) {
-                  list.push(ac)
-                }
-              } else {
-                list.push(ac)
-              }
-            }
-          }
-          this.activities = list;
+          this.activities = this.filterActivitiesForTypeCra(data.body.result);
         }
 
         if (this.isAdd == 'true') {
@@ -475,7 +546,10 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    */
   initCra(currentCra: Cra) {
     if (currentCra != null && currentCra.craDays != null) {
+      const nbBefore = currentCra.craDays.reduce((n, cd) => n + (cd?.craDayActivities?.length || 0), 0);
       this.deleteCraDayActivitiesOfActivityNullInCra(currentCra)
+      const nbAfter = currentCra.craDays.reduce((n, cd) => n + (cd?.craDayActivities?.length || 0), 0);
+      this.logger.debug("initCra craDayActivities avant/apres filtre activity==null : " + nbBefore + "/" + nbAfter);
       this.viewDate = currentCra.month;
       // this.logger.debug("+++ initCra currentCra.month", currentCra.month);
       if (this.notADate(this.viewDate)) this.viewDate = new Date();
@@ -1116,36 +1190,38 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
    */
   saveCra(redirectToList: boolean, isSendNotification: boolean, title, message): void {
 
-    this.logger.debug("saveCra isSendNotification, currentCra : ", isSendNotification, this.currentCra)
+    let label = "saveCra"
+
+    this.logger.debug(label + " isSendNotification, currentCra : ", isSendNotification, this.currentCra)
 
     if (!this.currentCra.consultant && this.currentCra.status != 'REJECTED' && this.currentCra.status != 'VALIDATED') {
       this.currentCra.consultant = this.userConnected;
-      this.logger.debug("+++ saveCra : change 01 of consultant of currentCra ", this.currentCra)
+      this.logger.debug(label + " : change 01 of consultant of currentCra ", this.currentCra)
     }
-    this.setCurrentCraConsultantId()
+    this.setCurrentCraConsultant()
 
     this.setMonthCurentCraIfNull();
 
     // this.consultantService.majCra(this.currentCra);
     if (!this.currentCra.consultant) {
-      this.logger.debug("+++ saveCra : cat No consultant of currentCra ")
+      this.logger.debug(label + " : cat No consultant of currentCra ")
       this.consultantService.findById(this.currentCra.consultantId).subscribe(
         data => {
-          this.logger.debug("+++ saveCra : set consultant ", data)
+          this.logger.debug(label + " : set consultant ", data)
           this.currentCra.consultant = data.body.result;
-          this.logger.debug("+++ saveCra : after call server consultant of currentCra is : ", this.currentCra.consultant)
-          this.logger.debug("+++ saveCra : change 04 of consultant of currentCra ", this.currentCra)
+          this.logger.debug(label + " : after call server consultant of currentCra is : ", this.currentCra.consultant)
+          this.logger.debug(label + " : change 04 of consultant of currentCra ", this.currentCra)
 
           this.saveCraDirect(redirectToList, isSendNotification, title, message);
         },
         error => {
-          this.logger.debug("ERROR +++ saveCra : set consultant err", error)
+          this.logger.debug(label + " : ERROR : set consultant err", error)
           this.isToRejectCra = false
           this.isToValidateCra = false
         }
       );
     } else {
-      this.logger.debug("+++ saveCra : cat consultant of currentCra Not Null : ", this.currentCra.consultant)
+      this.logger.debug(label + " : cat consultant of currentCra Not Null : ", this.currentCra.consultant)
       this.saveCraDirect(redirectToList, isSendNotification, title, message);
     }
 
@@ -1159,7 +1235,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     const label = "saveCraDirect"
 
-    this.logger.debug(label + " DEB this.currentCra, consultant : ", this.currentCra, this.currentCra.consultant)
+    this.logger.debug(label + " DEB this.currentCra, consultant, comment : ", this.currentCra, this.currentCra.consultant, this.currentCra.comment)
     this.logger.debug(label + " isSendNotification=", isSendNotification)
     //////////////////////////
 
@@ -1195,7 +1271,7 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
         this.logger.debug(label, data)
         this.afterCallServer(label, data)
 
-        this.currentCra = data.body.result
+        this.currentCra = data?.body?.result ? data.body.result : this.currentCra;
         this.logger.debug(label + " after save currentCra : ", this.currentCra)
         this.statusHistoJsonToTab()
         this.dataSharingService.majConsultantInCra(this.currentCra,
@@ -1272,8 +1348,11 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   canSubmitCra() {
     let label = "canSubmitCra"
-    let res = (!this.currentCra?.validByConsultant) && this.hasManager() && this.currentCra.consultant?.id == this.userConnected.id;
+    let res = (!this.currentCra?.validByConsultant) && this.hasManager() && this.currentCra.consultantId == this.userConnected.id;
     this.logger.debug(label + " currentCra?.validByConsultant=", this.currentCra?.validByConsultant)
+    this.logger.debug(label + " hasManager()=", this.hasManager())
+    this.logger.debug(label + " currentCra.consultantId=", this.currentCra.consultantId)
+    this.logger.debug(label + " userConnected.id=", this.userConnected.id)
     this.logger.debug(label + " res=", res)
     return res;
   }
@@ -1285,19 +1364,21 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
   sendNotification(title, message) {
 
-    this.logger.debug("sendNotification this.currentCra=", this.currentCra)
+    let label = "sendNotification"
+
+    this.logger.debug(label + " this.currentCra=", this.currentCra)
 
     let currentUser = this.userConnected;
     // let currentUser = this.currentCra.consultant
-    this.logger.debug("sendNotification currentUser=", currentUser)
-    this.logger.debug("sendNotification currentUser.role=", currentUser.role)
+    this.logger.debug(label + " currentUser=", currentUser)
+    this.logger.debug(label + " currentUser.role=", currentUser.role)
 
-    this.logger.debug("sendNotification this.userConnected=", this.userConnected)
-    this.logger.debug("sendNotification this.userConnected.role=", this.userConnected.role)
+    this.logger.debug(label + " this.userConnected=", this.userConnected)
+    this.logger.debug(label + " this.userConnected.role=", this.userConnected.role)
 
     if (!this.currentCra.consultant) {
       this.currentCra.consultant = currentUser
-      this.logger.debug("+++ saveCra : change 06 of consultant of currentCra ", this.currentCra)
+      this.logger.debug(label + " +++ saveCra : change 06 of consultant of currentCra ", this.currentCra)
     }
 
     if (!currentUser.adminConsultant) {
@@ -1320,45 +1401,45 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     notification.fromUser = currentUser
     notification.fromUsername = notification.fromUser.username
 
-    this.logger.debug("sendNotification fromUser : ", notification.fromUser)
+    this.logger.debug(label + " fromUser : ", notification.fromUser)
 
     // Déterminer le destinataire selon le statut du CRA
     let toUser: any;
-    this.logger.debug("sendNotification currentCra.status=", this.currentCra.status)
+    this.logger.debug(label + " currentCra.status=", this.currentCra.status)
 
     if (this.currentCra.status === 'TO_VALIDATE') {
       // Consultant envoie → notifier son manager
       toUser = currentUser.adminConsultant || currentUser;
-      this.logger.debug("sendNotification: Consultant envoie au manager");
+      this.logger.debug(label + " Consultant envoie au manager");
     } else if (this.currentCra.status === 'VALIDATED' || this.currentCra.status === 'REJECTED') {
       // Manager valide/rejette → notifier le consultant du CRA
       toUser = this.currentCra.consultant;
-      this.logger.debug("sendNotification: Manager notifie le consultant");
+      this.logger.debug(label + " Manager notifie le consultant");
     } else {
       // Défaut: si consultant, envoyer au manager; sinon au consultant du CRA
       toUser = currentUser.adminConsultant != null ? currentUser.adminConsultant : this.currentCra.consultant;
-      this.logger.debug("sendNotification: Cas par défaut");
+      this.logger.debug(label + " Cas par défaut");
     }
 
     notification.toUser = toUser
-    this.logger.debug("sendNotification toUser final : ", notification.toUser)
+    this.logger.debug(label + " toUser final : ", notification.toUser)
 
     notification.toUsername = notification.toUser.username
 
-    this.logger.debug("sendNotification isManager=", this.isManager)
-    this.logger.debug("sendNotification currentUser=", currentUser)
-    this.logger.debug("sendNotification currentCra.consultant=", this.currentCra.consultant)
-    this.logger.debug("sendNotification currentCra.consultant.adminConsultant=", this.currentCra.consultant.adminConsultant)
-    this.logger.debug("sendNotification notification=", notification)
+    this.logger.debug(label + " isManager=", this.isManager)
+    this.logger.debug(label + " currentUser=", currentUser)
+    this.logger.debug(label + " currentCra.consultant=", this.currentCra.consultant)
+    this.logger.debug(label + " currentCra.consultant.adminConsultant=", this.currentCra.consultant.adminConsultant)
+    this.logger.debug(label + " notification=", notification)
 
-    this.beforeCallServer("sendNotification")
+    this.beforeCallServer(label)
     this.dataSharingService.addNotificationServer(notification).subscribe((data) => {
-      this.afterCallServer("sendNotification", data)
+      this.logger.debug(label + " after addNotificationServer data : ", data)
+      this.afterCallServer(label, data)
       this.dataSharingService.getNotifications(null, null);
 
     }, error => {
-      this.addErrorFromErrorOfServer("sendNotification", error);
-
+      this.addErrorFromErrorOfServer(label, error);
     })
 
   }
@@ -1695,14 +1776,19 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
 
     if (this.currentCra.type == 'CONGE') {
 
+      // on ne peut pas valider un congé du mois précédent : TODO 
+
       let isCongesVide = true;
       let today = new Date();
       let yesterday = this.utils.getDateYesterday();
+      let lastMonthYYYY_MM = this.utils.getDateYYYY_MM(today);
 
       for (let i = 0; i < this.currentCra.craDays.length; i++) {
         let craDay: CraDay = this.currentCra.craDays[i];
         let craDayActivities: CraDayActivity[] = craDay.craDayActivities;
         let time: number = 0;
+        let dayDate = craDay.day;
+        let dayDateStr = this.utils.formatDate(dayDate)
 
         for (let craDayActivity of craDayActivities) {
 
@@ -1710,11 +1796,12 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
           let actType = craDayActivity.activity.type
           let congeDay = craDayActivity.activity.type.congeDay
 
-          this.logger.debug("isCraValid : i=" , i , ", actName=" , actName , ", actType=" , actType , ", congeDay=" , congeDay);
-          
-          if (craDayActivity.activity.type && !craDayActivity.activity.type.congeDay) {
+          this.logger.debug("isCraValid : i=", i, ", actName=", actName, ", actType=", actType, ", congeDay=", congeDay);
 
-            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.congeTypeOnly'), null, null);
+          if (actName && !actName.toUpperCase().includes('CONG')) {
+            let dbg = '. \n ' + 'i=' + i + ', \n ' + 'dayDateStr=' + dayDateStr + ', \n ' + 'actName=' + actName + ', \n ' + "actType=" + actType?.name + ', \n ' + "congeDay=" + congeDay + ', \n craDay=' + JSON.stringify(craDay);
+
+            this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.congeTypeOnly') + dbg, null, null);
             this.currentCra.validByConsultant = null;
             this.currentCra.dateValidationConsultant = null;
             this.maj_canSubmitCra();
@@ -1725,7 +1812,9 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
             let dateActivity: Date = this.utils.getDate(craDay.day);
             this.logger.debug("+++++ dateActivity", dateActivity)
             this.logger.debug("+++++ yesterday", yesterday)
-            if (dateActivity <= yesterday) {
+            // on doit tester si dateActivity fait partie de ce mois et plus : TODO 
+            let dateActivityYYYY_MM = this.utils.getDateYYYY_MM(dateActivity);
+            if (dateActivityYYYY_MM < lastMonthYYYY_MM) {
               this.utilsIhm.info(this.utils.tr('app.compo.cra.form.validation.noPastConge'), null, null);
               return false;
             }
@@ -1843,7 +1932,8 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
  * This method used to rejected cra,
  */
   rejectCra() {
-    this.logger.debug("rejectCra DEB currentCra", this.currentCra)
+    let label = "rejectCra"
+    this.logger.debug(label + " DEB currentCra", this.currentCra)
     this.isToRejectCra = true
     let name = this.getNameByType();
     this.currentCraUser = this.currentCra.consultant
@@ -2081,21 +2171,21 @@ export class CraFormCalComponent extends MereComponent implements CraObserver {
     let currentUser = this.dataSharingService.userConnected
     let isCurUserRespOrAdmin = this.dataSharingService.isCurrenUserRespOrAdmin()
 
-    this.logger.debug(label + " : currentUser.role="+currentUser.role)
-    this.logger.debug(label + " : isCurUserRespOrAdmin="+isCurUserRespOrAdmin)
-    this.logger.debug(label + " : isAdd="+this.isAdd)
-    this.logger.debug(label + " : isCurrenUserSameAsUserOfCurrentCra="+this.isCurrenUserSameAsUserOfCurrentCra())
+    // this.logger.debug(label + " : currentUser.role=" + currentUser.role)
+    // this.logger.debug(label + " : isCurUserRespOrAdmin=" + isCurUserRespOrAdmin)
+    // this.logger.debug(label + " : isAdd=" + this.isAdd)
+    // this.logger.debug(label + " : isCurrenUserSameAsUserOfCurrentCra=" + this.isCurrenUserSameAsUserOfCurrentCra())
 
     if (this.isAdd || (this.isCurrenUserSameAsUserOfCurrentCra() && !isCurUserRespOrAdmin)) {
-      this.logger.debug(label + " : res false 1")
+      // this.logger.debug(label + " : res false 1")
       return false;
     }
     if (currentUser.role == "MANAGER" || isCurUserRespOrAdmin) {
-      this.logger.debug(label + " : res true 1")
+      // this.logger.debug(label + " : res true 1")
       return true;
     }
 
-    this.logger.debug(label + " : res false 2")
+    // this.logger.debug(label + " : res false 2")
     return false;
   }
 

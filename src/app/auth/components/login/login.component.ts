@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from "@angular/router";
 import { SignupDialogComponent } from 'src/app/compo/_dialogs/signup-dialog/signup-dialog.component';
@@ -147,6 +147,19 @@ export class LoginComponent implements OnInit {
       height: '700px',
       disableClose: true
     });
+  }
+
+
+  @ViewChild('passwordInput') passwordInput!: ElementRef;
+
+  selectUsernameOfLastLogin(username: string) {
+    this.credentials.username = username;
+    this.credentials.password = '';
+    this.error = '';
+    this.info = '';
+    // TODO: focus sur le champ password
+    this.passwordInput.nativeElement.focus();
+
   }
 
 }

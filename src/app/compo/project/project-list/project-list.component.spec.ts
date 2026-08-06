@@ -11,6 +11,7 @@ import { LoggerService } from 'src/app/service/logger.service';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProjectListComponent } from "../../project/project-list/project-list.component";
 import { NgxPaginationModule } from 'ngx-pagination';
+import { of } from 'rxjs';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -46,7 +47,12 @@ describe('ProjectListComponent', () => {
           gotoLogin: () => {},
           gotoMyHome: () => {},
           router: { url: '/test', navigate: () => {} },
-          idEsnCurrent: 1
+          idEsnCurrent: 1,
+          listProject$: of([]),
+          loadListProject: () => of([]),
+          getListProject: () => [],
+          setListProject: () => {},
+          majClientInProjectList: () => {}
         } },
         { provide: ConsultantService, useValue: {} }
       ]

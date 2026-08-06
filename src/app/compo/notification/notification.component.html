@@ -18,7 +18,7 @@
                 <div class="d-flex w-100 justify-content-between">
 
                     <span>
-                        <span *ngIf="notification.craId" aria-hidden="true" (click)="showCra(notification)"
+                        <span *ngIf="notification.craId" aria-hidden="true" (click)="showForm(notification)"
                             attr.aria-label="{{getLabelShowCraConge(notification)}}" class="picto-item"> <button
                                 id="btn-notif-show-cra-{{index}}">{{utils.tr('showCra')}}</button>
                         </span>

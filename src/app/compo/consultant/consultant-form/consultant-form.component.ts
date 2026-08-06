@@ -667,6 +667,7 @@ export class ConsultantFormComponent extends MereComponent {
   }
 
   private proceedSaveConsultant(): void {
+    let label = "proceedSaveConsultant"
     this.logger.debug("this.manager.role:", '.' + this.manager?.role + '.')
     this.logger.debug("this.myObj.adminConsultant : start ", this.myObj.adminConsultant)
     this.myObj.username = this.utils.uniformUsername(this.myObj.username);
@@ -682,30 +683,33 @@ export class ConsultantFormComponent extends MereComponent {
     }
     this.setEsn();
     this.logger.debug("onSubmit obj", this.myObj);
-    let label = "onSubmit"
-    this.beforeCallServer(label);
-
+    
     if (!this.myObj.adminConsultantId) this.myObj.adminConsultantId = this.myObj.adminConsultant?.id
     this.myObj.adminConsultant = null;
     this.logger.debug("this.myObj.adminConsultant : before save ", this.myObj.adminConsultant)
-
+    
     if(this.myObj.role == 'ADMIN') {
       this.myObj.admin = true;
     }
-
+    
+    let labelActivities = "findAllActivitiesByConsultant"
+    this.beforeCallServer(labelActivities);
     this.dataSharingService.findAllActivitiesByConsultant(this.myObj.id,
       (data) => {
+        this.afterCallServer(labelActivities, data)
         this.myObj.listActivity = data?.body?.result || [];
         this.consultantService.majActivityList(this.myObj);
       },
       (error) => {
-        this.addErrorFromErrorOfServer(label, error);
+        this.addErrorFromErrorOfServer(labelActivities, error);
       }
     )
 
+    let labelSaveConsultant = "Save Consultant " + this.myObj?.id + " : " + this.myObj?.username
+    this.beforeCallServer(labelSaveConsultant)
     this.consultantService.save(this.myObj, this.dataSharingService.IsAddEsnAndResp).subscribe(
       data => {
-        this.afterCallServer(label, data)
+        this.afterCallServer(labelSaveConsultant, data)
 
         this.myObj = data.body.result
         this.logger.debug("after save this.myObj : ", this.myObj)
@@ -769,7 +773,7 @@ export class ConsultantFormComponent extends MereComponent {
 
       },
       error => {
-        this.addErrorFromErrorOfServer(label, error);
+        this.addErrorFromErrorOfServer(labelSaveConsultant, error);
 
       }
     );

@@ -4,6 +4,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 import { Consultant } from 'src/app/model/consultant';
 import { UtilsService } from 'src/app/service/utils.service';
 import { UtilsIhmService } from 'src/app/service/utilsIhm.service';
@@ -32,8 +33,8 @@ export class CraListComponent extends MereComponent {
   currentCra: Cra;
   @ViewChild('craDetailCal', { static: false }) craDetailCal: CraFormCalComponent;
 
-  filterConsultant: Consultant = new Consultant();
-  filterMonth: Date = new Date();
+  filterConsultant: Consultant = null;
+  filterMonth: Date = null;
 
   p1: any; p2: any
 
@@ -45,12 +46,17 @@ export class CraListComponent extends MereComponent {
     , private consultantService: ConsultantService
     , private datePipe: DatePipe) {
 
+
     super(utils, dataSharingService);
+
+    this.logger.debug("START CraListComponent constructor")
 
     this.colsSearch = ["consultantUsername", "month", "createdDate", "lastModifiedDate"]
   }
 
   ngOnInit() {
+
+    this.logger.debug("START CraListComponent ngOnInit")
 
     this.title = this.utils.tr('List') + " " + this.utils.tr('Cra') + "/" + this.utils.tr('Conge');
     this.logger.debug("cla-list ngOnInit userConnected", this.userConnected)
@@ -58,6 +64,11 @@ export class CraListComponent extends MereComponent {
     this.dataSharingService.getNotifications(null, null);
 
     this.findAll();
+
+    this.getListConsultants(() => {
+      this.filterConsultant = this.userConnected;
+      this.getFilteredCra();
+    }, null);
 
   }
 
@@ -73,33 +84,52 @@ export class CraListComponent extends MereComponent {
     this.myList = myList;
   }
 
-  findAll() {
-    this.beforeCallServer("findAll");
-    this.craService.findAll().subscribe(
-      data => {
-        this.logger.debug("cra list findAll data:", data)
-        this.afterCallServer("findAll", data);
-        // this.info00 = ''
-        this.myList = data.body.result;
-        this.myList00 = this.myList;
-        this.dataSharingService.setListCra(this.myList);
+  findAll(forceRefresh: boolean = false) {
+    const label = "cra-list.findAll";
+    const startTime = performance.now();
+    this.logger.debug(label + " START");
 
-        this.dataSharingService.majListCra();
+    // Utilise la méthode loadListCra de DataSharingService pour le lazy loading
+    this.dataSharingService.loadListCra(forceRefresh).subscribe((craList: Cra[]) => {
+      const afterCallTime = performance.now();
+      this.logger.debug(label + " - Data received duration: " + (afterCallTime - startTime).toFixed(2) + "ms");
 
-        this.logger.debug("cra list findAll myList:", this.myList)
-        this.logger.debug("cra list findAll dataSharingService.listCra:", this.dataSharingService.getListCra())
+      this.myList = craList;
+      this.logger.debug(label + " - myList ", this.myList);
+      this.logger.debug(label + " - myList size: " + this.myList?.length);
 
-        // //////////this.logger.debug("**********"+JSON.stringify(this.myList))
-        if (!this.isError() && this.myList && this.myList.length > 0) this.myList = this.myList.sort((a, b) => this.compareCraDesc(a, b))
 
-        this.getListConsultants();
-      }, error => {
-        this.logger.debug("cra list findAll error:", error)
-        this.addErrorFromErrorOfServer("findAll", error);
-        //this.logger.debug(error);
+      this.myList00 = this.myList;
+
+      const beforeSortTime = performance.now();
+      if (!this.isError() && this.myList && this.myList.length > 0) {
+        this.myList = this.myList.sort((a, b) => this.compareCraDesc(a, b))
       }
-    );
-    this.getFilteredCra();
+      const afterSortTime = performance.now();
+      this.logger.debug(label + " - sort duration: " + (afterSortTime - beforeSortTime).toFixed(2) + "ms");
+
+      this.getTitle();
+
+      const beforeFilteredTime = performance.now();
+      this.getFilteredCra();
+      const afterFilteredTime = performance.now();
+      this.logger.debug(label + " - getFilteredCra duration: " + (afterFilteredTime - beforeFilteredTime).toFixed(2) + "ms");
+
+      const endTime = performance.now();
+      this.logger.debug(label + " END - Total duration: " + (endTime - startTime).toFixed(2) + "ms");
+    });
+  }
+
+  majListCraConsultants() {
+    for (let cra of this.myList) {
+      cra.consultant = this.consultants.find(c => c.username === cra.consultantUsername);
+    }
+  }
+
+  majListCraDays() {
+    for (let cra of this.myList) {
+      this.dataSharingService.majActivityInCra(cra);
+    }
   }
 
   saveListCra(list: Cra[]) {
@@ -151,7 +181,13 @@ export class CraListComponent extends MereComponent {
       event.preventDefault();
       event.stopPropagation();
     }
-    
+
+    // Charger les activités du CRA avant de l'afficher
+    // this.dataSharingService.majCra(cra, 
+    //   () => {
+    //     this.dataSharingService.showCra(cra);
+    //   }
+    // );
     this.dataSharingService.showCra(cra);
   }
 
@@ -171,7 +207,7 @@ export class CraListComponent extends MereComponent {
             data => {
               mythis.afterCallServer("delete", data);
               if (!this.isError()) {
-                mythis.findAll();
+                mythis.findAll(true);
                 mythis.currentCra = null;
               }
             }, error => {
@@ -209,28 +245,27 @@ export class CraListComponent extends MereComponent {
   }
 
   getFilteredCra() {
+    this.logger.debug("getFilteredCra", this.filterConsultant, this.filterMonth);
+    if (!this.filterConsultant) {
+      this.logger.debug("getFilteredCra: filterConsultant is null");
+      this.listCraFiltred = this.myList || [];
+      return;
+    }
     let month: string = null;
     if (this.filterMonth) month = this.datePipe.transform(this.filterMonth, 'yyyy-MM');
-    //////////this.logger.debug("getFilteredCra", this.filterConsultant.username, month );
-    this.beforeCallServer("getFilteredCra");
-    this.craService.getFilteredCra(this.filterConsultant.username, month).subscribe(
-      data => {
-        this.afterCallServer("getFilteredCra", data);
-        this.listCraFiltred = data.body.result;
-        this.dataSharingService.majListCraParam(this.listCraFiltred)
-        this.logger.debug("**** showCra getFilteredCra: listCraFiltred=", this.listCraFiltred);
+    this.logger.debug("getFilteredCra", this.filterConsultant.username, month);
 
-        // this.saveListCra(this.listCraFiltred)
+    const username = this.filterConsultant.username;
+    this.listCraFiltred = (this.myList || []).filter(cra => {
+      const matchConsultant = !username || (cra.consultantUsername === username || cra.consultant?.username === username);
+      const craMonth = this.datePipe.transform(cra.month, 'yyyy-MM');
+      const matchMonth = !month || (craMonth === month);
+      return matchConsultant && matchMonth;
+    });
 
-        if (!this.isError()) this.listCraFiltred = this.listCraFiltred.sort((a, b) => this.compareCraDesc(a, b))
-        //////////this.logger.debug("**** getFilteredCra: listCraFiltred=", this.listCraFiltred);
-      }, error => {
-        this.addErrorFromErrorOfServer("getFilteredCra", error);
-        ////this.logger.debug(error);
-        //////////this.logger.debug("**** getFilteredCra: error=", error);
+    this.logger.debug("**** getFilteredCra: listCraFiltred=", this.listCraFiltred);
 
-      }
-    );
+    if (!this.isError()) this.listCraFiltred = this.listCraFiltred.sort((a, b) => this.compareCraDesc(a, b))
   }
 
   // @ViewChild("mydate", {static: false}) mydate: MyDatePicker;
@@ -249,14 +284,16 @@ export class CraListComponent extends MereComponent {
     this.compoSelectConsultant.selectedObj = consultant;
   }
 
-  getListConsultants() {
+  getListConsultants(fctOk: Function, fctKo: Function) {
     this.beforeCallServer("getListConsultants")
     this.consultantService.findAll().subscribe(
       data => {
         this.afterCallServer("getListConsultants", data)
         this.consultants = data.body.result;
+        if (fctOk) fctOk();
       }, error => {
         this.addErrorFromErrorOfServer("getListConsultants", error);
+        if (fctKo) fctKo();
       }
     );
   }

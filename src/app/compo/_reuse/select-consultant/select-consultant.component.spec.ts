@@ -10,6 +10,7 @@ import { DataSharingService } from 'src/app/service/data-sharing.service';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 import { SelectConsultantComponent } from './select-consultant.component';
 
 describe('SelectConsultantComponent', () => {
@@ -46,7 +47,11 @@ describe('SelectConsultantComponent', () => {
           gotoLogin: () => {},
           gotoMyHome: () => {},
           router: { url: '/test', navigate: () => {} },
-          idEsnCurrent: 1
+          idEsnCurrent: 1,
+          listConsultant$: of([]),
+          loadListConsultant: () => of([]),
+          getListConsultant: () => [],
+          setListConsultant: () => {}
         } },
         { provide: ConsultantService, useValue: {
           findAll: () => ({ subscribe: (fn: any) => { fn({ body: { result: [] } }); return { unsubscribe: () => {} }; } }),

@@ -20,7 +20,7 @@
                         <div class="form-group">
                             <label for="password">{{utils.tr('app.login.password')}}:</label>
                             <div class="d-flex align-items-center">
-                                <input id="password" class="form-control" [type]="showPassword ? 'text' : 'password'" 
+                                <input #passwordInput id="password" class="form-control" [type]="showPassword ? 'text' : 'password'" 
                                     placeholder="{{utils.tr('app.login.password')}}" name="password" required 
                                     [(ngModel)]="credentials.password" #password="ngModel" (keyup.enter)="login()">
                                 <div class="form-check ml-2">
@@ -100,7 +100,7 @@
             <tbody>
                 <tr *ngFor="let item of lastLogins; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ item.username }}</td>
+                    <td (click)="selectUsernameOfLastLogin(item.username)">{{ item.username }}</td>
                     <td>{{ item.date | date:'dd/MM/yyyy HH:mm' }}</td>
                 </tr>
             </tbody>

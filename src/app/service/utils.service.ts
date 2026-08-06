@@ -188,6 +188,15 @@ export class UtilsService {
   }
 
   /**
+   * retorurne une chaine de la forme YYYY_MM 
+   */
+  getDateYYYY_MM(date : Date) : string {
+    date = this.getDate(date)
+    const txt = date.getFullYear() + '_' + this.getNumberInMin2Digits((date.getMonth() + 1).toString());
+    return txt;
+  }
+
+  /**
    * 
    * @param nbYear nombre d'années à soustraire
    * @returns date actuelle moins nbYear années
