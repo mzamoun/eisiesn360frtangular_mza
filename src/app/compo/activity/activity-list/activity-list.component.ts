@@ -396,7 +396,7 @@ export class ActivityListComponent extends MereComponent {
 
   delete(myObj) {
     let myThis = this;
-    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, this
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete', { type: myObj.type ? myObj.type : (myObj.constructor ? myObj.constructor.name : 'inconnu'), id: myObj.id }), this
       , () => {
         myThis.beforeCallServer("delete")
         myThis.activityService.deleteById(myObj.id)

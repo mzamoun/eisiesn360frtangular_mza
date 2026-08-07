@@ -1,25 +1,11 @@
 
-completer tous les tests unitaires des services 
-les executer 
-corriger les erreurs 
-
----------------------
 
 Bugs en tant que role MANAGER : 
 
 Test	Statuts	Remarques	TODO	complexite tech	poids fct	Statut
 
-
-Message durant la suppression d'un CRA consultant à MAJ	KO				2	
-
-Libellet du Bouton Supprimer pour supprimer le CRA consultant est à MAJ	KO				2	
-Message durant la suppression des activités renseignées dans un CRA à MAJ	KO				2	
-Aucun resultat durant la recherche de consultant par username 	KO				2	
-Historique CRA Consultant filtre date KO 	KO				2	
-Historique CRA Consultan Clarifier le comportement en ajoutant du text	KO				3	
-
 on viewDateChange : si je tombe sur un congé : 
-- les activitees doivent etre toutes de type CONGE 
+- les activitees doivent etre toutes de type CONGE : OK 
 - s'il est rejected ou draft : je dois pouvoir l'envoyer to validate 
 						
 ---------------------
@@ -27,27 +13,16 @@ on viewDateChange : si je tombe sur un congé :
 Libbelet du Bouton pour supprimer les activités renseignées dans un CRA consultant à MAJ	KO				2	
 Libellet Bouton Update CRA consultant à MAJ	KO				3	
 Absence de Notification pour la demande de validation de CRA	KO				1	
-
-
----------------------
-
+-----------------------
 
 Autre projet : browser vxml pour les tests 
 ---------------------------------------
 abonnement IA via eisi-consulting 
 -------------------------------------
 
-
-
-
---------------------
-
 completer les tests unitaires 
 executer all tests avant chaque commit 
 -------------------------------------------
-
-
-
 
 Activity : ajouter autant de cols "name" que de langues traitees : _fr _en _ar 
 
@@ -244,6 +219,28 @@ Cra :
 ============================================================================================
 DONE 
 ============================================================================================
+
+07/08/2026
+
+Message durant la suppression d'un CRA consultant à MAJ	KO				2	
+
+introduire un param au message : "Voulez-vous vraiment supprimer la ligne avec id ="
+par :
+"Voulez-vous vraiment supprimer {{type}} avec id = {{id}} ?"
+
+exemple de type : CRA, CONGE, Activity, ....
+ce message se trouve dans les *-list-*, *-form-*
+
+c'est : app.compo.cra.list.confirmDelete
+-------------------------------------------
+
+06/08/2026
+completer tous les tests unitaires des services 
+les executer 
+corriger les erreurs 
+--------------------------------
+
+
 
 20/07/2026
 Absence de bouton pour valider le CRA Consultant Aléatoire 	KO				3	

@@ -83,7 +83,7 @@ export class CategoryListComponent extends MereComponent {
 
   delete(myObj) {
     let mythis = this;
-             mythis.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
+             mythis.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete', { type: myObj.type ? myObj.type : (myObj.constructor ? myObj.constructor.name : 'inconnu'), id: myObj.id }), this
 			, ()=> {
         mythis.beforeCallServer("delete")
         mythis.categoryService.deleteById(myObj.id)

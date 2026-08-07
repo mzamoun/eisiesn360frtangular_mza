@@ -199,7 +199,7 @@ export class CraListComponent extends MereComponent {
 
   delete(myObj: Cra) {
     let mythis = this;
-    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete', { type: myObj.type ? myObj.type : 'CRA', id: myObj.id }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.craService.deleteById(myObj.id)

@@ -83,7 +83,7 @@ export class MsgHistoListComponent extends MereComponent {
 
 	delete(myObj) {
 		let mythis = this;
-			 this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + myObj.id, mythis
+			 this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete', { type: myObj.type ? myObj.type : (myObj.constructor ? myObj.constructor.name : 'inconnu'), id: myObj.id }), mythis
 		, ()=> {
 			mythis.beforeCallServer("delete")
 			mythis.msgHistoService.deleteById(myObj.id)

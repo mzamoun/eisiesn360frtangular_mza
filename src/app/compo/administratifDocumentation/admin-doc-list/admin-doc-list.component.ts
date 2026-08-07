@@ -261,7 +261,7 @@ export class AdminDocListComponent extends MereComponent {
 
     let mythis = this;
 
-    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete') + document.id, mythis
+    this.utilsIhm.confirmYesNo(this.utils.tr('app.compo.cra.list.confirmDelete', { type: 'Document', id: document.id }), mythis
       , () => {
         mythis.beforeCallServer("delete");
         mythis.documentService.deleteDocument(document)

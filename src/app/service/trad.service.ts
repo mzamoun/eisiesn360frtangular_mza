@@ -3043,9 +3043,9 @@ export class TradService {
       "ar": "إجمالي المدة يتجاوز يوم واحد لهذا التاريخ",
     },
     "app.compo.cra.list.confirmDelete": {
-      "fr": "Voulez-vous vraiment supprimer la ligne avec id=",
-      "en": "Do you really want to delete the row with id=",
-      "ar": "هل تريد حقا حذف السطر ذي المعرف=",
+      "fr": "Voulez-vous vraiment supprimer {{type}} avec id = {{id}} ?",
+      "en": "Do you really want to delete {{type}} with id = {{id}} ?",
+      "ar": "هل تريد حقا حذف {{type}} ذي المعرف = {{id}} ?",
     },
     "app.common.confirm.deleteConsultantByUsername": {
       "fr": "Voulez-vous vraiment supprimer le consultant {{username}}",

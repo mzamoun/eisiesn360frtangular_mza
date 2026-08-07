@@ -343,8 +343,12 @@ export class NotificationComponent extends MereComponent implements AfterViewIni
         }
 
         notification.cra = craComplete
-        notification.viewed = true;
-        this.dataSharingService.showCra(craComplete);
+        this.dataSharingService.majConsultantInCra(craComplete, 
+          () => {
+            notification.viewed = true;
+            this.dataSharingService.showCra(craComplete);
+          }
+        )
       }
       , (error) => {
         this.delInfo(label2);
