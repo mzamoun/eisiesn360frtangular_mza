@@ -1,24 +1,14 @@
 
 
-Bugs en tant que role MANAGER : 
 
-Test	Statuts	Remarques	TODO	complexite tech	poids fct	Statut
 
-on viewDateChange : si je tombe sur un congé : 
-- les activitees doivent etre toutes de type CONGE : OK 
-- s'il est rejected ou draft : je dois pouvoir l'envoyer to validate 
-						
----------------------
-21/07/2026
-Libbelet du Bouton pour supprimer les activités renseignées dans un CRA consultant à MAJ	KO				2	
-Libellet Bouton Update CRA consultant à MAJ	KO				3	
-Absence de Notification pour la demande de validation de CRA	KO				1	
------------------------
-
+----------------------------------------------------
 Autre projet : browser vxml pour les tests 
 ---------------------------------------
-abonnement IA via eisi-consulting 
--------------------------------------
+abonnement IA : je me suis abonné à Devin avec mon compte perso au lieu de de celui de ma boite.
+Reponse : 
+Je t invite a arrêter cette démarche, de prendre les abonnements à la volée avec un outil qui n est pas forcément  le meilleur.
+-----------------------------------------------------------------------------
 
 completer les tests unitaires 
 executer all tests avant chaque commit 
@@ -240,7 +230,10 @@ les executer
 corriger les erreurs 
 --------------------------------
 
+on viewDateChange : si je tombe sur un congé : 
+- les activitees doivent etre toutes de type CONGE : OK 
 
+---------------------------------
 
 20/07/2026
 Absence de bouton pour valider le CRA Consultant Aléatoire 	KO				3	

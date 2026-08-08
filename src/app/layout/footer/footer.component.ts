@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class FooterComponent implements OnInit {
   // today = new Date();
-	dateCommitFront = "2026-08-07 15:23:25"
+	dateCommitFront = "2026-08-08 15:27:14"
   dateCommitServer = ""
 
   // dateFooter = "";
